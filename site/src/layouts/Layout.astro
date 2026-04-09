@@ -9,9 +9,38 @@ interface Props {
   title: string;
   description?: string;
   lang?: string;
+  ogImage?: string;
+  ogType?: string;
 }
 
-const { title, description = "A convergence-driven system for shipping software with AI agents.", lang = "en" } = Astro.props;
+const { title, description = "A convergence-driven system for shipping software with AI agents.", lang = "en", ogImage = "/presence/og-image.png", ogType = "website" } = Astro.props;
+
+const siteUrl = "https://vibecrafted.io";
+const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
+const canonicalUrl = new URL(canonicalPath, siteUrl).href;
+const ogImageUrl = new URL(ogImage, siteUrl).href;
+
+/* i18n alternate map: en path -> pl path */
+const i18nMap: Record<string, string> = {
+  '/': '/pl/',
+  '/presence/quickstart/': '/pl/quickstart/',
+  '/presence/framework/': '/pl/framework/',
+  '/presence/faq/': '/pl/faq/',
+};
+/* Build reverse map */
+const i18nMapReverse: Record<string, string> = Object.fromEntries(
+  Object.entries(i18nMap).map(([en, pl]) => [pl, en])
+);
+
+function getAlternates(path: string): { en: string; pl: string } | null {
+  const normalized = path.endsWith('/') ? path : path + '/';
+  if (normalized in i18nMap) return { en: normalized, pl: i18nMap[normalized] };
+  if (normalized in i18nMapReverse) return { en: i18nMapReverse[normalized], pl: normalized };
+  return null;
+}
+
+const alternates = getAlternates(canonicalPath);
+const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
 ---
 
 <!DOCTYPE html>
@@ -23,22 +52,26 @@ const { title, description = "A convergence-driven system for shipping software 
     <meta content={description} name="description">
     <meta content={title} property="og:title">
     <meta content={description} property="og:description">
-    <meta content="https://vibecrafted.io/presence/og-image.png" property="og:image">
+    <meta content={ogImageUrl} property="og:image">
     <meta content="1536" property="og:image:width">
     <meta content="1024" property="og:image:height">
-    <meta content="website" property="og:type">
-    <meta content="https://vibecrafted.io/" property="og:url">
+    <meta content={ogType} property="og:type">
+    <meta content={canonicalUrl} property="og:url">
+    <meta content="Vibecrafted" property="og:site_name">
+    <meta content={ogLocale} property="og:locale">
     <meta content="summary_large_image" name="twitter:card">
     <meta content={title} name="twitter:title">
     <meta content={description} name="twitter:description">
-    <meta content="https://vibecrafted.io/presence/og-image.png" name="twitter:image">
+    <meta content={ogImageUrl} name="twitter:image">
     <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://plausible.io; frame-src 'none'; base-uri 'self'; form-action 'self';">
     <meta content="index,follow" name="robots">
-    <link href="https://vibecrafted.io/" rel="canonical">
-    <link href="https://vibecrafted.io/" hreflang="en" rel="alternate">
-    <link href="https://vibecrafted.io/pl/" hreflang="pl" rel="alternate">
-    <link href="https://vibecrafted.io/" hreflang="x-default" rel="alternate">
+    <link href={canonicalUrl} rel="canonical">
+    {alternates && <>
+      <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
+      <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
+      <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
+    </>}
     <link href="/presence/favicon.ico" rel="icon" sizes="32x32">
     <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png">
     <link href="/presence/logo-128.png" rel="apple-touch-icon">
