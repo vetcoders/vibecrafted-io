@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
 import CopyButton from '../components/CopyButton.svelte';
-import { ClientRouter } from 'astro:transitions';
 import logo32 from '../assets/presence/logo-32.png';
 import '../styles/global.css';
 
@@ -189,7 +188,6 @@ const navLabels = isPl
     <script is:inline type="application/ld+json" set:html={jsonLd} />
     <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
     <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
-    <ClientRouter />
 </head>
 <body class:list={[isDocsPage && 'docs-page', isFrameworkPage && 'framework-page']}>
     <a class="skip-link" href="#main-content">{navLabels.skip}</a>
