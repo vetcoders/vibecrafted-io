@@ -150,6 +150,28 @@ const navLabels = isPl
       navPrimary: 'Primary navigation',
       navFooter: 'Footer navigation',
     };
+
+const inlineScriptHashes = [
+  "'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q='",
+  "'sha256-QJZDUlo/qa5AJCrG6vHyWcatjwCeWidEHQfJc601lzw='",
+  "'sha256-eIXWvAmxkr251LJZkjniEK5LcPF3NkapbJepohwYRIc='",
+  "'sha256-CGXPR4h8KhiD2d5ZEMGdIVoEsY5O4BhcHcTENCtCt40='",
+  "'sha256-QzWFZi+FLIx23tnm9SBU4aEgx4x8DsuASP07mfqol/c='",
+].join(' ');
+
+const contentSecurityPolicy = [
+  "default-src 'none'",
+  `script-src 'self' https://cdn.jsdelivr.net https://plausible.io ${inlineScriptHashes}`,
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "img-src 'self' data:",
+  "font-src 'self' https://fonts.gstatic.com",
+  "connect-src 'self' https://plausible.io",
+  "frame-src 'none'",
+  "worker-src 'self'",
+  "manifest-src 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
 ---
 
 <!DOCTYPE html>
@@ -178,7 +200,7 @@ const navLabels = isPl
     <meta content={description ?? title} name="twitter:image:alt">
     <meta content="@VetCoders" name="twitter:site">
     <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://plausible.io; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy}>
     <meta content={robotsContent} name="robots">
     <meta content="#0e0e11" name="theme-color">
     <link href={canonicalUrl} rel="canonical">
@@ -262,11 +284,12 @@ const navLabels = isPl
         <slot />
     </main>
 
-    <footer class="footer-shell">
+    <footer class="footer-shell" aria-label="Site footer">
         <div class="footer-brand">
             <Image
                 src={logo32}
                 alt=""
+                aria-hidden="true"
                 class="footer-logo"
                 width={24}
                 height={24}
