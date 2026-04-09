@@ -1,6 +1,8 @@
 ---
+import { Picture } from 'astro:assets';
 import CopyButton from '../components/CopyButton.svelte';
 import { ClientRouter } from 'astro:transitions';
+import logo32 from '../assets/presence/logo-32.png';
 import '../styles/global.css';
 
 interface Props {
@@ -31,6 +33,7 @@ const { title, description = "A convergence-driven system for shipping software 
     <meta content={description} name="twitter:description">
     <meta content="https://vibecrafted.io/presence/og-image.png" name="twitter:image">
     <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://plausible.io; frame-src 'none'; base-uri 'self'; form-action 'self';">
     <meta content="index,follow" name="robots">
     <link href="https://vibecrafted.io/" rel="canonical">
     <link href="https://vibecrafted.io/" hreflang="en" rel="alternate">
@@ -53,7 +56,16 @@ const { title, description = "A convergence-driven system for shipping software 
         <header class="nav-shell">
             <a class="brand" href="/">
                 <span class="brand-wordmark">vibecrafted</span>
-                <img alt="" aria-hidden="true" class="brand-logo" height="24" src="/presence/logo-32.png">
+                <Picture
+                    src={logo32}
+                    alt=""
+                    aria-hidden="true"
+                    class="brand-logo"
+                    width={24}
+                    height={24}
+                    densities={[1, 2]}
+                    formats={['avif', 'webp']}
+                />
             </a>
             <nav aria-label="Primary" class="nav-links">
                 <a href="#pipeline">Pipeline</a>
@@ -87,7 +99,15 @@ const { title, description = "A convergence-driven system for shipping software 
 
     <footer class="footer-shell">
         <div class="footer-brand">
-            <img src="/presence/logo-32.png" alt="" class="footer-logo" width="24" height="24">
+            <Picture
+                src={logo32}
+                alt=""
+                class="footer-logo"
+                width={24}
+                height={24}
+                densities={[1, 2]}
+                formats={['avif', 'webp']}
+            />
             <span class="footer-title">VIBECRAFTED</span>
             <p class="footer-tagline">𝗕𝘂𝗶𝗹𝘁 𝘂𝗻𝗱𝗲𝗿 ᵐⁱᵈⁿⁱᵍʰᵗ 𝗽𝗿𝗲𝘀𝘀𝘂𝗿𝗲. 𝗗𝗲𝗽𝗹𝗼𝘆𝗲𝗱 𝘁𝗼 ˡᵒᶜᵃˡʰᵒˢᵗ.</p>
         </div>
