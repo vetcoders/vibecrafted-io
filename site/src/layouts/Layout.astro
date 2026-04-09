@@ -113,6 +113,8 @@ const navLabels = isPl
       security: 'Bezpieczeństwo',
       skip: 'Przejdź do treści',
       switchLang: 'Switch to English',
+      menu: 'Menu',
+      closeMenu: 'Zamknij menu',
       navPrimary: 'Nawigacja główna',
       navFooter: 'Nawigacja stopki',
     }
@@ -136,6 +138,8 @@ const navLabels = isPl
       security: 'Security',
       skip: 'Skip to content',
       switchLang: 'Przełącz na polski',
+      menu: 'Menu',
+      closeMenu: 'Close menu',
       navPrimary: 'Primary navigation',
       navFooter: 'Footer navigation',
     };
@@ -191,7 +195,7 @@ const navLabels = isPl
     <a class="skip-link" href="#main-content">{navLabels.skip}</a>
 
     <div class="topbar">
-        <header class="nav-shell">
+        <header class="nav-shell" data-nav-open="false" data-nav-shell>
             <a class="brand" data-astro-reload href={navPaths.home}>
                 <span class="brand-wordmark">vibecrafted</span>
                 <Image
@@ -205,7 +209,23 @@ const navLabels = isPl
                     format="webp"
                 />
             </a>
-            <nav aria-label={navLabels.navPrimary} class="nav-links">
+            <button
+                aria-controls="site-nav"
+                aria-expanded="false"
+                aria-label={navLabels.menu}
+                class="nav-toggle"
+                data-closed-label={navLabels.menu}
+                data-nav-toggle
+                data-open-label={navLabels.closeMenu}
+                type="button"
+            >
+                <span class="nav-toggle__label">{navLabels.menu}</span>
+                <span aria-hidden="true" class="nav-toggle__glyph">
+                    <span></span>
+                    <span></span>
+                </span>
+            </button>
+            <nav aria-label={navLabels.navPrimary} class="nav-links" data-nav-panel id="site-nav">
                 <a href={sectionLinks.pipeline}>{navLabels.pipeline}</a>
                 <a href={sectionLinks.skills}>{navLabels.skills}</a>
                 <a href={sectionLinks.marbles}>{navLabels.marbles}</a>
@@ -285,6 +305,82 @@ const navLabels = isPl
         </div>
     </footer>
 
+    <script is:inline>
+        const mobileNavMedia = '(max-width: 720px)';
+
+        function initMobileNav() {
+            window.__vcNavCleanup?.();
+
+            const shell = document.querySelector('[data-nav-shell]');
+            const toggle = document.querySelector('[data-nav-toggle]');
+            const panel = document.querySelector('[data-nav-panel]');
+
+            if (!(shell instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement) || !(panel instanceof HTMLElement)) {
+                return;
+            }
+
+            const label = toggle.querySelector('.nav-toggle__label');
+            const closedLabel = toggle.dataset.closedLabel ?? 'Menu';
+            const openLabel = toggle.dataset.openLabel ?? 'Close';
+            const media = window.matchMedia(mobileNavMedia);
+
+            const setOpen = (open) => {
+                shell.dataset.navOpen = open ? 'true' : 'false';
+                toggle.setAttribute('aria-expanded', String(open));
+                toggle.setAttribute('aria-label', open ? openLabel : closedLabel);
+                if (label) {
+                    label.textContent = open ? openLabel : closedLabel;
+                }
+                document.body.classList.toggle('nav-open', open && media.matches);
+            };
+
+            const closeNav = () => setOpen(false);
+
+            if (toggle.dataset.navBound === 'true') {
+                setOpen(shell.dataset.navOpen === 'true' && media.matches);
+                return;
+            }
+
+            toggle.dataset.navBound = 'true';
+            setOpen(false);
+
+            toggle.addEventListener('click', () => {
+                setOpen(shell.dataset.navOpen !== 'true');
+            });
+
+            panel.querySelectorAll('a').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (media.matches) {
+                        closeNav();
+                    }
+                });
+            });
+
+            const handleKeydown = (event) => {
+                if (event.key === 'Escape') {
+                    closeNav();
+                }
+            };
+
+            const handleMediaChange = () => {
+                if (!media.matches) {
+                    closeNav();
+                }
+            };
+
+            document.addEventListener('keydown', handleKeydown);
+            media.addEventListener('change', handleMediaChange);
+
+            window.__vcNavCleanup = () => {
+                document.removeEventListener('keydown', handleKeydown);
+                media.removeEventListener('change', handleMediaChange);
+                document.body.classList.remove('nav-open');
+            };
+        }
+
+        document.addEventListener('astro:page-load', initMobileNav);
+        initMobileNav();
+    </script>
     <script is:inline src="/presence/app.js"></script>
 </body>
 </html>
