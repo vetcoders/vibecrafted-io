@@ -3,9 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import FrameworkPlayground from '../../components/FrameworkPlayground.svelte';
 ---
 <Layout title="𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Framework Playground" description="Interactive playground demonstrating the Vibecrafted convergence framework — explore the pipeline, skills, and marbles system live." lang="en">
-    <main class="framework-page-shell">
+    <div class="framework-page-shell">
         <FrameworkPlayground client:only="svelte" lang="en" />
-    </main>
+    </div>
     <link href="/presence/framework.css" rel="stylesheet">
     <script is:inline src="/presence/framework.js"></script>
 </Layout>
