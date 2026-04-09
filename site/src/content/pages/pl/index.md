@@ -2,7 +2,7 @@
 title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — The Founders' Framework"
 description: "Framework konwergencyjny do tworzenia oprogramowania z agentami AI. Zbudowany przez weterynarzy, którzy nauczyli się rzeźbić w kamieniu."
 ---
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
 import CopyButton from '../../components/CopyButton.svelte';
 import MermaidViewer from '../../components/MermaidViewer.svelte';
@@ -414,14 +414,14 @@ flowchart LR
     </main>
     <footer class="footer-shell">
         <div class="footer-brand">
-            <Picture
+            <Image
                 src={logo32}
                 alt=""
                 class="footer-logo"
                 width={24}
                 height={24}
                 densities={[1, 2]}
-                formats={['avif', 'webp']}
+                format="webp"
             />
             <span class="footer-title">VIBECRAFTED</span>
             <p class="footer-tagline">Stworzone po północy, pod presją. Odpalone na localhost.</p>

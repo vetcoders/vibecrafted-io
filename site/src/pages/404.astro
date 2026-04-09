@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import logo32 from '../assets/presence/logo-32.png';
 import Layout from '../layouts/Layout.astro';
 ---
@@ -14,7 +14,7 @@ import Layout from '../layouts/Layout.astro';
       <div class="not-found-grid">
         <div class="not-found-copy">
           <div class="not-found-eyebrow">
-            <Picture
+            <Image
               src={logo32}
               alt=""
               aria-hidden="true"
@@ -22,7 +22,7 @@ import Layout from '../layouts/Layout.astro';
               width={28}
               height={28}
               densities={[1, 2]}
-              formats={['avif', 'webp']}
+              format="webp"
             />
             <span>Route fracture detected</span>
           </div>

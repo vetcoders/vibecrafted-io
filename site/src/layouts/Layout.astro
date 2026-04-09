@@ -1,5 +1,5 @@
 ---
-import { Picture } from 'astro:assets';
+import { Image } from 'astro:assets';
 import CopyButton from '../components/CopyButton.svelte';
 import { ClientRouter } from 'astro:transitions';
 import logo32 from '../assets/presence/logo-32.png';
@@ -8,7 +8,7 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
-  lang?: string;
+  lang?: 'en' | 'pl';
   ogImage?: string;
   ogType?: string;
 }
@@ -182,9 +182,9 @@ const navLabels = isPl
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Allura&family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
-    <script type="application/ld+json" set:html={jsonLd} />
-    <script crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
-    <script defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
+    <script is:inline type="application/ld+json" set:html={jsonLd} />
+    <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+    <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
     <ClientRouter />
 </head>
 <body class:list={[isDocsPage && 'docs-page', isFrameworkPage && 'framework-page']}>
@@ -194,7 +194,7 @@ const navLabels = isPl
         <header class="nav-shell">
             <a class="brand" data-astro-reload href={navPaths.home}>
                 <span class="brand-wordmark">vibecrafted</span>
-                <Picture
+                <Image
                     src={logo32}
                     alt=""
                     aria-hidden="true"
@@ -202,7 +202,7 @@ const navLabels = isPl
                     width={24}
                     height={24}
                     densities={[1, 2]}
-                    formats={['avif', 'webp']}
+                    format="webp"
                 />
             </a>
             <nav aria-label={navLabels.navPrimary} class="nav-links">
@@ -237,14 +237,14 @@ const navLabels = isPl
 
     <footer class="footer-shell">
         <div class="footer-brand">
-            <Picture
+            <Image
                 src={logo32}
                 alt=""
                 class="footer-logo"
                 width={24}
                 height={24}
                 densities={[1, 2]}
-                formats={['avif', 'webp']}
+                format="webp"
             />
             <span class="footer-title">VIBECRAFTED</span>
             <p class="footer-tagline">𝗕𝘂𝗶𝗹𝘁 𝘂𝗻𝗱𝗲𝗿 ᵐⁱᵈⁿⁱᵍʰᵗ 𝗽𝗿𝗲𝘀𝘀𝘂𝗿𝗲. 𝗗𝗲𝗽𝗹𝗼𝘆𝗲𝗱 𝘁𝗼 ˡᵒᶜᵃˡʰᵒˢᵗ.</p>
