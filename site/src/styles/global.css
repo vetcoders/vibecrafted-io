@@ -3119,7 +3119,7 @@ footer {
 
 .framework-strip .card:hover {
     transform: translateZ(30px) rotateY(-2deg) scale(1.02);
-    box-shadow: -15px 25px 45px rgba(0, 0, 0, 0.4);
+    box-shadow: -15px 25px 45px var(--shadow-md);
     z-index: 10;
 }
 
@@ -3266,9 +3266,9 @@ footer {
 }
 
 .mmd-preview {
-    background: rgba(14, 14, 17, 0.5);
-    padding: 1rem;
-    border-radius: 6px;
+    background: var(--surface-glass);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
     overflow-x: auto;
     text-align: center;
     display: flex;
