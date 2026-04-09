@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import FrameworkPlayground from '../../components/FrameworkPlayground.svelte';
+---
+<Layout title="𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Framework Playground" lang="pl">
+    <main class="framework-page-shell" style="min-height: 100vh;">
+        <FrameworkPlayground client:only="svelte" lang="pl" />
+    </main>
+    <link href="/presence/framework.css" rel="stylesheet">
+    <script is:inline src="/presence/framework.js"></script>
+</Layout>

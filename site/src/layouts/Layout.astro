@@ -1,0 +1,132 @@
+---
+import CopyButton from '../components/CopyButton.svelte';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+}
+
+const { title, description = "A convergence-driven system for shipping software with AI agents.", lang = "en" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{title}</title>
+    <meta content={description} name="description">
+    <meta content={title} property="og:title">
+    <meta content={description} property="og:description">
+    <meta content="https://vibecrafted.io/presence/og-image.png" property="og:image">
+    <meta content="1536" property="og:image:width">
+    <meta content="1024" property="og:image:height">
+    <meta content="website" property="og:type">
+    <meta content="https://vibecrafted.io/" property="og:url">
+    <meta content="summary_large_image" name="twitter:card">
+    <meta content={title} name="twitter:title">
+    <meta content={description} name="twitter:description">
+    <meta content="https://vibecrafted.io/presence/og-image.png" name="twitter:image">
+    <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
+    <meta content="index,follow" name="robots">
+    <link href="https://vibecrafted.io/" rel="canonical">
+    <link href="https://vibecrafted.io/" hreflang="en" rel="alternate">
+    <link href="https://vibecrafted.io/pl/" hreflang="pl" rel="alternate">
+    <link href="https://vibecrafted.io/" hreflang="x-default" rel="alternate">
+    <link href="/presence/favicon.ico" rel="icon" sizes="32x32">
+    <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png">
+    <link href="/presence/logo-128.png" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+    <ClientRouter />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <div class="topbar">
+        <header class="nav-shell">
+            <a class="brand" href="/">
+                <span class="brand-wordmark">vibecrafted</span>
+                <img alt="" aria-hidden="true" class="brand-logo" height="24" src="/presence/logo-32.png">
+            </a>
+            <nav aria-label="Primary" class="nav-links">
+                <a href="#pipeline">Pipeline</a>
+                <a href="#skills">Skills</a>
+                <a href="#marbles">Marbles</a>
+                <a href="/presence/framework.html">Demo</a>
+                <a data-modal-open="quickstart-modal" href="/presence/quickstart.html">Quick Start</a>
+                <a data-modal-open="faq-modal" href="/presence/faq.html">FAQ</a>
+                <a href="#dou">DoU</a>
+                <div class="nav-get-zone">
+                    <a href="#get" id="nav-get-link">Get</a>
+                    <a href="/pl" hreflang="pl" lang="pl">PL</a>
+                    <a aria-label="GitHub" class="nav-icon-link" href="https://github.com/VetCoders/vibecrafted">
+                        <svg aria-hidden="true" class="nav-icon" viewBox="0 0 24 24">
+                            <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.51v-1.81c-2.94.64-3.56-1.24-3.56-1.24-.48-1.22-1.16-1.55-1.16-1.55-.95-.65.07-.63.07-.63 1.05.07 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.04.87.09-.68.37-1.14.66-1.4-2.35-.27-4.82-1.18-4.82-5.25 0-1.16.41-2.1 1.08-2.84-.11-.27-.47-1.36.1-2.83 0 0 .88-.28 2.89 1.08a10.08 10.08 0 0 1 5.26 0c2-1.36 2.88-1.08 2.88-1.08.58 1.47.22 2.56.11 2.83.67.74 1.08 1.68 1.08 2.84 0 4.08-2.48 4.97-4.85 5.23.38.33.72.97.72 1.95v2.89c0 .28.19.62.73.51A10.5 10.5 0 0 0 12 1.5Z"></path>
+                        </svg>
+                    </a>
+                </div>
+            </nav>
+        </header>
+    </div>
+
+    <div class="curl-banner" id="get">
+        <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash</code>
+        <CopyButton client:visible class="cb-copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash" defaultLabel="Copy" />
+    </div>
+
+    <main class="shell" id="main-content">
+        <slot />
+    </main>
+
+    <footer class="footer-shell">
+        <div class="footer-brand">
+            <img src="/presence/logo-32.png" alt="" class="footer-logo" width="24" height="24">
+            <span class="footer-title">VIBECRAFTED</span>
+            <p class="footer-tagline">𝗕𝘂𝗶𝗹𝘁 𝘂𝗻𝗱𝗲𝗿 ᵐⁱᵈⁿⁱᵍʰᵗ 𝗽𝗿𝗲𝘀𝘀𝘂𝗿𝗲. 𝗗𝗲𝗽𝗹𝗼𝘆𝗲𝗱 𝘁𝗼 ˡᵒᶜᵃˡʰᵒˢᵗ.</p>
+        </div>
+        
+        <div class="footer-links">
+            <div class="footer-col">
+                <h4>System</h4>
+                <a href="#pipeline">Pipeline</a>
+                <a href="#skills">Skills</a>
+                <a href="#marbles">Marbles Convergence</a>
+            </div>
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <a data-modal-open="quickstart-modal" href="/presence/quickstart.html">Quick Start</a>
+                <a data-modal-open="faq-modal" href="/presence/faq.html">FAQ</a>
+                <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Foundation</a>
+            </div>
+            <div class="footer-col">
+                <h4>Project</h4>
+                <a href="https://github.com/VetCoders/vibecrafted">GitHub Repository</a>
+                <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">License (BSL 1.1)</a>
+                <a href="https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md">Security</a>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-legal">
+                <span>&copy; 2026 VetCoders</span>
+                <span class="footer-brands">
+                    <span class="brand-badge">Built for Apple Silicon</span>
+                    <span class="brand-badge">Powered by OpenAI</span>
+                </span>
+            </div>
+            <div class="footer-bottom-links">
+                <a href="#dou">Declaration of Usage</a>
+            </div>
+        </div>
+    </footer>
+
+    <script is:inline src="/presence/app.js"></script>
+</body>
+</html>
