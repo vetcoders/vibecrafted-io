@@ -1,63 +1,14 @@
 ---
-import { Image } from 'astro:assets';
-import logo32 from '../assets/presence/logo-32.png';
+import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+
+const entry = await getEntry('pages', 'en/404');
+if (!entry) {
+  throw new Error("Content entry not found: en/404");
+}
+const { Content } = await render(entry);
 ---
 
-<Layout
-  title="404 — Route Not Found | Vibecrafted"
-  description="The requested Vibecrafted page could not be found. Return home, open the quick start, or inspect the framework."
-  lang="en"
->
-  <section class="not-found-view">
-    <div class="not-found-shell">
-      <div class="not-found-grid">
-        <div class="not-found-copy">
-          <div class="not-found-eyebrow">
-            <Image
-              src={logo32}
-              alt=""
-              aria-hidden="true"
-              class="not-found-eyebrow__logo"
-              width={28}
-              height={28}
-              densities={[1, 2]}
-              format="webp"
-            />
-            <span>Route fracture detected</span>
-          </div>
-
-          <p class="section-label">Copper / Patina / Stone</p>
-          <h1 class="not-found-title">404</h1>
-          <p class="not-found-lead">
-            This route slipped outside the live build. Re-enter through the homepage, reopen the quick start, or jump
-            straight into the framework demo to get back on the current path.
-          </p>
-
-          <div class="not-found-trace" aria-label="Suggested recovery route">
-            <span class="not-found-trace__kicker">Suggested recovery route</span>
-            <p class="not-found-trace__path">Home -> Quick Start -> Framework Demo</p>
-          </div>
-
-          <div class="not-found-actions">
-            <a class="btn-solid" href="/">Back Home</a>
-            <a class="btn-outline" href="/presence/quickstart/">Quick Start</a>
-          </div>
-        </div>
-
-        <aside class="not-found-panel" aria-label="Recovery options">
-          <p class="not-found-panel__kicker">Fast recovery</p>
-          <ul class="not-found-links">
-            <li><a href="/">Open the home page</a></li>
-            <li><a href="/presence/framework/">View the framework demo</a></li>
-            <li><a href="/presence/faq/">Check the FAQ</a></li>
-            <li><a href="https://github.com/VetCoders/vibecrafted">Browse the repository</a></li>
-          </ul>
-          <p class="not-found-panel__note">
-            If you followed an old link, jump back to the homepage and re-enter through the current navigation.
-          </p>
-        </aside>
-      </div>
-    </div>
-  </section>
+<Layout title={entry.data.title} description={entry.data.description} lang="en">
+    <Content />
 </Layout>

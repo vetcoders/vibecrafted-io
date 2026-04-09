@@ -1,11 +1,14 @@
 ---
+import { getEntry, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import FrameworkPlayground from '../../components/FrameworkPlayground.svelte';
+
+const entry = await getEntry('pages', 'pl/framework');
+if (!entry) {
+  throw new Error("Content entry not found: pl/framework");
+}
+const { Content } = await render(entry);
 ---
-<Layout title="𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Framework Playground" description="Interaktywny playground frameworka Vibecrafted — eksploruj pipeline, skille i system marbles na żywo." lang="pl">
-    <div class="framework-page-shell">
-        <FrameworkPlayground client:only="svelte" lang="pl" />
-    </div>
-    <link href="/presence/framework.css" rel="stylesheet">
-    <script is:inline src="/presence/framework.js"></script>
+
+<Layout title={entry.data.title} description={entry.data.description} lang="pl">
+    <Content />
 </Layout>

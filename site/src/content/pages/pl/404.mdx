@@ -1,0 +1,58 @@
+---
+title: "404 — Nie znaleziono strony | Vibecrafted"
+description: "Żądana strona Vibecrafted nie została znaleziona. Wróć na stronę główną, otwórz szybki start lub sprawdź framework."
+---
+import { Image } from 'astro:assets';
+import logo32 from '../../../assets/presence/logo-32.png';
+
+<section class="not-found-view">
+  <div class="not-found-shell">
+    <div class="not-found-grid">
+      <div class="not-found-copy">
+        <div class="not-found-eyebrow">
+          <Image
+            src={logo32}
+            alt=""
+            aria-hidden="true"
+            class="not-found-eyebrow__logo"
+            width={28}
+            height={28}
+            densities={[1, 2]}
+            format="webp"
+          />
+          <span>Wykryto pęknięcie ścieżki</span>
+        </div>
+
+        <p class="section-label">Miedź / Patyna / Kamień</p>
+        <h1 class="not-found-title">404</h1>
+        <p class="not-found-lead">
+          Ta ścieżka wypadła poza działający build. Wróć przez stronę główną, ponownie otwórz szybki start lub przejdź
+          prosto do demo frameworka, aby wrócić na właściwą drogę.
+        </p>
+
+        <div class="not-found-trace" aria-label="Sugerowana ścieżka powrotu">
+          <span class="not-found-trace__kicker">Sugerowana ścieżka powrotu</span>
+          <p class="not-found-trace__path">Home -> Szybki Start -> Demo Frameworka</p>
+        </div>
+
+        <div class="not-found-actions">
+          <a class="btn-solid" href="/pl/">Wróć na stronę główną</a>
+          <a class="btn-outline" href="/pl/quickstart/">Szybki start</a>
+        </div>
+      </div>
+
+      <aside class="not-found-panel" aria-label="Opcje powrotu">
+        <p class="not-found-panel__kicker">Szybki powrót</p>
+        <ul class="not-found-links">
+          <li><a href="/pl/">Otwórz stronę główną</a></li>
+          <li><a href="/pl/framework/">Zobacz demo frameworka</a></li>
+          <li><a href="/pl/faq/">Sprawdź FAQ</a></li>
+          <li><a href="https://github.com/VetCoders/vibecrafted">Przeglądaj repozytorium</a></li>
+        </ul>
+        <p class="not-found-panel__note">
+          Jeśli kliknąłeś w stary link, wróć na stronę główną i wejdź ponownie przez aktualną nawigację.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
