@@ -1,0 +1,69 @@
+---
+const { lang } = Astro.props;
+---
+<section class="fade-up">
+    <div class="docs-columns">
+        {lang === 'en' ? (
+            <>
+            <article class="resource-card">
+                <p class="resource-kicker">What you need</p>
+                <h3>Minimal prerequisites</h3>
+                <ul class="resource-list">
+                    <li>macOS or Linux</li>
+                    <li>Git, Python 3.10+, and <code>make</code></li>
+                    <li>One or more agent CLIs: Codex, Claude, or Gemini</li>
+                    <li>Optional but high-value foundations: loctree, aicx, prview, ScreenScribe</li>
+                </ul>
+            </article>
+            <article class="resource-card">
+                <p class="resource-kicker">What you get</p>
+                <h3>Operational surfaces after install</h3>
+                <ul class="resource-list">
+                    <li>A central skill store under <code>$VIBECRAFTED_ROOT/.vibecrafted/skills/</code></li>
+                    <li>Artifacts grouped by repo and date under <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code></li>
+                    <li>Shell helpers for spawning, observing, marbles, DoU, hydrate, and release</li>
+                    <li>A staging-friendly control plane under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code></li>
+                </ul>
+            </article>
+            </>
+        ) : (
+            <>
+            <article class="resource-card">
+                <p class="resource-kicker">Czego potrzebujesz</p>
+                <h3>Minimalne wymagania</h3>
+                <ul class="resource-list">
+                    <li>macOS albo Linux</li>
+                    <li>Git, Python 3.10+ i <code>make</code></li>
+                    <li>Co najmniej jeden runtime: Codex, Claude albo Gemini</li>
+                    <li>Opcjonalnie, ale bardzo przydatne: loctree, aicx, prview, ScreenScribe</li>
+                </ul>
+            </article>
+            <article class="resource-card">
+                <p class="resource-kicker">Po instalacji</p>
+                <h3>Co dostajesz po instalacji</h3>
+                <ul class="resource-list">
+                    <li>Centralny magazyn skilli w <code>$VIBECRAFTED_ROOT/.vibecrafted/skills/</code></li>
+                    <li>Artefakty pogrupowane według repozytorium i daty w <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code></li>
+                    <li>Helpery shellowe do uruchamiania agentów, obserwacji sesji, Marbles, DoU, Hydrate i Release</li>
+                    <li>Lokalną kopię frameworka w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code></li>
+                </ul>
+            </article>
+            </>
+        )}
+    </div>
+    <div class="docs-inline-links">
+        {lang === 'en' ? (
+            <>
+            <a data-astro-reload href="/presence/faq/">Answered FAQ</a>
+            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Foundation Stack</a>
+            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Markdown Version</a>
+            </>
+        ) : (
+            <>
+            <a data-astro-reload href="/pl/faq/">FAQ</a>
+            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Stack zależności</a>
+            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Szybki start w Markdownie</a>
+            </>
+        )}
+    </div>
+</section>

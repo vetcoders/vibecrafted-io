@@ -1,0 +1,28 @@
+---
+const { lang } = Astro.props;
+---
+<section class="docs-hero fade-up">
+    {lang === 'en' ? (
+        <>
+        <div class="section-label">Quick Start</div>
+        <h1 class="manifesto-title">From zero to your first 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. loop.</h1>
+        <p class="manifesto-lead"> Install the framework, verify the control plane, then run a real workflow inside a live repository. The goal is first signal fast, not endless setup. </p>
+        <p class="manifesto-quote"> Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙. </p>
+        <div class="manifesto-actions">
+            <a class="btn-solid" data-astro-reload href="/">Back to Overview</a>
+            <a class="btn-outline" href="https://github.com/VetCoders/vibecrafted">View on GitHub</a>
+        </div>
+        </>
+    ) : (
+        <>
+        <div class="section-label">Szybki start</div>
+        <h1 class="manifesto-title">Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..</h1>
+        <p class="manifesto-lead"> Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska. </p>
+        <p class="manifesto-quote"> Framework, który stworzył sam siebie. </p>
+        <div class="manifesto-actions">
+            <a class="btn-solid" data-astro-reload href="/pl/">Wróć do przeglądu</a>
+            <a class="btn-outline" href="https://github.com/VetCoders/vibecrafted">Zobacz na GitHubie</a>
+        </div>
+        </>
+    )}
+</section>
