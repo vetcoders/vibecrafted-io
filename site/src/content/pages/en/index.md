@@ -404,8 +404,8 @@ flowchart LR
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a data-modal-open="quickstart-modal" href="/presence/quickstart/">Quick Start</a>
-                    <a data-modal-open="faq-modal" href="/presence/faq/">FAQ</a>
+                    <a data-astro-reload data-modal-open="quickstart-modal" href="/presence/quickstart/">Quick Start</a>
+                    <a data-astro-reload data-modal-open="faq-modal" href="/presence/faq/">FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted">GitHub</a>
                 </div>
             </div>
@@ -445,8 +445,8 @@ flowchart LR
             <a href="#get">Install</a>
             <a href="#pipeline">Pipeline</a>
             <a href="#skills">Skills</a>
-            <a data-modal-open="quickstart-modal" href="/presence/quickstart/">Quick Start</a>
-            <a data-modal-open="faq-modal" href="/presence/faq/">FAQ</a>
+            <a data-astro-reload data-modal-open="quickstart-modal" href="/presence/quickstart/">Quick Start</a>
+            <a data-astro-reload data-modal-open="faq-modal" href="/presence/faq/">FAQ</a>
             <a href="https://loct.io">Loctree</a>
         </nav>
         <p class="footer-copyright">&copy; 2025-2026 VetCoders. Built by Maciej Gad &amp; Monika Szymańska.</p>
@@ -463,7 +463,7 @@ flowchart LR
                     <p class="surface-modal__lead">The homepage gives you the shape. The standalone guide gives you the exact install path, doctor pass, and first workflow.</p>
                 </div>
                 <div class="surface-modal__head-actions">
-                    <a class="surface-modal__link" href="/presence/quickstart/">Standalone page</a>
+                    <a class="surface-modal__link" data-astro-reload href="/presence/quickstart/">Standalone page</a>
                     <button aria-label="Close quickstart" class="surface-modal__close" data-modal-close
                         type="button">Close</button>
                 </div>
@@ -533,7 +533,7 @@ flowchart LR
                     <p class="surface-modal__lead">This is the short answer layer. The standalone FAQ carries the full install, workflow, foundations, and commercial posture.</p>
                 </div>
                 <div class="surface-modal__head-actions">
-                    <a class="surface-modal__link" href="/presence/faq/">Standalone page</a>
+                    <a class="surface-modal__link" data-astro-reload href="/presence/faq/">Standalone page</a>
                     <button aria-label="Close FAQ" class="surface-modal__close" data-modal-close
                         type="button">Close</button>
                 </div>
@@ -560,7 +560,7 @@ flowchart LR
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md">Long-form Markdown
                         FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">License</a>
-                    <a href="/presence/quickstart/">Standalone Quick Start</a>
+                    <a data-astro-reload href="/presence/quickstart/">Standalone Quick Start</a>
                 </div>
             </div>
         </div>

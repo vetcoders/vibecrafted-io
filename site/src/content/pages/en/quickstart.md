@@ -9,7 +9,7 @@ description: "Install the Vibecrafted framework, verify the control plane, and r
                 <p class="manifesto-lead"> Install the framework, verify the control plane, then run a real workflow inside a live repository. The goal is first signal fast, not endless setup. </p>
                 <p class="manifesto-quote"> Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙. </p>
                 <div class="manifesto-actions">
-                    <a class="btn-solid" href="/">Back to Overview</a>
+                    <a class="btn-solid" data-astro-reload href="/">Back to Overview</a>
                     <a class="btn-outline" href="https://github.com/VetCoders/vibecrafted">View on GitHub</a>
                 </div>
             </section>
@@ -109,7 +109,7 @@ vibecrafted release codex --prompt "Prepare release steps"</code></pre>
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a href="/presence/faq/">Answered FAQ</a>
+                    <a data-astro-reload href="/presence/faq/">Answered FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Foundation Stack</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Markdown
                         Version</a>

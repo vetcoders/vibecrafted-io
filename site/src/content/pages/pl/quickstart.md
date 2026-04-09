@@ -9,7 +9,7 @@ description: "Zainstaluj framework Vibecrafted, sprawdź środowisko i uruchom p
                 <p class="manifesto-lead"> Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska. </p>
                 <p class="manifesto-quote"> Framework, który stworzył sam siebie. </p>
                 <div class="manifesto-actions">
-                    <a class="btn-solid" href="/pl/">Wróć do przeglądu</a>
+                    <a class="btn-solid" data-astro-reload href="/pl/">Wróć do przeglądu</a>
                     <a class="btn-outline" href="https://github.com/VetCoders/vibecrafted">Zobacz na GitHubie</a>
                 </div>
             </section>
@@ -109,7 +109,7 @@ vc-release codex</code></pre>
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a href="/pl/faq/">FAQ</a>
+                    <a data-astro-reload href="/pl/faq/">FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Stack zależności</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Szybki start w
                         Markdownie</a>

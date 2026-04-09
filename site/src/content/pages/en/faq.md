@@ -9,8 +9,8 @@ description: "Frequently asked questions about the Vibecrafted framework — wha
                 <p class="manifesto-lead"> This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits. </p>
                 <p class="manifesto-quote"> Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙. </p>
                 <div class="manifesto-actions">
-                    <a class="btn-solid" href="/presence/quickstart/">Read Quick Start</a>
-                    <a class="btn-outline" href="/">Back to Overview</a>
+                    <a class="btn-solid" data-astro-reload href="/presence/quickstart/">Read Quick Start</a>
+                    <a class="btn-outline" data-astro-reload href="/">Back to Overview</a>
                 </div>
             </section>
             <section class="fade-up">
@@ -89,7 +89,7 @@ description: "Frequently asked questions about the Vibecrafted framework — wha
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a href="/presence/quickstart/">Quick Start</a>
+                    <a data-astro-reload href="/presence/quickstart/">Quick Start</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md">Long-form Markdown
                         FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">License</a>

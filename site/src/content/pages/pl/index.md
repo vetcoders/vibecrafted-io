@@ -390,8 +390,8 @@ flowchart LR
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a data-modal-open="quickstart-modal" href="/pl/quickstart/">Szybki start</a>
-                    <a data-modal-open="faq-modal" href="/pl/faq/">FAQ</a>
+                    <a data-astro-reload data-modal-open="quickstart-modal" href="/pl/quickstart/">Szybki start</a>
+                    <a data-astro-reload data-modal-open="faq-modal" href="/pl/faq/">FAQ</a>
                     <a href="https://github.com/VetCoders/vibecrafted">GitHub</a>
                 </div>
             </div>
@@ -431,8 +431,8 @@ flowchart LR
             <a href="#get">Instalacja</a>
             <a href="#pipeline">Pipeline</a>
             <a href="#skills">Skille</a>
-            <a data-modal-open="quickstart-modal" href="/pl/quickstart/">Szybki start</a>
-            <a data-modal-open="faq-modal" href="/pl/faq/">FAQ</a>
+            <a data-astro-reload data-modal-open="quickstart-modal" href="/pl/quickstart/">Szybki start</a>
+            <a data-astro-reload data-modal-open="faq-modal" href="/pl/faq/">FAQ</a>
             <a href="https://loct.io">Loctree</a>
         </nav>
         <p class="footer-copyright">&copy; 2025-2026 VetCoders. Stworzone przez Macieja Gada i Monikę Szymańską.</p>
@@ -449,7 +449,7 @@ flowchart LR
                     <p class="surface-modal__lead">Ta strona daje Ci ogólny obraz. Osobny przewodnik pokazuje dokładną ścieżkę instalacji, wynik doctora i pierwszy workflow.</p>
                 </div>
                 <div class="surface-modal__head-actions">
-                    <a class="surface-modal__link" href="/pl/quickstart/">Osobna strona</a>
+                    <a class="surface-modal__link" data-astro-reload href="/pl/quickstart/">Osobna strona</a>
                     <button aria-label="Zamknij szybki start" class="surface-modal__close" data-modal-close
                         type="button">Zamknij</button>
                 </div>
@@ -519,7 +519,7 @@ flowchart LR
                     <p class="surface-modal__lead">To krótki zestaw odpowiedzi. Osobne FAQ rozwija temat instalacji, workflow, zależności i modelu komercyjnego.</p>
                 </div>
                 <div class="surface-modal__head-actions">
-                    <a class="surface-modal__link" href="/pl/faq/">Osobna strona</a>
+                    <a class="surface-modal__link" data-astro-reload href="/pl/faq/">Osobna strona</a>
                     <button aria-label="Zamknij FAQ" class="surface-modal__close" data-modal-close
                         type="button">Zamknij</button>
                 </div>
@@ -546,7 +546,7 @@ flowchart LR
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md">Długie FAQ w
                         Markdownie</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">Licencja</a>
-                    <a href="/pl/quickstart/">Osobny Szybki start</a>
+                    <a data-astro-reload href="/pl/quickstart/">Osobny Szybki start</a>
                 </div>
             </div>
         </div>

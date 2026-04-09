@@ -9,8 +9,8 @@ description: "Najczęściej zadawane pytania o framework Vibecrafted — czym je
                 <p class="manifesto-lead"> Tutaj wyjaśniamy, jak działa𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji. </p>
                 <p class="manifesto-quote"> Framework, który stworzył sam siebie. </p>
                 <div class="manifesto-actions">
-                    <a class="btn-solid" href="/pl/quickstart/">Szybki start</a>
-                    <a class="btn-outline" href="/pl/">Wróć do przeglądu</a>
+                    <a class="btn-solid" data-astro-reload href="/pl/quickstart/">Szybki start</a>
+                    <a class="btn-outline" data-astro-reload href="/pl/">Wróć do przeglądu</a>
                 </div>
             </section>
             <section class="fade-up">
@@ -85,7 +85,7 @@ description: "Najczęściej zadawane pytania o framework Vibecrafted — czym je
                     </article>
                 </div>
                 <div class="docs-inline-links">
-                    <a href="/pl/quickstart/">Szybki start</a>
+                    <a data-astro-reload href="/pl/quickstart/">Szybki start</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md">Pełne FAQ -
                         markdown</a>
                     <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">Licencja</a>
