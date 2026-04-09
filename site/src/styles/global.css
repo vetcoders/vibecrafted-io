@@ -238,6 +238,7 @@ h1, h2, h3, h4, h5, h6 {
     gap: var(--space-md);
     height: 100%;
     padding: 0;
+    min-width: 0;
 }
 
 .brand {
@@ -284,7 +285,8 @@ h1, h2, h3, h4, h5, h6 {
     font-size: clamp(0.66rem, 0.74vw, 0.72rem);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--steel-dark)
+    color: var(--steel-dark);
+    min-width: 0;
 }
 
 .nav-links a {
@@ -2386,16 +2388,47 @@ footer {
         width: min(100% - 1rem, 42rem);
         padding: 0.55rem 0;
         align-items: flex-start;
+        gap: 0.65rem;
+        height: auto;
+        overflow: hidden;
+    }
+
+    .brand {
+        min-height: 2.75rem;
+        flex-shrink: 0;
     }
 
     .nav-links {
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
         gap: 0.35rem 0.7rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        padding-bottom: 0.15rem;
+        scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-links a,
+    .nav-get-zone,
+    .nav-get-zone a {
+        flex: 0 0 auto;
     }
 
     .nav-links a,
     .nav-get-zone a {
+        display: inline-flex;
+        align-items: center;
         min-height: 2.75rem;
-        padding: 0.2rem 0;
+        padding: 0 0.15rem;
+    }
+
+    .nav-get-zone {
+        gap: 0.9rem;
     }
 
     .nav-icon-link {
@@ -2456,6 +2489,28 @@ footer {
     .footer-links a,
     .footer-copyright {
         letter-spacing: 0.12em;
+    }
+
+    .btn-solid,
+    .btn-outline,
+    .surface-modal__link,
+    .surface-modal__close,
+    .curl-banner .cb-copy,
+    .code-block .copy-btn,
+    .mmd-copy,
+    .mmd-toggle,
+    .mmd-split,
+    .strip-arrow,
+    .resource-links a,
+    .docs-inline-links a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.75rem;
+    }
+
+    .code-block {
+        padding-top: 4rem;
     }
 
     .install-flow,
@@ -2548,6 +2603,52 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.7rem;
+    }
+
+    .framework-strip-wrap {
+        width: 100%;
+        margin-left: 0;
+        padding-inline: 0;
+    }
+
+    .framework-strip {
+        padding-inline: 0.75rem;
+        scroll-padding-inline: 0.75rem;
+    }
+
+    .framework-strip .card {
+        flex-basis: min(84vw, 19rem);
+    }
+
+    .framework-strip-wrap::before,
+    .framework-strip-wrap::after {
+        width: clamp(1.75rem, 8vw, 2.5rem);
+    }
+
+    .mmd-shell {
+        padding-top: 4.25rem;
+    }
+
+    .mmd-copy,
+    .mmd-toggle,
+    .mmd-split {
+        top: 0.65rem;
+        padding: 0.42rem 0.72rem;
+        font-size: 0.72rem;
+    }
+
+    .mmd-split {
+        left: 0.85rem;
+        right: auto;
+    }
+
+    .mmd-toggle {
+        left: 5.35rem;
+        right: auto;
+    }
+
+    .mmd-copy {
+        right: 0.85rem;
     }
 }
 
