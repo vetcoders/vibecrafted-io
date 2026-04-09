@@ -9,6 +9,9 @@
 
   onMount(() => {
     if (!canvas) return;
+    const mountedCanvas = canvas;
+    const mountedLoopCounter = loopCounter;
+    const mountedCoverageCounter = coverageCounter;
     
     // Polyfills for old code
     var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -384,10 +387,17 @@ function shuffleArr(a) {
     
     // Execute the showcase logic in this scope
     // ============ HERO MARBLE SHOWCASE (PHYSICS CONVERGENCE) ============
+    var animationFrameId = 0;
+    var fadeInterval: ReturnType<typeof setInterval> | undefined;
+    var showcaseResizeObserver: ResizeObserver | undefined;
+    var cleanupShowcase = function () {};
+    var isDisposed = false;
+
 (function () {
-    var canvas = document.getElementById('marbleCanvas');
+    var canvas = mountedCanvas;
     if (!canvas || !canvas.getContext) return;
     var ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
     var isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|EdgiOS|FxiOS/i.test(navigator.userAgent);
     var dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, isSafari ? 1.5 : 2));
@@ -553,7 +563,7 @@ function shuffleArr(a) {
     }
 
     function renderBoardLayer() {
-        if (!boardLayerCtx) return;
+        if (!boardLayerCtx || isDisposed) return;
         boardLayer.width = width * dpr;
         boardLayer.height = height * dpr;
         boardLayerCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -567,8 +577,9 @@ function shuffleArr(a) {
     }
 
     function resizeCanvas() {
+        if (isDisposed) return;
         var rect = canvas.getBoundingClientRect();
-        if (!rect.width) return;
+        if (!rect.width || !rect.height) return;
         width = rect.width;
         height = rect.height;
         canvas.width = width * dpr;
@@ -584,6 +595,20 @@ function shuffleArr(a) {
     }
 
     window.addEventListener('resize', resizeCanvas);
+    if ('ResizeObserver' in window) {
+        showcaseResizeObserver = new ResizeObserver(function () {
+            resizeCanvas();
+        });
+        showcaseResizeObserver.observe(canvas);
+    }
+    cleanupShowcase = function () {
+        window.removeEventListener('resize', resizeCanvas);
+        showcaseResizeObserver?.disconnect();
+        if (fadeInterval) {
+            clearInterval(fadeInterval);
+            fadeInterval = undefined;
+        }
+    };
     resizeCanvas();
 
     function settledCount() {
@@ -618,10 +643,13 @@ function shuffleArr(a) {
         if (morphing) return;
         morphing = true;
         fadeOutAlpha = 1;
-        var fadeInterval = setInterval(function () {
+        fadeInterval = setInterval(function () {
             fadeOutAlpha -= 0.015;
             if (fadeOutAlpha <= 0) {
-                clearInterval(fadeInterval);
+                if (fadeInterval) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = undefined;
+                }
                 fadeOutAlpha = 1;
                 shapeIndex = pickNextShapeIndex(shapeIndex);
                 morphing = false;
@@ -720,14 +748,15 @@ function shuffleArr(a) {
     }
 
     function updateCounters() {
-        if (loopCounter) loopCounter.textContent = marbles.length;
-        if (coverageCounter) {
+        if (mountedLoopCounter) mountedLoopCounter.textContent = marbles.length;
+        if (mountedCoverageCounter) {
             var pct = slots.length ? Math.round(displayCoverageRatio() * 100) : 0;
-            coverageCounter.textContent = pct + '%';
+            mountedCoverageCounter.textContent = pct + '%';
         }
     }
 
     function tick(now) {
+        if (isDisposed) return;
         var dt = Math.min(32, now - lastAt);
         lastAt = now;
 
@@ -839,14 +868,21 @@ function shuffleArr(a) {
         }
         updateCounters();
 
-        requestAnimationFrame(tick);
+        animationFrameId = requestAnimationFrame(tick);
     }
 
     loopTimer = 700 + Math.random() * 300;
-    requestAnimationFrame(tick);
+    animationFrameId = requestAnimationFrame(tick);
 })();
 
 
+    return () => {
+        isDisposed = true;
+        cleanupShowcase();
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+    };
   });
 </script>
 
