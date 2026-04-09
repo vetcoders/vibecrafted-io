@@ -1,0 +1,77 @@
+---
+const { lang } = Astro.props;
+---
+<section class="references-section" id="references">
+    <div class="container fade-up">
+        {lang === 'en' ? (
+            <>
+            <div class="section-label">References</div>
+            <h2 class="section-title">Ground Truth &amp; Influences</h2>
+            <p class="section-sub">The bibliography below extends the manifesto list with the structural-modeling and convergence influences surfaced again in internal AICX grounding work.</p>
+            </>
+        ) : (
+            <>
+            <div class="section-label">Referencje</div>
+            <h2 class="section-title">Ground Truth i inspiracje</h2>
+            <p class="section-sub">Poniższa bibliografia rozszerza listę manifestu o wpływy modelowania strukturalnego i konwergencji wyłonione ponownie w wewnętrznej pracy groundingowej AICX.</p>
+            </>
+        )}
+        <ol class="references-list">
+            <li class="reference-item">
+                <p class="reference-citation">Morris, K.; B&ouml;ckeler, B. (2026). <em>Humans and Agents in Software Engineering Loops</em>; <em>Harness Engineering</em>; <em>Context Engineering for Coding Agents</em>. Thoughtworks / Martin Fowler.</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "The why-loop / how-loop framing, harness design, and human-guided workflow discipline behind SHACE and the operator role." 
+                        : "Framing why-loop / how-loop, projektowanie harnessów i dyscyplina workflow prowadzonego przez człowieka stojące za SHACE i rolą operatora."}
+                </p>
+            </li>
+            <li class="reference-item">
+                <p class="reference-citation">Gong, L.; Elhoushi, M.; Cheung, A. (2024). <em>AST-T5: Structure-Aware Pretraining for Code Generation</em>.</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "The structure-aware pretraining thread behind 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.'s insistence that models should not write into a repo blind." 
+                        : "Wątek pretreningu świadomego struktury stojący za insistencją 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍., że modele nie powinny pisać do repo na ślepo."}
+                </p>
+            </li>
+            <li class="reference-item">
+                <p class="reference-citation">Guo, D. et al. (2021). <em>GraphCodeBERT: Pre-training Code Representations with Data Flow</em>.</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "A complementary structure-aware result that reinforced the case for externalized code shape, even though GraphCodeBERT models data flow rather than AST." 
+                        : "Komplementarny wynik świadomy struktury, który wzmocnił argument za eksternalizowanym kształtem kodu, mimo że GraphCodeBERT modeluje przepływ danych, a nie AST."}
+                </p>
+                <p class="reference-links"><a href="https://arxiv.org/abs/2009.08366">arXiv</a></p>
+            </li>
+            <li class="reference-item">
+                <p class="reference-citation">{lang === 'en' ? "Cunningham, W. (1992) and later technical debt literature." : "Cunningham, W. (1992) i późniejsza literatura o długu technicznym."}</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "The conceptual ancestor of DoU: working code is not the same thing as a healthy, trustworthy, shippable system." 
+                        : "Konceptualny przodek DoU: działający kod to nie to samo co zdrowy, godny zaufania, gotowy do wysyłki system."}
+                </p>
+            </li>
+            <li class="reference-item">
+                <p class="reference-citation">{lang === 'en' ? "CEGIS / counterexample-guided synthesis and later counterexample-guided optimization literature." : "CEGIS / synteza prowadzona kontrprzykładami i późniejsza literatura o optymalizacji prowadzonej kontrprzykładami."}</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "The convergence lineage behind Marbles: loop, inspect failure, add counterexamples, reduce the plausible program space, repeat until the surface stops lying." 
+                        : "Linia konwergencji za Marbles: pętla, inspekcja awarii, dodanie kontrprzykładów, redukcja przestrzeni programów, powtarzanie aż powierzchnia przestanie kłamać."}
+                </p>
+                <p class="reference-links">
+                    <a href="https://www.cprover.org/synthesis">{lang === 'en' ? "Counterexample-guided synthesis overview" : "Przegląd syntezy prowadzonej kontrprzykładami"}</a>
+                </p>
+            </li>
+            <li class="reference-item">
+                <p class="reference-citation">VetCoders (2026). <em>{lang === 'en' ? "The 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Manifesto" : "Manifest 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍."}</em>.</p>
+                <p class="reference-note">
+                    {lang === 'en' 
+                        ? "Primary source for SHACE, Marbles, Loctree Mapping, PSCD, and the founder-grade Definition of Undone as original 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. concepts." 
+                        : "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i założycielskiej Definicji Niezrobionego jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.."}
+                </p>
+                <p class="reference-links">
+                    <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_EN.md">{lang === 'en' ? "Read the manifesto" : "Przeczytaj manifest"}</a>
+                </p>
+            </li>
+        </ol>
+    </div>
+</section>

@@ -1,0 +1,83 @@
+---
+const { lang } = Astro.props;
+---
+<section class="diffusion-section" id="marbles">
+    <div class="container fade-up">
+        <div class="section-label">Marbles</div>
+        {lang === 'en' ? (
+            <>
+            <h2 class="section-title">Denoise Until the Circle Is Full</h2>
+            <p class="section-sub">AI agents are stochastic parrots. Every generation introduces noise. You cannot prompt your way out of it. You iterate.</p>
+            </>
+        ) : (
+            <>
+            <h2 class="section-title">Odszumiaj aż koło się zapełni</h2>
+            <p class="section-sub">Agenci AI to stochastyczne papugi. Każda generacja wprowadza szum. Nie da się tego obejść promptem. Iterujesz.</p>
+            </>
+        )}
+        <div class="diffusion-visual">
+            <div class="diffusion-canvas-wrap">
+                <canvas id="diffusionCanvas"></canvas>
+            </div>
+            <div class="diffusion-text">
+                {lang === 'en' ? (
+                    <>
+                    <h3>The Isomorphism</h3>
+                    <div class="formula">
+                        Image diffusion:&nbsp; noise &rarr; denoise &times; N &rarr; image<br />
+                        Code diffusion:&nbsp;&nbsp; chaos &rarr; reduce_entropy &times; N &rarr; product<br /><br />
+                        Step 0: Pure noise (no context, no structure)<br />
+                        Step 1: Init &mdash; gross shapes emerge<br />
+                        Step 2: Implement &mdash; detail generation<br />
+                        Step N: Converged &mdash; DoU &lt; threshold = DoD
+                    </div>
+                    <p>There is no fixed loop count. The loop runs until P0=P1=P2=0 &mdash; the circle is full. Early loops make large structural corrections; late loops make small refinements.</p>
+                    </>
+                ) : (
+                    <>
+                    <h3>Izomorfizm</h3>
+                    <div class="formula">
+                        Dyfuzja obrazu:&nbsp; szum &rarr; odszumienie &times; N &rarr; obraz<br />
+                        Dyfuzja kodu:&nbsp;&nbsp; chaos &rarr; redukcja_entropii &times; N &rarr; produkt<br /><br />
+                        Krok 0: Czysty szum (brak kontekstu, brak struktury)<br />
+                        Krok 1: Init &mdash; pojawiają się zgrubne kształty<br />
+                        Krok 2: Implementacja &mdash; generowanie detali<br />
+                        Krok N: Skonwergowane &mdash; DoU &lt; pr&oacute;g = DoD
+                    </div>
+                    <p>Nie ma ustalonej liczby pętli. Pętla działa aż P0=P1=P2=0 &mdash; koło jest pełne. Wczesne pętle dokonują dużych korekt strukturalnych; późne pętle robią drobne poprawki.</p>
+                    </>
+                )}
+            </div>
+        </div>
+        <div class="framework-portal-card">
+            <div class="framework-portal-card__copy">
+                {lang === 'en' ? (
+                    <>
+                    <p class="framework-playground-shell__kicker">Interactive Playground</p>
+                    <h3>Open the convergence board as its own surface</h3>
+                    <p>The board is no longer squeezed into the landing page. The full-viewport playground is now the teaching surface: manual phases, command prompt, and board-first motion.</p>
+                    </>
+                ) : (
+                    <>
+                    <p class="framework-playground-shell__kicker">Interaktywny playground</p>
+                    <h3>Otwórz tablicę konwergencji jako osobną powierzchnię</h3>
+                    <p>Tablica nie jest już wciśnięta w landing page. Pełnoekranowy playground jest teraz powierzchnią dydaktyczną: ręczne fazy, prompt poleceń i ruch board-first.</p>
+                    </>
+                )}
+            </div>
+            <div class="framework-portal-card__actions">
+                {lang === 'en' ? (
+                    <>
+                    <a class="framework-playground-shell__link" href="/presence/framework/">Enter framework playground</a>
+                    <p>Board-first. Manual. Command-shaped. Built for the 1.3.0 direction.</p>
+                    </>
+                ) : (
+                    <>
+                    <a class="framework-playground-shell__link" href="/pl/framework/">Wejdź do playgroundu</a>
+                    <p>Board-first. Ręczny. Kształtowany komendami. Zbudowany dla kierunku 1.3.0.</p>
+                    </>
+                )}
+            </div>
+        </div>
+    </div>
+</section>

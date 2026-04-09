@@ -1,0 +1,196 @@
+---
+const { lang } = Astro.props;
+
+const labels = lang === 'en' ? {
+    label: "The Skill Suite",
+    title: "16 Specialized Workflows",
+    sub: "Hard-coded procedures forged in the trenches. Powered by frontier models and Rust-based structural intelligence.",
+    scrollLeft: "Scroll left",
+    scrollRight: "Scroll right",
+    phases: {
+        craft: "Phase 1 · Craft",
+        converge: "Phase 2 · Converge",
+        ship: "Phase 3 · Ship",
+        frontier: "Frontier Fleet",
+        e2e: "E2E Delivery",
+        fallback: "Fallback",
+        final: "Final Step"
+    }
+} : {
+    label: "Zestaw skilli",
+    title: "16 wyspecjalizowanych workflowów",
+    sub: "Zakodowane na twardo procedury wykute w okopach. Napędzane modelami frontier i inteligencją strukturalną w Rust.",
+    scrollLeft: "Przewiń w lewo",
+    scrollRight: "Przewiń w prawo",
+    phases: {
+        craft: "Faza 1 · Twórz",
+        converge: "Faza 2 · Konwerguj",
+        ship: "Faza 3 · Wypuść",
+        frontier: "Flota Frontier",
+        e2e: "Dostawa E2E",
+        fallback: "Fallback",
+        final: "Krok finalny"
+    }
+};
+
+const skills = [
+    {
+        id: 'vc-scaffold',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        cardClass: 'card--accent-steel',
+        desc: lang === 'en' ? "Founder-first architecture planning. Maps the landscape and produces a scoped build plan for agents to execute." : "Planowanie architektury od założyciela. Mapuje krajobraz i tworzy scoped plan budowy do realizacji przez agentów.",
+        tags: lang === 'en' ? ["architecture", "scoping", "MVP"] : ["architektura", "scoping", "MVP"],
+        trigger: lang === 'en' ? '"Scaffold: real-time dashboard" · "Zaplanuj to"' : '"Scaffold: real-time dashboard" · "Zaplanuj to"'
+    },
+    {
+        id: 'vc-init',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "Bootstrap the agent session. Forces models to index history (AICX), read the AST (Loctree), and verify quality gates." : "Bootstrap sesji agenta. Zmusza modele do zaindeksowania historii (AICX), odczytania AST (Loctree) i weryfikacji bramek jakości.",
+        tags: lang === 'en' ? ["bootstrap", "context", "ground truth"] : ["bootstrap", "kontekst", "ground truth"],
+        trigger: '"Init session" · "Zainicjuj" · "Daj kontekst"'
+    },
+    {
+        id: 'vc-workflow',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "The ERi Pipeline: Examine &rarr; Research &rarr; Implement. Structured implementation with cumulative context feeding." : "Pipeline ERi: Zbadaj &rarr; Researchu &rarr; Zaimplementuj. Ustrukturyzowana implementacja z kumulatywnym kontekstem.",
+        tags: ["ERi", "loctree", "research"],
+        trigger: '"Workflow" · "Zbadaj i zaimplementuj" · "ERi"'
+    },
+    {
+        id: 'vc-agents',
+        phase: labels.phases.frontier,
+        phaseClass: 'build card-phase--copper',
+        cardClass: 'card--accent-copper',
+        desc: lang === 'en' ? "Spawn external fleet (Codex, Claude, Gemini) in real terminals with isolated context and durable artifacts." : "Spawnuj zewnętrzną flotę (Codex, Claude, Gemini) w prawdziwych terminalach z izolowanym kontekstem i trwałymi artefaktami.",
+        tags: lang === 'en' ? ["frontier", "isolated", "eval"] : ["frontier", "izolacja", "eval"],
+        trigger: '"Spawn agents" · "Agent fleet" · "Odpal agentów"'
+    },
+    {
+        id: 'vc-research',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "Triple-agent triangulation. Throw all three models at the same problem and synthesize a gap-free research document." : "Triangulacja trzech agentów. Rzuć trzy modele na ten sam problem i zsyntetyzuj dokument badawczy bez luk.",
+        tags: lang === 'en' ? ["triangulation", "SoTA", "truth"] : ["triangulacja", "SoTA", "prawda"],
+        trigger: '"Research this" · "Zbadaj to" · "Triple research"'
+    },
+    {
+        id: 'vc-partner',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "Executive pairing. Shared brain mode for strategic debugging and architectural triage with delegated fieldwork." : "Parowanie executive. Tryb wspólnego mózgu do strategicznego debugowania i triażu architektonicznego z delegowanym fieldworkiem.",
+        tags: lang === 'en' ? ["partner", "strategy", "ownership"] : ["partner", "strategia", "ownership"],
+        trigger: '"Partner mode" · "Idziemy razem" · "You drive"'
+    },
+    {
+        id: 'vc-justdo',
+        phase: labels.phases.e2e,
+        phaseClass: 'build card-phase--light',
+        cardClass: 'card--accent-steel',
+        desc: lang === 'en' ? "Autonomous delivery. Takes a mandate, decides, implements, verifies, and packages without ceremony." : "Autonomiczna dostawa. Bierze mandat, decyduje, implementuje, weryfikuje i pakuje bez ceremonii.",
+        tags: lang === 'en' ? ["autonomous", "delivery", "wow effect"] : ["autonomiczny", "dostawa", "wow effect"],
+        trigger: '"Just do it" · "Zrób to" · "Dowieź to"'
+    },
+    {
+        id: 'vc-followup',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "The reality check. Post-implementation audit that gives a brutal GO / NO-GO verdict based on quality gates." : "Sprawdzian rzeczywistości. Audyt po implementacji dający brutalny werdykt GO / NO-GO na podstawie bramek jakości.",
+        tags: lang === 'en' ? ["audit", "severity", "readiness"] : ["audyt", "severity", "gotowość"],
+        trigger: lang === 'en' ? '"Follow-up check" · "Czy są jeszcze luki?"' : '"Follow-up check" · "Czy są jeszcze luki?"'
+    },
+    {
+        id: 'vc-marbles',
+        phase: labels.phases.converge,
+        phaseClass: 'loop-phase',
+        cardClass: 'card--accent-copper',
+        desc: lang === 'en' ? "Iterative convergence. Loop until entropy is crushed (P0=0, P1=0, P2=0). Adaptive denoising for code." : "Iteracyjna konwergencja. Pętla aż entropia zostanie zmiażdżona (P0=0, P1=0, P2=0). Adaptacyjne odszumianie kodu.",
+        tags: lang === 'en' ? ["diffusion", "convergence", "entropy"] : ["dyfuzja", "konwergencja", "entropia"],
+        trigger: '"Marbles" · "Kulki" · "Loop until done"'
+    },
+    {
+        id: 'vc-review',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "PR review pipeline. Generates prview artifacts and squeezes maximum findings with line-level evidence." : "Pipeline review PR. Generuje artefakty prview i wyciąga maksimum findingów z dowodami na poziomie linii.",
+        tags: ["review", "prview", "findings"],
+        trigger: '"Review PR" · "Daj findings" · "Run prview"'
+    },
+    {
+        id: 'vc-prune',
+        phase: labels.phases.craft,
+        phaseClass: 'build',
+        desc: lang === 'en' ? "Ruthless cleanup. Defines the runtime cone and cuts dead weight, experiments, and scar tissue without mercy." : "Bezlitosne czyszczenie. Definiuje stożek runtime i wycina martwy kod, eksperymenty i bliznowatą tkankę bez litości.",
+        tags: ["prune", "clean", "runtime cone"],
+        trigger: '"Prune repo" · "Strip dead code" · "Wyczyść repo"'
+    },
+    {
+        id: 'vc-delegate',
+        phase: labels.phases.fallback,
+        phaseClass: 'build card-phase--muted',
+        desc: lang === 'en' ? "Safe native delegation using Claude's Task tool. In-session parallelization for small, bounded tasks." : "Bezpieczna natywna delegacja przy użyciu Task tool Claude. Równoległość w sesji dla małych, ograniczonych zadań.",
+        tags: lang === 'en' ? ["native", "Task tool", "sandboxed"] : ["natywny", "Task tool", "sandboxed"],
+        trigger: '"Delegate safely" · "Native agents"'
+    },
+    {
+        id: 'vc-dou',
+        phase: labels.phases.ship,
+        phaseClass: 'ship',
+        desc: lang === 'en' ? "Definition of Undone. Audits product surface, install paths, and SEO. Measures the gap to launch." : "Definition of Undone. Audytuje powierzchnię produktu, ścieżki instalacji i SEO. Mierzy dystans do launchu.",
+        tags: lang === 'en' ? ["DoU", "Plague Score", "funnel"] : ["DoU", "Plague Score", "lejek"],
+        trigger: lang === 'en' ? '"DoU audit" · "Are we shippable?"' : '"DoU audit" · "Czy jesteśmy gotowi?"'
+    },
+    {
+        id: 'vc-decorate',
+        phase: labels.phases.ship,
+        phaseClass: 'ship',
+        cardClass: 'card--accent-steel',
+        desc: lang === 'en' ? "Visual coherence. Detects brand tokens and upgrades weak patterns into a premium interaction language." : "Spójność wizualna. Wykrywa tokeny marki i podnosi słabe wzorce do premium języka interakcji.",
+        tags: lang === 'en' ? ["smaczki", "polish", "intentional"] : ["smaczki", "polish", "intentional"],
+        trigger: '"Decorate" · "Udekoruj" · "Make it look good"'
+    },
+    {
+        id: 'vc-hydrate',
+        phase: labels.phases.ship,
+        phaseClass: 'ship',
+        desc: lang === 'en' ? "Market packaging. Executes the non-code work: marketplace listings, SEO fixes, and onboarding flows." : "Pakowanie rynkowe. Realizuje pracę poza kodem: listingi marketplace, poprawki SEO i ścieżki onboardingu.",
+        tags: lang === 'en' ? ["package", "SEO", "onboarding"] : ["pakowanie", "SEO", "onboarding"],
+        trigger: '"Hydrate" · "Make it shippable" · "Nawodnij"'
+    },
+    {
+        id: 'vc-release',
+        phase: labels.phases.final,
+        phaseClass: 'ship card-phase--patina',
+        cardClass: 'card--accent-patina',
+        desc: lang === 'en' ? "Final milestone. Tags, changelogs, registry publishing, and go-to-market mechanics. Ship it to people." : "Finałowy kamień milowy. Tagi, changelogi, publikacja w rejestrze i mechaniki go-to-market. Wyślij to ludziom.",
+        tags: lang === 'en' ? ["ship", "publish", "market"] : ["ship", "publikacja", "rynek"],
+        trigger: '"Release" · "Ship to market" · "Wypuść wersję"'
+    }
+];
+---
+<section id="skills">
+    <div class="container fade-up">
+        <div class="section-label">{labels.label}</div>
+        <h2 class="section-title">{labels.title}</h2>
+        <p class="section-sub">{labels.sub}</p>
+        <div class="framework-strip-wrap">
+            <button class="strip-arrow strip-arrow--left" aria-label={labels.scrollLeft} type="button">&#8249;</button>
+            <div class="framework-strip">
+                {skills.map(s => (
+                    <div class={`card ${s.cardClass || ''}`}>
+                        <div class={`card-phase ${s.phaseClass}`}>{s.phase}</div>
+                        <h3>{s.id}</h3>
+                        <p class="card-desc" set:html={s.desc}></p>
+                        <div class="card-tags">
+                            {s.tags.map(tag => <span class="tag">{tag}</span>)}
+                        </div>
+                        <div class="card-trigger" set:html={s.trigger}></div>
+                    </div>
+                ))}
+            </div>
+            <button class="strip-arrow strip-arrow--right" aria-label={labels.scrollRight} type="button">&#8250;</button>
+        </div>
+    </div>
+</section>

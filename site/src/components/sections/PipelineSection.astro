@@ -1,0 +1,131 @@
+---
+import MermaidViewer from '../../components/MermaidViewer.svelte';
+
+const { lang } = Astro.props;
+
+const mermaidEn = `%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1
+flowchart LR
+    subgraph "Craft"
+        scaffold["Scaffold"] --> init["Init"]
+        init --> workflow["Workflow"]
+        workflow --> followup["Follow-up"]
+    end
+    followup --> marbles{{"Marbles Loop"}}
+    marbles -->|P0/P1/P2 > 0| marbles
+    marbles --> dou["DoU"]
+    subgraph "Ship"
+        dou --> decorate["Decorate"]
+        decorate --> hydrate["Hydrate"]
+        hydrate --> release(["Release"])
+    end`;
+
+const mermaidPl = `%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1
+flowchart LR
+    subgraph "Twórz"
+        scaffold["Scaffold"] --> init["Init"]
+        init --> workflow["Workflow"]
+        workflow --> followup["Follow-up"]
+    end
+    followup --> marbles{{"Pętla Marbles"}}
+    marbles -->|P0/P1/P2 > 0| marbles
+    marbles --> dou["DoU"]
+    subgraph "Wypuść"
+        dou --> decorate["Decorate"]
+        decorate --> hydrate["Hydrate"]
+        hydrate --> release(["Release"])
+    end`;
+
+const highlightedEn = `<span class="comment">%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1</span>
+flowchart LR
+    subgraph "Craft"
+        scaffold["Scaffold"] --&gt; init["Init"]
+        init --&gt; workflow["Workflow"]
+        workflow --&gt; followup["Follow-up"]
+    end
+    followup --&gt; marbles{{"Marbles Loop"}}
+    marbles --&gt;|P0/P1/P2 &gt; 0| marbles
+    marbles --&gt; dou["DoU"]
+    subgraph "Ship"
+        dou --&gt; decorate["Decorate"]
+        decorate --&gt; hydrate["Hydrate"]
+        hydrate --&gt; release(["Release"])
+    end`;
+
+const highlightedPl = `<span class="comment">%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1</span>
+flowchart LR
+    subgraph "Twórz"
+        scaffold["Scaffold"] --&gt; init["Init"]
+        init --&gt; workflow["Workflow"]
+        workflow --&gt; followup["Follow-up"]
+    end
+    followup --&gt; marbles{{"Pętla Marbles"}}
+    marbles --&gt;|P0/P1/P2 &gt; 0| marbles
+    marbles --&gt; dou["DoU"]
+    subgraph "Wypuść"
+        dou --&gt; decorate["Decorate"]
+        decorate --&gt; hydrate["Hydrate"]
+        hydrate --&gt; release(["Release"])
+    end`;
+
+const code = lang === 'en' ? mermaidEn : mermaidPl;
+const highlightedCode = lang === 'en' ? highlightedEn : highlightedPl;
+---
+<section class="pipeline-section" id="pipeline">
+    <div class="container fade-up">
+        {lang === 'en' ? (
+            <>
+            <div class="section-label">The Method</div>
+            <h2 class="section-title">Craft &rarr; Converge &rarr; Ship</h2>
+            <p class="section-sub">A founder-grade operating model for shaping, denoising, and finally releasing software with AI agents.</p>
+            </>
+        ) : (
+            <>
+            <div class="section-label">Metoda</div>
+            <h2 class="section-title">Twórz &rarr; Konwerguj &rarr; Wypuść</h2>
+            <p class="section-sub">Model operacyjny klasy założycielskiej do kształtowania, odszumiania i wreszcie wypuszczania oprogramowania z agentami AI.</p>
+            </>
+        )}
+        <MermaidViewer client:visible {highlightedCode} {code} />
+        <div class="pipeline-notes">
+            <article class="pipeline-note">
+                {lang === 'en' ? (
+                    <>
+                    <h3>Craft</h3>
+                    <p>Scaffold the architecture, init the context, and run the ERi workflow. Force agents to respect the AST and history.</p>
+                    </>
+                ) : (
+                    <>
+                    <h3>Twórz</h3>
+                    <p>Zaplanuj architekturę, zainicjuj kontekst i uruchom workflow ERi. Zmuś agentów do respektowania AST i historii.</p>
+                    </>
+                )}
+            </article>
+            <article class="pipeline-note">
+                {lang === 'en' ? (
+                    <>
+                    <h3>Converge</h3>
+                    <p>Systematically reduce entropy through Marbles loops until all P0, P1, and P2 issues are resolved.</p>
+                    </>
+                ) : (
+                    <>
+                    <h3>Konwerguj</h3>
+                    <p>Systematycznie redukuj entropię przez pętle Marbles, aż wszystkie problemy P0, P1 i P2 zostaną rozwiązane.</p>
+                    </>
+                )}
+            </article>
+            <article class="pipeline-note">
+                {lang === 'en' ? (
+                    <>
+                    <h3>Ship</h3>
+                    <p>Audit the product surface with DoU, polish with Decorate, and package with Hydrate before final Release.</p>
+                    </>
+                ) : (
+                    <>
+                    <h3>Wypuść</h3>
+                    <p>Zaudytuj powierzchnię produktu z DoU, wypoleruj z Decorate i zapakuj z Hydrate przed finalnym Release.</p>
+                    </>
+                )}
+            </article>
+        </div>
+    </div>
+</section>
