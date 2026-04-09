@@ -912,6 +912,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-solid {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--interactive-min-height);
     background: var(--copper);
     color: var(--stone-deep);
     font-family: var(--font-head);
@@ -934,6 +938,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--interactive-min-height);
     background: var(--card-bg);
     backdrop-filter: var(--button-outline-backdrop);
     color: var(--stone-light);

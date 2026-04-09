@@ -86,9 +86,9 @@
 </script>
 
 <div class="mmd-shell" data-mode={mode}>
-  <button class="mmd-split" type="button" onclick={splitMode}>Split</button>
-  <button class="mmd-toggle" type="button" onclick={toggleMode}>Preview</button>
-  <button class="mmd-copy {copyState === 'copied' ? 'is-copied' : ''} {copyState === 'error' ? 'is-error' : ''}" type="button" onclick={handleCopy}>
+  <button class="mmd-split" type="button" aria-label="Toggle split view" onclick={splitMode}>Split</button>
+  <button class="mmd-toggle" type="button" aria-label="Toggle diagram preview" onclick={toggleMode}>Preview</button>
+  <button class="mmd-copy {copyState === 'copied' ? 'is-copied' : ''} {copyState === 'error' ? 'is-error' : ''}" type="button" aria-label={copyState === 'copied' ? 'Copied to clipboard' : (copyState === 'error' ? 'Copy failed' : 'Copy diagram code to clipboard')} onclick={handleCopy}>
     {copyState === 'copied' ? 'Copied' : (copyState === 'error' ? 'Failed' : 'Copy')}
   </button>
   
