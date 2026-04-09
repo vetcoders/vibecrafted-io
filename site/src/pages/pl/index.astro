@@ -1,7 +1,9 @@
 ---
+import { Picture } from 'astro:assets';
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
 import CopyButton from '../../components/CopyButton.svelte';
 import MermaidViewer from '../../components/MermaidViewer.svelte';
+import logo32 from '../../assets/presence/logo-32.png';
 import Layout from '../../layouts/Layout.astro';
 ---
 
@@ -580,7 +582,15 @@ flowchart LR
 
     <footer class="footer-shell">
         <div class="footer-brand">
-            <img src="/presence/logo-32.png" alt="" class="footer-logo" width="24" height="24">
+            <Picture
+                src={logo32}
+                alt=""
+                class="footer-logo"
+                width={24}
+                height={24}
+                densities={[1, 2]}
+                formats={['avif', 'webp']}
+            />
             <span class="footer-title">VIBECRAFTED</span>
             <p class="footer-tagline">Stworzone po północy, pod presją. Odpalone na localhost.</p>
         </div>
