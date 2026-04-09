@@ -1,4 +1,6 @@
 <script lang="ts">
+  type CopyState = 'default' | 'copied' | 'error';
+
   let { 
     textToCopy, 
     class: className = '', 
@@ -11,9 +13,9 @@
     copiedLabel?: string;
   }>();
 
-  let state = $state('default'); // 'default', 'copied', 'error'
-  let label = $derived(state === 'copied' ? copiedLabel : (state === 'error' ? 'Error' : defaultLabel));
-  let timer: ReturnType<typeof setTimeout>;
+  let state = $state<CopyState>('default');
+  let label = $derived(state === 'copied' ? copiedLabel : state === 'error' ? 'Error' : defaultLabel);
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   async function handleCopy() {
     try {
@@ -23,7 +25,7 @@
       } else {
         throw new Error("Clipboard API not available");
       }
-    } catch (err) {
+    } catch {
       // Fallback
       const textArea = document.createElement("textarea");
       textArea.value = textToCopy;
@@ -36,7 +38,7 @@
       try {
         document.execCommand('copy');
         state = 'copied';
-      } catch (e) {
+      } catch {
         state = 'error';
       }
       textArea.remove();

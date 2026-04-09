@@ -1,25 +1,30 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  
-  let { code = '', highlightedCode = '' } = $props<{ code: string, highlightedCode?: string }>();
-  let mode = $state('code'); // 'code', 'preview', 'split'
-  let previewContainer: HTMLElement;
-  let copyState = $state('default'); // 'default', 'copied', 'error'
-  let copyTimer: ReturnType<typeof setTimeout>;
+  type MermaidMode = 'code' | 'preview' | 'split';
+  type CopyState = 'default' | 'copied' | 'error';
 
-  const displayCode = highlightedCode || code;
+  let { code = '', highlightedCode = '' } = $props<{ code: string, highlightedCode?: string }>();
+  let mode = $state<MermaidMode>('code');
+  let previewContainer: HTMLDivElement | undefined;
+  let copyState = $state<CopyState>('default');
+  let copyTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const displayCode = $derived(highlightedCode || code);
+
+  function getErrorMessage(error: unknown) {
+    return error instanceof Error ? error.message : 'Unknown error';
+  }
 
   async function renderMermaid() {
     if (!previewContainer) return;
-    // @ts-ignore
-    if (window.mermaid) {
-      const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+    const mermaid = window.mermaid;
+
+    if (mermaid) {
+      const id = `mermaid-${Math.random().toString(36).slice(2, 11)}`;
       try {
-        // @ts-ignore
-        const { svg } = await window.mermaid.render(id, code);
+        const { svg } = await mermaid.render(id, code);
         previewContainer.innerHTML = svg;
-      } catch (err: any) {
-        previewContainer.innerHTML = `<div class="mmd-error">Render error: ${err.message}</div>`;
+      } catch (error) {
+        previewContainer.innerHTML = `<div class="mmd-error">Render error: ${getErrorMessage(error)}</div>`;
       }
     } else {
       previewContainer.innerHTML = '<div class="mmd-error">Preview unavailable.</div>';
@@ -48,7 +53,7 @@
       } else {
         throw new Error("Clipboard API not available");
       }
-    } catch (err) {
+    } catch {
       // Fallback
       const textArea = document.createElement("textarea");
       textArea.value = code;
@@ -61,7 +66,7 @@
       try {
         document.execCommand('copy');
         copyState = 'copied';
-      } catch (e) {
+      } catch {
         copyState = 'error';
       }
       textArea.remove();

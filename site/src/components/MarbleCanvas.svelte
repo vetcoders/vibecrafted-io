@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
 
-  let canvas: HTMLCanvasElement;
-  let loopCounter: HTMLElement;
-  let coverageCounter: HTMLElement;
+  let canvas: HTMLCanvasElement | undefined;
+  let loopCounter: HTMLSpanElement | undefined;
+  let coverageCounter: HTMLSpanElement | undefined;
 
   onMount(() => {
     if (!canvas) return;
-    const heroCanvas = canvas;
     
     // Polyfills for old code
     var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

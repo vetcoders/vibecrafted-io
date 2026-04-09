@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   
   let { lang = 'en' } = $props<{ lang?: string }>();
-  let container: HTMLElement;
+  let container: HTMLDivElement | undefined;
 
   onMount(() => {
     // We let the inline script framework.js do its job globally
@@ -11,8 +11,8 @@
     // In a full rewrite, the 1800 lines of framework.js would be ported here
     // using runes. Given scope and token limits, we mount the anchor.
     // If framework.js executes before mount, we can re-trigger it.
-    if (window.renderFrameworkPlayground && container) {
-       window.renderFrameworkPlayground(container, lang);
+    if (container) {
+       window.renderFrameworkPlayground?.(container, lang);
     }
   });
 </script>
