@@ -1,6 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import CopyButton from '../components/CopyButton.svelte';
+import ScrollObserver from '../components/ScrollObserver.svelte';
+import CardStrip from '../components/CardStrip.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import '../styles/global.css';
 
@@ -24,6 +26,10 @@ const robotsContent = is404 ? 'noindex,follow' : 'index,follow';
 /* i18n alternate map: en path -> pl path */
 const i18nMap: Record<string, string> = {
   '/': '/pl/',
+  '/en/': '/pl/',
+  '/en/quickstart/': '/pl/quickstart/',
+  '/en/faq/': '/pl/faq/',
+  '/en/framework/': '/pl/framework/',
   '/presence/quickstart/': '/pl/quickstart/',
   '/presence/framework/': '/pl/framework/',
   '/presence/faq/': '/pl/faq/',
@@ -74,10 +80,10 @@ const toggleHreflang = isPl ? 'en' : 'pl';
 
 /* Locale-aware paths for nav & footer */
 const navPaths = {
-  home: isPl ? '/pl/' : '/',
-  demo: isPl ? '/pl/framework/' : '/presence/framework/',
-  quickstart: isPl ? '/pl/quickstart/' : '/presence/quickstart/',
-  faq: isPl ? '/pl/faq/' : '/presence/faq/',
+  home: isPl ? '/pl/' : '/en/',
+  demo: isPl ? '/pl/framework/' : '/en/framework/',
+  quickstart: isPl ? '/pl/quickstart/' : '/en/quickstart/',
+  faq: isPl ? '/pl/faq/' : '/en/faq/',
 };
 
 const isHomePage = normalizedPath === navPaths.home;
@@ -382,6 +388,7 @@ const navLabels = isPl
         document.addEventListener('astro:page-load', initMobileNav);
         initMobileNav();
     </script>
-    <script is:inline src="/presence/app.js"></script>
+    <ScrollObserver client:load />
+    <CardStrip client:load />
 </body>
 </html>
