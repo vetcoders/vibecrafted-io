@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
+
   type MermaidMode = 'code' | 'preview' | 'split';
   type CopyState = 'default' | 'copied' | 'error';
 
-  let { code = '', highlightedCode = '' } = $props<{ code: string, highlightedCode?: string }>();
+  let { code = '', highlightedCode = '' } = $props<{ code: string; highlightedCode?: string }>();
   let mode = $state<MermaidMode>('code');
   let previewContainer: HTMLDivElement | undefined;
   let copyState = $state<CopyState>('default');
@@ -10,24 +12,31 @@
 
   const displayCode = $derived(highlightedCode || code);
 
+  onDestroy(() => {
+    if (copyTimer) {
+      clearTimeout(copyTimer);
+    }
+  });
+
   function getErrorMessage(error: unknown) {
     return error instanceof Error ? error.message : 'Unknown error';
   }
 
   async function renderMermaid() {
-    if (!previewContainer) return;
+    const container = previewContainer;
+    if (!container) return;
     const mermaid = window.mermaid;
 
     if (mermaid) {
       const id = `mermaid-${Math.random().toString(36).slice(2, 11)}`;
       try {
         const { svg } = await mermaid.render(id, code);
-        previewContainer.innerHTML = svg;
+        container.innerHTML = svg;
       } catch (error) {
-        previewContainer.innerHTML = `<div class="mmd-error">Render error: ${getErrorMessage(error)}</div>`;
+        container.innerHTML = `<div class="mmd-error">Render error: ${getErrorMessage(error)}</div>`;
       }
     } else {
-      previewContainer.innerHTML = '<div class="mmd-error">Preview unavailable.</div>';
+      container.innerHTML = '<div class="mmd-error">Preview unavailable.</div>';
     }
   }
 
@@ -47,19 +56,19 @@
 
   async function handleCopy() {
     try {
-      if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(code);
         copyState = 'copied';
       } else {
-        throw new Error("Clipboard API not available");
+        throw new Error('Clipboard API not available');
       }
     } catch {
       // Fallback
-      const textArea = document.createElement("textarea");
+      const textArea = document.createElement('textarea');
       textArea.value = code;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
       document.body.appendChild(textArea);
       textArea.focus();
       textArea.select();

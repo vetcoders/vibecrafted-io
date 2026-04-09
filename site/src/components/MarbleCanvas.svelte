@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  const copyButtonTimers = new WeakMap<HTMLButtonElement, ReturnType<typeof setTimeout>>();
+
   let canvas: HTMLCanvasElement | undefined;
   let loopCounter: HTMLSpanElement | undefined;
   let coverageCounter: HTMLSpanElement | undefined;
@@ -9,7 +11,7 @@
     if (!canvas) return;
     
     // Polyfills for old code
-    var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var supportsIntersectionObserver = 'IntersectionObserver' in window;
 var liveRegion;
 var liveRegionTimer;
@@ -45,7 +47,7 @@ var uiStrings = isPolishLocale ? {
     previewUnavailable: 'Preview unavailable.'
 };
 
-function getLiveRegion() {
+function getLiveRegion(): HTMLDivElement {
     if (liveRegion) return liveRegion;
     liveRegion = document.createElement('div');
     liveRegion.className = 'sr-only';
@@ -55,7 +57,7 @@ function getLiveRegion() {
     return liveRegion;
 }
 
-function announceUiMessage(message) {
+function announceUiMessage(message: string | undefined) {
     if (!message) return;
     var region = getLiveRegion();
     clearTimeout(liveRegionTimer);
@@ -65,7 +67,7 @@ function announceUiMessage(message) {
     }, 40);
 }
 
-function fallbackCopyText(text) {
+function fallbackCopyText(text: string | undefined) {
     if (!text) return false;
     var area = document.createElement('textarea');
     area.value = text;
@@ -87,9 +89,9 @@ function fallbackCopyText(text) {
     return copied;
 }
 
-function copyText(text) {
+function copyText(text: string | undefined) {
     if (!text) return Promise.resolve(false);
-    if (navigator && navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+    if (navigator.clipboard?.writeText && window.isSecureContext) {
         return navigator.clipboard.writeText(text).then(function () {
             return true;
         }).catch(function () {
@@ -99,17 +101,21 @@ function copyText(text) {
     return Promise.resolve(fallbackCopyText(text));
 }
 
-function flashCopyButton(btn, copied) {
+function flashCopyButton(btn: HTMLButtonElement | null | undefined, copied: boolean) {
     if (!btn) return;
-    var defaultText = btn.getAttribute('data-default-label') || btn.textContent.trim() || uiStrings.copy;
+    var defaultText = btn.getAttribute('data-default-label') || btn.textContent?.trim() || uiStrings.copy;
     btn.textContent = copied ? uiStrings.copied : uiStrings.copyFailed;
     btn.classList.toggle('is-copied', copied);
     btn.classList.toggle('is-error', !copied);
-    clearTimeout(btn._copyTimer);
-    btn._copyTimer = setTimeout(function () {
+    var existingTimer = copyButtonTimers.get(btn);
+    if (existingTimer) {
+        clearTimeout(existingTimer);
+    }
+    var timer = setTimeout(function () {
         btn.textContent = defaultText;
         btn.classList.remove('is-copied', 'is-error');
     }, copied ? 1400 : 1800);
+    copyButtonTimers.set(btn, timer);
 }
 
 
