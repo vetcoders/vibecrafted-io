@@ -288,6 +288,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-links a {
+    display: inline-flex;
+    align-items: center;
     color: var(--steel-dark);
     text-decoration: none;
     font-weight: 500;
@@ -396,6 +398,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .curl-banner .cb-copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
     font-family: var(--font-mono);
     font-size: .6rem;
     font-weight: 600;
@@ -1740,6 +1746,12 @@ body.modal-open .curl-banner {
 }
 
 .surface-modal__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
     color: var(--steel-dark);
     text-decoration: none;
     font-family: var(--font-mono);
@@ -1751,6 +1763,7 @@ body.modal-open .curl-banner {
 .surface-modal__link:hover,
 .surface-modal__link:focus-visible {
     color: var(--copper-bright);
+    background: rgba(184, 115, 51, 0.08);
     outline: none;
 }
 
@@ -1849,6 +1862,10 @@ body.modal-open .curl-banner {
     position: absolute;
     top: .75rem;
     right: .75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     color: var(--steel-dark);
@@ -2071,6 +2088,28 @@ html.subpage {
 
 .install-command-bar__copy {
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid rgba(184, 115, 51, 0.22);
+    border-radius: 10px;
+    background: rgba(20, 23, 28, 0.92);
+    color: var(--copper-bright);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.install-command-bar__copy:hover,
+.install-command-bar__copy:focus-visible {
+    border-color: rgba(212, 144, 92, 0.48);
+    color: var(--stone-light);
+    background: rgba(184, 115, 51, 0.16);
+    outline: none;
 }
 
 #get .section-sub {
@@ -2300,6 +2339,8 @@ footer {
 }
 
 .footer-links a {
+    display: inline-flex;
+    align-items: center;
     color: var(--steel-dark);
     text-decoration: none;
     font-family: var(--font-mono);
@@ -2327,6 +2368,39 @@ footer {
 @media (max-width: 720px) {
     html.subpage {
         --nav-height: 64px;
+    }
+
+    :root {
+        --nav-height: 76px;
+        --banner-height: 48px;
+        --chrome-offset: calc(var(--nav-height) + var(--banner-height));
+        --page-shell: min(100% - 1rem, 42rem);
+    }
+
+    .topbar {
+        height: auto;
+        min-height: var(--nav-height);
+    }
+
+    .nav-shell {
+        width: min(100% - 1rem, 42rem);
+        padding: 0.55rem 0;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        gap: 0.35rem 0.7rem;
+    }
+
+    .nav-links a,
+    .nav-get-zone a {
+        min-height: 2.75rem;
+        padding: 0.2rem 0;
+    }
+
+    .nav-icon-link {
+        width: 2.75rem;
+        height: 2.75rem;
     }
 
     .subpage .topbar {
@@ -2366,6 +2440,19 @@ footer {
         padding: 0 1rem;
     }
 
+    .footer-links a {
+        min-height: 2.75rem;
+        padding: 0.15rem 0;
+    }
+
+    .footer-brands {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: 0;
+    }
+
     .footer-links a,
     .footer-copyright {
         letter-spacing: 0.12em;
@@ -2397,12 +2484,20 @@ footer {
     }
 
     .install-command-bar {
+        grid-template-columns: auto minmax(0, 1fr);
         gap: 0.7rem;
         padding: 0.72rem 0.78rem 0.72rem 0.86rem;
     }
 
     .install-command-bar__code {
+        white-space: normal;
+        overflow-wrap: anywhere;
         font-size: 0.76rem;
+    }
+
+    .install-command-bar__copy {
+        grid-column: 1 / -1;
+        width: 100%;
     }
 
     .surface-modal {
@@ -2415,6 +2510,7 @@ footer {
     }
 
     .surface-modal__head-actions {
+        flex-wrap: wrap;
         justify-content: space-between;
     }
 
@@ -2573,6 +2669,14 @@ footer {
     transform-style: preserve-3d;
 }
 
+@media (max-width: 720px) {
+    .framework-strip-wrap {
+        width: 100%;
+        margin-left: 0;
+        padding-inline: max(0.75rem, 4vw);
+    }
+}
+
 .framework-strip {
     display: flex;
     gap: var(--space-md);
@@ -2669,6 +2773,10 @@ footer {
 .mmd-copy, .mmd-toggle, .mmd-split {
     position: absolute;
     top: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     color: var(--steel-dark);
