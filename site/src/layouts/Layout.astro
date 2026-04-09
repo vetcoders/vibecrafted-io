@@ -42,6 +42,26 @@ function getAlternates(path: string): { en: string; pl: string } | null {
 const alternates = getAlternates(canonicalPath);
 const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
 
+/* JSON-LD structured data */
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": title,
+  "description": description,
+  "url": canonicalUrl,
+  "inLanguage": lang,
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Vibecrafted",
+    "url": siteUrl,
+    "publisher": {
+      "@type": "Organization",
+      "name": "VetCoders",
+      "url": "https://github.com/VetCoders"
+    }
+  }
+});
+
 /* Locale-aware nav helpers */
 const isPl = lang === 'pl';
 const normalizedPath = canonicalPath.endsWith('/') ? canonicalPath : `${canonicalPath}/`;
@@ -93,6 +113,8 @@ const navLabels = isPl
       security: 'Bezpieczeństwo',
       skip: 'Przejdź do treści',
       switchLang: 'Switch to English',
+      navPrimary: 'Nawigacja główna',
+      navFooter: 'Nawigacja stopki',
     }
   : {
       pipeline: 'Pipeline',
@@ -114,6 +136,8 @@ const navLabels = isPl
       security: 'Security',
       skip: 'Skip to content',
       switchLang: 'Przełącz na polski',
+      navPrimary: 'Primary navigation',
+      navFooter: 'Footer navigation',
     };
 ---
 
@@ -133,6 +157,7 @@ const navLabels = isPl
     <meta content={canonicalUrl} property="og:url">
     <meta content="Vibecrafted" property="og:site_name">
     <meta content={ogLocale} property="og:locale">
+    {alternates && <meta content={lang === 'pl' ? 'en_US' : 'pl_PL'} property="og:locale:alternate" />}
     <meta content="summary_large_image" name="twitter:card">
     <meta content={title} name="twitter:title">
     <meta content={description} name="twitter:description">
@@ -153,6 +178,7 @@ const navLabels = isPl
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com/css2?family=Allura&family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     
+    <script type="application/ld+json" set:html={jsonLd} />
     <script crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
     <script defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
     <ClientRouter />
@@ -175,7 +201,7 @@ const navLabels = isPl
                     formats={['avif', 'webp']}
                 />
             </a>
-            <nav aria-label="Primary" class="nav-links">
+            <nav aria-label={navLabels.navPrimary} class="nav-links">
                 <a href={sectionLinks.pipeline}>{navLabels.pipeline}</a>
                 <a href={sectionLinks.skills}>{navLabels.skills}</a>
                 <a href={sectionLinks.marbles}>{navLabels.marbles}</a>
@@ -220,7 +246,7 @@ const navLabels = isPl
             <p class="footer-tagline">𝗕𝘂𝗶𝗹𝘁 𝘂𝗻𝗱𝗲𝗿 ᵐⁱᵈⁿⁱᵍʰᵗ 𝗽𝗿𝗲𝘀𝘀𝘂𝗿𝗲. 𝗗𝗲𝗽𝗹𝗼𝘆𝗲𝗱 𝘁𝗼 ˡᵒᶜᵃˡʰᵒˢᵗ.</p>
         </div>
         
-        <nav class="footer-links" aria-label="Footer">
+        <nav class="footer-links" aria-label={navLabels.navFooter}>
             <div class="footer-col">
                 <h4>{navLabels.system}</h4>
                 <a href={sectionLinks.pipeline}>{navLabels.pipeline}</a>
