@@ -2,6 +2,8 @@
 title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Szybki Start | VetCoders"
 description: "Zainstaluj framework Vibecrafted, sprawdź środowisko i uruchom pierwszą pętlę konwergencji w mniej niż pięć minut."
 ---
+import CopyButton from '../../../components/CopyButton.svelte';
+
 <div class="docs-shell">
             <section class="docs-hero fade-up">
                 <div class="section-label">Szybki start</div>
@@ -20,7 +22,7 @@ description: "Zainstaluj framework Vibecrafted, sprawdź środowisko i uruchom p
                         <h3>Zainstaluj𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. lokalnie</h3>
                         <p>To polecenie tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code> i uruchamia system w tej wersji.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash" defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash</code></pre>
                         </div>
                         <p class="docs-note">Po instalacji otwórz nowy terminal albo ręcznie załaduj helpery w bieżącej sesji.</p>
@@ -30,7 +32,7 @@ description: "Zainstaluj framework Vibecrafted, sprawdź środowisko i uruchom p
                         <h3>Sprawdź, czy wszystko jest gotowe</h3>
                         <p>Uruchom <code>doctor</code> wcześnie. Szybko pokaże, czy środowisko jest gotowe do pracy i czy czegoś jeszcze nie brakuje.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy="vibecrafted doctor" defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>vibecrafted doctor</code></pre>
                         </div>
                         <p class="docs-note">Jeśli coś świeci na żółto, doctor pokaże, czego brakuje, zamiast zostawiać Cię z domysłami.</p>
@@ -40,7 +42,8 @@ description: "Zainstaluj framework Vibecrafted, sprawdź środowisko i uruchom p
                         <h3>Wejdź w realne repo</h3>
                         <p>Wejdź do repo, które naprawdę ma znaczenie, i pozwól agentowi załadować historię, strukturę i bramki jakości, zanim cokolwiek zmieni.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`cd $VIBECRAFTED_ROOT/twoj-projekt
+vc-init claude`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>cd $VIBECRAFTED_ROOT/twoj-projekt
 vc-init claude</code></pre>
                         </div>
@@ -51,11 +54,11 @@ vc-init claude</code></pre>
                         <h3>Uruchom pierwsze realne zadanie</h3>
                         <p>Gdy kontekst jest już zakotwiczony, możesz uruchomić pełną ścieżkę realizacji albo bardziej kontrolowany workflow, zależnie od tego, ile kontroli chcesz zachować.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy='vc-justdo codex "Dodaj uwierzytelnianie użytkowników z JWT"' defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>vc-justdo codex "Dodaj uwierzytelnianie użytkowników z JWT"</code></pre>
                         </div>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy='vc-workflow claude "Zaplanuj i zaimplementuj moduł auth"' defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>vc-workflow claude "Zaplanuj i zaimplementuj moduł auth"</code></pre>
                         </div>
                         <p class="docs-note">Użyj <code>vc-justdo</code>, gdy chcesz oddać agentowi pełną odpowiedzialność. Użyj <code>vc-workflow</code>, gdy chcesz przejść przez wyraźny układ ERI: Eksploruj → Rozpoznaj → Implementuj.</p>
@@ -65,7 +68,9 @@ vc-init claude</code></pre>
                         <h3>Uruchom flotę, gdy jeden model nie wystarcza</h3>
                         <p>Ta ścieżka służy do pracy równoległej i zostawia trwałe artefakty. Chodzi o realne porównanie wyników, nie o pokaz.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted codex implement .vibecrafted/plans/my-plan.md
+vibecrafted claude research .vibecrafted/plans/my-plan.md
+vibecrafted gemini implement .vibecrafted/plans/my-plan.md`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>vibecrafted codex implement .vibecrafted/plans/my-plan.md
 vibecrafted claude research .vibecrafted/plans/my-plan.md
 vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
@@ -76,7 +81,9 @@ vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
                         <h3>Domknij pętlę, zanim uznasz pracę za skończoną</h3>
                         <p>W𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. „gotowe” nie oznacza tylko działającego kodu. Oznacza też to, czy ktoś rzeczywiście może z tego skorzystać.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Kopiuj</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`vc-dou claude
+vc-hydrate codex
+vc-release codex`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
                             <pre><code>vc-dou claude
 vc-hydrate codex
 vc-release codex</code></pre>

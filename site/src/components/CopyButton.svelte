@@ -7,16 +7,31 @@
     textToCopy, 
     class: className = '', 
     defaultLabel = 'Copy', 
-    copiedLabel = 'Copied' 
+    copiedLabel = 'Copied',
+    errorLabel = 'Error',
+    defaultAriaLabel = 'Copy to clipboard',
+    copiedAriaLabel = 'Copied to clipboard',
+    errorAriaLabel = 'Copy failed'
   } = $props<{
     textToCopy: string;
     class?: string;
     defaultLabel?: string;
     copiedLabel?: string;
+    errorLabel?: string;
+    defaultAriaLabel?: string;
+    copiedAriaLabel?: string;
+    errorAriaLabel?: string;
   }>();
 
   let state = $state<CopyState>('default');
-  let label = $derived(state === 'copied' ? copiedLabel : state === 'error' ? 'Error' : defaultLabel);
+  let label = $derived(state === 'copied' ? copiedLabel : state === 'error' ? errorLabel : defaultLabel);
+  let ariaLabel = $derived(
+    state === 'copied'
+      ? copiedAriaLabel
+      : state === 'error'
+        ? errorAriaLabel
+        : defaultAriaLabel
+  );
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   onDestroy(() => {
@@ -62,7 +77,8 @@
 <button
   class="{className} {state === 'copied' ? 'is-copied' : ''} {state === 'error' ? 'is-error' : ''}"
   type="button"
-  aria-label={state === 'copied' ? 'Copied to clipboard' : 'Copy to clipboard'}
+  data-copy-managed="svelte"
+  aria-label={ariaLabel}
   onclick={handleCopy}
 >
   {label}

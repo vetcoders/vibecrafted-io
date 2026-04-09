@@ -606,7 +606,7 @@ function shuffleArr(a) {
 
 // ============ COPY CODE ============
 (function () {
-    var buttons = document.querySelectorAll('.copy-btn');
+    var buttons = document.querySelectorAll('.copy-btn:not([data-copy-managed="svelte"])');
     buttons.forEach(function (btn) {
         btn.setAttribute('data-default-label', btn.textContent.trim() || uiStrings.copy);
         btn.addEventListener('click', function () {

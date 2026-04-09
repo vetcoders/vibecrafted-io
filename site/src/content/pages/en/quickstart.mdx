@@ -2,6 +2,8 @@
 title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Quick Start | VetCoders"
 description: "Install the Vibecrafted framework, verify the control plane, and run your first convergence loop in under five minutes."
 ---
+import CopyButton from '../../../components/CopyButton.svelte';
+
 <div class="docs-shell">
             <section class="docs-hero fade-up">
                 <div class="section-label">Quick Start</div>
@@ -20,7 +22,7 @@ description: "Install the Vibecrafted framework, verify the control plane, and r
                         <h3>Install the framework</h3>
                         <p>Use the public bootstrap path. It stages a local snapshot under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code> and runs the orchestrator from that local copy. </p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash" copiedLabel="Copied!" />
                             <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash</code></pre>
                         </div>
                         <p class="docs-note">Open a new terminal when the install finishes, or source the installed helper file directly in your current shell.</p>
@@ -30,7 +32,7 @@ description: "Install the Vibecrafted framework, verify the control plane, and r
                         <h3>Run the doctor</h3>
                         <p>Check the staged control plane, shell helpers, and optional foundations before you blame the workflow.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy="vibecrafted doctor" copiedLabel="Copied!" />
                             <pre><code>vibecrafted doctor</code></pre>
                         </div>
                         <p class="docs-note">If something is yellow, the doctor tells you what is missing instead of leaving you to guess.</p>
@@ -40,7 +42,8 @@ description: "Install the Vibecrafted framework, verify the control plane, and r
                         <h3>Bootstrap context inside a real repo</h3>
                         <p>Move into the project you actually care about, then give the agent the prompt that forces context gathering before edits.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`cd $VIBECRAFTED_ROOT/your-project
+vibecrafted init claude`} copiedLabel="Copied!" />
                             <pre><code>cd $VIBECRAFTED_ROOT/your-project
 vibecrafted init claude</code></pre>
                         </div>
@@ -51,11 +54,11 @@ vibecrafted init claude</code></pre>
                         <h3>Hand over a real task</h3>
                         <p>Once the context is anchored, run the full delivery path or a narrower workflow depending on how much control you want.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy='vibecrafted justdo codex --prompt "Add user authentication with JWT"' copiedLabel="Copied!" />
                             <pre><code>vibecrafted justdo codex --prompt "Add user authentication with JWT"</code></pre>
                         </div>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy='vibecrafted workflow claude --prompt "Plan and implement auth module"' copiedLabel="Copied!" />
                             <pre><code>vibecrafted workflow claude --prompt "Plan and implement auth module"</code></pre>
                         </div>
                         <p class="docs-note">Use <code>vibecrafted justdo</code> for end-to-end ownership. Use <code>vibecrafted workflow</code> when you want explicit Examine -> Research -> Implement structure. </p>
@@ -65,7 +68,9 @@ vibecrafted init claude</code></pre>
                         <h3>Spawn the fleet when one model is not enough</h3>
                         <p>External agent helpers are there for parallel fieldwork and durable artifacts, not for theatre.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted codex implement .vibecrafted/plans/my-plan.md
+vibecrafted claude research .vibecrafted/plans/my-plan.md
+vibecrafted gemini implement .vibecrafted/plans/my-plan.md`} copiedLabel="Copied!" />
                             <pre><code>vibecrafted codex implement .vibecrafted/plans/my-plan.md
 vibecrafted claude research .vibecrafted/plans/my-plan.md
 vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
@@ -76,7 +81,9 @@ vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
                         <h3>Close the loop before you call it done</h3>
                         <p>Shipping in𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. means code quality, product-surface truth, and packaging truth.</p>
                         <div class="code-block">
-                            <button class="copy-btn" type="button">Copy</button>
+                            <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted dou claude --prompt "Audit launch readiness"
+vibecrafted hydrate codex --prompt "Package the product"
+vibecrafted release codex --prompt "Prepare release steps"`} copiedLabel="Copied!" />
                             <pre><code>vibecrafted dou claude --prompt "Audit launch readiness"
 vibecrafted hydrate codex --prompt "Package the product"
 vibecrafted release codex --prompt "Prepare release steps"</code></pre>
