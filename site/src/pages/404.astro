@@ -2,13 +2,39 @@
 import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 
-const entry = await getEntry('pages', 'en/404');
-if (!entry) {
-  throw new Error("Content entry not found: en/404");
+const entryEn = await getEntry('pages', 'en/404');
+const entryPl = await getEntry('pages', 'pl/404');
+if (!entryEn || !entryPl) {
+  throw new Error("Content entry not found: 404");
 }
-const { Content } = await render(entry);
+const { Content: ContentEn } = await render(entryEn);
+const { Content: ContentPl } = await render(entryPl);
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} lang="en">
-    <Content />
+<Layout title={entryEn.data.title} description={entryEn.data.description} lang="en">
+    <div id="not-found-en">
+        <ContentEn />
+    </div>
+    <div id="not-found-pl" hidden>
+        <ContentPl />
+    </div>
+    <script is:inline>
+        (function() {
+            var path = window.location.pathname;
+            var isPl = path.startsWith('/pl');
+            if (!isPl) {
+                var lang = navigator.language || navigator.userLanguage || '';
+                isPl = lang.startsWith('pl');
+            }
+            if (isPl) {
+                var en = document.getElementById('not-found-en');
+                var pl = document.getElementById('not-found-pl');
+                if (en && pl) {
+                    en.hidden = true;
+                    pl.hidden = false;
+                }
+                document.documentElement.lang = 'pl';
+            }
+        })();
+    </script>
 </Layout>
