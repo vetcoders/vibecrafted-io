@@ -57,7 +57,15 @@
     --steel-border-subtle: rgba(163, 184, 199, 0.16);
     --steel-border-muted: rgba(163, 184, 199, 0.12);
     --steel-border-soft: rgba(163, 184, 199, 0.18);
+    --steel-bg-subtle: rgba(163, 184, 199, 0.08);
     --text-primary: rgba(229, 236, 245, 0.88);
+    --text-secondary: rgba(229, 236, 245, 0.72);
+    --surface-banner: rgba(14, 14, 17, 0.96);
+    --surface-overlay-subtle: rgba(9, 10, 12, 0.52);
+    --copper-border: rgba(184, 115, 51, 0.8);
+    --copper-shadow: rgba(184, 115, 51, 0.2);
+    --copper-glow-faint: rgba(184, 115, 51, 0.12);
+    --btn-padding: 0.875rem 2rem;
     --blur: blur(16px);
     --radius-sm: 6px;
     --radius-md: 12px;
@@ -427,7 +435,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-icon-link:hover {
     color: var(--steel);
     border-color: var(--steel-border-subtle);
-    background: rgba(163, 184, 199, 0.08);
+    background: var(--steel-bg-subtle);
 }
 
 .nav-icon {
@@ -443,7 +451,7 @@ h1, h2, h3, h4, h5, h6 {
     left: 0;
     right: 0;
     z-index: 90;
-    background: rgba(14, 14, 17, 0.96);
+    background: var(--surface-banner);
     backdrop-filter: var(--blur);
     border-bottom: 1px solid var(--card-border);
     padding: 6px 5vw;
@@ -467,7 +475,7 @@ h1, h2, h3, h4, h5, h6 {
 .curl-banner code {
     font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
     font-size: .76rem;
-    color: rgba(229, 236, 245, 0.72);
+    color: var(--text-secondary);
     white-space: normal;
     overflow-wrap: anywhere;
     text-align: center;
@@ -491,9 +499,9 @@ h1, h2, h3, h4, h5, h6 {
     text-transform: uppercase;
     color: var(--copper);
     background: none;
-    border: 1px solid rgba(184, 115, 51, 0.8);
+    border: 1px solid var(--copper-border);
     border-radius: 4px;
-    padding: 2px 10px;
+    padding: var(--space-xs) var(--space-sm);
     cursor: pointer;
     transition: all .15s;
     flex-shrink: 0
@@ -622,7 +630,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 400;
     letter-spacing: 0.01em;
     color: var(--stone-light);
-    text-shadow: 0 0 26px rgba(184, 115, 51, 0.12);
+    text-shadow: 0 0 26px var(--copper-glow-faint);
 }
 
 .manifesto-title__rule {
@@ -753,14 +761,14 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--stone-deep);
     font-family: var(--font-head);
     font-weight: 600;
-    padding: 14px 32px;
-    border-radius: 6px;
+    padding: var(--btn-padding);
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-size: 0.95rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     transition: all 0.2s;
-    box-shadow: 0 10px 24px rgba(184, 115, 51, 0.2);
+    box-shadow: 0 10px 24px var(--copper-shadow);
     border: 1px solid var(--glow);
 }
 
@@ -771,14 +779,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-outline {
-    background: rgba(26, 29, 34, 0.52);
+    background: var(--card-bg);
     backdrop-filter: blur(8px);
     color: var(--stone-light);
     font-family: var(--font-head);
-    border: 1px solid rgba(163, 184, 199, 0.2);
+    border: 1px solid var(--steel-border-soft);
     font-weight: 600;
-    padding: 14px 32px;
-    border-radius: 6px;
+    padding: var(--btn-padding);
+    border-radius: var(--radius-sm);
     text-decoration: none;
     font-size: 0.95rem;
     letter-spacing: 0.05em;
@@ -1031,7 +1039,7 @@ section {
 }
 
 .foundation-card:hover {
-    border-color: rgba(184, 115, 51, 0.55);
+    border-color: var(--glow);
     transform: translateY(-3px);
     box-shadow: 0 14px 28px var(--shadow-md);
 }
@@ -1130,7 +1138,7 @@ section {
     font-family: var(--font-mono);
     font-size: .78rem;
     line-height: 1.55;
-    color: rgba(229, 236, 245, .96)
+    color: var(--stone-light)
 }
 
 .mmd-shell .comment {
@@ -1215,17 +1223,17 @@ section {
 }
 
 .card .card-phase.build {
-    background: rgba(163, 184, 199, .15);
+    background: var(--steel-bg-subtle);
     color: var(--steel)
 }
 
 .card .card-phase.ship {
-    background: rgba(90, 138, 122, .15);
+    background: var(--glow-muted);
     color: var(--patina)
 }
 
 .card .card-phase.loop-phase {
-    background: rgba(184, 115, 51, .15);
+    background: var(--glow-subtle);
     color: var(--copper)
 }
 
@@ -1235,7 +1243,7 @@ section {
 }
 
 .card .card-desc {
-    color: rgba(196, 212, 224, 0.78);
+    color: var(--steel-edge-muted);
     font-size: .92rem;
     margin-bottom: 1rem;
     line-height: 1.6
@@ -1525,7 +1533,7 @@ section {
 .transition-dou-copy {
     max-width: 28rem;
     margin: 0 auto;
-    color: rgba(196, 212, 224, 0.78);
+    color: var(--steel-edge-muted);
     line-height: 1.7;
 }
 
