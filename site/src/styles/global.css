@@ -369,13 +369,17 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--steel-dark);
     text-decoration: none;
     font-weight: 500;
-    transition: color .2s ease
+    transition: color .2s ease;
+    min-height: 2.75rem;
+    padding-block: var(--space-xs);
 }
 
-.nav-links a:hover,
+.nav-links a:hover {
+    color: var(--steel);
+}
+
 .nav-links a:focus-visible {
     color: var(--steel);
-    outline: none;
 }
 
 .nav-links a[href="#pipeline"],
@@ -410,8 +414,10 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.9rem;
-    height: 1.9rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
     color: var(--steel-dark);
     border: 1px solid transparent;
     border-radius: 999px;
@@ -696,7 +702,6 @@ h1, h2, h3, h4, h5, h6 {
 .hero-proof-note a:hover,
 .hero-proof-note a:focus-visible {
     color: var(--copper-bright);
-    outline: none;
 }
 
 @media (max-width: 900px) {
@@ -1734,7 +1739,6 @@ section {
 .docs-inline-links a:hover,
 .docs-inline-links a:focus-visible {
     color: var(--copper-bright);
-    outline: none;
 }
 
 body.modal-open {
@@ -1840,7 +1844,6 @@ body.modal-open .curl-banner {
 .surface-modal__link:focus-visible {
     color: var(--copper-bright);
     background: var(--glow-muted);
-    outline: none;
 }
 
 .surface-modal__close {
@@ -1862,7 +1865,6 @@ body.modal-open .curl-banner {
 .surface-modal__close:focus-visible {
     border-color: rgba(212, 144, 92, 0.52);
     color: var(--copper-bright);
-    outline: none;
 }
 
 .surface-modal__body {
@@ -1941,7 +1943,8 @@ body.modal-open .curl-banner {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.5rem;
+    min-height: 2.75rem;
+    min-width: 2.75rem;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     color: var(--steel-dark);
@@ -2185,7 +2188,6 @@ html.subpage {
     border-color: rgba(212, 144, 92, 0.48);
     color: var(--stone-light);
     background: var(--glow-subtle);
-    outline: none;
 }
 
 #get .section-sub {
@@ -2430,7 +2432,6 @@ footer {
 .footer-links a:hover,
 .footer-links a:focus-visible {
     color: var(--steel);
-    outline: none;
 }
 
 .footer-copyright {
@@ -3589,7 +3590,6 @@ footer {
     border-color: var(--not-found-link-hover-border);
     background: var(--not-found-link-hover-bg);
     transform: translateY(-1px);
-    outline: none;
 }
 
 .not-found-panel__note {

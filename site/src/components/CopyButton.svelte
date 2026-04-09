@@ -59,9 +59,10 @@
   }
 </script>
 
-<button 
-  class="{className} {state === 'copied' ? 'is-copied' : ''} {state === 'error' ? 'is-error' : ''}" 
-  type="button" 
+<button
+  class="{className} {state === 'copied' ? 'is-copied' : ''} {state === 'error' ? 'is-error' : ''}"
+  type="button"
+  aria-label={state === 'copied' ? 'Copied to clipboard' : 'Copy to clipboard'}
   onclick={handleCopy}
 >
   {label}

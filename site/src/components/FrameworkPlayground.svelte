@@ -19,10 +19,12 @@
   });
 </script>
 
-<div 
+<div
   bind:this={container}
-  data-framework-autoplay="false" 
-  data-framework-layout="standalone" 
+  role="application"
+  aria-label="Framework convergence playground"
+  data-framework-autoplay="false"
+  data-framework-layout="standalone"
   data-framework-playground
   data-framework-start="scaffold"
 ></div>
