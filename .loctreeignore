@@ -1,0 +1,9 @@
+# Build artifacts - Astro/Svelte bundler output (GitHub Pages deploy dir)
+docs/_astro/
+
+# Vendored release snapshot
+release/
+
+# Site build output (intermediate)
+site/dist/
+site/node_modules/
