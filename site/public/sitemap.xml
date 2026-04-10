@@ -2,37 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://vibecrafted.io/</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/" />
+        <loc>https://vibecrafted.io/en/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/" />
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://vibecrafted.io/presence/quickstart/</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/quickstart/" />
+        <loc>https://vibecrafted.io/en/quickstart/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/quickstart/" />
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/quickstart/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/quickstart/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/quickstart/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://vibecrafted.io/presence/faq/</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/faq/" />
+        <loc>https://vibecrafted.io/en/faq/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/faq/" />
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/faq/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/faq/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/faq/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://vibecrafted.io/presence/framework/</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/framework/" />
+        <loc>https://vibecrafted.io/en/framework/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/framework/" />
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/framework/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/framework/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/framework/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -40,8 +40,8 @@
     <url>
         <loc>https://vibecrafted.io/pl/</loc>
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
@@ -49,8 +49,8 @@
     <url>
         <loc>https://vibecrafted.io/pl/quickstart/</loc>
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/quickstart/" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/quickstart/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/quickstart/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/quickstart/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/quickstart/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
@@ -58,8 +58,8 @@
     <url>
         <loc>https://vibecrafted.io/pl/faq/</loc>
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/faq/" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/faq/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/faq/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/faq/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/faq/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
@@ -67,8 +67,8 @@
     <url>
         <loc>https://vibecrafted.io/pl/framework/</loc>
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/framework/" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/presence/framework/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/presence/framework/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/framework/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/framework/" />
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>

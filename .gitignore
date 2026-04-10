@@ -34,3 +34,6 @@ aicx-dashboard.html
 !SECURITY.md
 /tmp
 /dist
+*.log
+/.vibecrafted
+/.junie

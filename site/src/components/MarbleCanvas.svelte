@@ -378,19 +378,12 @@
   $effect(() => {
     if (!canvasEl) return;
 
+    const canvas = canvasEl;
+    const ctx = canvas.getContext('2d')!;
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     reducedMotion = motionQuery.matches;
     const onMotionChange = (e: MediaQueryListEvent) => { reducedMotion = e.matches; };
     motionQuery.addEventListener('change', onMotionChange);
-
-    if (reducedMotion) {
-      // Static state: show filled board, no animation
-      motionQuery.removeEventListener('change', onMotionChange);
-      return;
-    }
-
-    const canvas = canvasEl;
-    const ctx = canvas.getContext('2d')!;
 
     // DPR cap: Safari gets 1.5, others get 2
     const isSafari = /Safari/i.test(navigator.userAgent) && !/Chrome|Chromium|CriOS|EdgiOS|FxiOS/i.test(navigator.userAgent);
@@ -414,7 +407,11 @@
     let fadeOutAlpha = 1;
     let shapeIndex = 0;
     let rafId = 0;
+    let readyFrameId = 0;
+    let morphInterval: ReturnType<typeof window.setInterval> | 0 = 0;
+    let reducedMotionTimer: ReturnType<typeof window.setTimeout> | 0 = 0;
     let disposed = false;
+    let resizeObserver: ResizeObserver | undefined;
 
     interface Marble {
       x: number; y: number;
@@ -463,9 +460,103 @@
       updateCounters();
     }
 
-    function resizeCanvas(): void {
-      const rect = canvas.getBoundingClientRect();
-      if (!rect.width) return;
+    function renderScene(): void {
+      if (!width || !height) return;
+
+      ctx.clearRect(0, 0, width, height);
+      if (boardLayer.width && boardLayer.height) {
+        ctx.drawImage(boardLayer, 0, 0, width, height);
+      }
+
+      const conv = convergenceRatio();
+      const renderList = marbles.slice().sort((a, b) => a.y - b.y);
+      for (const m of renderList) {
+        const speed = Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+        const hover = m.z || 0;
+        let mAlpha = m.settled ? 0.7 + conv * 0.3 : 0.5 + Math.min(speed * 0.03, 0.4);
+        mAlpha *= fadeOutAlpha;
+
+        if (hover > 0 || speed > 0.5) {
+          const shadowScale = Math.max(0.4, 1 - hover / 180);
+          ctx.globalAlpha = mAlpha * Math.max(0.05, 0.4 - hover / 250);
+          ctx.beginPath();
+          ctx.ellipse(
+            m.x,
+            m.y + marbleRadius * 0.6 + hover * 0.15,
+            marbleRadius * 0.8 * shadowScale,
+            marbleRadius * 0.4 * shadowScale,
+            0,
+            0,
+            Math.PI * 2
+          );
+          ctx.fillStyle = 'rgba(0,0,0,1)';
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = mAlpha;
+        ctx.drawImage(m.sprite, m.x - m.sprite.width / 2, m.y - hover - m.sprite.height / 2);
+      }
+
+      ctx.globalAlpha = 1;
+      updateCounters();
+    }
+
+    function renderStaticBoard(): void {
+      if (!slots.length) {
+        marbleCount = 0;
+        coveragePct = '0%';
+        ctx.clearRect(0, 0, width, height);
+        return;
+      }
+
+      for (const slot of slots) slot.assigned = false;
+      marbles = [];
+
+      const settledTarget = Math.min(slots.length, Math.max(14, Math.round(slots.length * 0.84)));
+      const settledSlots = shuffleArr(slots.slice()).slice(0, settledTarget);
+      settledSlots.forEach((slot, index) => {
+        slot.assigned = true;
+        marbles.push({
+          x: slot.x,
+          y: slot.y,
+          vx: 0,
+          vy: 0,
+          z: 0,
+          vz: 0,
+          target: slot,
+          settled: true,
+          chaosLevel: 0,
+          sprite: createSprite(marbleRadius, index % PALETTES.length, PATTERNS[index % PATTERNS.length], 9000 + index),
+        });
+      });
+      currentLoop = targetLoops;
+      targetCoverage = 1;
+      morphing = false;
+      fadeOutAlpha = 1;
+      renderScene();
+    }
+
+    function clearReducedMotionCycle(): void {
+      if (reducedMotionTimer) {
+        window.clearTimeout(reducedMotionTimer);
+        reducedMotionTimer = 0;
+      }
+    }
+
+    function scheduleReducedMotionCycle(delay = 1500 + Math.random() * 700): void {
+      clearReducedMotionCycle();
+      if (disposed || !reducedMotion || !width || !height) return;
+      reducedMotionTimer = window.setTimeout(() => {
+        reducedMotionTimer = 0;
+        if (!disposed && reducedMotion) {
+          startMorph();
+        }
+      }, delay);
+    }
+
+    function resizeCanvas(): boolean {
+      const rect = (canvas.parentElement ?? canvas).getBoundingClientRect();
+      if (!rect.width || !rect.height) return false;
       width = rect.width;
       height = rect.height;
       canvas.width = width * dpr;
@@ -476,6 +567,15 @@
       board.radius = Math.min(width, height) * 0.42;
       marbleRadius = Math.max(10, board.radius * 0.08);
       buildBoard();
+      loopTimer = 140 + Math.random() * 120;
+      if (reducedMotion) {
+        renderStaticBoard();
+        scheduleReducedMotionCycle();
+      } else {
+        clearReducedMotionCycle();
+        renderScene();
+      }
+      return true;
     }
 
     function settledCount(): number {
@@ -504,14 +604,22 @@
       if (morphing) return;
       morphing = true;
       fadeOutAlpha = 1;
-      const fadeInterval = setInterval(() => {
-        fadeOutAlpha -= 0.015;
+      clearReducedMotionCycle();
+      if (morphInterval) window.clearInterval(morphInterval);
+      morphInterval = window.setInterval(() => {
+        fadeOutAlpha -= reducedMotion ? 0.01 : 0.015;
+        renderScene();
         if (fadeOutAlpha <= 0) {
-          clearInterval(fadeInterval);
+          window.clearInterval(morphInterval);
+          morphInterval = 0;
           fadeOutAlpha = 1;
           shapeIndex = pickNextShapeIndex(shapeIndex);
           morphing = false;
           buildBoard();
+          if (reducedMotion) {
+            renderStaticBoard();
+            scheduleReducedMotionCycle();
+          }
         }
       }, 16);
     }
@@ -597,11 +705,6 @@
       const dt = Math.min(32, now - lastAt);
       lastAt = now;
 
-      ctx.clearRect(0, 0, width, height);
-      if (boardLayer.width && boardLayer.height) {
-        ctx.drawImage(boardLayer, 0, 0, width, height);
-      }
-
       // Remove off-screen marbles
       marbles = marbles.filter(m => {
         if (m.settled) return true;
@@ -652,28 +755,6 @@
         }
       }
 
-      // Render marbles (sorted by y for depth)
-      const renderList = marbles.slice().sort((a, b) => a.y - b.y);
-      for (const m of renderList) {
-        const speed = Math.sqrt(m.vx * m.vx + m.vy * m.vy);
-        const hover = m.z || 0;
-        let mAlpha = m.settled ? 0.7 + conv * 0.3 : 0.5 + Math.min(speed * 0.03, 0.4);
-        mAlpha *= fadeOutAlpha;
-
-        if (hover > 0 || speed > 0.5) {
-          const shadowScale = Math.max(0.4, 1 - hover / 180);
-          ctx.globalAlpha = mAlpha * Math.max(0.05, 0.4 - hover / 250);
-          ctx.beginPath();
-          ctx.ellipse(m.x, m.y + marbleRadius * 0.6 + hover * 0.15, marbleRadius * 0.8 * shadowScale, marbleRadius * 0.4 * shadowScale, 0, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0,0,0,1)';
-          ctx.fill();
-        }
-
-        ctx.globalAlpha = mAlpha;
-        ctx.drawImage(m.sprite, m.x - m.sprite.width / 2, m.y - hover - m.sprite.height / 2);
-      }
-      ctx.globalAlpha = 1;
-
       // Shape completion → morph
       if (!morphing && convergenceRatio() >= 1 && currentLoop >= targetLoops && allMarblesSettled()) {
         startMorph();
@@ -684,21 +765,84 @@
           loopTimer = 1200 + Math.random() * 900;
         }
       }
-      updateCounters();
+      renderScene();
       rafId = requestAnimationFrame(tick);
     }
 
-    // Boot
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    rafId = requestAnimationFrame(tick);
+    function startLoop(): void {
+      if (disposed || reducedMotion || rafId || !width || !height) return;
+      clearReducedMotionCycle();
+      lastAt = performance.now();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function ensureCanvasReady(): void {
+      if (disposed) return;
+      if (!resizeCanvas()) {
+        readyFrameId = requestAnimationFrame(ensureCanvasReady);
+        return;
+      }
+      startLoop();
+    }
+
+    const observedEl = canvas.parentElement ?? canvas;
+    resizeObserver = new ResizeObserver(() => {
+      if (!resizeCanvas()) return;
+      if (reducedMotion) {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+        scheduleReducedMotionCycle();
+      } else {
+        startLoop();
+      }
+    });
+    resizeObserver.observe(observedEl);
+
+    const onWindowResize = () => {
+      if (!resizeCanvas()) return;
+      if (reducedMotion) {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+        scheduleReducedMotionCycle();
+      } else {
+        startLoop();
+      }
+    };
+
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      onMotionChange(e);
+      if (!resizeCanvas()) return;
+      if (reducedMotion) {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = 0;
+        }
+        scheduleReducedMotionCycle();
+      } else {
+        startLoop();
+      }
+    };
+
+    motionQuery.removeEventListener('change', onMotionChange);
+    motionQuery.addEventListener('change', handleMotionChange);
+
+    ensureCanvasReady();
+    window.addEventListener('resize', onWindowResize);
 
     // Cleanup on unmount
     return () => {
       disposed = true;
-      cancelAnimationFrame(rafId);
-      window.removeEventListener('resize', resizeCanvas);
-      motionQuery.removeEventListener('change', onMotionChange);
+      if (rafId) cancelAnimationFrame(rafId);
+      if (readyFrameId) cancelAnimationFrame(readyFrameId);
+      if (morphInterval) window.clearInterval(morphInterval);
+      clearReducedMotionCycle();
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', onWindowResize);
+      motionQuery.removeEventListener('change', handleMotionChange);
     };
   });
 </script>

@@ -114,7 +114,6 @@
   }
 
   const SHAPES = ['circle', 'square', 'hexagon', 'spiral', 'waves', 'grid'] as const satisfies readonly BoardShape[];
-  const componentId = `framework-${Math.random().toString(36).slice(2, 8)}`;
   const ALERT_RED = '#e05544';
   const PAL = {
     amber: { base: '#d46b3f', light: '#f4c89a' },
@@ -455,6 +454,7 @@
   };
 
   let { lang = 'en' } = $props<{ lang?: Lang }>();
+  const componentId = `framework-playground-${lang === 'pl' ? 'pl' : 'en'}`;
 
   let rootEl: HTMLDivElement | undefined;
   let stageEl: HTMLDivElement | undefined;
@@ -477,6 +477,7 @@
   let shipGlow = $state(0);
   let shakeOffset = $state({ x: 0, y: 0 });
   let convergenceRunning = $state(false);
+  let motionActive = $state(false);
   let convergenceWaveCount = $state(0);
   let convergenceCooldown = $state(0);
   let followupShakeMs = $state(0);
@@ -514,6 +515,23 @@
 
   let locale = $derived<Lang>(lang === 'pl' ? 'pl' : 'en');
   let text = $derived(FRAMEWORK_I18N[locale]);
+  let routePrefix = $derived(locale === 'pl' ? '/pl' : '/en');
+  let surfaceSignals = $derived(
+    locale === 'pl' ? ['9 faz', 'Board-first', 'Nawigacja klawiaturą'] : ['9 phases', 'Board-first', 'Keyboard nav']
+  );
+  let surfaceLinks = $derived(
+    locale === 'pl'
+      ? {
+          quickstart: 'Szybki start',
+          faq: 'FAQ',
+          landing: 'Powrót do landingu'
+        }
+      : {
+          quickstart: 'Quick Start',
+          faq: 'FAQ',
+          landing: 'Back to landing'
+        }
+  );
   let phases = $derived.by<PhaseDescriptor[]>(() =>
     PHASE_BLUEPRINTS.map((phase) => ({
       ...phase,
@@ -726,6 +744,7 @@
     marbles = [];
     overflowMarbles = [];
     pings = [];
+    convergenceRunning = false;
     convergenceWaveCount = 0;
     convergenceCooldown = 0;
     followupShakeMs = 0;
@@ -745,13 +764,16 @@
     currentPhaseIndex = index;
     phaseTime = 0;
     phasePulse = prefersReducedMotion ? 0.18 : 1;
-    boardAlpha = phase.name === 'scaffold' ? 0.88 : 1;
+    boardAlpha = phase.name === 'scaffold' ? (prefersReducedMotion ? 0.88 : 0.12) : phase.name === 'init' ? 0.92 : 1;
+    shakeOffset = { x: 0, y: 0 };
 
     if (phase.name === 'scaffold') {
       grooveRevealProgress = 0;
       resetBoardState();
     } else if (phase.name === 'init') {
-      grooveRevealProgress = Math.max(grooveRevealProgress, 0.18);
+      grooveRevealProgress = prefersReducedMotion ? 0.18 : 0;
+    } else if (phase.name === 'workflow') {
+      grooveRevealProgress = prefersReducedMotion ? 1 : 0;
     } else {
       grooveRevealProgress = 1;
     }
@@ -761,6 +783,7 @@
     }
 
     syncSlotVisibility();
+    motionActive = true;
     announce(text.controls.status.phaseChanged);
     renderBoard();
   }
@@ -865,13 +888,17 @@
 
   function spawnOperatorBatch() {
     const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
+    if (openSlots.length === 0) {
+      showPhase(phases.findIndex((phase) => phase.name === 'workflow'));
+      return;
+    }
     for (let index = 0; index < Math.min(operatorCount, openSlots.length); index += 1) {
       const pick = Math.floor(Math.random() * openSlots.length);
       const target = openSlots[pick];
       marbles.push(spawnMarble(target, 0.12, 'ocean'));
       openSlots.splice(pick, 1);
     }
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.operatorsSpawned);
   }
 
@@ -903,6 +930,7 @@
     convergenceCooldown = 0;
     showPhase(phases.findIndex((phase) => phase.name === 'marbles'));
     convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.convergenceStarted);
   }
 
@@ -936,21 +964,21 @@
     if (Math.random() > 0.45) overflowMarbles.push(spawnOverflow());
 
     followupShakeMs = prefersReducedMotion ? 140 : 680;
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.followupComplete);
   }
 
   function runDouAudit() {
     douPulseMs = prefersReducedMotion ? 240 : 1400;
     errorFlash = 0.4;
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.blockersSurfaced);
   }
 
   function applyFinish() {
     polishTarget = clamp(polishTarget + 0.22, 0.2, 1);
     phasePulse = Math.max(phasePulse, prefersReducedMotion ? 0.2 : 0.85);
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.finishApplied);
   }
 
@@ -959,7 +987,7 @@
     for (let index = 0; index < Math.min(hydrateBatchSize, gaps.length); index += 1) {
       marbles.push(spawnMarble(gaps[index], 0.05, 'forest'));
     }
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.gapsFilled);
   }
 
@@ -981,7 +1009,7 @@
     if (resetTimer) clearTimeout(resetTimer);
     releasePulseMs = prefersReducedMotion ? 500 : 2200;
     shipGlow = 1;
-    convergenceRunning = true;
+    motionActive = true;
     announce(text.controls.status.loopReleased);
     resetTimer = setTimeout(() => {
       restartLoop();
@@ -1289,6 +1317,9 @@
   }
 
   function hasMotion() {
+    if (currentPhase.name === 'scaffold' && phaseTime < (prefersReducedMotion ? 24 : 560)) return true;
+    if (currentPhase.name === 'init' && grooveRevealProgress < 0.175) return true;
+    if (currentPhase.name === 'workflow' && grooveRevealProgress < 0.995) return true;
     if (phasePulse > 0.02 || followupShakeMs > 0 || douPulseMs > 0 || releasePulseMs > 0) return true;
     if (convergenceWaveCount > 0) return true;
     if (pings.length > 0) return true;
@@ -1298,6 +1329,25 @@
   function stepSimulation(dt: number) {
     const timeScale = dt / 16;
     phaseTime += dt;
+    const phaseDuration = Math.max(1, currentPhase.duration);
+
+    if (currentPhase.name === 'scaffold') {
+      boardAlpha = prefersReducedMotion ? 0.88 : Math.min(0.88, Math.max(0.16, phaseTime / 420));
+      grooveRevealProgress = 0;
+      if (!prefersReducedMotion && phaseTime < 220) {
+        const intensity = 1 - phaseTime / 220;
+        shakeOffset.x = Math.sin(phaseTime * 0.06) * 2.6 * intensity;
+        shakeOffset.y = Math.cos(phaseTime * 0.04) * 1.8 * intensity;
+      }
+    } else if (currentPhase.name === 'init') {
+      boardAlpha = 1;
+      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(0.18, (phaseTime / phaseDuration) * 0.18));
+    } else if (currentPhase.name === 'workflow') {
+      boardAlpha = 1;
+      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(1, phaseTime / (phaseDuration * 0.65)));
+    }
+
+    syncSlotVisibility();
 
     if (convergenceWaveCount > 0) {
       convergenceCooldown -= dt;
@@ -1360,12 +1410,13 @@
     renderBoard();
     if (!hasMotion()) {
       convergenceRunning = false;
+      motionActive = false;
       lastFrameTime = 0;
     }
   }
 
   $effect(() => {
-    if (!convergenceRunning || typeof window === 'undefined') return;
+    if (!motionActive || typeof window === 'undefined') return;
 
     let frameId = 0;
 
@@ -1376,7 +1427,7 @@
       if (dt > 0) {
         stepSimulation(dt);
       }
-      if (convergenceRunning) {
+      if (motionActive) {
         frameId = window.requestAnimationFrame(tick);
       }
     };
@@ -1396,6 +1447,13 @@
   });
 
   onMount(() => {
+    reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+    prefersReducedMotion = reducedMotionMedia.matches;
+    const handleMotionChange = (event: MediaQueryListEvent) => {
+      prefersReducedMotion = event.matches;
+    };
+    reducedMotionMedia.addEventListener('change', handleMotionChange);
+
     syncThemeTokens();
     resizeCanvas();
     showPhase(0);
@@ -1406,13 +1464,6 @@
     if (stageEl) {
       resizeObserver.observe(stageEl);
     }
-
-    reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-    prefersReducedMotion = reducedMotionMedia.matches;
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      prefersReducedMotion = event.matches;
-    };
-    reducedMotionMedia.addEventListener('change', handleMotionChange);
 
     return () => {
       reducedMotionMedia?.removeEventListener('change', handleMotionChange);
@@ -1434,8 +1485,22 @@
   <div class="framework-playground__meta">
     <div class="framework-playground__meta-copy">
       <p class="framework-playground__kicker">{text.showcaseKicker}</p>
-      <h2 class="framework-playground__heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h2>
+      <h1 class="framework-playground__heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h1>
       <p class="framework-playground__lede">{text.showcaseLead}</p>
+      <div class="framework-playground__meta-utility">
+        <div class="framework-playground__signal-row" aria-label={locale === 'pl' ? 'Sygnały powierzchni' : 'Surface signals'}>
+          {#each surfaceSignals as signal}
+            <span class="framework-playground__signal">{signal}</span>
+          {/each}
+        </div>
+        <div class="framework-playground__link-row">
+          <a class="framework-playground__meta-link" data-astro-reload href={`${routePrefix}/quickstart/`}>{surfaceLinks.quickstart}</a>
+          <a class="framework-playground__meta-link" data-astro-reload href={`${routePrefix}/faq/`}>{surfaceLinks.faq}</a>
+          <a class="framework-playground__meta-link framework-playground__meta-link--ghost" data-astro-reload href={`${routePrefix}/`}>
+            {surfaceLinks.landing}
+          </a>
+        </div>
+      </div>
     </div>
     <div class="framework-playground__metrics" aria-label={text.controls.metrics.progress}>
       <article class="framework-playground__metric-card">
@@ -1463,11 +1528,18 @@
       <div
         bind:this={stageEl}
         class="framework-playground__stage"
+        data-board-shape={boardShape}
         id={`${componentId}-panel`}
         role="img"
         aria-label={boardAriaLabel}
         aria-labelledby={`${componentId}-heading`}
       >
+        <div class="framework-playground__ghost-board" aria-hidden="true">
+          <div class="framework-playground__ghost-ring"></div>
+          <div class="framework-playground__ghost-lattice"></div>
+          <div class="framework-playground__ghost-axis framework-playground__ghost-axis--horizontal"></div>
+          <div class="framework-playground__ghost-axis framework-playground__ghost-axis--vertical"></div>
+        </div>
         <canvas bind:this={canvasEl} class="framework-playground__canvas" aria-hidden="true"></canvas>
         <div class="framework-playground__overlay" aria-hidden="true">
           <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
@@ -1568,7 +1640,6 @@
             class="framework-playground__action-btn framework-playground__action-btn--muted"
             type="button"
             aria-label={text.controls.buttons.spawnOperators}
-            disabled={visibleSlotCount === 0}
             onclick={spawnOperatorBatch}
           >
             {text.controls.buttons.spawnOperators}
@@ -1577,7 +1648,7 @@
             class="framework-playground__action-btn"
             type="button"
             aria-label={text.controls.buttons.runConvergence}
-            disabled={convergenceRunning || visibleSlotCount === 0}
+            disabled={convergenceRunning}
             onclick={runConvergence}
           >
             {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
@@ -1718,6 +1789,60 @@
     line-height: 1.55;
   }
 
+  .framework-playground__meta-utility {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .framework-playground__signal-row,
+  .framework-playground__link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .framework-playground__signal,
+  .framework-playground__meta-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.05rem;
+    padding: 0.42rem 0.72rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border: 1px solid rgba(163, 184, 199, 0.16);
+    background: rgba(9, 10, 12, 0.64);
+    backdrop-filter: blur(10px);
+  }
+
+  .framework-playground__signal {
+    color: var(--steel-edge);
+  }
+
+  .framework-playground__meta-link {
+    color: var(--copper-bright);
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      background 180ms ease,
+      color 180ms ease;
+  }
+
+  .framework-playground__meta-link:hover,
+  .framework-playground__meta-link:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(184, 115, 51, 0.36);
+    background: rgba(184, 115, 51, 0.1);
+    outline: none;
+  }
+
+  .framework-playground__meta-link--ghost {
+    color: var(--steel-edge);
+  }
+
   .framework-playground__metrics {
     display: grid;
     grid-template-columns: repeat(3, minmax(8rem, 1fr));
@@ -1731,6 +1856,7 @@
     border: 1px solid var(--steel-border-soft);
     border-radius: var(--radius-md);
     background: rgba(14, 14, 17, 0.68);
+    backdrop-filter: blur(16px) saturate(118%);
     box-shadow: 0 14px 28px var(--shadow-md), inset 0 1px 0 var(--glass-panel-highlight);
     overflow: hidden;
   }
@@ -1747,7 +1873,7 @@
   }
 
   .framework-playground__metric-label {
-    color: var(--steel-dark);
+    color: rgba(196, 212, 224, 0.68);
   }
 
   .framework-playground__body {
@@ -1792,6 +1918,7 @@
 
   .framework-playground__stage {
     position: relative;
+    isolation: isolate;
     min-height: clamp(26rem, 58svh, 52rem);
     border-radius: var(--radius-lg);
     border: 1px solid var(--steel-border-soft);
@@ -1804,24 +1931,110 @@
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 24px 48px rgba(0, 0, 0, 0.3);
   }
 
+  .framework-playground__stage::before,
   .framework-playground__stage::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(212, 144, 92, 0.16), transparent 55%);
-    opacity: 0;
-    transition: opacity 240ms ease;
     pointer-events: none;
+    z-index: 0;
+  }
+
+  .framework-playground__stage::before {
+    inset: -12%;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(212, 144, 92, 0.1), transparent 36%),
+      radial-gradient(circle at 22% 74%, rgba(90, 138, 122, 0.08), transparent 22%);
+    opacity: 0.45;
+    transform-origin: center;
+    animation: framework-stage-ambient 8.8s ease-in-out infinite;
+  }
+
+  .framework-playground__stage::after {
+    background: radial-gradient(circle at center, rgba(212, 144, 92, 0.16), transparent 55%);
+    opacity: 0.1;
+    animation: framework-stage-breathe 6.4s ease-in-out infinite;
+    transition: opacity 240ms ease;
   }
 
   .framework-playground[data-transitioning="true"] .framework-playground__stage::after {
-    opacity: 1;
+    opacity: 0.26;
+    animation-duration: 2.2s;
   }
 
   .framework-playground__canvas {
+    position: relative;
+    z-index: 1;
     width: 100%;
     height: 100%;
     display: block;
+  }
+
+  .framework-playground__ghost-board {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .framework-playground__ghost-ring,
+  .framework-playground__ghost-lattice {
+    position: absolute;
+    inset: 13%;
+    border-radius: 50%;
+  }
+
+  .framework-playground__ghost-ring {
+    border: 1px solid rgba(212, 144, 92, 0.18);
+    box-shadow:
+      0 0 0 1px rgba(196, 212, 224, 0.06),
+      0 0 26px rgba(184, 115, 51, 0.08);
+    opacity: 0.68;
+  }
+
+  .framework-playground__ghost-lattice {
+    inset: 16%;
+    background:
+      radial-gradient(circle, rgba(196, 212, 224, 0.12) 0 23%, transparent 27%) center / clamp(1.8rem, 2.2vw, 2.6rem) clamp(1.8rem, 2.2vw, 2.6rem) repeat;
+    opacity: 0.28;
+    filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.22));
+  }
+
+  .framework-playground__ghost-axis {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(68%, 30rem);
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(196, 212, 224, 0.08) 22%, rgba(212, 144, 92, 0.14) 50%, rgba(196, 212, 224, 0.08) 78%, transparent 100%);
+    transform: translate(-50%, -50%);
+    opacity: 0.42;
+  }
+
+  .framework-playground__ghost-axis--vertical {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .framework-playground__stage[data-board-shape="square"] .framework-playground__ghost-ring,
+  .framework-playground__stage[data-board-shape="square"] .framework-playground__ghost-lattice,
+  .framework-playground__stage[data-board-shape="grid"] .framework-playground__ghost-ring,
+  .framework-playground__stage[data-board-shape="grid"] .framework-playground__ghost-lattice {
+    border-radius: calc(var(--radius-md) + 0.2rem);
+  }
+
+  .framework-playground__stage[data-board-shape="hexagon"] .framework-playground__ghost-ring,
+  .framework-playground__stage[data-board-shape="hexagon"] .framework-playground__ghost-lattice {
+    clip-path: polygon(25% 8%, 75% 8%, 94% 50%, 75% 92%, 25% 92%, 6% 50%);
+  }
+
+  .framework-playground__stage[data-board-shape="waves"] .framework-playground__ghost-lattice {
+    clip-path: polygon(0 44%, 12% 38%, 24% 46%, 37% 40%, 50% 48%, 63% 42%, 76% 50%, 88% 44%, 100% 52%, 100% 72%, 0 72%);
+  }
+
+  .framework-playground__stage[data-board-shape="spiral"] .framework-playground__ghost-lattice {
+    background:
+      repeating-radial-gradient(circle at center, rgba(212, 144, 92, 0.14) 0 2px, transparent 2px 18px);
+    opacity: 0.14;
   }
 
   .framework-playground__overlay {
@@ -1927,7 +2140,7 @@
 
   .framework-playground__side-copy {
     margin: 0;
-    color: var(--steel-dark);
+    color: rgba(196, 212, 224, 0.76);
     font-size: 0.94rem;
     line-height: 1.55;
   }
@@ -2183,7 +2396,7 @@
   }
 
   .framework-playground__chip-detail {
-    color: var(--steel-dark);
+    color: rgba(196, 212, 224, 0.72);
     font-size: 0.77rem;
     line-height: 1.4;
   }
@@ -2249,6 +2462,8 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .framework-playground__stage::before,
+    .framework-playground__stage::after,
     .framework-playground *,
     .framework-playground *::before,
     .framework-playground *::after {
@@ -2256,6 +2471,32 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
+    }
+  }
+
+  @keyframes framework-stage-ambient {
+    0%,
+    100% {
+      opacity: 0.24;
+      transform: scale(0.98) translate3d(-1.5%, -1%, 0);
+    }
+
+    50% {
+      opacity: 0.54;
+      transform: scale(1.04) translate3d(1.5%, 1%, 0);
+    }
+  }
+
+  @keyframes framework-stage-breathe {
+    0%,
+    100% {
+      opacity: 0.08;
+      transform: scale(0.96);
+    }
+
+    50% {
+      opacity: 0.18;
+      transform: scale(1.03);
     }
   }
 </style>

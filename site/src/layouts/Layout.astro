@@ -17,7 +17,17 @@ interface Props {
 const { title, description = "A convergence-driven system for shipping software with AI agents.", lang = "en", ogImage = "/presence/og-image.png", ogType = "website" } = Astro.props;
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? "https://vibecrafted.io";
-const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
+
+function normalizeCanonicalPath(pathname: string) {
+  const normalized = pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
+  if (normalized === '/') return '/en/';
+  if (normalized === '/presence/quickstart/') return '/en/quickstart/';
+  if (normalized === '/presence/framework/') return '/en/framework/';
+  if (normalized === '/presence/faq/') return '/en/faq/';
+  return normalized;
+}
+
+const canonicalPath = normalizeCanonicalPath(Astro.url.pathname);
 const canonicalUrl = new URL(canonicalPath, siteUrl).href;
 const ogImageUrl = new URL(ogImage, siteUrl).href;
 const is404 = Astro.url.pathname.includes('404');
@@ -30,9 +40,6 @@ const i18nMap: Record<string, string> = {
   '/en/quickstart/': '/pl/quickstart/',
   '/en/faq/': '/pl/faq/',
   '/en/framework/': '/pl/framework/',
-  '/presence/quickstart/': '/pl/quickstart/',
-  '/presence/framework/': '/pl/framework/',
-  '/presence/faq/': '/pl/faq/',
 };
 /* Build reverse map */
 const i18nMapReverse: Record<string, string> = Object.fromEntries(

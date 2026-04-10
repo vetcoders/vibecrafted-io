@@ -1,18 +1,36 @@
 <script lang="ts">
-  let reducedMotion = $state(false);
+  import { onMount } from 'svelte';
 
-  $effect(() => {
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    reducedMotion = motionQuery.matches;
+  const REVEAL_CLASS = 'js-reveal-ready';
 
-    const items = document.querySelectorAll('.fade-up');
-    if (!items.length) return;
+  function setupReveal() {
+    const root = document.documentElement;
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.fade-up'));
 
-    // Reduced motion or no IntersectionObserver: show all immediately
-    if (reducedMotion || !('IntersectionObserver' in window)) {
-      items.forEach(el => el.classList.add('visible'));
-      return;
+    if (!items.length) {
+      root.classList.remove(REVEAL_CLASS);
+      return () => {};
     }
+
+    const markViewportItemsVisible = () => {
+      const threshold = window.innerHeight * 0.9;
+      for (const item of items) {
+        const rect = item.getBoundingClientRect();
+        if (rect.top <= threshold && rect.bottom >= 0) {
+          item.classList.add('visible');
+        }
+      }
+    };
+
+    markViewportItemsVisible();
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+      root.classList.remove(REVEAL_CLASS);
+      items.forEach((item) => item.classList.add('visible'));
+      return () => {};
+    }
+
+    root.classList.add(REVEAL_CLASS);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -22,13 +40,34 @@
           }
         }
       },
-      { threshold: 0.12 }
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
     );
 
-    items.forEach(el => observer.observe(el));
+    items.forEach((item) => observer.observe(item));
 
     return () => {
       observer.disconnect();
+      root.classList.remove(REVEAL_CLASS);
+    };
+  }
+
+  onMount(() => {
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let cleanup = setupReveal();
+
+    const rerun = () => {
+      cleanup();
+      cleanup = setupReveal();
+    };
+
+    window.addEventListener('astro:page-load', rerun);
+    motionQuery.addEventListener('change', rerun);
+
+    return () => {
+      cleanup();
+      window.removeEventListener('astro:page-load', rerun);
+      motionQuery.removeEventListener('change', rerun);
+      document.documentElement.classList.remove(REVEAL_CLASS);
     };
   });
 </script>
