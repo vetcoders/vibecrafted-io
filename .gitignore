@@ -37,3 +37,10 @@ aicx-dashboard.html
 *.log
 /.vibecrafted
 /.junie
+/.venv
+/.idea
+/.pytest_cache
+/.ruff_cache
+
+# Vendor snapshot from upstream source repo
+/release
