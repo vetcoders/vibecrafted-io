@@ -9,16 +9,12 @@ const { lang } = Astro.props;
             <h1 class="manifesto-title">
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
                 <span class="manifesto-title__rule" aria-hidden="true"></span>
-                {lang === 'en' ? (
-                    <span class="manifesto-title__framework">The <span class="manifesto-title__framework-accent">Founders'</span> Framework</span>
-                ) : (
-                    <span class="manifesto-title__framework">Framework <span class="manifesto-title__framework-accent">Założycieli</span></span>
-                )}
+                <span class="manifesto-title__framework">The <span class="manifesto-title__framework-accent">Founders'</span> Framework</span>
             </h1>
             <p class="manifesto-lead">
                 {lang === 'en' 
                     ? "A convergence-driven system for shipping software with AI agents." 
-                    : "System oparty na konwergencji do budowania oprogramowania z agentami AI."}
+                    : "System konwergencji do budowania i wdrażania oprogramowania z agentami AI."}
             </p>
             <p class="manifesto-quote">
                 {lang === 'en' 
@@ -26,7 +22,7 @@ const { lang } = Astro.props;
                     : <>Framework, który napisał swój własny kod przez <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.</>}
             </p>
             <div class="manifesto-actions">
-                <a href="#evidence" class="btn-solid">{lang === 'en' ? "See the Evidence" : "Zobacz dowody"}</a>
+                <a href="#evidence" class="btn-solid">{lang === 'en' ? "See the Evidence" : "Dowody"}</a>
                 <a href="https://github.com/VetCoders/vibecrafted" class="btn-outline" rel="noopener noreferrer">{lang === 'en' ? "View on GitHub" : "GitHub"}</a>
             </div>
         </header>

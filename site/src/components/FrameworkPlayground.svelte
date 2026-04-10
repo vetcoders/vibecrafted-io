@@ -80,7 +80,7 @@
       boardShape: string;
       density: string;
       operators: string;
-      grooves: string;
+      precisionFill: string;
       command: string;
       phaseDetail: string;
       actionPanel: string;
@@ -263,7 +263,7 @@
         boardShape: 'Board shape',
         density: 'Groove density',
         operators: 'Specialists',
-        grooves: 'Visible grooves',
+        precisionFill: 'Precision fill',
         command: 'Command surface',
         phaseDetail: 'Phase note',
         actionPanel: 'Board controls',
@@ -347,7 +347,7 @@
         boardShape: 'Kształt planszy',
         density: 'Gęstość rowków',
         operators: 'Specjaliści',
-        grooves: 'Widoczne rowki',
+        precisionFill: 'Precyzja domknięcia',
         command: 'Powierzchnia komend',
         phaseDetail: 'Notatka fazy',
         actionPanel: 'Sterowanie planszą',
@@ -515,23 +515,6 @@
 
   let locale = $derived<Lang>(lang === 'pl' ? 'pl' : 'en');
   let text = $derived(FRAMEWORK_I18N[locale]);
-  let routePrefix = $derived(locale === 'pl' ? '/pl' : '/en');
-  let surfaceSignals = $derived(
-    locale === 'pl' ? ['9 faz', 'Board-first', 'Nawigacja klawiaturą'] : ['9 phases', 'Board-first', 'Keyboard nav']
-  );
-  let surfaceLinks = $derived(
-    locale === 'pl'
-      ? {
-          quickstart: 'Szybki start',
-          faq: 'FAQ',
-          landing: 'Powrót do landingu'
-        }
-      : {
-          quickstart: 'Quick Start',
-          faq: 'FAQ',
-          landing: 'Back to landing'
-        }
-  );
   let phases = $derived.by<PhaseDescriptor[]>(() =>
     PHASE_BLUEPRINTS.map((phase) => ({
       ...phase,
@@ -556,18 +539,12 @@
   let densityPercent = $derived(Math.round(((grooveDensity - 0.5) / 1.5) * 100));
   let operatorPercent = $derived(Math.round(((operatorCount - 1) / 9) * 100));
   let hydratePercent = $derived(Math.round(((hydrateBatchSize - 1) / 9) * 100));
+  let boardShapeLabel = $derived(text.controls.shapes[boardShape]);
   let promptCommand = $derived.by(() => currentPhaseCommand(currentPhase));
   let boardAriaLabel = $derived.by(
     () =>
       `${currentPhase.label}. ${currentPhase.title}. ${convergenceProgress}% ${text.controls.metrics.progress.toLowerCase()}. ${filledSlotCount} ${text.controls.metrics.grooves.toLowerCase()} ${locale === 'pl' ? 'wypełnionych' : 'filled'}.`
   );
-  let phaseActionLabel = $derived(text.controls.buttons.phaseAction[currentPhase.name]);
-  let nextPhaseLabel = $derived(
-    currentPhaseIndex < phases.length - 1
-      ? `${text.controls.buttons.nextPhase}: ${phases[currentPhaseIndex + 1].label}`
-      : text.controls.buttons.resetLoop
-  );
-  let stageTransitioning = $derived(phasePulse > 0.08 || douPulseMs > 0 || releasePulseMs > 0);
 
   function clamp(value: number, min: number, max: number) {
     return Math.min(max, Math.max(min, value));
@@ -1051,16 +1028,6 @@
     }
   }
 
-  function goToNextPhase() {
-    if (currentPhaseIndex < phases.length - 1) {
-      showPhase(currentPhaseIndex + 1);
-      phaseButtons[currentPhaseIndex]?.focus();
-    } else {
-      restartLoop();
-      phaseButtons[0]?.focus();
-    }
-  }
-
   function handlePhaseKeydown(event: KeyboardEvent, index: number) {
     const lastIndex = phases.length - 1;
     let nextIndex = index;
@@ -1100,6 +1067,11 @@
     buildSlots();
     syncSlotVisibility();
     renderBoard();
+  }
+
+  function shiftBoardShape(delta: number) {
+    const nextIndex = (SHAPES.indexOf(boardShape) + delta + SHAPES.length) % SHAPES.length;
+    handleShapeChange(SHAPES[nextIndex] ?? 'circle');
   }
 
   function handleDensityInput(event: Event) {
@@ -1480,43 +1452,8 @@
   bind:this={rootEl}
   class="framework-playground"
   data-phase={currentPhase.name}
-  data-transitioning={stageTransitioning ? 'true' : 'false'}
 >
-  <div class="framework-playground__meta">
-    <div class="framework-playground__meta-copy">
-      <p class="framework-playground__kicker">{text.showcaseKicker}</p>
-      <h1 class="framework-playground__heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h1>
-      <p class="framework-playground__lede">{text.showcaseLead}</p>
-      <div class="framework-playground__meta-utility">
-        <div class="framework-playground__signal-row" aria-label={locale === 'pl' ? 'Sygnały powierzchni' : 'Surface signals'}>
-          {#each surfaceSignals as signal}
-            <span class="framework-playground__signal">{signal}</span>
-          {/each}
-        </div>
-        <div class="framework-playground__link-row">
-          <a class="framework-playground__meta-link" data-astro-reload href={`${routePrefix}/quickstart/`}>{surfaceLinks.quickstart}</a>
-          <a class="framework-playground__meta-link" data-astro-reload href={`${routePrefix}/faq/`}>{surfaceLinks.faq}</a>
-          <a class="framework-playground__meta-link framework-playground__meta-link--ghost" data-astro-reload href={`${routePrefix}/`}>
-            {surfaceLinks.landing}
-          </a>
-        </div>
-      </div>
-    </div>
-    <div class="framework-playground__metrics" aria-label={text.controls.metrics.progress}>
-      <article class="framework-playground__metric-card">
-        <span class="framework-playground__metric-label">{text.controls.metrics.progress}</span>
-        <strong class="framework-playground__metric-value">{convergenceProgress}%</strong>
-      </article>
-      <article class="framework-playground__metric-card">
-        <span class="framework-playground__metric-label">{text.controls.metrics.grooves}</span>
-        <strong class="framework-playground__metric-value">{filledSlotCount}/{visibleSlotCount}</strong>
-      </article>
-      <article class="framework-playground__metric-card">
-        <span class="framework-playground__metric-label">{text.controls.metrics.marbles}</span>
-        <strong class="framework-playground__metric-value">{visibleMarbleCount}</strong>
-      </article>
-    </div>
-  </div>
+  <h1 class="framework-playground__sr-heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h1>
 
   <div class="framework-playground__body">
     <div class="framework-playground__board-column">
@@ -1534,12 +1471,6 @@
         aria-label={boardAriaLabel}
         aria-labelledby={`${componentId}-heading`}
       >
-        <div class="framework-playground__ghost-board" aria-hidden="true">
-          <div class="framework-playground__ghost-ring"></div>
-          <div class="framework-playground__ghost-lattice"></div>
-          <div class="framework-playground__ghost-axis framework-playground__ghost-axis--horizontal"></div>
-          <div class="framework-playground__ghost-axis framework-playground__ghost-axis--vertical"></div>
-        </div>
         <canvas bind:this={canvasEl} class="framework-playground__canvas" aria-hidden="true"></canvas>
         <div class="framework-playground__overlay" aria-hidden="true">
           <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
@@ -1554,136 +1485,167 @@
     </div>
 
     <aside class="framework-playground__side-column">
-      <section class="framework-playground__panel framework-playground__panel--phase">
-        <p class="framework-playground__side-kicker">{text.controls.phaseDetail}</p>
-        <h3 class="framework-playground__side-title">{currentPhase.description}</h3>
-        <p class="framework-playground__side-copy">{currentHint}</p>
-        <div class="framework-playground__detail-pill" data-tone={currentPhase.tone}>
-          <span>{currentPhase.detail}</span>
-        </div>
-      </section>
+      <p class="framework-playground__side-kicker">{text.operators}</p>
+      <p class="framework-playground__side-copy">{currentHint}</p>
 
-      <section class="framework-playground__panel framework-playground__panel--controls">
-        <div class="framework-playground__panel-head">
-          <p class="framework-playground__side-kicker">{text.controls.actionPanel}</p>
-          <span class="framework-playground__badge">{text.controls.command}</span>
-        </div>
+      <div class="framework-playground__alert-strip" aria-label={text.controls.alerts}>
+        <p class="framework-playground__alert-line" data-alert="dou" data-active={currentPhase.name === 'dou' || douBlockers > 0}>
+          <span>{text.alerts.dou.title}</span>
+          <strong>{douBlockers}</strong>
+        </p>
+        <p class="framework-playground__alert-line" data-alert="review" data-active={currentPhase.name === 'followup' || reviewWeakFits > 0}>
+          <span>{text.alerts.review.title}</span>
+          <strong>{reviewWeakFits}</strong>
+        </p>
+      </div>
 
-        <div class="framework-playground__shape-grid" aria-label={text.controls.boardShape}>
-          {#each SHAPES as shape}
-            <button
-              class="framework-playground__shape-chip"
-              class:is-active={boardShape === shape}
-              type="button"
-              aria-pressed={boardShape === shape}
-              aria-label={`${text.controls.boardShape}: ${text.controls.shapes[shape]}`}
-              onclick={() => handleShapeChange(shape)}
-            >
-              {text.controls.shapes[shape]}
+      <section class="framework-playground__controls" aria-label={text.controls.actionPanel}>
+        {#if currentPhase.name === 'scaffold'}
+          <div class="framework-playground__controls-inner">
+            <div class="framework-playground__control-row">
+              <span class="framework-playground__control-caption">{text.controls.boardShape}</span>
+              <div class="framework-playground__shape-nav">
+                <button
+                  class="framework-playground__control-btn"
+                  type="button"
+                  aria-label={locale === 'pl' ? 'Poprzedni kształt planszy' : 'Previous board shape'}
+                  onclick={() => shiftBoardShape(-1)}
+                >
+                  &lt;
+                </button>
+                <span class="framework-playground__shape-label">{boardShapeLabel}</span>
+                <button
+                  class="framework-playground__control-btn"
+                  type="button"
+                  aria-label={locale === 'pl' ? 'Następny kształt planszy' : 'Next board shape'}
+                  onclick={() => shiftBoardShape(1)}
+                >
+                  &gt;
+                </button>
+              </div>
+            </div>
+            <div class="framework-playground__control-note">
+              {locale === 'pl'
+                ? 'Najpierw blokujemy granicę. Gęstość rowków należy do Workflow.'
+                : 'Lock the boundary first. Groove density belongs to Workflow.'}
+            </div>
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.scaffold}
             </button>
-          {/each}
-        </div>
-
-        <label class="framework-playground__control">
-          <span class="framework-playground__control-copy">
-            <span>{text.controls.density}</span>
-            <strong>{grooveDensity.toFixed(1)}</strong>
-          </span>
-          <input
-            type="range"
-            min="0.5"
-            max="2"
-            step="0.1"
-            value={grooveDensity}
-            aria-label={text.controls.density}
-            style={`--range-pct:${densityPercent}%`}
-            oninput={handleDensityInput}
-          />
-        </label>
-
-        <label class="framework-playground__control">
-          <span class="framework-playground__control-copy">
-            <span>{text.controls.operators}</span>
-            <strong>{operatorCount}</strong>
-          </span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            step="1"
-            value={operatorCount}
-            aria-label={text.controls.operators}
-            style={`--range-pct:${operatorPercent}%`}
-            oninput={handleOperatorInput}
-          />
-        </label>
-
-        <label class="framework-playground__control">
-          <span class="framework-playground__control-copy">
-            <span>{text.controls.grooves}</span>
-            <strong>{visibleSlotCount}</strong>
-          </span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            step="1"
-            value={hydrateBatchSize}
-            aria-label={`${text.controls.grooves}: ${text.controls.metrics.grooves}`}
-            style={`--range-pct:${hydratePercent}%`}
-            oninput={handleHydrateInput}
-          />
-        </label>
-
-        <div class="framework-playground__actions">
-          <button
-            class="framework-playground__action-btn framework-playground__action-btn--muted"
-            type="button"
-            aria-label={text.controls.buttons.spawnOperators}
-            onclick={spawnOperatorBatch}
-          >
-            {text.controls.buttons.spawnOperators}
-          </button>
-          <button
-            class="framework-playground__action-btn"
-            type="button"
-            aria-label={text.controls.buttons.runConvergence}
-            disabled={convergenceRunning}
-            onclick={runConvergence}
-          >
-            {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
-          </button>
-          <button class="framework-playground__action-btn framework-playground__action-btn--muted" type="button" onclick={runPhaseAction}>
-            {phaseActionLabel}
-          </button>
-          <button class="framework-playground__action-btn framework-playground__action-btn--ghost" type="button" onclick={goToNextPhase}>
-            {nextPhaseLabel}
-          </button>
-        </div>
+          </div>
+        {:else if currentPhase.name === 'init'}
+          <div class="framework-playground__controls-inner">
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.init}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'workflow'}
+          <div class="framework-playground__controls-inner">
+            <label class="framework-playground__control">
+              <span class="framework-playground__control-caption">
+                {text.controls.density}: {grooveDensity.toFixed(1)} · {text.controls.metrics.grooves}: {visibleSlotCount}
+              </span>
+              <input
+                type="range"
+                min="0.5"
+                max="2"
+                step="0.1"
+                value={grooveDensity}
+                aria-label={text.controls.density}
+                style={`--range-pct:${densityPercent}%`}
+                oninput={handleDensityInput}
+              />
+            </label>
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.workflow}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'marbles'}
+          <div class="framework-playground__controls-inner">
+            <label class="framework-playground__control">
+              <span class="framework-playground__control-caption">
+                {text.controls.operators}: {operatorCount}
+              </span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={operatorCount}
+                aria-label={text.controls.operators}
+                style={`--range-pct:${operatorPercent}%`}
+                oninput={handleOperatorInput}
+              />
+            </label>
+            <button
+              class="framework-playground__action-btn framework-playground__action-btn--muted"
+              type="button"
+              aria-label={text.controls.buttons.spawnOperators}
+              onclick={spawnOperatorBatch}
+            >
+              {text.controls.buttons.spawnOperators}
+            </button>
+            <button
+              class="framework-playground__action-btn"
+              type="button"
+              aria-label={text.controls.buttons.runConvergence}
+              disabled={convergenceRunning}
+              onclick={runConvergence}
+            >
+              {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'followup'}
+          <div class="framework-playground__controls-inner">
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.followup}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'dou'}
+          <div class="framework-playground__controls-inner">
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.dou}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'decorate'}
+          <div class="framework-playground__controls-inner">
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.decorate}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'hydrate'}
+          <div class="framework-playground__controls-inner">
+            <label class="framework-playground__control">
+              <span class="framework-playground__control-caption">
+                {text.controls.precisionFill}: {hydrateBatchSize}
+              </span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="1"
+                value={hydrateBatchSize}
+                aria-label={text.controls.precisionFill}
+                style={`--range-pct:${hydratePercent}%`}
+                oninput={handleHydrateInput}
+              />
+            </label>
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.hydrate}
+            </button>
+          </div>
+        {:else if currentPhase.name === 'release'}
+          <div class="framework-playground__controls-inner">
+            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
+              {text.controls.buttons.phaseAction.release}
+            </button>
+          </div>
+        {/if}
       </section>
 
-      <section class="framework-playground__panel framework-playground__panel--alerts">
-        <p class="framework-playground__side-kicker">{text.controls.alerts}</p>
-        <div class="framework-playground__alert-grid">
-          <article class="framework-playground__alert-card" class:is-active={currentPhase.name === 'dou' || douBlockers > 0}>
-            <span class="framework-playground__alert-title">{text.alerts.dou.title}</span>
-            <strong class="framework-playground__alert-count">{douBlockers}</strong>
-            <p class="framework-playground__alert-copy">{text.alerts.dou.detail}</p>
-          </article>
-          <article
-            class="framework-playground__alert-card framework-playground__alert-card--review"
-            class:is-active={currentPhase.name === 'followup' || reviewWeakFits > 0}
-          >
-            <span class="framework-playground__alert-title">{text.alerts.review.title}</span>
-            <strong class="framework-playground__alert-count">{reviewWeakFits}</strong>
-            <p class="framework-playground__alert-copy">{text.alerts.review.detail}</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="framework-playground__panel framework-playground__panel--rail">
-        <p class="framework-playground__side-kicker">{text.choosePhase}</p>
-        <div class="framework-playground__rail" role="tablist" aria-label={text.choosePhase}>
+      <p class="framework-playground__side-kicker">{text.choosePhase}</p>
+      <div class="framework-playground__rail-shell">
+        <div class="framework-playground__rail framework-playground__rail--stack" role="tablist" aria-label={text.choosePhase}>
           {#each phases as phase, index}
             <button
               bind:this={phaseButtons[index]}
@@ -1691,6 +1653,7 @@
               class:is-active={index === currentPhaseIndex}
               class:is-done={index < currentPhaseIndex}
               data-tone={phase.tone}
+              data-tooltip={`${phase.title}. ${phase.description}`}
               type="button"
               role="tab"
               tabindex={index === currentPhaseIndex ? 0 : -1}
@@ -1701,11 +1664,10 @@
               onkeydown={(event) => handlePhaseKeydown(event, index)}
             >
               <span class="framework-playground__chip-label">{phase.label}</span>
-              <span class="framework-playground__chip-detail">{phase.detail}</span>
             </button>
           {/each}
         </div>
-      </section>
+      </div>
     </aside>
   </div>
 
@@ -1715,184 +1677,76 @@
 <style>
   :global(body.framework-page) {
     min-height: 100svh;
-    background:
-      radial-gradient(circle at top left, rgba(184, 115, 51, 0.14), transparent 28%),
-      radial-gradient(circle at top right, rgba(90, 138, 122, 0.16), transparent 22%),
-      linear-gradient(180deg, rgba(14, 14, 17, 1) 0%, rgba(10, 10, 12, 1) 100%);
+    background: linear-gradient(180deg, rgba(14, 14, 17, 1) 0%, rgba(10, 10, 12, 1) 100%);
     background-attachment: scroll;
   }
 
   :global(.framework-page-shell) {
     width: min(1880px, calc(100vw - 0.5rem));
-    min-height: 100svh;
+    height: 100svh;
     margin: 0 auto;
     padding: calc(var(--nav-height) + 0.35rem) 0.25rem 0.25rem;
     display: grid;
     grid-template-rows: minmax(0, 1fr);
+    gap: 0;
+    align-content: start;
   }
 
   .framework-playground {
-    --stage-glow: rgba(184, 115, 51, 0.12);
     width: 100%;
-    min-height: calc(100svh - var(--nav-height) - 0.6rem);
-    border: 1px solid var(--steel-border-soft);
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: clamp(0.95rem, 1.4vw, 1.35rem);
+    padding: clamp(0.9rem, 1.3vw, 1.15rem);
     background:
-      radial-gradient(circle at 16% 18%, rgba(184, 115, 51, 0.09), transparent 28%),
-      radial-gradient(circle at 84% 12%, rgba(90, 138, 122, 0.1), transparent 22%),
-      linear-gradient(180deg, rgba(18, 19, 23, 0.96) 0%, rgba(10, 10, 12, 0.98) 100%);
+      radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.08), transparent 26%),
+      radial-gradient(circle at 82% 12%, rgba(163, 184, 199, 0.08), transparent 24%),
+      linear-gradient(180deg, rgba(18, 19, 23, 0.94) 0%, rgba(10, 10, 12, 0.96) 100%);
     box-shadow: var(--shadow);
     display: grid;
-    gap: clamp(0.95rem, 1.2vw, 1.5rem);
+    gap: 0;
+  }
+
+  .framework-playground__sr-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
-  }
-
-  .framework-playground__meta {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1rem;
-    align-items: start;
-  }
-
-  .framework-playground__meta-copy {
-    display: grid;
-    gap: 0.45rem;
-    max-width: 62rem;
-  }
-
-  .framework-playground__kicker,
-  .framework-playground__press-kicker,
-  .framework-playground__side-kicker,
-  .framework-playground__metric-label {
-    font-family: var(--font-mono);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-  }
-
-  .framework-playground__kicker {
-    color: var(--copper-bright);
-  }
-
-  .framework-playground__heading {
-    margin: 0;
-    font-size: clamp(1.8rem, 3.6vw, 3.2rem);
-    line-height: 1.05;
-  }
-
-  .framework-playground__lede {
-    margin: 0;
-    max-width: 62ch;
-    color: var(--steel-dark);
-    font-size: 0.98rem;
-    line-height: 1.55;
-  }
-
-  .framework-playground__meta-utility {
-    display: grid;
-    gap: 0.6rem;
-  }
-
-  .framework-playground__signal-row,
-  .framework-playground__link-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-  }
-
-  .framework-playground__signal,
-  .framework-playground__meta-link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.05rem;
-    padding: 0.42rem 0.72rem;
-    border-radius: 999px;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border: 1px solid rgba(163, 184, 199, 0.16);
-    background: rgba(9, 10, 12, 0.64);
-    backdrop-filter: blur(10px);
-  }
-
-  .framework-playground__signal {
-    color: var(--steel-edge);
-  }
-
-  .framework-playground__meta-link {
-    color: var(--copper-bright);
-    text-decoration: none;
-    transition:
-      transform 180ms ease,
-      border-color 180ms ease,
-      background 180ms ease,
-      color 180ms ease;
-  }
-
-  .framework-playground__meta-link:hover,
-  .framework-playground__meta-link:focus-visible {
-    transform: translateY(-1px);
-    border-color: rgba(184, 115, 51, 0.36);
-    background: rgba(184, 115, 51, 0.1);
-    outline: none;
-  }
-
-  .framework-playground__meta-link--ghost {
-    color: var(--steel-edge);
-  }
-
-  .framework-playground__metrics {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(8rem, 1fr));
-    gap: 0.7rem;
-    min-width: min(100%, 24rem);
-  }
-
-  .framework-playground__metric-card,
-  .framework-playground__panel {
-    position: relative;
-    border: 1px solid var(--steel-border-soft);
-    border-radius: var(--radius-md);
-    background: rgba(14, 14, 17, 0.68);
-    backdrop-filter: blur(16px) saturate(118%);
-    box-shadow: 0 14px 28px var(--shadow-md), inset 0 1px 0 var(--glass-panel-highlight);
-    overflow: hidden;
-  }
-
-  .framework-playground__metric-card {
-    padding: 0.9rem 1rem;
-    display: grid;
-    gap: 0.3rem;
-  }
-
-  .framework-playground__metric-value {
-    font-size: 1.35rem;
-    color: var(--steel-edge);
-  }
-
-  .framework-playground__metric-label {
-    color: rgba(196, 212, 224, 0.68);
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .framework-playground__body {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1.14fr) minmax(19rem, 27rem);
-    gap: clamp(1rem, 1.35vw, 1.6rem);
+    grid-template-columns: minmax(0, 1fr) clamp(248px, 18vw, 298px);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: clamp(1rem, 1.4vw, 1.8rem);
     align-items: stretch;
+    align-content: stretch;
+    justify-content: center;
+    padding: 0 0.35rem 0 0.65rem;
   }
 
   .framework-playground__board-column {
+    grid-column: 1;
+    grid-row: 2;
     display: flex;
     flex-direction: column;
-    min-height: 0;
     min-width: 0;
-    gap: 0.7rem;
+    min-height: 0;
+    align-self: stretch;
   }
 
   .framework-playground__pressline {
+    grid-column: 1 / -1;
+    grid-row: 1;
     margin: 0;
     display: flex;
     align-items: center;
@@ -1907,6 +1761,10 @@
   }
 
   .framework-playground__press-kicker {
+    font-family: var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.74rem;
     color: var(--patina);
   }
 
@@ -1918,487 +1776,436 @@
 
   .framework-playground__stage {
     position: relative;
-    isolation: isolate;
-    min-height: clamp(26rem, 58svh, 52rem);
+    width: 100%;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--steel-border-soft);
-    overflow: hidden;
-    background:
-      radial-gradient(circle at center, rgba(34, 34, 31, 0.4) 0%, rgba(12, 12, 13, 0.88) 100%),
+    border: 1px solid var(--card-border);
+    background-image:
+      radial-gradient(circle at 50% 50%, rgba(34, 34, 31, 0.4) 0%, rgba(12, 12, 13, 0.85) 100%),
       url('/presence/background-stone.webp');
     background-size: cover;
     background-position: center;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 24px 48px rgba(0, 0, 0, 0.3);
-  }
-
-  .framework-playground__stage::before,
-  .framework-playground__stage::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .framework-playground__stage::before {
-    inset: -12%;
-    background:
-      radial-gradient(circle at 50% 42%, rgba(212, 144, 92, 0.1), transparent 36%),
-      radial-gradient(circle at 22% 74%, rgba(90, 138, 122, 0.08), transparent 22%);
-    opacity: 0.45;
-    transform-origin: center;
-    animation: framework-stage-ambient 8.8s ease-in-out infinite;
-  }
-
-  .framework-playground__stage::after {
-    background: radial-gradient(circle at center, rgba(212, 144, 92, 0.16), transparent 55%);
-    opacity: 0.1;
-    animation: framework-stage-breathe 6.4s ease-in-out infinite;
-    transition: opacity 240ms ease;
-  }
-
-  .framework-playground[data-transitioning="true"] .framework-playground__stage::after {
-    opacity: 0.26;
-    animation-duration: 2.2s;
+    background-blend-mode: multiply;
+    overflow: hidden;
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
   }
 
   .framework-playground__canvas {
-    position: relative;
-    z-index: 1;
     width: 100%;
     height: 100%;
     display: block;
   }
 
-  .framework-playground__ghost-board {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .framework-playground__ghost-ring,
-  .framework-playground__ghost-lattice {
-    position: absolute;
-    inset: 13%;
-    border-radius: 50%;
-  }
-
-  .framework-playground__ghost-ring {
-    border: 1px solid rgba(212, 144, 92, 0.18);
-    box-shadow:
-      0 0 0 1px rgba(196, 212, 224, 0.06),
-      0 0 26px rgba(184, 115, 51, 0.08);
-    opacity: 0.68;
-  }
-
-  .framework-playground__ghost-lattice {
-    inset: 16%;
-    background:
-      radial-gradient(circle, rgba(196, 212, 224, 0.12) 0 23%, transparent 27%) center / clamp(1.8rem, 2.2vw, 2.6rem) clamp(1.8rem, 2.2vw, 2.6rem) repeat;
-    opacity: 0.28;
-    filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.22));
-  }
-
-  .framework-playground__ghost-axis {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: min(68%, 30rem);
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(196, 212, 224, 0.08) 22%, rgba(212, 144, 92, 0.14) 50%, rgba(196, 212, 224, 0.08) 78%, transparent 100%);
-    transform: translate(-50%, -50%);
-    opacity: 0.42;
-  }
-
-  .framework-playground__ghost-axis--vertical {
-    transform: translate(-50%, -50%) rotate(90deg);
-  }
-
-  .framework-playground__stage[data-board-shape="square"] .framework-playground__ghost-ring,
-  .framework-playground__stage[data-board-shape="square"] .framework-playground__ghost-lattice,
-  .framework-playground__stage[data-board-shape="grid"] .framework-playground__ghost-ring,
-  .framework-playground__stage[data-board-shape="grid"] .framework-playground__ghost-lattice {
-    border-radius: calc(var(--radius-md) + 0.2rem);
-  }
-
-  .framework-playground__stage[data-board-shape="hexagon"] .framework-playground__ghost-ring,
-  .framework-playground__stage[data-board-shape="hexagon"] .framework-playground__ghost-lattice {
-    clip-path: polygon(25% 8%, 75% 8%, 94% 50%, 75% 92%, 25% 92%, 6% 50%);
-  }
-
-  .framework-playground__stage[data-board-shape="waves"] .framework-playground__ghost-lattice {
-    clip-path: polygon(0 44%, 12% 38%, 24% 46%, 37% 40%, 50% 48%, 63% 42%, 76% 50%, 88% 44%, 100% 52%, 100% 72%, 0 72%);
-  }
-
-  .framework-playground__stage[data-board-shape="spiral"] .framework-playground__ghost-lattice {
-    background:
-      repeating-radial-gradient(circle at center, rgba(212, 144, 92, 0.14) 0 2px, transparent 2px 18px);
-    opacity: 0.14;
-  }
-
   .framework-playground__overlay {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
-    display: flex;
-    flex-wrap: wrap;
+    top: 1.5rem;
+    left: 1.5rem;
+    display: grid;
     gap: 0.45rem;
-    z-index: 2;
+    min-width: 164px;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background: rgba(8, 9, 11, 0.82);
+    backdrop-filter: var(--blur);
+    box-shadow: var(--shadow);
+    z-index: 5;
   }
 
   .framework-playground__overlay span,
-  .framework-playground__badge,
-  .framework-playground__detail-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    min-height: 2.1rem;
-    padding: 0.45rem 0.8rem;
-    border-radius: 999px;
+  .framework-playground__overlay strong {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border: 1px solid rgba(163, 184, 199, 0.16);
-    background: rgba(9, 10, 12, 0.76);
-    color: var(--steel-edge);
-    backdrop-filter: blur(10px);
   }
 
-  .framework-playground__overlay strong,
-  .framework-playground__badge {
-    color: var(--copper-bright);
+  .framework-playground__overlay span {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--steel);
+    font-size: 0.7rem;
+  }
+
+  .framework-playground__overlay strong {
+    color: var(--stone-light);
+    font-size: 0.88rem;
   }
 
   .framework-playground__prompt {
     position: absolute;
+    left: 1rem;
     right: 1rem;
     bottom: 1rem;
-    max-width: min(100% - 2rem, 32rem);
-    margin: 0;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.85rem 1rem;
-    border-radius: calc(var(--radius-md) + 2px);
-    border: 1px solid rgba(163, 184, 199, 0.16);
-    background: rgba(9, 10, 12, 0.82);
-    color: var(--steel-edge);
+    gap: 0.75rem;
+    width: fit-content;
+    max-width: calc(100% - 2rem);
+    margin: 0;
+    padding: 0.72rem 0.9rem;
+    border: 1px solid rgba(163, 184, 199, 0.14);
+    border-radius: 999px;
+    background: rgba(7, 9, 12, 0.78);
+    color: var(--stone-light);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
-    line-height: 1.45;
-    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(12px);
-    z-index: 2;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
+    z-index: 5;
   }
 
   .framework-playground__prompt-mark {
-    color: var(--patina);
-    flex: 0 0 auto;
+    color: var(--steel-dark);
   }
 
   .framework-playground__prompt-command {
     min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--stone-light);
   }
 
   .framework-playground__side-column {
-    display: grid;
-    gap: 0.85rem;
-    align-content: start;
-    min-width: 0;
-  }
-
-  .framework-playground__panel {
-    padding: 1rem;
-    display: grid;
-    gap: 0.8rem;
-  }
-
-  .framework-playground__panel-head {
+    grid-column: 2;
+    grid-row: 2;
+    width: auto;
+    height: auto;
+    min-height: 0;
     display: flex;
-    justify-content: space-between;
-    gap: 0.6rem;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.85rem;
+    min-width: 0;
+    overflow: visible;
+    padding: 0.15rem 0.15rem 0.15rem 0;
   }
 
   .framework-playground__side-kicker {
     margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: var(--steel-dark);
-  }
-
-  .framework-playground__side-title {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.45;
-    color: var(--steel-edge);
   }
 
   .framework-playground__side-copy {
     margin: 0;
-    color: rgba(196, 212, 224, 0.76);
-    font-size: 0.94rem;
-    line-height: 1.55;
+    color: var(--steel);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    min-height: 2.2rem;
   }
 
-  .framework-playground__detail-pill {
-    width: fit-content;
-    color: var(--steel-edge);
-  }
-
-  .framework-playground__detail-pill[data-tone="copper"] {
-    border-color: rgba(184, 115, 51, 0.28);
-    color: var(--copper-bright);
-  }
-
-  .framework-playground__detail-pill[data-tone="patina"] {
-    border-color: rgba(90, 138, 122, 0.32);
-    color: var(--patina);
-  }
-
-  .framework-playground__detail-pill[data-tone="alert"] {
-    border-color: rgba(224, 85, 68, 0.32);
-    color: #ffb8ae;
-  }
-
-  .framework-playground__shape-grid {
+  .framework-playground__alert-strip {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.45rem;
+    gap: 0.22rem;
   }
 
-  .framework-playground__shape-chip,
-  .framework-playground__action-btn,
-  .framework-playground__chip {
-    appearance: none;
-    border: 1px solid rgba(163, 184, 199, 0.16);
-    background: rgba(163, 184, 199, 0.04);
-    color: var(--steel-edge);
-    transition:
-      transform 180ms ease,
-      border-color 180ms ease,
-      background 180ms ease,
-      color 180ms ease,
-      box-shadow 180ms ease;
-  }
-
-  .framework-playground__shape-chip {
-    min-height: 2.45rem;
-    border-radius: calc(var(--radius-sm) + 4px);
-    padding: 0.55rem 0.7rem;
+  .framework-playground__alert-line {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid rgba(163, 184, 199, 0.16);
+    color: var(--steel-dark);
     font-family: var(--font-mono);
     font-size: 0.69rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
-  .framework-playground__shape-chip.is-active,
-  .framework-playground__shape-chip:hover,
-  .framework-playground__shape-chip:focus-visible {
-    border-color: rgba(184, 115, 51, 0.36);
-    background: rgba(184, 115, 51, 0.12);
+  .framework-playground__alert-line strong {
+    color: var(--stone-light);
+    font-size: 0.78rem;
+  }
+
+  .framework-playground__alert-line[data-alert="dou"][data-active="true"] {
+    border-left-color: rgba(224, 85, 68, 0.78);
+    color: #ffb8ae;
+  }
+
+  .framework-playground__alert-line[data-alert="review"][data-active="true"] {
+    border-left-color: rgba(184, 115, 51, 0.68);
     color: var(--copper-bright);
-    box-shadow: 0 12px 28px rgba(184, 115, 51, 0.12);
-    transform: translateY(-1px);
-    outline: none;
+  }
+
+  .framework-playground__controls {
+    margin-top: 0;
+    min-width: 0;
+  }
+
+  .framework-playground__controls-inner {
+    display: grid;
+    gap: 0.72rem;
+    padding: 0.35rem 0 0.15rem;
   }
 
   .framework-playground__control {
     display: grid;
-    gap: 0.45rem;
+    gap: 0.35rem;
   }
 
-  .framework-playground__control-copy {
+  .framework-playground__control-row {
     display: flex;
-    justify-content: space-between;
-    gap: 0.65rem;
     align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .framework-playground__control-caption {
     color: var(--steel-edge);
-    font-size: 0.82rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
-  .framework-playground__control-copy span {
+  .framework-playground__control-note {
     color: var(--steel-dark);
+    font-size: 0.8rem;
+    line-height: 1.4;
   }
 
-  .framework-playground__control input[type="range"] {
-    appearance: none;
-    width: 100%;
-    height: 0.42rem;
-    border-radius: 999px;
-    background:
-      linear-gradient(90deg, var(--copper) 0%, var(--copper-bright) var(--range-pct), rgba(163, 184, 199, 0.14) var(--range-pct), rgba(163, 184, 199, 0.14) 100%);
+  .framework-playground__shape-nav {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .framework-playground__shape-label {
+    min-width: 5rem;
+    color: var(--stone-light);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .framework-playground__control-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    background: rgba(163, 184, 199, 0.05);
+    color: var(--stone-light);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .framework-playground__control-btn:hover,
+  .framework-playground__control-btn:focus-visible {
+    border-color: var(--copper-bright);
+    background: rgba(184, 115, 51, 0.15);
+    color: var(--copper-bright);
+    box-shadow: 0 0 15px rgba(184, 115, 51, 0.2);
     outline: none;
+  }
+
+  .framework-playground__controls-inner input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+      to right,
+      var(--copper-bright) 0%,
+      var(--copper-bright) var(--range-pct, 0%),
+      rgba(163, 184, 199, 0.14) var(--range-pct, 0%),
+      rgba(163, 184, 199, 0.14) 100%
+    );
+    border-radius: 999px;
+    outline: none;
+    margin: 0.6rem 0;
     cursor: pointer;
   }
 
-  .framework-playground__control input[type="range"]::-webkit-slider-thumb {
+  .framework-playground__controls-inner input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
     appearance: none;
-    width: 1rem;
-    height: 1rem;
+    width: 16px;
+    height: 16px;
+    background: var(--stone-light);
+    border: 3px solid var(--copper-bright);
     border-radius: 50%;
-    border: 2px solid rgba(9, 10, 12, 0.92);
-    background: var(--steel-edge);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(184, 115, 51, 0.6);
+    transition: transform 0.1s ease;
   }
 
-  .framework-playground__control input[type="range"]::-moz-range-thumb {
-    width: 1rem;
-    height: 1rem;
-    border-radius: 50%;
-    border: 2px solid rgba(9, 10, 12, 0.92);
-    background: var(--steel-edge);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  .framework-playground__controls-inner input[type="range"]:active::-webkit-slider-thumb {
+    transform: scale(1.2);
   }
 
-  .framework-playground__actions {
-    display: grid;
-    gap: 0.55rem;
+  .framework-playground__controls-inner input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--copper-bright);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 10px rgba(184, 115, 51, 0.4);
   }
 
   .framework-playground__action-btn {
-    min-height: 2.75rem;
-    border-radius: calc(var(--radius-sm) + 6px);
-    padding: 0.7rem 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.72rem 0.95rem;
+    border: 1px solid rgba(184, 115, 51, 0.4);
+    border-radius: var(--radius-md);
+    background: rgba(184, 115, 51, 0.1);
+    color: var(--copper-bright);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-  }
-
-  .framework-playground__action-btn:hover,
-  .framework-playground__action-btn:focus-visible,
-  .framework-playground__chip:hover,
-  .framework-playground__chip:focus-visible {
-    transform: translateY(-1px);
-    border-color: rgba(184, 115, 51, 0.34);
-    background: rgba(184, 115, 51, 0.1);
-    color: var(--copper-bright);
-    outline: none;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
   }
 
   .framework-playground__action-btn:disabled {
     opacity: 0.56;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
   }
 
-  .framework-playground__action-btn:not(.framework-playground__action-btn--muted):not(.framework-playground__action-btn--ghost) {
-    border-color: rgba(184, 115, 51, 0.28);
-    background: linear-gradient(135deg, rgba(184, 115, 51, 0.14), rgba(212, 144, 92, 0.08));
-    color: var(--copper-bright);
-  }
-
-  .framework-playground__action-btn--ghost {
-    border-style: dashed;
-  }
-
-  .framework-playground__alert-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.6rem;
-  }
-
-  .framework-playground__alert-card {
-    border-radius: calc(var(--radius-sm) + 4px);
-    border: 1px solid rgba(224, 85, 68, 0.14);
-    background: rgba(224, 85, 68, 0.05);
-    padding: 0.8rem;
-    display: grid;
-    gap: 0.28rem;
-  }
-
-  .framework-playground__alert-card--review {
-    border-color: rgba(163, 184, 199, 0.16);
-    background: rgba(163, 184, 199, 0.05);
-  }
-
-  .framework-playground__alert-card.is-active {
-    border-color: rgba(224, 85, 68, 0.34);
-    box-shadow: inset 0 0 0 1px rgba(224, 85, 68, 0.14);
-  }
-
-  .framework-playground__alert-card--review.is-active {
-    border-color: rgba(184, 115, 51, 0.34);
-    box-shadow: inset 0 0 0 1px rgba(184, 115, 51, 0.12);
-  }
-
-  .framework-playground__alert-title {
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--steel-dark);
-  }
-
-  .framework-playground__alert-count {
-    font-size: 1.55rem;
+  .framework-playground__action-btn--muted {
+    border-color: rgba(163, 184, 199, 0.18);
+    background: rgba(163, 184, 199, 0.08);
     color: var(--steel-edge);
   }
 
-  .framework-playground__alert-copy {
-    margin: 0;
-    color: var(--steel-dark);
-    font-size: 0.82rem;
-    line-height: 1.45;
+  .framework-playground__action-btn--muted:hover,
+  .framework-playground__action-btn--muted:focus-visible {
+    border-color: rgba(163, 184, 199, 0.3);
+    background: rgba(163, 184, 199, 0.12);
+    box-shadow: 0 4px 20px rgba(163, 184, 199, 0.12);
+    outline: none;
+  }
+
+  .framework-playground__action-btn:hover,
+  .framework-playground__action-btn:focus-visible {
+    border-color: var(--copper-bright);
+    background: rgba(184, 115, 51, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(184, 115, 51, 0.2);
+    outline: none;
+  }
+
+  .framework-playground__rail-shell {
+    position: relative;
+    width: 100%;
+    min-width: 0;
   }
 
   .framework-playground__rail {
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    padding: 0.15rem 0 0.35rem;
+  }
+
+  .framework-playground__rail--stack {
     display: grid;
-    gap: 0.55rem;
+    grid-template-columns: 1fr;
+    gap: 0.08rem;
   }
 
   .framework-playground__chip {
-    width: 100%;
-    text-align: left;
-    border-radius: calc(var(--radius-sm) + 6px);
-    padding: 0.75rem 0.85rem;
-    display: grid;
-    gap: 0.2rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    padding: 0.34rem 0 0.34rem 0.75rem;
+    border: 0;
+    border-left: 1px solid rgba(163, 184, 199, 0.16);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--stone-light);
     cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+
+  .framework-playground__chip:hover,
+  .framework-playground__chip:focus-visible {
+    border-left-color: rgba(184, 115, 51, 0.36);
+    background: transparent;
+    outline: none;
   }
 
   .framework-playground__chip.is-active {
-    border-color: rgba(184, 115, 51, 0.34);
-    background: rgba(184, 115, 51, 0.12);
+    border-left-color: rgba(184, 115, 51, 0.78);
+    background: transparent;
     color: var(--copper-bright);
-    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.16);
   }
 
   .framework-playground__chip.is-done {
-    border-color: rgba(90, 138, 122, 0.3);
-    background: rgba(90, 138, 122, 0.12);
+    border-left-color: rgba(90, 138, 122, 0.3);
   }
 
   .framework-playground__chip[data-tone="patina"].is-active {
-    border-color: rgba(90, 138, 122, 0.34);
-    background: rgba(90, 138, 122, 0.12);
+    border-left-color: rgba(90, 138, 122, 0.72);
     color: var(--patina);
   }
 
   .framework-playground__chip[data-tone="alert"].is-active {
-    border-color: rgba(224, 85, 68, 0.38);
-    background: rgba(224, 85, 68, 0.12);
+    border-left-color: rgba(224, 85, 68, 0.78);
     color: #ffb8ae;
   }
 
   .framework-playground__chip-label {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
+    font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
+    font-size: 0.71rem;
+    letter-spacing: 0.07em;
+    line-height: 1;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  .framework-playground__chip-detail {
-    color: rgba(196, 212, 224, 0.72);
-    font-size: 0.77rem;
-    line-height: 1.4;
+  .framework-playground__chip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: calc(100% + 0.8rem);
+    top: 50%;
+    transform: translate(0.35rem, -50%);
+    width: 240px;
+    padding: 0.72rem 0.82rem;
+    border: 1px solid rgba(163, 184, 199, 0.16);
+    border-radius: 14px;
+    background: rgba(9, 10, 13, 0.88);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    color: var(--stone-light);
+    font-family: var(--font-head);
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    transition: opacity 0.18s ease, transform 0.18s ease;
   }
 
   .framework-playground__sr-only {
@@ -2413,57 +2220,144 @@
     border: 0;
   }
 
-  @media (max-width: 1100px) {
-    .framework-playground__meta,
-    .framework-playground__body {
-      grid-template-columns: minmax(0, 1fr);
+  .framework-playground__chip:hover::after,
+  .framework-playground__chip:focus-visible::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  @media (max-width: 960px) {
+    :global(.framework-page-shell) {
+      width: min(100vw - 0.5rem, 1880px);
+      height: auto;
+      min-height: 100svh;
+      padding: calc(var(--nav-height) + 0.35rem) 0.25rem 0.5rem;
     }
 
-    .framework-playground__metrics {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .framework-playground__body {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 1rem;
+      padding: 0;
+    }
+
+    .framework-playground__pressline,
+    .framework-playground__board-column,
+    .framework-playground__side-column {
+      grid-column: 1;
+    }
+
+    .framework-playground__pressline {
+      grid-row: 1;
+    }
+
+    .framework-playground__board-column {
+      grid-row: 2;
     }
 
     .framework-playground__stage {
-      min-height: 25rem;
+      height: auto;
+      min-height: clamp(500px, 64vh, 760px);
+    }
+
+    .framework-playground__side-column {
+      grid-row: 3;
+      padding: 0;
+    }
+
+    .framework-playground__rail--stack {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    .framework-playground__chip {
+      min-height: 2.65rem;
+      padding: 0.65rem 0.75rem;
+      justify-content: center;
+      border: 1px solid rgba(163, 184, 199, 0.12);
+      border-radius: var(--radius-md);
+      background: rgba(17, 18, 22, 0.82);
+    }
+
+    .framework-playground__chip:hover {
+      border-color: rgba(184, 115, 51, 0.28);
+    }
+
+    .framework-playground__chip.is-active {
+      background: rgba(27, 20, 15, 0.92);
+      box-shadow: 0 0 0 1px rgba(184, 115, 51, 0.18);
+    }
+
+    .framework-playground__chip::after {
+      left: 50%;
+      right: auto;
+      width: max-content;
+      max-width: min(26rem, 44vw);
+      transform: translate(-50%, 0.35rem);
+    }
+
+    .framework-playground__chip:hover::after,
+    .framework-playground__chip:focus-visible::after {
+      transform: translate(-50%, 0);
     }
   }
 
-  @media (max-width: 720px) {
+  @media (max-width: 640px) {
     :global(.framework-page-shell) {
-      width: min(100vw, calc(100vw - 0.25rem));
-      padding-inline: 0.125rem;
+      width: min(100vw - 0.4rem, 1880px);
+      padding: calc(var(--nav-height) + 0.25rem) 0.2rem 0.35rem;
     }
 
     .framework-playground {
-      min-height: calc(100svh - var(--nav-height) - 0.25rem);
       padding: 0.8rem;
-      border-radius: calc(var(--radius-lg) - 4px);
-    }
-
-    .framework-playground__metrics,
-    .framework-playground__alert-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .framework-playground__shape-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .framework-playground__overlay {
-      inset: 0.75rem 0.75rem auto 0.75rem;
+      left: auto;
+      right: 0.8rem;
+      min-width: 134px;
     }
 
     .framework-playground__prompt {
-      right: 0.75rem;
-      left: 0.75rem;
+      left: 0.8rem;
+      right: 0.8rem;
+      width: auto;
+    }
+
+    .framework-playground__rail {
+      gap: 0.38rem;
+    }
+
+    .framework-playground__rail--stack {
+      grid-template-columns: 1fr;
+    }
+
+    .framework-playground__chip {
+      min-height: 2.4rem;
+      padding: 0.42rem 0.5rem;
+    }
+
+    .framework-playground__chip-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    .framework-playground__chip::after {
+      left: 0;
+      right: 0;
+      bottom: calc(100% + 0.55rem);
+      transform: translate(0, 0.35rem);
+      width: auto;
       max-width: none;
-      font-size: 0.7rem;
+    }
+
+    .framework-playground__chip:hover::after,
+    .framework-playground__chip:focus-visible::after {
+      transform: translate(0, 0);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .framework-playground__stage::before,
-    .framework-playground__stage::after,
     .framework-playground *,
     .framework-playground *::before,
     .framework-playground *::after {
@@ -2471,32 +2365,6 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
-    }
-  }
-
-  @keyframes framework-stage-ambient {
-    0%,
-    100% {
-      opacity: 0.24;
-      transform: scale(0.98) translate3d(-1.5%, -1%, 0);
-    }
-
-    50% {
-      opacity: 0.54;
-      transform: scale(1.04) translate3d(1.5%, 1%, 0);
-    }
-  }
-
-  @keyframes framework-stage-breathe {
-    0%,
-    100% {
-      opacity: 0.08;
-      transform: scale(0.96);
-    }
-
-    50% {
-      opacity: 0.18;
-      transform: scale(1.03);
     }
   }
 </style>

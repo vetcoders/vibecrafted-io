@@ -14,7 +14,7 @@ interface Props {
   ogType?: string;
 }
 
-const { title, description = "A convergence-driven system for shipping software with AI agents.", lang = "en", ogImage = "/presence/og-image.png", ogType = "website" } = Astro.props;
+const { title, description = "Release engine for AI-built software. Ship AI-built software without the vibe hangover.", lang = "en", ogImage = "/presence/og-image.png", ogType = "website" } = Astro.props;
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? "https://vibecrafted.io";
 
@@ -283,8 +283,8 @@ const contentSecurityPolicy = [
     </div>
 
     <div class="curl-banner" id="get">
-        <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash</code>
-        <CopyButton client:visible class="cb-copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash" defaultLabel={isPl ? 'Kopiuj' : 'Copy'} copiedLabel={isPl ? 'Skopiowano!' : 'Copied!'} />
+        <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code>
+        <CopyButton client:visible class="cb-copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui" defaultLabel={isPl ? 'Kopiuj' : 'Copy'} copiedLabel={isPl ? 'Skopiowano!' : 'Copied!'} />
     </div>
 
     <main class="shell" id="main-content">

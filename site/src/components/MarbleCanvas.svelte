@@ -13,7 +13,7 @@
   // ── i18n labels (derived from prop, no DOM sniffing) ───────────────
   let labels = $derived(
     lang === 'pl'
-      ? { marbles: 'Kulki', converge: 'Zbieżność' }
+      ? { marbles: 'Marbles', converge: 'Konwergencja' }
       : { marbles: 'Marbles', converge: 'Converge' }
   );
 

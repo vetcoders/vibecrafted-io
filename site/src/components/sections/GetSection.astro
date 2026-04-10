@@ -9,13 +9,13 @@ const { lang } = Astro.props;
             <>
             <div class="section-label">Get 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</div>
             <h2 class="section-title">Install the framework. Start the loop.</h2>
-            <p class="section-sub">Bootstrap the control plane, verify your local surface, and enter the first founder-grade workflow with the new command deck.</p>
+            <p class="section-sub">Bootstrap the control plane, open the guided installer, verify your local surface, and enter the first founder-grade workflow with the new command deck.</p>
             </>
         ) : (
             <>
             <div class="section-label">Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</div>
             <h2 class="section-title">Zainstaluj framework. Uruchom pętlę.</h2>
-            <p class="section-sub">Zbootstrapuj control plane, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow klasy założycielskiej z nowym command deckiem.</p>
+            <p class="section-sub">Zbootstrapuj control plane, otwórz guided installer, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow klasy założycielskiej z nowym command deckiem.</p>
             </>
         )}
         <div class="docs-grid docs-grid--steps">
@@ -25,20 +25,20 @@ const { lang } = Astro.props;
                     {lang === 'en' ? (
                         <>
                         <h3>Bootstrap the control plane</h3>
-                        <p>Stage the framework locally and let the installer walk through the real environment before it touches the system.</p>
+                        <p>Stage the framework locally and open the guided installer so a founder-grade operator can see the machine truth before anything touches the system.</p>
                         </>
                     ) : (
                         <>
                         <h3>Zbootstrapuj control plane</h3>
-                        <p>Zainstaluj framework lokalnie i pozwól instalatorowi przejść przez realne środowisko, zanim dotknie systemu.</p>
+                        <p>Zainstaluj framework lokalnie i otwórz guided installer, żeby operator klasy founder zobaczył prawdę o maszynie, zanim cokolwiek dotknie systemu.</p>
                         </>
                     )}
                 </div>
                 <div class="docs-card__command docs-card__command--bar">
                     <div class="install-command-bar">
                         <span class="install-command-bar__prompt">$</span>
-                        <code class="install-command-bar__code">curl -fsSL https://vibecrafted.io/install.sh | bash</code>
-                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash" defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
+                        <code class="install-command-bar__code">curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code>
+                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui" defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
                     </div>
                 </div>
             </article>
