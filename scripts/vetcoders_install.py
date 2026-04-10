@@ -42,6 +42,7 @@ try:
     )
     from runtime_paths import (
         read_version_file,
+        start_here_path,
         xdg_config_home,
         vibecrafted_home,
     )
@@ -59,6 +60,7 @@ except (
     )
     from scripts.runtime_paths import (
         read_version_file,
+        start_here_path,
         xdg_config_home,
         vibecrafted_home,
     )
@@ -354,7 +356,6 @@ SYMLINK_TARGET_CHOICES = [*SYMLINK_TARGETS, "gemini"]
 # ---------------------------------------------------------------------------
 
 STATE_FILE = ".vc-install.json"
-START_HERE_FILE = "START_HERE.md"
 
 
 @dataclass
@@ -392,10 +393,6 @@ class InstallState:
         state_file = store_path / STATE_FILE
         state_file.parent.mkdir(parents=True, exist_ok=True)
         state_file.write_text(json.dumps(asdict(self), indent=2) + "\n")
-
-
-def start_here_path() -> Path:
-    return vibecrafted_home() / START_HERE_FILE
 
 
 def _doctor_totals(findings: Sequence["DoctorFinding"]) -> Tuple[int, int, int]:

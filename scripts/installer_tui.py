@@ -3,14 +3,21 @@ from __future__ import annotations
 
 import contextlib
 import queue
-import select
 import shutil
 import subprocess
 import sys
-import termios
 import textwrap
 import threading
-import tty
+
+# Unix-only terminal modules — guarded for Windows portability
+try:
+    import select
+    import termios
+    import tty
+
+    _HAS_UNIX_TERMINAL = True
+except ImportError:  # pragma: no cover - Windows
+    _HAS_UNIX_TERMINAL = False
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
@@ -27,6 +34,7 @@ try:
     )
     from runtime_paths import (
         read_version_file,
+        start_here_path,
         xdg_config_home,
         vibecrafted_home,
     )
@@ -44,6 +52,7 @@ except (
     )
     from scripts.runtime_paths import (
         read_version_file,
+        start_here_path,
         xdg_config_home,
         vibecrafted_home,
     )
@@ -100,10 +109,6 @@ def helper_layer_path() -> Path:
 
 def install_log_path() -> Path:
     return vibecrafted_home() / "install.log"
-
-
-def start_here_path() -> Path:
-    return vibecrafted_home() / "START_HERE.md"
 
 
 def runtime_skill_views() -> dict[str, Path]:
@@ -535,7 +540,7 @@ def handle_key(state: InstallerState, key: str | None) -> InstallerState:
 
 @contextlib.contextmanager
 def raw_terminal_mode(enabled: bool):
-    if not enabled:
+    if not enabled or not _HAS_UNIX_TERMINAL:
         yield
         return
 
@@ -549,7 +554,7 @@ def raw_terminal_mode(enabled: bool):
 
 
 def read_key(timeout: float = READ_KEY_TIMEOUT) -> str | None:
-    if not sys.stdin.isatty():
+    if not sys.stdin.isatty() or not _HAS_UNIX_TERMINAL:
         return None
 
     ready, _, _ = select.select([sys.stdin], [], [], timeout)

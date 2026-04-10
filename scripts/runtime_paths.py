@@ -25,4 +25,15 @@ def xdg_config_home() -> Path:
 def vibecrafted_home() -> Path:
     if "VIBECRAFTED_HOME" in os.environ and os.environ["VIBECRAFTED_HOME"]:
         return Path(os.environ["VIBECRAFTED_HOME"]).expanduser()
+    # Match shell scripts: VIBECRAFTED_ROOT/.vibecrafted as fallback
+    vibecrafted_root = os.environ.get("VIBECRAFTED_ROOT", "")
+    if vibecrafted_root:
+        return Path(vibecrafted_root).expanduser() / ".vibecrafted"
     return Path.home() / ".vibecrafted"
+
+
+START_HERE_FILE = "START_HERE.md"
+
+
+def start_here_path() -> Path:
+    return vibecrafted_home() / START_HERE_FILE
