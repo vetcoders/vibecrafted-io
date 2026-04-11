@@ -1,86 +1,24 @@
 ---
-const { lang } = Astro.props;
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const section = getTranslations(lang).sections.foundation;
 ---
 <section class="runtime-view">
     <div class="container fade-up">
-        {lang === 'en' ? (
-            <>
-            <div class="section-label">Runtime Foundations</div>
-            <h2 class="section-title">The substrate beneath the framework.</h2>
-            <p class="section-sub">The tooling that keeps frontier agents anchored to repo truth, instead of their own hallucinations.</p>
-            </>
-        ) : (
-            <>
-            <div class="section-label">Fundamenty runtime</div>
-            <h2 class="section-title">Substrat pod frameworkiem.</h2>
-            <p class="section-sub">Narzędzia, które trzymają agentów zakotwiczonych w prawdzie repo, zamiast w ich własnych halucynacjach.</p>
-            </>
-        )}
+        <div class="section-label">{section.label}</div>
+        <h2 class="section-title">{section.title}</h2>
+        <p class="section-sub">{section.sub}</p>
         <div class="foundation-grid">
-            <a class="foundation-card" href="https://loct.io">
-                <div class="foundation-icon foundation-icon--steel">01</div>
-                <h3>loctree</h3>
-                {lang === 'en' ? (
-                    <>
-                    <p class="foundation-role">Perception Engine</p>
-                    <p>AST-augmented architectural memory. The eyes for every agent &mdash; forces LLMs to see the full repo structure before modifying a single file.</p>
-                    </>
-                ) : (
-                    <>
-                    <p class="foundation-role">Silnik percepcji</p>
-                    <p>Pamięć architektoniczna wzbogacona AST. Oczy każdego agenta &mdash; zmusza LLM-y do zobaczenia pełnej struktury repo przed modyfikacją jakiegokolwiek pliku.</p>
-                    </>
-                )}
-                <span class="foundation-link">loct.io</span>
-            </a>
-            <a class="foundation-card" href="https://github.com/VetCoders/ai-contexters">
-                <div class="foundation-icon foundation-icon--copper">02</div>
-                <h3>aicx-mcp</h3>
-                {lang === 'en' ? (
-                    <>
-                    <p class="foundation-role">History Retrieval</p>
-                    <p>Indexes decisions, intents, and outcomes from every AI session. Agents retrieve what was decided and why, ensuring session-to-session continuity.</p>
-                    </>
-                ) : (
-                    <>
-                    <p class="foundation-role">Odzyskiwanie historii</p>
-                    <p>Indeksuje decyzje, intencje i wyniki z każdej sesji AI. Agenci odzyskują co zdecydowano i dlaczego, zapewniając ciągłość między sesjami.</p>
-                    </>
-                )}
-                <span class="foundation-link">github.com/VetCoders/ai-contexters</span>
-            </a>
-            <a class="foundation-card" href="https://github.com/VetCoders/prview">
-                <div class="foundation-icon foundation-icon--patina">03</div>
-                <h3>prview</h3>
-                {lang === 'en' ? (
-                    <>
-                    <p class="foundation-role">Audit &amp; Quality Gate</p>
-                    <p>Generates durable PR review packs with line-level findings. The merge gate that turns terminal dumps into actual artifacts.</p>
-                    </>
-                ) : (
-                    <>
-                    <p class="foundation-role">Audyt i bramka jakości</p>
-                    <p>Generuje trwałe paczki review PR z findingami na poziomie linii. Bramka merge, która zamienia zrzuty terminala w rzeczywiste artefakty.</p>
-                    </>
-                )}
-                <span class="foundation-link">github.com/VetCoders/prview</span>
-            </a>
-            <a class="foundation-card" href="https://github.com/VetCoders/screenscribe">
-                <div class="foundation-icon foundation-icon--muted">04</div>
-                <h3>ScreenScribe</h3>
-                {lang === 'en' ? (
-                    <>
-                    <p class="foundation-role">Visual Reviewer</p>
-                    <p>Turns narrated screencasts into structured engineering findings. The orchestrator's eye on the real product surface.</p>
-                    </>
-                ) : (
-                    <>
-                    <p class="foundation-role">Wizualny recenzent</p>
-                    <p>Zamienia nagrane screencasty w ustrukturyzowane findingi inżynierskie. Oko orkiestratora na rzeczywistą powierzchnię produktu.</p>
-                    </>
-                )}
-                <span class="foundation-link">github.com/VetCoders/screenscribe</span>
-            </a>
+            {section.cards.map((card) => (
+                <a class="foundation-card" href={card.href}>
+                    <div class={card.iconClass}>{card.number}</div>
+                    <h3>{card.name}</h3>
+                    <p class="foundation-role">{card.role}</p>
+                    <p>{card.body}</p>
+                    <span class="foundation-link">{card.linkLabel}</span>
+                </a>
+            ))}
         </div>
     </div>
 </section>

@@ -1,154 +1,42 @@
---- 
+---
 import CopyButton from '../../components/CopyButton.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
-const { lang } = Astro.props;
+const { lang } = Astro.props as { lang: Lang };
+const dict = getTranslations(lang);
+const section = dict.sections.quickstartSteps;
+const copyButton = dict.copyButton;
 ---
 <section class="fade-up">
     <div class="docs-grid docs-grid--steps">
-        {lang === 'en' ? (
-            <>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 1</p>
-                <h3>Install the framework</h3>
-                <p>Use the public guided bootstrap path. It stages a local snapshot under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code>, opens the browser installer, and keeps the same install truth as automation.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui" copiedLabel="Copied!" />
-                    <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code></pre>
-                </div>
-                <p class="docs-note">Use the direct <code>| bash</code> path only when you already want compact automation instead of the guided kickoff.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 2</p>
-                <h3>Run the doctor</h3>
-                <p>Check the staged control plane, shell helpers, and optional foundations before you blame the workflow.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy="vibecrafted doctor" copiedLabel="Copied!" />
-                    <pre><code>vibecrafted doctor</code></pre>
-                </div>
-                <p class="docs-note">If something is yellow, the doctor tells you what is missing instead of leaving you to guess.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 3</p>
-                <h3>Bootstrap context inside a real repo</h3>
-                <p>Move into the project you actually care about, then give the agent the prompt that forces context gathering before edits.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`cd $VIBECRAFTED_ROOT/your-project\nvibecrafted init claude`} copiedLabel="Copied!" />
-                    <pre><code>cd $VIBECRAFTED_ROOT/your-project
-vibecrafted init claude</code></pre>
-                </div>
-                <p class="docs-note"><code>vibecrafted init</code> is the main front door. It reads history, maps structure, and runs quality gates before implementation starts.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 4</p>
-                <h3>Hand over a real task</h3>
-                <p>Once the context is anchored, run the full delivery path or a narrower workflow depending on how much control you want.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy='vibecrafted justdo codex --prompt "Add user authentication with JWT"' copiedLabel="Copied!" />
-                    <pre><code>vibecrafted justdo codex --prompt "Add user authentication with JWT"</code></pre>
-                </div>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy='vibecrafted workflow claude --prompt "Plan and implement auth module"' copiedLabel="Copied!" />
-                    <pre><code>vibecrafted workflow claude --prompt "Plan and implement auth module"</code></pre>
-                </div>
-                <p class="docs-note">Use <code>vibecrafted justdo</code> for end-to-end ownership. Use <code>vibecrafted workflow</code> when you want explicit Examine -&gt; Research -&gt; Implement structure.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 5</p>
-                <h3>Spawn the fleet when one model is not enough</h3>
-                <p>External agent helpers are there for parallel fieldwork and durable artifacts, not for theatre.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted codex implement .vibecrafted/plans/my-plan.md\nvibecrafted claude research .vibecrafted/plans/my-plan.md\nvibecrafted gemini implement .vibecrafted/plans/my-plan.md`} copiedLabel="Copied!" />
-                    <pre><code>vibecrafted codex implement .vibecrafted/plans/my-plan.md
-vibecrafted claude research .vibecrafted/plans/my-plan.md
-vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
-                </div>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Step 6</p>
-                <h3>Close the loop before you call it done</h3>
-                <p>Shipping in 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. means code quality, product-surface truth, and packaging truth.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted dou claude --prompt "Audit launch readiness"\nvibecrafted decorate codex --prompt "Polish the release surface"\nvibecrafted hydrate codex --prompt "Package the product"\nvibecrafted release codex --prompt "Prepare release steps"`} copiedLabel="Copied!" />
-                    <pre><code>vibecrafted dou claude --prompt "Audit launch readiness"
-vibecrafted decorate codex --prompt "Polish the release surface"
-vibecrafted hydrate codex --prompt "Package the product"
-vibecrafted release codex --prompt "Prepare release steps"</code></pre>
-                </div>
-                <p class="docs-note">The framework is complete when a stranger can discover, understand, install, and trust the thing, not when your tests stop yelling.</p>
-            </article>
-            </>
-        ) : (
-            <>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 1</p>
-                <h3>Zainstaluj 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. lokalnie</h3>
-                <p>Użyj publicznej guided ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code>, otwiera browser installer i trzyma ten sam install truth co automatyzacja.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui" defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code></pre>
-                </div>
-                <p class="docs-note">Bezpośredniej ścieżki <code>| bash</code> używaj tylko wtedy, gdy celowo wybierasz compact automation zamiast guided kickoffu.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 2</p>
-                <h3>Sprawdź, czy wszystko jest gotowe</h3>
-                <p>Uruchom <code>doctor</code> wcześnie. Szybko pokaże, czy środowisko jest gotowe do pracy i czy czegoś jeszcze nie brakuje.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy="vibecrafted doctor" defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>vibecrafted doctor</code></pre>
-                </div>
-                <p class="docs-note">Jeśli coś świeci na żółto, doctor pokaże, czego brakuje, zamiast zostawiać Cię z domysłami.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 3</p>
-                <h3>Wejdź w realne repo</h3>
-                <p>Wejdź do repo, które naprawdę ma znaczenie, i pozwól agentowi załadować historię, strukturę i bramki jakości, zanim cokolwiek zmieni.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`cd $VIBECRAFTED_ROOT/twoj-projekt\nvc-init claude`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>cd $VIBECRAFTED_ROOT/twoj-projekt
-vc-init claude</code></pre>
-                </div>
-                <p class="docs-note"><code>vc-init</code> czyta historię, mapuje strukturę i uruchamia bramki jakości, zanim zacznie się implementacja.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 4</p>
-                <h3>Uruchom pierwsze realne zadanie</h3>
-                <p>Gdy kontekst jest już zakotwiczony, możesz uruchomić pełną ścieżkę realizacji albo bardziej kontrolowany workflow, zależnie od tego, ile kontroli chcesz zachować.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy='vc-justdo codex "Dodaj uwierzytelnianie użytkowników z JWT"' defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>vc-justdo codex "Dodaj uwierzytelnianie użytkowników z JWT"</code></pre>
-                </div>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy='vc-workflow claude "Zaplanuj i zaimplementuj moduł auth"' defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>vc-workflow claude "Zaplanuj i zaimplementuj moduł auth"</code></pre>
-                </div>
-                <p class="docs-note">Użyj <code>vc-justdo</code>, gdy chcesz oddać agentowi pełną odpowiedzialność. Użyj <code>vc-workflow</code>, gdy chcesz przejść przez wyraźny układ ERI: Eksploruj &rarr; Rozpoznaj &rarr; Implementuj.</p>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 5</p>
-                <h3>Uruchom flotę, gdy jeden model nie wystarcza</h3>
-                <p>Ta ścieżka służy do pracy równoległej i zostawia trwałe artefakty. Chodzi o realne porównanie wyników, nie o pokaz.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`vibecrafted codex implement .vibecrafted/plans/my-plan.md\nvibecrafted claude research .vibecrafted/plans/my-plan.md\nvibecrafted gemini implement .vibecrafted/plans/my-plan.md`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>vibecrafted codex implement .vibecrafted/plans/my-plan.md
-vibecrafted claude research .vibecrafted/plans/my-plan.md
-vibecrafted gemini implement .vibecrafted/plans/my-plan.md</code></pre>
-                </div>
-            </article>
-            <article class="docs-card">
-                <p class="docs-kicker">Krok 6</p>
-                <h3>Domknij pętlę, zanim uznasz pracę za skończoną</h3>
-                <p>W 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. "gotowe" nie oznacza tylko działającego kodu. Oznacza też to, czy ktoś rzeczywiście może z tego skorzystać.</p>
-                <div class="code-block">
-                    <CopyButton client:visible class="copy-btn" textToCopy={`vc-dou claude\nvc-decorate codex\nvc-hydrate codex\nvc-release codex`} defaultLabel="Kopiuj" copiedLabel="Skopiowano!" errorLabel="Błąd" defaultAriaLabel="Kopiuj do schowka" copiedAriaLabel="Skopiowano do schowka" errorAriaLabel="Kopiowanie nie powiodło się" />
-                    <pre><code>vc-dou claude
-vc-decorate codex
-vc-hydrate codex
-vc-release codex</code></pre>
-                </div>
-                <p class="docs-note">Jeśli nie da się tego znaleźć, zrozumieć i zainstalować, to jeszcze nie jest gotowe. Nawet jeśli testy są zielone.</p>
-            </article>
-            </>
-        )}
+        {section.steps.map((step) => {
+            const commands = 'commands' in step ? step.commands : [step.command];
+            const note = 'note' in step ? step.note : undefined;
+
+            return (
+                <article class="docs-card">
+                    <p class="docs-kicker">{step.kicker}</p>
+                    <h3>{step.title}</h3>
+                    <p set:html={step.body}></p>
+                    {commands.map((command) => (
+                        <div class="code-block">
+                            <CopyButton
+                                client:visible
+                                class="copy-btn"
+                                textToCopy={command}
+                                defaultLabel={copyButton.default}
+                                copiedLabel={copyButton.copied}
+                                errorLabel={copyButton.error}
+                                defaultAriaLabel={copyButton.defaultAria}
+                                copiedAriaLabel={copyButton.copiedAria}
+                                errorAriaLabel={copyButton.errorAria}
+                            />
+                            <pre><code>{command}</code></pre>
+                        </div>
+                    ))}
+                    {note && <p class="docs-note" set:html={note}></p>}
+                </article>
+            );
+        })}
     </div>
 </section>

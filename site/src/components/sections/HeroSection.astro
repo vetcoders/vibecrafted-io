@@ -11,13 +11,13 @@ const hero = getTranslations(lang).sections.hero;
             <h1 class="manifesto-title">
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
                 <span class="manifesto-title__rule" aria-hidden="true"></span>
-                <span class="manifesto-title__framework">The <span class="manifesto-title__framework-accent">Founders'</span> Framework</span>
+                <span class="manifesto-title__framework">
+                    <Fragment set:html={hero.frameworkTitleHtml} />
+                </span>
             </h1>
-            <p class="manifesto-lead">
-                {hero.lead}
-            </p>
+            <p class="manifesto-lead">{hero.lead}</p>
             <p class="manifesto-quote">
-                {lang === "en" ? <Fragment set:html={`A framework that wrote its own code through <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.`} /> : <Fragment set:html={`Framework, który napisał swój własny kod przez <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.`} /> }
+                <Fragment set:html={hero.quoteHtml} />
             </p>
             <div class="manifesto-actions">
                 <a href="#evidence" class="btn-solid">{hero.evidence}</a>

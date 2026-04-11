@@ -1,66 +1,48 @@
 ---
-const { lang } = Astro.props;
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const section = getTranslations(lang).sections.dou;
+const trajectoryBars = [
+  { className: 'bar bar--copper', height: '24', label: section.bars[0], score: '15' },
+  { className: 'bar bar--copper', height: '40', label: section.bars[1], score: '40' },
+  { className: 'bar bar--steel', height: '65', label: section.bars[2], score: '65' },
+  { className: 'bar bar--steel', height: '85', label: section.bars[3], score: '85' },
+  { className: 'bar bar--patina', height: '100', label: section.bars[4], score: '100' },
+];
 ---
 <section class="manifesto-section" id="dou">
     <div class="container fade-up">
-        <div class="section-label">DoU</div>
-        {lang === 'en' ? (
-            <h2 class="section-title">The Definition of Undone</h2>
-        ) : (
-            <h2 class="section-title">Definicja niezrobionego</h2>
-        )}
+        <div class="section-label">{section.label}</div>
+        <h2 class="section-title">{section.title}</h2>
         <div class="manifesto-layout">
             <div class="manifesto-block">
-                {lang === 'en' ? (
-                    <>
-                    <blockquote>AI agents have solved the hardest part of software creation: making the thing work. They have not yet solved the second hardest part: making the thing reachable.</blockquote>
-                    <p class="manifesto-lead">The gap is rarely code quality. It is the brutal space between a working system and a product that strangers can discover, install, trust, and buy.</p>
-                    <p class="manifesto-diagnostic-label">The Founder's Diagnostic:</p>
-                    <ul class="plague-list">
-                        <li><span class="check">+</span> Tests pass</li>
-                        <li><span class="check">+</span> Architecture is sound</li>
-                        <li><span class="check">+</span> README exists</li>
-                        <li><span class="cross">&ndash;</span> Nobody can find it from Google</li>
-                        <li><span class="cross">&ndash;</span> Nobody can install it without a toolchain</li>
-                        <li><span class="cross">&ndash;</span> Nobody can pay for it</li>
-                    </ul>
-                    <p class="manifesto-summary">Items 4&ndash;6 are the Definition of Undone. Phase 3 forces the system into the market.</p>
-                    </>
-                ) : (
-                    <>
-                    <blockquote>Agenci AI rozwiązali najtrudniejszą część tworzenia oprogramowania: sprawienie, żeby rzecz działała. Nie rozwiązali jeszcze drugiej najtrudniejszej: sprawienie, żeby była osiągalna.</blockquote>
-                    <p class="manifesto-lead">Problem rzadko dotyczy jakości kodu. To brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.</p>
-                    <p class="manifesto-diagnostic-label">Diagnostyka założyciela:</p>
-                    <ul class="plague-list">
-                        <li><span class="check">+</span> Testy przechodzą</li>
-                        <li><span class="check">+</span> Architektura jest solidna</li>
-                        <li><span class="check">+</span> README istnieje</li>
-                        <li><span class="cross">&ndash;</span> Nikt nie znajdzie tego w Google</li>
-                        <li><span class="cross">&ndash;</span> Nikt nie zainstaluje bez toolchaina</li>
-                        <li><span class="cross">&ndash;</span> Nikt nie może za to zapłacić</li>
-                    </ul>
-                    <p class="manifesto-summary">Punkty 4&ndash;6 to Definicja Niezrobionego. Faza 3 wymusza wejście systemu na rynek.</p>
-                    </>
-                )}
+                <blockquote>{section.quote}</blockquote>
+                <p class="manifesto-lead">{section.lead}</p>
+                <p class="manifesto-diagnostic-label">{section.diagnosticLabel}</p>
+                <ul class="plague-list">
+                    {section.checklist.map((item) => (
+                        <li>
+                            <span class={item.kind === 'check' ? 'check' : 'cross'}>
+                                {item.kind === 'check' ? '+' : '–'}
+                            </span>
+                            {item.text}
+                        </li>
+                    ))}
+                </ul>
+                <p class="manifesto-summary">{section.summary}</p>
             </div>
             <div class="transition-visual transition-visual--dou">
-                {lang === 'en' ? (
-                    <p class="transition-caption">Convergence Trajectory &mdash; loop until the circle is full</p>
-                ) : (
-                    <p class="transition-caption">Trajektoria konwergencji &mdash; pętla aż koło się zapełni</p>
-                )}
+                <p class="transition-caption">{section.caption}</p>
                 <div class="trajectory" id="trajectoryBars">
-                    <div class="bar bar--copper" data-h="24"><span class="bar-label">{lang === 'en' ? 'Loop 1' : 'Pętla 1'}</span><span class="bar-score">15</span></div>
-                    <div class="bar bar--copper" data-h="40"><span class="bar-label">{lang === 'en' ? 'Loop 2' : 'Pętla 2'}</span><span class="bar-score">40</span></div>
-                    <div class="bar bar--steel" data-h="65"><span class="bar-label">{lang === 'en' ? 'Loop 3' : 'Pętla 3'}</span><span class="bar-score">65</span></div>
-                    <div class="bar bar--steel" data-h="85"><span class="bar-label">{lang === 'en' ? 'Loop 4' : 'Pętla 4'}</span><span class="bar-score">85</span></div>
-                    <div class="bar bar--patina" data-h="100"><span class="bar-label">{lang === 'en' ? 'Loop 5' : 'Pętla 5'}</span><span class="bar-score">100</span></div>
+                    {trajectoryBars.map((bar) => (
+                        <div class={bar.className} data-h={bar.height}>
+                            <span class="bar-label">{bar.label}</span>
+                            <span class="bar-score">{bar.score}</span>
+                        </div>
+                    ))}
                 </div>
-                {lang === 'en' ? (
-                    <p class="transition-scoreline">Score: 15 &rarr; 40 &rarr; 65 &rarr; 85 &rarr; 100</p>
-                ) : (
-                    <p class="transition-scoreline">Wynik: 15 &rarr; 40 &rarr; 65 &rarr; 85 &rarr; 100</p>
-                )}
+                <p class="transition-scoreline">{section.scoreline}</p>
             </div>
         </div>
     </div>

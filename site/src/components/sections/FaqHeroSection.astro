@@ -1,28 +1,16 @@
 ---
-const { lang } = Astro.props;
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const section = getTranslations(lang).sections.faqHero;
 ---
 <section class="docs-hero fade-up">
-    {lang === 'en' ? (
-        <>
-        <div class="section-label">Answered FAQ</div>
-        <h1 class="manifesto-title">The questions strangers ask first.</h1>
-        <p class="manifesto-lead"> This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits. </p>
-        <p class="manifesto-quote"> Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙. </p>
-        <div class="manifesto-actions">
-            <a class="btn-solid" data-astro-reload href="/en/quickstart/">Read Quick Start</a>
-            <a class="btn-outline" data-astro-reload href="/en/">Back to Overview</a>
-        </div>
-        </>
-    ) : (
-        <>
-        <div class="section-label">FAQ</div>
-        <h1 class="manifesto-title">Pytania, które padają na początku.</h1>
-        <p class="manifesto-lead"> Tutaj wyjaśniamy, jak działa𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. &mdash; bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji. </p>
-        <p class="manifesto-quote"> Framework, który stworzył sam siebie. </p>
-        <div class="manifesto-actions">
-            <a class="btn-solid" data-astro-reload href="/pl/quickstart/">Szybki start</a>
-            <a class="btn-outline" data-astro-reload href="/pl/">Wróć do przeglądu</a>
-        </div>
-        </>
-    )}
+    <div class="section-label">{section.label}</div>
+    <h1 class="manifesto-title">{section.title}</h1>
+    <p class="manifesto-lead">{section.lead}</p>
+    <p class="manifesto-quote">{section.quote}</p>
+    <div class="manifesto-actions">
+        <a class="btn-solid" href={section.primaryHref}>{section.primaryLabel}</a>
+        <a class="btn-outline" href={section.secondaryHref}>{section.secondaryLabel}</a>
+    </div>
 </section>

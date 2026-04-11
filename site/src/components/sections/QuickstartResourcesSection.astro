@@ -1,69 +1,28 @@
 ---
-const { lang } = Astro.props;
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const section = getTranslations(lang).sections.quickstartResources;
 ---
 <section class="fade-up">
     <div class="docs-columns">
-        {lang === 'en' ? (
-            <>
+        {section.cards.map((card) => (
             <article class="resource-card">
-                <p class="resource-kicker">What you need</p>
-                <h3>Minimal prerequisites</h3>
+                <p class="resource-kicker">{card.kicker}</p>
+                <h3>{card.title}</h3>
                 <ul class="resource-list">
-                    <li>macOS or Linux</li>
-                    <li>Git, Python 3.10+, and <code>make</code></li>
-                    <li>One or more agent CLIs: Codex, Claude, or Gemini</li>
-                    <li>Optional but high-value foundations: loctree, aicx, prview, ScreenScribe</li>
+                    {card.items.map((item) => (
+                        <li><Fragment set:html={item} /></li>
+                    ))}
                 </ul>
             </article>
-            <article class="resource-card">
-                <p class="resource-kicker">What you get</p>
-                <h3>Operational surfaces after install</h3>
-                <ul class="resource-list">
-                    <li>A central skill store under <code>$VIBECRAFTED_ROOT/.vibecrafted/skills/</code></li>
-                    <li>Artifacts grouped by repo and date under <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code></li>
-                    <li>Shell helpers for spawning, observing, marbles, DoU, hydrate, and release</li>
-                    <li>A staging-friendly control plane under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code></li>
-                </ul>
-            </article>
-            </>
-        ) : (
-            <>
-            <article class="resource-card">
-                <p class="resource-kicker">Czego potrzebujesz</p>
-                <h3>Minimalne wymagania</h3>
-                <ul class="resource-list">
-                    <li>macOS albo Linux</li>
-                    <li>Git, Python 3.10+ i <code>make</code></li>
-                    <li>Co najmniej jeden runtime: Codex, Claude albo Gemini</li>
-                    <li>Opcjonalnie, ale bardzo przydatne: loctree, aicx, prview, ScreenScribe</li>
-                </ul>
-            </article>
-            <article class="resource-card">
-                <p class="resource-kicker">Po instalacji</p>
-                <h3>Co dostajesz po instalacji</h3>
-                <ul class="resource-list">
-                    <li>Centralny magazyn skilli w <code>$VIBECRAFTED_ROOT/.vibecrafted/skills/</code></li>
-                    <li>Artefakty pogrupowane według repozytorium i daty w <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code></li>
-                    <li>Helpery shellowe do uruchamiania agentów, obserwacji sesji, Marbles, DoU, Hydrate i Release</li>
-                    <li>Lokalną kopię frameworka w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code></li>
-                </ul>
-            </article>
-            </>
-        )}
+        ))}
     </div>
     <div class="docs-inline-links">
-        {lang === 'en' ? (
-            <>
-            <a data-astro-reload href="/en/faq/">Answered FAQ</a>
-            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Foundation Stack</a>
-            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Markdown Version</a>
-            </>
-        ) : (
-            <>
-            <a data-astro-reload href="/pl/faq/">FAQ</a>
-            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md">Stack zależności</a>
-            <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md">Szybki start w Markdownie</a>
-            </>
-        )}
+        {section.links.map((link) => (
+            <a href={link.href} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                {link.label}
+            </a>
+        ))}
     </div>
 </section>

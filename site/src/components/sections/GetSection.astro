@@ -1,131 +1,51 @@
 ---
 import CopyButton from '../../components/CopyButton.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
-const { lang } = Astro.props;
+const { lang } = Astro.props as { lang: Lang };
+const dict = getTranslations(lang);
+const section = dict.sections.get;
+const copyButton = dict.copyButton;
 ---
 <section id="get">
     <div class="container fade-up">
-        {lang === 'en' ? (
-            <>
-            <div class="section-label">Get 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</div>
-            <h2 class="section-title">Install the framework. Start the loop.</h2>
-            <p class="section-sub">Bootstrap the control plane, open the guided installer, verify your local surface, and enter the first founder-grade workflow with the new command deck.</p>
-            </>
-        ) : (
-            <>
-            <div class="section-label">Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</div>
-            <h2 class="section-title">Zainstaluj framework. Uruchom pętlę.</h2>
-            <p class="section-sub">Zbootstrapuj control plane, otwórz guided installer, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow klasy założycielskiej z nowym command deckiem.</p>
-            </>
-        )}
+        <div class="section-label">{section.label}</div>
+        <h2 class="section-title">{section.title}</h2>
+        <p class="section-sub">{section.sub}</p>
         <div class="docs-grid docs-grid--steps">
-            <article class="docs-card docs-card--install">
-                <div class="docs-card__step" aria-hidden="true">01</div>
-                <div class="docs-card__copy">
-                    {lang === 'en' ? (
-                        <>
-                        <h3>Bootstrap the control plane</h3>
-                        <p>Stage the framework locally and open the guided installer so a founder-grade operator can see the machine truth before anything touches the system.</p>
-                        </>
-                    ) : (
-                        <>
-                        <h3>Zbootstrapuj control plane</h3>
-                        <p>Zainstaluj framework lokalnie i otwórz guided installer, żeby operator klasy founder zobaczył prawdę o maszynie, zanim cokolwiek dotknie systemu.</p>
-                        </>
-                    )}
-                </div>
-                <div class="docs-card__command docs-card__command--bar">
-                    <div class="install-command-bar">
-                        <span class="install-command-bar__prompt">$</span>
-                        <code class="install-command-bar__code">curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code>
-                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui" defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
+            {section.cards.map((card) => (
+                <article class="docs-card docs-card--install">
+                    <div class="docs-card__step" aria-hidden="true">{card.step}</div>
+                    <div class="docs-card__copy">
+                        <h3>{card.title}</h3>
+                        <p set:html={card.body}></p>
                     </div>
-                </div>
-            </article>
-            <article class="docs-card docs-card--install">
-                <div class="docs-card__step" aria-hidden="true">02</div>
-                <div class="docs-card__copy">
-                    {lang === 'en' ? (
-                        <>
-                        <h3>Enter through the command deck</h3>
-                        <p>The main front door is now <code>vibecrafted</code>. Daily skill surfaces are exposed as direct <code>vc-*</code> commands.</p>
-                        </>
-                    ) : (
-                        <>
-                        <h3>Wejdź przez command deck</h3>
-                        <p>Główne drzwi wejściowe to teraz <code>vibecrafted</code>. Codzienne powierzchnie skilli są dostępne jako bezpośrednie komendy <code>vc-*</code>.</p>
-                        </>
-                    )}
-                </div>
-                <div class="docs-card__command docs-card__command--bar">
-                    <div class="install-command-bar">
-                        <span class="install-command-bar__prompt">$</span>
-                        <code class="install-command-bar__code">vibecrafted help &amp;&amp; vibecrafted init claude</code>
-                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy="vibecrafted help &amp;&amp; vibecrafted init claude" defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
+                    <div class="docs-card__command docs-card__command--bar">
+                        <div class="install-command-bar">
+                            <span class="install-command-bar__prompt">$</span>
+                            <code class="install-command-bar__code">{card.command}</code>
+                            <CopyButton
+                                client:visible
+                                class="cb-copy install-command-bar__copy"
+                                textToCopy={card.command}
+                                defaultLabel={copyButton.upperDefault}
+                                copiedLabel={copyButton.copied}
+                                errorLabel={copyButton.error}
+                                defaultAriaLabel={copyButton.defaultAria}
+                                copiedAriaLabel={copyButton.copiedAria}
+                                errorAriaLabel={copyButton.errorAria}
+                            />
+                        </div>
                     </div>
-                </div>
-            </article>
-            <article class="docs-card docs-card--install">
-                <div class="docs-card__step" aria-hidden="true">03</div>
-                <div class="docs-card__copy">
-                    {lang === 'en' ? (
-                        <>
-                        <h3>Drive the real work</h3>
-                        <p>Examine the codebase, research ground truth, and delegate implementation to parallel agents &mdash; all in one pipeline.</p>
-                        </>
-                    ) : (
-                        <>
-                        <h3>Napędzaj prawdziwą pracę</h3>
-                        <p>Zbadaj codebase, researchu ground truth i deleguj implementację do równoległych agentów &mdash; wszystko w jednym pipeline.</p>
-                        </>
-                    )}
-                </div>
-                <div class="docs-card__command docs-card__command--bar">
-                    <div class="install-command-bar">
-                        <span class="install-command-bar__prompt">$</span>
-                        <code class="install-command-bar__code">vibecrafted workflow claude --prompt "Plan and implement auth module"</code>
-                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy='vibecrafted workflow claude --prompt "Plan and implement auth module"' defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
-                    </div>
-                </div>
-            </article>
-            <article class="docs-card docs-card--install">
-                <div class="docs-card__step" aria-hidden="true">04</div>
-                <div class="docs-card__copy">
-                    {lang === 'en' ? (
-                        <>
-                        <h3>Converge until it stops lying</h3>
-                        <p>The marbles loop finds what is still wrong and eliminates it. Each pass sharpens the surface.</p>
-                        </>
-                    ) : (
-                        <>
-                        <h3>Konwerguj aż przestanie kłamać</h3>
-                        <p>Pętla marbles znajduje to, co wciąż jest źle i eliminuje to. Każde przejście wyostrza powierzchnię.</p>
-                        </>
-                    )}
-                </div>
-                <div class="docs-card__command docs-card__command--bar">
-                    <div class="install-command-bar">
-                        <span class="install-command-bar__prompt">$</span>
-                        <code class="install-command-bar__code">vibecrafted marbles codex --count 3 --depth 3</code>
-                        <CopyButton client:visible class="cb-copy install-command-bar__copy" textToCopy="vibecrafted marbles codex --count 3 --depth 3" defaultLabel={lang === 'en' ? "COPY" : "KOPIUJ"} />
-                    </div>
-                </div>
-            </article>
+                </article>
+            ))}
         </div>
         <div class="docs-inline-links">
-            {lang === 'en' ? (
-                <>
-                <a data-astro-reload data-modal-open="quickstart-modal" href="/en/quickstart/">Quick Start</a>
-                <a data-astro-reload data-modal-open="faq-modal" href="/en/faq/">FAQ</a>
-                <a href="https://github.com/VetCoders/vibecrafted">GitHub</a>
-                </>
-            ) : (
-                <>
-                <a data-astro-reload data-modal-open="quickstart-modal" href="/pl/quickstart/">Szybki start</a>
-                <a data-astro-reload data-modal-open="faq-modal" href="/pl/faq/">FAQ</a>
-                <a href="https://github.com/VetCoders/vibecrafted">GitHub</a>
-                </>
-            )}
+            {section.links.map((link) => (
+                <a href={link.href} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                    {link.label}
+                </a>
+            ))}
         </div>
     </div>
 </section>
