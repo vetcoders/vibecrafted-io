@@ -1105,11 +1105,7 @@ section {
 
 /* PIPELINE */
 .pipeline-section {
-    background: linear-gradient(180deg, var(--overlay-subtle), var(--overlay-md))
-}
-
-.mmd-shell {
-    position: relative;
+    
     background: var(--glass-panel-bg-strong);
     border: 1px solid var(--glass-panel-border);
     border-radius: 10px;
@@ -1152,6 +1148,17 @@ section {
     -webkit-backdrop-filter: blur(20px) saturate(120%);
     box-shadow: 0 12px 30px var(--shadow-sm), inset 0 1px 0 var(--glass-panel-highlight);
     padding: 1rem 1rem .9rem
+}
+
+
+.pipeline-num {
+    display: block;
+    color: var(--copper);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-xs);
+    opacity: 0.8;
 }
 
 .pipeline-note h3 {
@@ -3038,7 +3045,7 @@ html.js-reveal-ready .fade-up.visible {
     padding: var(--docs-hero-padding-expanded);
     border: 1px solid var(--glass-panel-border);
     border-radius: var(--docs-hero-radius-expanded);
-    background: var(--docs-hero-surface);
+    background: var(--glass-panel-bg);
     backdrop-filter: var(--docs-hero-backdrop);
     -webkit-backdrop-filter: var(--docs-hero-backdrop);
     box-shadow: var(--docs-hero-shadow);
@@ -3454,4 +3461,15 @@ html.js-reveal-ready .fade-up.visible {
     letter-spacing: 0.06em;
     font-weight: 500;
     text-transform: uppercase;
+}
+
+
+.mermaid, .mmd-shell {
+    max-width: 100%;
+    overflow-x: auto;
+}
+.skills-track, .card-strip, .framework-strip, .docs-grid {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
