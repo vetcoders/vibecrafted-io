@@ -50,7 +50,7 @@ export const en = {
       label: "The Method",
       title: "Craft → Converge → Ship",
       sub: "A founder-grade operating model for shaping, denoising, and finally releasing software with AI agents.",
-      mermaid: `%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1
+      mermaid: `%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.3.0
 flowchart LR
     subgraph "Craft"
         scaffold["Scaffold"] --> init["Init"]
@@ -65,7 +65,7 @@ flowchart LR
         decorate --> hydrate["Hydrate"]
         hydrate --> release(["Release"])
     end`,
-      highlighted: `<span class="comment">%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.2.1</span>
+      highlighted: `<span class="comment">%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.3.0</span>
 flowchart LR
     subgraph "Craft"
         scaffold["Scaffold"] --&gt; init["Init"]

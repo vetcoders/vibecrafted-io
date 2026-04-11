@@ -66,6 +66,23 @@
     else if (e.key === 'Escape' && currentStep > 0) goTo(0);
   }
 
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  function handleTouchStart(e: TouchEvent) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+
+  function handleTouchEnd(e: TouchEvent) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) next();
+      else back();
+    }
+  }
+
   onMount(() => {
     document.addEventListener('keydown', handleKeydown);
     return () => document.removeEventListener('keydown', handleKeydown);
@@ -237,7 +254,8 @@
   </nav>
 
   <!-- Slide rail: contained scroll, no page scroll -->
-  <div class="wz-rail">
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div class="wz-rail" ontouchstart={handleTouchStart} ontouchend={handleTouchEnd}>
     <div
       class="wz-slide"
       class:exit-left={transitioning && direction === 'forward'}
