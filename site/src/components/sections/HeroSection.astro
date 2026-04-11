@@ -1,7 +1,9 @@
 ---
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
-const { lang } = Astro.props;
+const { lang } = Astro.props as { lang: Lang };
+const hero = getTranslations(lang).sections.hero;
 ---
 <article class="founder-manifesto">
     <section class="hero-split fade-up">
@@ -12,18 +14,14 @@ const { lang } = Astro.props;
                 <span class="manifesto-title__framework">The <span class="manifesto-title__framework-accent">Founders'</span> Framework</span>
             </h1>
             <p class="manifesto-lead">
-                {lang === 'en' 
-                    ? "A convergence-driven system for shipping software with AI agents." 
-                    : "System konwergencji do budowania i wdrażania oprogramowania z agentami AI."}
+                {hero.lead}
             </p>
             <p class="manifesto-quote">
-                {lang === 'en' 
-                    ? <>A framework that wrote its own code through <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.</>
-                    : <>Framework, który napisał swój własny kod przez <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.</>}
+                {lang === "en" ? <Fragment set:html={`A framework that wrote its own code through <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.`} /> : <Fragment set:html={`Framework, który napisał swój własny kod przez <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.`} /> }
             </p>
             <div class="manifesto-actions">
-                <a href="#evidence" class="btn-solid">{lang === 'en' ? "See the Evidence" : "Dowody"}</a>
-                <a href="https://github.com/VetCoders/vibecrafted" class="btn-outline" rel="noopener noreferrer">{lang === 'en' ? "View on GitHub" : "GitHub"}</a>
+                <a href="#evidence" class="btn-solid">{hero.evidence}</a>
+                <a href={hero.quickstartHref} class="btn-outline">{hero.quickstart}</a>
             </div>
         </header>
         <MarbleCanvas client:only="svelte" lang={lang} />
