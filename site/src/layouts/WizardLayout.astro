@@ -1,0 +1,66 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: 'en' | 'pl';
+}
+
+const {
+  title,
+  description = 'Guided installer for the Vibecrafted release engine.',
+  lang = 'en',
+} = Astro.props;
+
+const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+const ogImageUrl = new URL('/presence/og-image.png', siteUrl).href;
+const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+    <ClientRouter />
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>{title}</title>
+    <meta content={description} name="description">
+    <meta content={title} property="og:title">
+    <meta content={description} property="og:description">
+    <meta content={ogImageUrl} property="og:image">
+    <meta content="website" property="og:type">
+    <meta content={canonicalUrl} property="og:url">
+    <meta content="Vibecrafted" property="og:site_name">
+    <meta content={ogLocale} property="og:locale">
+    <meta content="summary_large_image" name="twitter:card">
+    <meta content={title} name="twitter:title">
+    <meta content={description} name="twitter:description">
+    <meta content={ogImageUrl} name="twitter:image">
+    <meta content="@VetCoders" name="twitter:site">
+    <meta content="index,follow" name="robots">
+    <meta content="#0e0e11" name="theme-color">
+    <link href={canonicalUrl} rel="canonical">
+    <link href="/presence/favicon.ico" rel="icon" sizes="32x32">
+    <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png">
+    <link href="/presence/logo-128.png" rel="apple-touch-icon">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100dvh;
+        overflow: hidden;
+        background: var(--stone-deep, #0e0e11);
+      }
+    </style>
+</head>
+<body>
+    <slot />
+</body>
+</html>
