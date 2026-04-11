@@ -8,6 +8,7 @@ export const pl = {
     faq: "FAQ",
     dou: "DoU",
     get: "Pobierz",
+    install: "Instaluj",
     github: "GitHub",
     license: "Licencja (BSL 1.1)",
     security: "Bezpieczeństwo",
@@ -22,7 +23,7 @@ export const pl = {
   footer: {
     ariaLabel: "Stopka strony",
     brand: "VIBECRAFTED",
-    tagline: "Zbudowane pod presją północy. Wdrożone na localhost.",
+    tagline: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
     copyright: "© 2026 VetCoders",
   },
   copyButton: {
@@ -37,10 +38,10 @@ export const pl = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'The <span class="manifesto-title__framework-accent">Founders&apos;</span> Framework',
+        'Silnik <span class="manifesto-title__framework-accent">release</span>&apos;u dla oprogramowania budowanego z AI',
       lead: "Dowieź oprogramowanie budowane z AI bez vibe hangover.",
       quoteHtml:
-        'Framework, który napisał swój własny kod przez <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.',
+        "Weź repo, które agenci już wytworzyli, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć.",
       evidence: "Dowody",
       quickstart: "Otwórz szybki start",
       quickstartHref: "/pl/quickstart/",
@@ -372,13 +373,13 @@ flowchart LR
     },
     get: {
       label: "Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-      title: "Zainstaluj framework. Uruchom pętlę.",
-      sub: "Zbootstrapuj control plane, otwórz guided installer, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow klasy założycielskiej z nowym command deckiem.",
+      title: "Zainstaluj silnik release'u. Uruchom pętlę.",
+      sub: "Zbootstrapuj control plane, otwórz guided installer, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu.",
       cards: [
         {
           step: "01",
           title: "Zbootstrapuj control plane",
-          body: "Zainstaluj framework lokalnie i otwórz guided installer, żeby operator klasy founder zobaczył prawdę o maszynie, zanim cokolwiek dotknie systemu.",
+          body: "Zainstaluj framework lokalnie i otwórz guided installer, żeby zobaczyć prawdę o maszynie, zanim cokolwiek dotknie systemu.",
           command:
             "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
         },
@@ -391,7 +392,7 @@ flowchart LR
         {
           step: "03",
           title: "Napędzaj prawdziwą pracę",
-          body: "Zbadaj codebase, researchu ground truth i deleguj implementację do równoległych agentów &mdash; wszystko w jednym pipeline.",
+          body: "Zbadaj codebase, odtwórz ground truth i deleguj implementację do równoległych agentów &mdash; wszystko w jednym pipeline.",
           command:
             'vibecrafted workflow claude --prompt "Plan and implement auth module"',
         },
@@ -402,6 +403,8 @@ flowchart LR
           command: "vibecrafted marbles codex --count 3 --depth 3",
         },
       ],
+      installWizardHref: "/pl/install/",
+      installWizardLabel: "Otwórz prowadzony instalator",
       links: [
         { href: "/pl/quickstart/", label: "Szybki start" },
         { href: "/pl/faq/", label: "FAQ" },
@@ -412,7 +415,7 @@ flowchart LR
       label: "Szybki start",
       title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..",
       lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska.",
-      quote: "Framework, który stworzył sam siebie.",
+      quote: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
       primaryHref: "/pl/",
       primaryLabel: "Wróć do przeglądu",
       secondaryHref: "https://github.com/VetCoders/vibecrafted",
@@ -474,18 +477,18 @@ flowchart LR
           kicker: "Krok 3",
           title: "Wejdź w realne repo",
           body: "Wejdź do repo, które naprawdę ma znaczenie, i pozwól agentowi załadować historię, strukturę i bramki jakości, zanim cokolwiek zmieni.",
-          command: "cd $VIBECRAFTED_ROOT/twoj-projekt\nvc-init claude",
-          note: "<code>vc-init</code> czyta historię, mapuje strukturę i uruchamia bramki jakości, zanim zacznie się implementacja.",
+          command: "cd $VIBECRAFTED_ROOT/twoj-projekt\nvibecrafted init claude",
+          note: "<code>vibecrafted init</code> czyta historię, mapuje strukturę i uruchamia bramki jakości, zanim zacznie się implementacja.",
         },
         {
           kicker: "Krok 4",
           title: "Uruchom pierwsze realne zadanie",
           body: "Gdy kontekst jest już zakotwiczony, możesz uruchomić pełną ścieżkę realizacji albo bardziej kontrolowany workflow, zależnie od tego, ile kontroli chcesz zachować.",
           commands: [
-            'vc-justdo codex "Dodaj uwierzytelnianie użytkowników z JWT"',
-            'vc-workflow claude "Zaplanuj i zaimplementuj moduł auth"',
+            'vibecrafted justdo codex --prompt "Dodaj uwierzytelnianie użytkowników z JWT"',
+            'vibecrafted workflow claude --prompt "Zaplanuj i zaimplementuj moduł auth"',
           ],
-          note: "Użyj <code>vc-justdo</code>, gdy chcesz oddać agentowi pełną odpowiedzialność. Użyj <code>vc-workflow</code>, gdy chcesz przejść przez wyraźny układ ERI: Eksploruj &rarr; Rozpoznaj &rarr; Implementuj.",
+          note: "Użyj <code>vibecrafted justdo</code>, gdy chcesz oddać agentowi pełną odpowiedzialność. Użyj <code>vibecrafted workflow</code>, gdy chcesz przejść przez wyraźny układ ERI: Eksploruj &rarr; Research &rarr; Implementuj.",
         },
         {
           kicker: "Krok 5",
@@ -499,7 +502,7 @@ flowchart LR
           title: "Domknij pętlę, zanim uznasz pracę za skończoną",
           body: 'W 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. "gotowe" nie oznacza tylko działającego kodu. Oznacza też to, czy ktoś rzeczywiście może z tego skorzystać.',
           command:
-            "vc-dou claude\nvc-decorate codex\nvc-hydrate codex\nvc-release codex",
+            'vibecrafted dou claude --prompt "Audit launch readiness"\nvibecrafted decorate codex --prompt "Polish the release surface"\nvibecrafted hydrate codex --prompt "Package the product"\nvibecrafted release codex --prompt "Prepare release steps"',
           note: "Jeśli nie da się tego znaleźć, zrozumieć i zainstalować, to jeszcze nie jest gotowe. Nawet jeśli testy są zielone.",
         },
       ],
@@ -507,8 +510,8 @@ flowchart LR
     faqHero: {
       label: "FAQ",
       title: "Pytania, które padają na początku.",
-      lead: "Tutaj wyjaśniamy, jak działa𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji.",
-      quote: "Framework, który stworzył sam siebie.",
+      lead: "Tutaj wyjaśniamy, jak działa 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji.",
+      quote: "Installer, docs i command deck muszą obiecywać dokładnie to samo.",
       primaryHref: "/pl/quickstart/",
       primaryLabel: "Szybki start",
       secondaryHref: "/pl/",

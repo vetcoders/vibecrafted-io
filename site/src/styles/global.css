@@ -1976,6 +1976,35 @@ html.subpage {
     margin-bottom: 1.5rem;
 }
 
+.get-wizard-cta {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0 0.5rem;
+}
+.get-wizard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    background: var(--copper);
+    color: var(--stone-deep);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--copper);
+    transition: all 0.2s ease;
+    box-shadow: 0 0 16px rgba(184, 115, 51, 0.2);
+}
+.get-wizard-btn:hover,
+.get-wizard-btn:focus-visible {
+    background: var(--copper-bright);
+    border-color: var(--copper-bright);
+    box-shadow: 0 0 24px rgba(184, 115, 51, 0.35);
+}
+
 #get .docs-inline-links {
     margin-top: var(--docs-inline-links-margin-top);
 }

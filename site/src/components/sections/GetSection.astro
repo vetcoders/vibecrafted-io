@@ -40,6 +40,9 @@ const copyButton = dict.copyButton;
                 </article>
             ))}
         </div>
+        <div class="get-wizard-cta">
+            <a href={section.installWizardHref} class="get-wizard-btn">{section.installWizardLabel}</a>
+        </div>
         <div class="docs-inline-links">
             {section.links.map((link) => (
                 <a href={link.href} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}>

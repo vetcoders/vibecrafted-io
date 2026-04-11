@@ -8,6 +8,7 @@ export const en = {
     faq: "FAQ",
     dou: "DoU",
     get: "Get",
+    install: "Install",
     github: "GitHub",
     license: "License (BSL 1.1)",
     security: "Security",
@@ -22,7 +23,7 @@ export const en = {
   footer: {
     ariaLabel: "Site footer",
     brand: "VIBECRAFTED",
-    tagline: "Built under midnight pressure. Deployed to localhost.",
+    tagline: "From AI-generated repo to launch-ready product.",
     copyright: "© 2026 VetCoders",
   },
   copyButton: {
@@ -37,10 +38,10 @@ export const en = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'The <span class="manifesto-title__framework-accent">Founders&apos;</span> Framework',
+        'Release <span class="manifesto-title__framework-accent">engine</span> for AI-built software',
       lead: "Ship AI-built software without the vibe hangover.",
       quoteHtml:
-        'A framework that wrote its own code through <span class="manifesto-quote__accent">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙</span>.',
+        'Take the repo your agents already produced and turn it into something a stranger can install, trust, and use.',
       evidence: "See the Evidence",
       quickstart: "Open Quick Start",
       quickstartHref: "/en/quickstart/",
@@ -372,13 +373,13 @@ flowchart LR
     },
     get: {
       label: "Get 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-      title: "Install the framework. Start the loop.",
-      sub: "Bootstrap the control plane, open the guided installer, verify your local surface, and enter the first founder-grade workflow with the new command deck.",
+      title: "Install the release engine. Start the loop.",
+      sub: "Bootstrap the control plane, open the guided installer, verify your local surface, and enter the first shippable workflow through the command deck.",
       cards: [
         {
           step: "01",
           title: "Bootstrap the control plane",
-          body: "Stage the framework locally and open the guided installer so a founder-grade operator can see the machine truth before anything touches the system.",
+          body: "Stage the framework locally and open the guided installer so the machine shape is visible before anything touches your system.",
           command:
             "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
         },
@@ -402,6 +403,8 @@ flowchart LR
           command: "vibecrafted marbles codex --count 3 --depth 3",
         },
       ],
+      installWizardHref: "/en/install/",
+      installWizardLabel: "Open Guided Installer",
       links: [
         { href: "/en/quickstart/", label: "Quick Start" },
         { href: "/en/faq/", label: "FAQ" },
@@ -412,7 +415,7 @@ flowchart LR
       label: "Quick Start",
       title: "From zero to your first 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. loop.",
       lead: "Install the framework, verify the control plane, then run a real workflow inside a live repository. The goal is first signal fast, not endless setup.",
-      quote: "Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙.",
+      quote: "From AI-generated repo to launch-ready product.",
       primaryHref: "/en/",
       primaryLabel: "Back to Overview",
       secondaryHref: "https://github.com/VetCoders/vibecrafted",
@@ -508,7 +511,7 @@ flowchart LR
       label: "Answered FAQ",
       title: "The questions strangers ask first.",
       lead: "This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits.",
-      quote: "Created by itself through the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙.",
+      quote: "The installer, docs, and command deck should all promise the same thing.",
       primaryHref: "/en/quickstart/",
       primaryLabel: "Read Quick Start",
       secondaryHref: "/en/",

@@ -52,6 +52,7 @@ const i18nMap: Record<string, string> = {
   '/en/quickstart/': '/pl/quickstart/',
   '/en/faq/': '/pl/faq/',
   '/en/framework/': '/pl/framework/',
+  '/en/install/': '/pl/install/',
 };
 
 const i18nMapReverse: Record<string, string> = Object.fromEntries(
@@ -96,6 +97,7 @@ const navPaths = {
   demo: isPl ? '/pl/framework/' : '/en/framework/',
   quickstart: isPl ? '/pl/quickstart/' : '/en/quickstart/',
   faq: isPl ? '/pl/faq/' : '/en/faq/',
+  install: isPl ? '/pl/install/' : '/en/install/',
 };
 
 const isHomePage = normalizedPath === navPaths.home;
@@ -239,7 +241,7 @@ const contentSecurityPolicy = [
                 <a href={navPaths.faq}>{navLabels.faq}</a>
                 <a href={sectionLinks.dou}>{navLabels.dou}</a>
                 <div class="nav-get-zone">
-                    <a href={sectionLinks.get} id="nav-get-link">{navLabels.get}</a>
+                    <a href={navPaths.install} id="nav-get-link">{navLabels.install}</a>
                     <a href={toggleHref} hreflang={toggleHreflang} lang={toggleHreflang} aria-label={navLabels.switchLang}>
                         {navLabels.toggleShort}
                     </a>
