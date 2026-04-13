@@ -615,25 +615,26 @@
   }
 
   function currentPhaseCommand(phase: PhaseDescriptor) {
+    // Keep the playground anchored to public command-deck examples, not demo-only prompts.
     switch (phase.name) {
       case 'scaffold':
-        return `vibecrafted scaffold claude --prompt "Shape the board as ${boardShape}"`;
+        return 'vibecrafted scaffold claude --prompt "Plan the auth architecture"';
       case 'init':
         return 'vibecrafted init claude';
       case 'workflow':
-        return `vibecrafted workflow claude --prompt "Tune groove density to ${grooveDensity.toFixed(1)}"`;
+        return 'vibecrafted workflow claude --prompt "Plan and implement auth"';
       case 'followup':
-        return 'vibecrafted followup codex';
+        return 'vibecrafted followup codex --prompt "Audit the auth changes"';
       case 'marbles':
-        return `vibecrafted marbles codex --count ${Math.max(2, operatorCount)} --depth 3`;
+        return 'vibecrafted marbles codex --prompt "Fill the gaps on the auth module" --count 3';
       case 'dou':
-        return 'vibecrafted dou claude';
+        return 'vibecrafted dou claude --prompt "Audit launch readiness"';
       case 'decorate':
-        return 'vibecrafted decorate codex';
+        return 'vibecrafted decorate codex --prompt "Polish the release surface"';
       case 'hydrate':
-        return `vibecrafted hydrate codex --count ${hydrateBatchSize}`;
+        return 'vibecrafted hydrate codex --prompt "Package the product"';
       case 'release':
-        return 'vibecrafted release codex';
+        return 'vibecrafted release codex --prompt "Prepare release steps"';
       default:
         return `vibecrafted ${phase.name} codex`;
     }
@@ -1676,18 +1677,21 @@
 
 <style>
   :global(body.framework-page) {
-    min-height: 100svh;
-    background: linear-gradient(180deg, rgba(14, 14, 17, 1) 0%, rgba(10, 10, 12, 1) 100%);
-    background-attachment: scroll;
+    min-height: 100%;
+    background:
+      linear-gradient(180deg, rgba(12, 12, 15, 0.94) 0%, rgba(9, 9, 12, 0.98) 100%),
+      var(--site-paper-substrate);
+    background-attachment: scroll, scroll;
   }
 
   :global(.framework-page-shell) {
-    width: min(1880px, calc(100vw - 0.5rem));
-    height: 100svh;
+    width: min(1480px, calc(100vw - 0.85rem));
+    height: auto;
+    min-height: 0;
     margin: 0 auto;
-    padding: calc(var(--nav-height) + 0.35rem) 0.25rem 0.25rem;
+    padding: calc(var(--nav-height) + 0.75rem) 0.4rem 0.7rem;
     display: grid;
-    grid-template-rows: minmax(0, 1fr);
+    grid-template-rows: min-content;
     gap: 0;
     align-content: start;
   }
@@ -1697,17 +1701,18 @@
     max-width: 100%;
     min-width: 0;
     min-height: 0;
-    height: 100%;
+    --framework-stage-height: clamp(20.75rem, 48svh, 31.5rem);
+    height: auto;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: clamp(0.9rem, 1.3vw, 1.15rem);
+    padding: clamp(0.85rem, 1.1vw, 1rem);
     background:
       radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.08), transparent 26%),
       radial-gradient(circle at 82% 12%, rgba(163, 184, 199, 0.08), transparent 24%),
       linear-gradient(180deg, rgba(18, 19, 23, 0.94) 0%, rgba(10, 10, 12, 0.96) 100%);
     box-shadow: var(--shadow);
     display: grid;
-    gap: 0;
+    gap: clamp(0.8rem, 1vw, 1rem);
   }
 
   .framework-playground__sr-heading {
@@ -1725,13 +1730,13 @@
   .framework-playground__body {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(248px, 18vw, 298px);
-    grid-template-rows: auto minmax(0, 1fr);
-    gap: clamp(1rem, 1.4vw, 1.8rem);
-    align-items: stretch;
-    align-content: stretch;
+    grid-template-columns: minmax(0, 1fr) clamp(248px, 20vw, 296px);
+    grid-template-rows: auto auto;
+    gap: clamp(0.85rem, 1vw, 1.15rem);
+    align-items: start;
+    align-content: start;
     justify-content: center;
-    padding: 0 0.35rem 0 0.65rem;
+    padding: 0 0.15rem 0 0.4rem;
   }
 
   .framework-playground__board-column {
@@ -1739,9 +1744,10 @@
     grid-row: 2;
     display: flex;
     flex-direction: column;
+    gap: 0.65rem;
     min-width: 0;
     min-height: 0;
-    align-self: stretch;
+    align-self: start;
   }
 
   .framework-playground__pressline {
@@ -1777,8 +1783,8 @@
   .framework-playground__stage {
     position: relative;
     width: 100%;
-    flex: 1 1 auto;
-    height: auto;
+    flex: 0 0 auto;
+    height: var(--framework-stage-height);
     min-height: 0;
     border-radius: var(--radius-lg);
     border: 1px solid var(--card-border);
@@ -1800,12 +1806,12 @@
 
   .framework-playground__overlay {
     position: absolute;
-    top: 1.5rem;
-    left: 1.5rem;
+    top: 1.2rem;
+    left: 1.2rem;
     display: grid;
     gap: 0.45rem;
-    min-width: 164px;
-    padding: 1rem 1.1rem;
+    min-width: 150px;
+    padding: 0.85rem 0.95rem;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-md);
     background: rgba(8, 9, 11, 0.82);
@@ -1836,16 +1842,16 @@
 
   .framework-playground__prompt {
     position: absolute;
-    left: 1rem;
-    right: 1rem;
-    bottom: 1rem;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.9rem;
     display: inline-flex;
     align-items: center;
     gap: 0.75rem;
     width: fit-content;
-    max-width: calc(100% - 2rem);
+    max-width: calc(100% - 1.8rem);
     margin: 0;
-    padding: 0.72rem 0.9rem;
+    padding: 0.68rem 0.88rem;
     border: 1px solid rgba(163, 184, 199, 0.14);
     border-radius: 999px;
     background: rgba(7, 9, 12, 0.78);
@@ -1872,16 +1878,18 @@
   .framework-playground__side-column {
     grid-column: 2;
     grid-row: 2;
+    position: sticky;
+    top: calc(var(--nav-height) + 0.8rem);
     width: auto;
     height: auto;
     min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 0.85rem;
+    gap: 0.75rem;
     min-width: 0;
     overflow: visible;
-    padding: 0.15rem 0.15rem 0.15rem 0;
+    padding: 0.1rem 0.15rem 0.15rem 0;
   }
 
   .framework-playground__side-kicker {
@@ -1943,7 +1951,7 @@
   .framework-playground__controls-inner {
     display: grid;
     gap: 0.72rem;
-    padding: 0.35rem 0 0.15rem;
+    padding: 0.25rem 0 0.1rem;
   }
 
   .framework-playground__control {
@@ -2228,16 +2236,20 @@
 
   @media (max-width: 960px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.5rem, 1880px);
+      width: min(100vw - 0.45rem, 1480px);
       height: auto;
-      min-height: 100svh;
-      padding: calc(var(--nav-height) + 0.35rem) 0.25rem 0.5rem;
+      min-height: 0;
+      padding: calc(var(--nav-height) + 0.55rem) 0.25rem 0.6rem;
+    }
+
+    .framework-playground {
+      --framework-stage-height: clamp(21rem, 56svh, 34rem);
     }
 
     .framework-playground__body {
       grid-template-columns: 1fr;
       grid-template-rows: auto auto auto;
-      gap: 1rem;
+      gap: 0.95rem;
       padding: 0;
     }
 
@@ -2256,12 +2268,12 @@
     }
 
     .framework-playground__stage {
-      height: auto;
-      min-height: clamp(500px, 64vh, 760px);
+      height: var(--framework-stage-height);
     }
 
     .framework-playground__side-column {
       grid-row: 3;
+      position: static;
       padding: 0;
     }
 
@@ -2304,23 +2316,25 @@
 
   @media (max-width: 640px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.4rem, 1880px);
-      padding: calc(var(--nav-height) + 0.25rem) 0.2rem 0.35rem;
+      width: min(100vw - 0.35rem, 1480px);
+      padding: calc(var(--nav-height) + 0.45rem) 0.15rem 0.35rem;
     }
 
     .framework-playground {
-      padding: 0.8rem;
+      --framework-stage-height: clamp(18.75rem, 52svh, 28.5rem);
+      padding: 0.75rem;
+      gap: 0.75rem;
     }
 
     .framework-playground__overlay {
       left: auto;
-      right: 0.8rem;
-      min-width: 134px;
+      right: 0.75rem;
+      min-width: 132px;
     }
 
     .framework-playground__prompt {
-      left: 0.8rem;
-      right: 0.8rem;
+      left: 0.75rem;
+      right: 0.75rem;
       width: auto;
     }
 

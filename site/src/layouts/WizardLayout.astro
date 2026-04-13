@@ -60,7 +60,138 @@ const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
       }
     </style>
 </head>
-<body>
-    <slot />
+<body class="wizard-page">
+    <main class="wizard-shell">
+        <div class="wizard-shell__frame">
+            <slot />
+        </div>
+    </main>
 </body>
 </html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  body.wizard-page {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: clamp(0.8rem, 2vw, 1.35rem);
+    overflow: hidden;
+    background: var(--stone-deep, #0e0e11);
+  }
+
+  body.wizard-page::before,
+  body.wizard-page::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  body.wizard-page::before {
+    background:
+      radial-gradient(circle at 22% 18%, rgba(184, 115, 51, 0.16), transparent 28%),
+      radial-gradient(circle at 78% 16%, rgba(90, 138, 122, 0.12), transparent 24%),
+      radial-gradient(circle at 52% 82%, rgba(163, 184, 199, 0.08), transparent 30%);
+    opacity: 0.95;
+    mix-blend-mode: screen;
+  }
+
+  body.wizard-page::after {
+    background:
+      linear-gradient(180deg, rgba(7, 8, 10, 0.22), rgba(7, 8, 10, 0.72)),
+      radial-gradient(circle at 50% 24%, transparent 30%, rgba(9, 10, 12, 0.62) 100%);
+  }
+
+  .wizard-shell {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 76rem);
+    height: min(calc(100dvh - 1.6rem), 58rem);
+    min-height: min(calc(100dvh - 1.6rem), 46rem);
+  }
+
+  .wizard-shell::before,
+  .wizard-shell::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    border-radius: 999px;
+    filter: blur(42px);
+    opacity: 0.42;
+  }
+
+  .wizard-shell::before {
+    width: 16rem;
+    height: 16rem;
+    top: -2rem;
+    right: 8%;
+    background: rgba(184, 115, 51, 0.22);
+  }
+
+  .wizard-shell::after {
+    width: 14rem;
+    height: 14rem;
+    bottom: -2.5rem;
+    left: 10%;
+    background: rgba(90, 138, 122, 0.16);
+  }
+
+  .wizard-shell__frame {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    border: 1px solid rgba(196, 212, 224, 0.16);
+    border-radius: clamp(1.4rem, 3vw, 2rem);
+    background:
+      linear-gradient(180deg, rgba(10, 12, 15, 0.92), rgba(8, 9, 12, 0.98)),
+      radial-gradient(circle at top right, rgba(184, 115, 51, 0.12), transparent 34%);
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  .wizard-shell__frame::before,
+  .wizard-shell__frame::after {
+    content: "";
+    position: absolute;
+    left: clamp(1rem, 3vw, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
+    height: 1px;
+    pointer-events: none;
+  }
+
+  .wizard-shell__frame::before {
+    top: 0;
+    background: linear-gradient(90deg, rgba(184, 115, 51, 0), rgba(184, 115, 51, 0.58), rgba(163, 184, 199, 0.18), rgba(184, 115, 51, 0));
+  }
+
+  .wizard-shell__frame::after {
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(163, 184, 199, 0), rgba(163, 184, 199, 0.2), rgba(184, 115, 51, 0.42), rgba(163, 184, 199, 0));
+  }
+
+  @media (max-width: 720px) {
+    body.wizard-page {
+      padding: 0;
+    }
+
+    .wizard-shell {
+      width: 100%;
+      height: 100dvh;
+      min-height: 100dvh;
+    }
+
+    .wizard-shell__frame {
+      border-left: 0;
+      border-right: 0;
+      border-radius: 0;
+    }
+  }
+</style>

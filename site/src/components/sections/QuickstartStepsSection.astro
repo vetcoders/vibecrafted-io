@@ -8,33 +8,37 @@ const section = dict.sections.quickstartSteps;
 const copyButton = dict.copyButton;
 ---
 <section class="fade-up">
-    <div class="docs-grid docs-grid--steps">
+    <div class="docs-grid docs-grid--operations">
         {section.steps.map((step) => {
             const commands = 'commands' in step ? step.commands : [step.command];
             const note = 'note' in step ? step.note : undefined;
 
             return (
-                <article class="docs-card">
-                    <p class="docs-kicker">{step.kicker}</p>
-                    <h3>{step.title}</h3>
-                    <p set:html={step.body}></p>
-                    {commands.map((command) => (
-                        <div class="code-block">
-                            <CopyButton
-                                client:visible
-                                class="copy-btn"
-                                textToCopy={command}
-                                defaultLabel={copyButton.default}
-                                copiedLabel={copyButton.copied}
-                                errorLabel={copyButton.error}
-                                defaultAriaLabel={copyButton.defaultAria}
-                                copiedAriaLabel={copyButton.copiedAria}
-                                errorAriaLabel={copyButton.errorAria}
-                            />
-                            <pre><code>{command}</code></pre>
-                        </div>
-                    ))}
-                    {note && <p class="docs-note" set:html={note}></p>}
+                <article class="docs-card docs-card--operation">
+                    <div class="docs-card__copy">
+                        <p class="docs-kicker">{step.kicker}</p>
+                        <h3>{step.title}</h3>
+                        <p set:html={step.body}></p>
+                        {note && <p class="docs-note" set:html={note}></p>}
+                    </div>
+                    <div class="docs-card__command docs-card__command--stack">
+                        {commands.map((command) => (
+                            <div class="code-block">
+                                <CopyButton
+                                    client:visible
+                                    class="copy-btn"
+                                    textToCopy={command}
+                                    defaultLabel={copyButton.default}
+                                    copiedLabel={copyButton.copied}
+                                    errorLabel={copyButton.error}
+                                    defaultAriaLabel={copyButton.defaultAria}
+                                    copiedAriaLabel={copyButton.copiedAria}
+                                    errorAriaLabel={copyButton.errorAria}
+                                />
+                                <pre><code>{command}</code></pre>
+                            </div>
+                        ))}
+                    </div>
                 </article>
             );
         })}

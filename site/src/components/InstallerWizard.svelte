@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import CopyButton from './CopyButton.svelte';
 
   interface Props {
     lang?: 'en' | 'pl';
@@ -11,7 +12,6 @@
   let currentStep = $state(0);
   let direction = $state<'forward' | 'backward'>('forward');
   let slideVisible = $state(true);
-  let copyState = $state<'idle' | 'copied' | 'error'>('idle');
   let termLines = $state<string[]>([]);
   let termRunning = $state(false);
 
@@ -19,6 +19,25 @@
 
   const content = $derived(lang === 'pl' ? PL : EN);
   const progress = $derived((currentStep / (STEPS - 1)) * 100);
+  const copyLabels = $derived(
+    lang === 'pl'
+      ? {
+          default: 'Kopiuj',
+          copied: 'Skopiowano',
+          error: 'Błąd',
+          defaultAria: 'Kopiuj komendę',
+          copiedAria: 'Komenda skopiowana',
+          errorAria: 'Nie udało się skopiować komendy',
+        }
+      : {
+          default: 'Copy',
+          copied: 'Copied',
+          error: 'Error',
+          defaultAria: 'Copy command',
+          copiedAria: 'Command copied',
+          errorAria: 'Failed to copy command',
+        }
+  );
 
   function goToStep(step: number) {
     if (step === currentStep || !slideVisible) return;
@@ -37,17 +56,6 @@
 
   function back() {
     if (currentStep > 0) goToStep(currentStep - 1);
-  }
-
-  async function copyCommand() {
-    try {
-      await navigator.clipboard.writeText(installCommand);
-      copyState = 'copied';
-      setTimeout(() => { copyState = 'idle'; }, 2200);
-    } catch {
-      copyState = 'error';
-      setTimeout(() => { copyState = 'idle'; }, 2200);
-    }
   }
 
   function simulateTerminal() {
@@ -102,6 +110,7 @@
     '▸ Phase 1/4: Diagnostics',
     '  python3 ✓  git ✓  make ✓  node ✓',
     '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
+    '  prview ○  screenscribe ○',
     '▸ Phase 2/4: Foundations',
     '  Installing loctree-mcp... done',
     '  Installing aicx-mcp... done',
@@ -122,6 +131,7 @@
     '▸ Faza 1/4: Diagnostyka',
     '  python3 ✓  git ✓  make ✓  node ✓',
     '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
+    '  prview ○  screenscribe ○',
     '▸ Faza 2/4: Fundamenty',
     '  Instalacja loctree-mcp... gotowe',
     '  Instalacja aicx-mcp... gotowe',
@@ -174,6 +184,8 @@
           { label: 'claude / codex / gemini', required: true },
           { label: 'loctree-mcp', required: false },
           { label: 'aicx-mcp', required: false },
+          { label: 'prview', required: false },
+          { label: 'screenscribe', required: false },
         ],
         hint: 'Real checks run during install',
       },
@@ -241,6 +253,8 @@
           { label: 'claude / codex / gemini', required: true },
           { label: 'loctree-mcp', required: false },
           { label: 'aicx-mcp', required: false },
+          { label: 'prview', required: false },
+          { label: 'screenscribe', required: false },
         ],
         hint: 'Sprawdzenia uruchamiane podczas instalacji',
       },
@@ -372,14 +386,16 @@
           <div class="wz-cmd-bar">
             <span class="wz-cmd-prompt">$</span>
             <code class="wz-cmd-text">{installCommand}</code>
-            <button
+            <CopyButton
               class="wz-cmd-copy"
-              class:copied={copyState === 'copied'}
-              onclick={copyCommand}
-              aria-label="Copy command"
-            >
-              {copyState === 'copied' ? '\u2713 Copied' : copyState === 'error' ? '\u2715' : 'Copy'}
-            </button>
+              textToCopy={installCommand}
+              defaultLabel={copyLabels.default}
+              copiedLabel={copyLabels.copied}
+              errorLabel={copyLabels.error}
+              defaultAriaLabel={copyLabels.defaultAria}
+              copiedAriaLabel={copyLabels.copiedAria}
+              errorAriaLabel={copyLabels.errorAria}
+            />
           </div>
         </div>
         {#if termLines.length > 0}
@@ -454,24 +470,28 @@
     --c-copper-bright: var(--copper-bright, #d4905c);
     --c-steel: var(--steel, #a3b8c7);
     --c-stone: var(--stone-deep, #0e0e11);
-    --c-surface: var(--card-bg, rgba(26, 29, 34, 0.55));
-    --c-border: var(--card-border, rgba(163, 184, 199, 0.1));
+    --c-surface: var(--glass-panel-bg, linear-gradient(180deg, rgba(18, 20, 24, 0.68), rgba(8, 9, 12, 0.82)));
+    --c-surface-strong: var(--glass-panel-bg-strong, linear-gradient(180deg, rgba(18, 20, 24, 0.8), rgba(8, 9, 12, 0.9)));
+    --c-border: var(--glass-panel-border, rgba(196, 212, 224, 0.18));
     --c-text: var(--text-primary, rgba(229, 236, 245, 0.88));
-    --c-text-dim: var(--text-secondary, rgba(229, 236, 245, 0.48));
-    --c-glow: rgba(184, 115, 51, 0.2);
-    --f-mono: 'JetBrains Mono', 'SF Mono', monospace;
-    --f-sans: 'Poppins', -apple-system, sans-serif;
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --c-text-dim: rgba(212, 223, 232, 0.72);
+    --c-glow: rgba(184, 115, 51, 0.22);
+    --c-glow-soft: rgba(184, 115, 51, 0.1);
+    --f-mono: var(--font-mono, 'JetBrains Mono', 'SF Mono', monospace);
+    --f-sans: var(--font-head, 'Poppins', -apple-system, sans-serif);
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
     width: 100%;
-    max-width: 580px;
+    max-width: 42rem;
     margin: 0 auto;
-    padding: 1rem 1.5rem;
+    min-height: 100%;
+    height: 100%;
+    padding: clamp(1rem, 2.1vw, 1.45rem) clamp(0.95rem, 2.4vw, 1.6rem);
     font-family: var(--f-sans);
     color: var(--c-text);
-    height: 100dvh;
     display: flex;
     flex-direction: column;
+    gap: clamp(0.8rem, 1.3vw, 1.1rem);
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
@@ -479,38 +499,45 @@
 
   /* ---- Brand bar ---- */
   .wz-brand-bar {
-    text-align: center;
-    padding: 0.375rem 0 0.625rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.15rem 0 0.1rem;
     flex-shrink: 0;
   }
   .wz-brand {
     font-family: var(--f-mono);
     font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
     color: var(--c-copper-bright);
+    text-shadow: 0 0 24px var(--c-glow-soft);
   }
   .wz-ver {
     font-family: var(--f-mono);
-    font-size: 0.625rem;
+    font-size: 0.62rem;
     color: var(--c-text-dim);
-    margin-left: 0.375rem;
-    vertical-align: middle;
+    padding: 0.22rem 0.5rem;
+    border: 1px solid rgba(163, 184, 199, 0.14);
+    border-radius: 999px;
+    background: rgba(14, 16, 20, 0.54);
+    line-height: 1;
   }
 
   /* ---- Progress track + dots ---- */
   .wz-progress {
     flex-shrink: 0;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.1rem;
     position: relative;
   }
   .wz-track {
     position: absolute;
-    top: 5px;
-    left: 10%;
-    right: 10%;
-    height: 2px;
-    background: var(--c-border);
+    top: 0.8rem;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: rgba(163, 184, 199, 0.14);
     border-radius: 1px;
     overflow: hidden;
   }
@@ -530,7 +557,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.3rem;
+    gap: 0.45rem;
     background: none;
     border: none;
     cursor: pointer;
@@ -538,22 +565,23 @@
     flex: 1;
   }
   .wz-pip {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 2px solid var(--c-border);
-    background: var(--c-stone);
+    border: 1.5px solid rgba(163, 184, 199, 0.18);
+    background: rgba(10, 11, 14, 0.88);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s var(--ease);
     color: var(--c-stone);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .wz-dot.active .wz-pip {
     border-color: var(--c-copper);
     background: var(--c-copper);
-    box-shadow: 0 0 10px var(--c-glow), 0 0 20px rgba(184, 115, 51, 0.08);
-    transform: scale(1.2);
+    box-shadow: 0 0 14px var(--c-glow), 0 0 28px rgba(184, 115, 51, 0.08);
+    transform: scale(1.18);
   }
   .wz-dot.done .wz-pip {
     border-color: var(--c-copper-bright);
@@ -564,9 +592,9 @@
   .wz-pip svg { display: none; }
   .wz-dot-label {
     font-family: var(--f-mono);
-    font-size: 0.5rem;
+    font-size: 0.56rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     color: var(--c-text-dim);
     transition: color 0.2s;
   }
@@ -580,6 +608,13 @@
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
+    padding: clamp(1rem, 2.2vw, 1.35rem);
+    border: 1px solid var(--c-border);
+    border-radius: calc(var(--radius-lg, 20px) + 2px);
+    background: var(--c-surface-strong);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 20px 44px rgba(0, 0, 0, 0.22);
     scrollbar-width: thin;
     scrollbar-color: var(--c-copper) transparent;
   }
@@ -588,7 +623,11 @@
   .wz-stage::-webkit-scrollbar-thumb { background: var(--c-copper); border-radius: 2px; }
 
   .wz-slide {
-    padding: 0.25rem 0;
+    min-height: 100%;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     will-change: transform, opacity;
   }
 
@@ -633,45 +672,50 @@
     justify-content: center;
     text-align: center;
     min-height: 100%;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
   .wz-title {
     font-family: var(--f-sans);
-    font-size: clamp(1.125rem, 3vw, 1.375rem);
+    font-size: clamp(1.45rem, 3vw, 1.95rem);
     font-weight: 600;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.45rem;
     color: var(--c-text);
-    line-height: 1.25;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
   }
   .wz-body {
-    font-size: 0.8125rem;
-    line-height: 1.65;
+    font-size: 0.92rem;
+    line-height: 1.72;
     color: var(--c-text-dim);
-    margin-bottom: 0.375rem;
-    max-width: 44ch;
+    margin-bottom: 0;
+    max-width: 40ch;
   }
 
   /* CTA button on welcome */
   .wz-cta {
-    margin-top: 1rem;
+    margin-top: 1.05rem;
     font-family: var(--f-mono);
-    font-size: 0.8125rem;
+    font-size: 0.76rem;
     font-weight: 600;
-    padding: 0.625rem 1.75rem;
-    border-radius: 8px;
-    border: none;
+    min-height: 3rem;
+    padding: 0.78rem 1.45rem;
+    border-radius: calc(var(--radius-sm, 6px) + 2px);
+    border: 1px solid rgba(184, 115, 51, 0.44);
     background: var(--c-copper);
     color: var(--c-stone);
     cursor: pointer;
-    transition: all 0.25s var(--ease);
+    transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    box-shadow: 0 14px 30px rgba(184, 115, 51, 0.2);
   }
   .wz-cta:hover {
     background: var(--c-copper-bright);
-    box-shadow: 0 0 20px var(--c-glow);
-    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(184, 115, 51, 0.28);
+    transform: translateY(-2px);
   }
   .wz-cta-arrow {
     transition: transform 0.2s;
@@ -684,26 +728,28 @@
   .wz-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-top: 0.25rem;
+    gap: 0.75rem;
+    margin-top: 0.2rem;
   }
   @media (max-width: 480px) {
     .wz-grid { grid-template-columns: 1fr; }
   }
   .wz-card {
     display: flex;
-    gap: 0.5rem;
-    padding: 0.625rem 0.75rem;
+    gap: 0.7rem;
+    padding: 0.85rem 0.95rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-radius: 10px;
+    border-radius: calc(var(--radius-md, 12px) + 1px);
     align-items: flex-start;
     animation: cardIn 0.35s var(--ease) both;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
   .wz-card:hover {
     border-color: rgba(184, 115, 51, 0.25);
-    box-shadow: 0 0 12px rgba(184, 115, 51, 0.06);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transform: translateY(-1px);
   }
   @keyframes cardIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -718,15 +764,17 @@
   }
   .wz-card-name {
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.74rem;
     color: var(--c-text);
     display: block;
-    margin-bottom: 0.125rem;
+    margin-bottom: 0.18rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
   .wz-card-desc {
-    font-size: 0.625rem;
+    font-size: 0.72rem;
     color: var(--c-text-dim);
-    line-height: 1.45;
+    line-height: 1.55;
     margin: 0;
   }
 
@@ -740,14 +788,15 @@
   .wz-check {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.3125rem 0.5rem;
-    border-radius: 6px;
+    gap: 0.65rem;
+    padding: 0.55rem 0.72rem;
+    border-radius: calc(var(--radius-sm, 6px) + 4px);
     background: var(--c-surface);
     border: 1px solid var(--c-border);
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.74rem;
     animation: cardIn 0.3s var(--ease) both;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-badge {
     font-size: 0.4375rem;
@@ -762,11 +811,11 @@
     color: var(--c-text);
   }
   .wz-tag {
-    font-size: 0.5rem;
+    font-size: 0.56rem;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 0.0625rem 0.3125rem;
-    border-radius: 3px;
+    letter-spacing: 0.1em;
+    padding: 0.18rem 0.42rem;
+    border-radius: 999px;
   }
   .wz-tag.req {
     background: rgba(184, 115, 51, 0.1);
@@ -782,14 +831,17 @@
     margin-top: 0.75rem;
   }
   .wz-cmd-bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 0.75rem;
-    background: rgba(14, 14, 17, 0.92);
-    border: 1px solid var(--c-copper);
-    border-radius: 8px;
-    box-shadow: 0 0 16px var(--c-glow);
+    gap: 0.8rem;
+    padding: 0.82rem 0.92rem;
+    background: linear-gradient(180deg, rgba(18, 20, 24, 0.82), rgba(9, 10, 13, 0.94));
+    border: 1px solid rgba(212, 144, 92, 0.3);
+    border-radius: calc(var(--radius-md, 12px) + 1px);
+    box-shadow:
+      0 18px 34px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .wz-cmd-prompt {
     font-family: var(--f-mono);
@@ -799,51 +851,67 @@
   }
   .wz-cmd-text {
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.79rem;
     color: var(--c-text);
     flex: 1;
-    word-break: break-all;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
     -webkit-user-select: all;
     user-select: all;
   }
   .wz-cmd-copy {
     font-family: var(--f-mono);
-    font-size: 0.625rem;
-    background: none;
-    border: 1px solid var(--c-border);
-    border-radius: 5px;
-    color: var(--c-text-dim);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.62rem 0.95rem;
+    font-size: 0.68rem;
+    background: rgba(14, 16, 20, 0.84);
+    border: 1px solid rgba(184, 115, 51, 0.24);
+    border-radius: 999px;
+    color: var(--copper-bright);
     cursor: pointer;
-    padding: 0.1875rem 0.5rem;
-    transition: all 0.2s;
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     flex-shrink: 0;
     white-space: nowrap;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
   .wz-cmd-copy:hover {
-    border-color: var(--c-copper);
-    color: var(--c-copper-bright);
+    border-color: rgba(212, 144, 92, 0.54);
+    color: var(--c-text);
+    background: rgba(184, 115, 51, 0.12);
+    transform: translateY(-1px);
   }
-  .wz-cmd-copy.copied {
+  .wz-cmd-copy.is-copied {
     border-color: var(--c-copper-bright);
     color: var(--c-copper-bright);
     background: rgba(184, 115, 51, 0.08);
   }
+  .wz-cmd-copy.is-error {
+    border-color: rgba(163, 184, 199, 0.26);
+    color: var(--c-text);
+    background: rgba(20, 23, 28, 0.92);
+  }
 
   /* ---- Terminal sim ---- */
   .wz-terminal {
-    margin-top: 0.625rem;
-    padding: 0.5rem 0.625rem;
-    background: rgba(14, 14, 17, 0.85);
+    margin-top: 0.85rem;
+    padding: 0.92rem 1rem;
+    background: linear-gradient(180deg, rgba(13, 15, 18, 0.92), rgba(8, 9, 12, 0.98));
     border: 1px solid var(--c-border);
-    border-radius: 6px;
+    border-radius: calc(var(--radius-md, 12px) + 1px);
     font-family: var(--f-mono);
-    font-size: 0.5625rem;
-    line-height: 1.55;
+    font-size: 0.68rem;
+    line-height: 1.62;
     color: var(--c-text-dim);
-    max-height: 12rem;
+    max-height: 15rem;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--c-copper) transparent;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-term-line {
     white-space: pre;
@@ -865,40 +933,44 @@
   .wz-next-cmds {
     display: flex;
     flex-direction: column;
-    gap: 0.375rem;
-    margin-top: 0.5rem;
+    gap: 0.55rem;
+    margin-top: 0.75rem;
   }
   .wz-next-cmd {
     display: flex;
     align-items: baseline;
-    gap: 0.625rem;
-    padding: 0.4375rem 0.625rem;
+    gap: 0.75rem;
+    padding: 0.72rem 0.85rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-radius: 6px;
+    border-radius: calc(var(--radius-md, 12px) + 1px);
     animation: cardIn 0.35s var(--ease) both;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-next-cmd-code {
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.74rem;
     color: var(--c-copper-bright);
     white-space: nowrap;
     flex-shrink: 0;
+    letter-spacing: 0.08em;
   }
   .wz-next-cmd-desc {
-    font-size: 0.6875rem;
+    font-size: 0.78rem;
     color: var(--c-text-dim);
+    line-height: 1.55;
   }
 
   /* ---- Hint ---- */
   .wz-hint {
     font-family: var(--f-mono);
-    font-size: 0.5625rem;
+    font-size: 0.64rem;
     color: var(--c-text-dim);
     text-align: center;
-    margin: 0.5rem 0 0.375rem;
-    opacity: 0.6;
+    margin: 0.15rem 0 0;
+    opacity: 0.74;
     flex-shrink: 0;
+    letter-spacing: 0.08em;
   }
 
   /* ---- Navigation ---- */
@@ -906,31 +978,33 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.375rem 0;
-    border-top: 1px solid var(--c-border);
+    padding: 0.35rem 0 0;
+    border-top: 1px solid rgba(163, 184, 199, 0.14);
     flex-shrink: 0;
   }
   .wz-btn {
     font-family: var(--f-mono);
-    font-size: 0.8125rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    font-size: 0.82rem;
+    width: 2.85rem;
+    height: 2.85rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s var(--ease);
+    transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.2s var(--ease);
     text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-btn-back {
-    background: none;
-    border: 1px solid var(--c-border);
+    background: rgba(14, 16, 20, 0.64);
+    border: 1px solid rgba(163, 184, 199, 0.16);
     color: var(--c-text-dim);
   }
   .wz-btn-back:hover:not(:disabled) {
     border-color: var(--c-steel);
     color: var(--c-text);
+    transform: translateY(-1px);
   }
   .wz-btn-back:disabled {
     opacity: 0.2;
@@ -941,24 +1015,28 @@
     border: 1px solid var(--c-copper);
     color: var(--c-stone);
     font-weight: 700;
+    box-shadow: 0 12px 24px rgba(184, 115, 51, 0.22);
   }
   .wz-btn-next:hover {
     background: var(--c-copper-bright);
     border-color: var(--c-copper-bright);
-    box-shadow: 0 0 14px var(--c-glow);
-    transform: scale(1.05);
+    box-shadow: 0 16px 28px rgba(184, 115, 51, 0.28);
+    transform: translateY(-1px);
   }
   .wz-btn-done {
-    border-radius: 1.25rem;
+    border-radius: 999px;
     width: auto;
-    padding: 0 1rem;
-    font-size: 0.6875rem;
-    gap: 0.25rem;
+    padding: 0 1.15rem;
+    font-size: 0.72rem;
+    gap: 0.35rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   .wz-counter {
     font-family: var(--f-mono);
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     color: var(--c-text-dim);
+    letter-spacing: 0.08em;
   }
   .wz-counter-sep {
     opacity: 0.4;
@@ -970,25 +1048,83 @@
     text-align: center;
     padding: 0.25rem 0 0;
     font-family: var(--f-mono);
-    font-size: 0.5625rem;
+    font-size: 0.6rem;
     color: var(--c-text-dim);
-    opacity: 0.3;
-    letter-spacing: 0.08em;
+    opacity: 0.46;
+    letter-spacing: 0.16em;
     flex-shrink: 0;
   }
 
   /* ---- Responsive ---- */
-  @media (max-height: 600px) {
-    .wizard { padding: 0.375rem 1rem; }
-    .wz-brand-bar { padding: 0.125rem 0 0.375rem; }
-    .wz-progress { margin-bottom: 0.75rem; }
-    .wz-title { font-size: 1rem; margin-bottom: 0.5rem; }
-    .wz-body { font-size: 0.75rem; }
-    .wz-hint { margin: 0.25rem 0; }
-    .wz-nav { padding: 0.25rem 0; }
+  @media (max-width: 720px) {
+    .wizard {
+      max-width: none;
+      padding: 0.95rem 0.85rem 0.8rem;
+    }
+
+    .wz-stage {
+      padding: 0.95rem 0.82rem;
+    }
+
+    .wz-grid {
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+    }
+
+    .wz-cmd-bar {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .wz-cmd-copy {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    .wz-next-cmd {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .wz-next-cmd-code {
+      white-space: normal;
+    }
+
+    .wz-dot-label {
+      font-size: 0.5rem;
+    }
   }
+
+  @media (max-height: 740px) {
+    .wizard {
+      padding-top: 0.7rem;
+      gap: 0.7rem;
+    }
+
+    .wz-brand-bar {
+      padding-top: 0;
+    }
+
+    .wz-stage {
+      padding: 0.9rem 0.82rem;
+    }
+
+    .wz-title {
+      font-size: clamp(1.24rem, 2.5vw, 1.55rem);
+    }
+
+    .wz-body {
+      font-size: 0.84rem;
+    }
+
+    .wz-card,
+    .wz-check,
+    .wz-next-cmd {
+      padding-block: 0.55rem;
+    }
+  }
+
   @media (max-width: 360px) {
-    .wizard { padding: 0.5rem 0.75rem; }
+    .wizard { padding-inline: 0.72rem; }
     .wz-dot-label { display: none; }
   }
 </style>

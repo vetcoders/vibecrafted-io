@@ -7,6 +7,8 @@ For the delegation doctrine and the `vc-why-matrix`, see
 [`skills/vc-agents/SKILL.md`](../../skills/vc-agents/SKILL.md).
 For the framework overview and pillar descriptions, see
 [`docs/runtime/README.md`](./README.md).
+For the current content-truth matrix and live-surface mapping, see
+[`CONTENT_TRUTH.md`](./CONTENT_TRUTH.md).
 
 ---
 

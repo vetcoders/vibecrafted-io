@@ -6,136 +6,69 @@
     const rightBtn = document.querySelector('.strip-arrow--right') as HTMLButtonElement | null;
     if (!wrap || !strip || !leftBtn || !rightBtn) return;
 
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const originals = Array.from(strip.children) as HTMLElement[];
-    if (!originals.length) return;
-
-    let cycleWidth = 0;
-    let resetQueued = false;
-    let targetScrollLeft = 0;
-    let velocity = 0;
-    let animationFrame = 0;
-    let isMomentumScroll = false;
-
-    function cloneCard(card: HTMLElement): HTMLElement {
-      const clone = card.cloneNode(true) as HTMLElement;
-      clone.setAttribute('aria-hidden', 'true');
-      clone.classList.add('card--clone');
-      return clone;
-    }
-
-    function seedInfiniteStrip(): void {
-      const before = document.createDocumentFragment();
-      const after = document.createDocumentFragment();
-      for (const card of originals) {
-        before.appendChild(cloneCard(card));
-        after.appendChild(cloneCard(card));
-      }
-      strip.insertBefore(before, strip.firstChild);
-      strip.appendChild(after);
-    }
-
-    function measureCycleWidth(): void {
-      const styles = window.getComputedStyle(strip);
-      const gap = parseFloat(styles.columnGap || styles.gap || '0');
-      cycleWidth = originals.reduce((sum, card, index) =>
-        sum + card.getBoundingClientRect().width + (index < originals.length - 1 ? gap : 0), 0);
-    }
-
-    function normalizeScrollLeft(value: number): number {
-      if (!cycleWidth) return value;
-      while (value < cycleWidth * 0.5) value += cycleWidth;
-      while (value > cycleWidth * 1.5) value -= cycleWidth;
-      return value;
-    }
-
-    function jumpToMiddle(force: boolean): void {
-      measureCycleWidth();
-      if (!cycleWidth) return;
-      if (force) {
-        strip.scrollLeft = cycleWidth;
-        targetScrollLeft = cycleWidth;
-        return;
-      }
-      strip.scrollLeft = normalizeScrollLeft(strip.scrollLeft);
-      targetScrollLeft = normalizeScrollLeft(targetScrollLeft || strip.scrollLeft);
-    }
-
-    function queueWrap(): void {
-      if (resetQueued) return;
-      resetQueued = true;
-      requestAnimationFrame(() => {
-        resetQueued = false;
-        jumpToMiddle(false);
-      });
-    }
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const finePointer = window.matchMedia('(pointer: fine)');
+    let resizeObserver: ResizeObserver | null = null;
+    let pointerId: number | null = null;
+    let dragStartX = 0;
+    let dragStartScrollLeft = 0;
+    let isDragging = false;
 
     function getScrollAmount(): number {
       const styles = window.getComputedStyle(strip);
       const gap = parseFloat(styles.columnGap || styles.gap || '0');
-      const width = originals[0]?.getBoundingClientRect().width ?? 300;
+      const firstCard = strip.querySelector<HTMLElement>('.card:not(.card--clone)') ?? strip.querySelector<HTMLElement>('.card');
+      const width = firstCard?.getBoundingClientRect().width ?? 300;
       return width + gap;
     }
 
-    function stopMomentum(): void {
-      velocity = 0;
-      if (!animationFrame) return;
-      cancelAnimationFrame(animationFrame);
-      animationFrame = 0;
+    function getMaxScrollLeft(): number {
+      return Math.max(0, strip.scrollWidth - strip.clientWidth);
     }
 
-    function stepMomentum(): void {
-      animationFrame = 0;
-      measureCycleWidth();
-      if (!cycleWidth) return;
-
-      const current = strip.scrollLeft;
-      const delta = targetScrollLeft - current;
-      const attraction = prefersReduced ? 0.18 : 0.11;
-      const damping = prefersReduced ? 0.56 : 0.82;
-
-      velocity += delta * attraction;
-      velocity *= damping;
-
-      if (Math.abs(delta) < 0.35 && Math.abs(velocity) < 0.16) {
-        isMomentumScroll = true;
-        strip.scrollLeft = targetScrollLeft;
-        queueWrap();
-        isMomentumScroll = false;
-        velocity = 0;
-        return;
-      }
-
-      isMomentumScroll = true;
-      strip.scrollLeft = current + velocity;
-      queueWrap();
-      animationFrame = requestAnimationFrame(stepMomentum);
+    function clampScrollLeft(value: number): number {
+      return Math.min(Math.max(0, value), getMaxScrollLeft());
     }
 
-    function ensureMomentum(): void {
-      if (prefersReduced) {
-        stopMomentum();
-        strip.scrollLeft = targetScrollLeft;
-        queueWrap();
-        return;
-      }
-      if (!animationFrame) animationFrame = requestAnimationFrame(stepMomentum);
-    }
+    function updateChrome(): void {
+      const maxScrollLeft = getMaxScrollLeft();
+      const scrollable = maxScrollLeft > 1;
+      const atStart = strip.scrollLeft <= 1;
+      const atEnd = strip.scrollLeft >= maxScrollLeft - 1;
 
-    function pushMomentum(distance: number, impulseMultiplier: number): void {
-      measureCycleWidth();
-      if (!cycleWidth) return;
-      targetScrollLeft = normalizeScrollLeft((targetScrollLeft || strip.scrollLeft) + distance);
-      velocity += distance * impulseMultiplier;
-      ensureMomentum();
+      wrap.dataset.atStart = String(atStart);
+      wrap.dataset.atEnd = String(atEnd);
+      wrap.dataset.isScrollable = String(scrollable);
+      wrap.dataset.isDragging = String(isDragging);
+
+      leftBtn.disabled = !scrollable || atStart;
+      rightBtn.disabled = !scrollable || atEnd;
     }
 
     function scrollStrip(direction: number): void {
-      const amount = getScrollAmount() * (prefersReduced ? 1 : 1.15);
-      pushMomentum(direction * amount, prefersReduced ? 0.02 : 0.04);
+      strip.scrollBy({
+        left: direction * getScrollAmount(),
+        behavior: prefersReduced.matches ? 'auto' : 'smooth',
+      });
     }
 
-    // Keyboard navigation on the wrapper
+    function canConsume(delta: number): boolean {
+      const maxScrollLeft = getMaxScrollLeft();
+      if (maxScrollLeft <= 1) return false;
+      if (delta < 0 && strip.scrollLeft <= 1) return false;
+      if (delta > 0 && strip.scrollLeft >= maxScrollLeft - 1) return false;
+      return true;
+    }
+
+    function stopDrag(pointer?: number | null): void {
+      if (pointerId !== null && pointer === pointerId) {
+        strip.releasePointerCapture?.(pointerId);
+      }
+      pointerId = null;
+      isDragging = false;
+      updateChrome();
+    }
+
     function handleKeydown(e: KeyboardEvent): void {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
@@ -146,37 +79,94 @@
       }
     }
 
-    // Initialize
-    seedInfiniteStrip();
-    jumpToMiddle(true);
+    const onLeftClick = () => scrollStrip(-1);
+    const onRightClick = () => scrollStrip(1);
 
-    leftBtn.addEventListener('click', () => scrollStrip(-1));
-    rightBtn.addEventListener('click', () => scrollStrip(1));
-    strip.addEventListener('pointerdown', () => { stopMomentum(); targetScrollLeft = strip.scrollLeft; });
-    strip.addEventListener('touchstart', () => { stopMomentum(); targetScrollLeft = strip.scrollLeft; }, { passive: true });
-    strip.addEventListener('scroll', () => {
-      if (!isMomentumScroll) targetScrollLeft = strip.scrollLeft;
-      queueWrap();
-      isMomentumScroll = false;
-    }, { passive: true });
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      pointerId = event.pointerId;
+      isDragging = true;
+      dragStartX = event.clientX;
+      dragStartScrollLeft = strip.scrollLeft;
+      strip.setPointerCapture?.(event.pointerId);
+      updateChrome();
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!isDragging || pointerId !== event.pointerId) return;
+      const delta = event.clientX - dragStartX;
+      strip.scrollLeft = clampScrollLeft(dragStartScrollLeft - delta);
+      updateChrome();
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      if (pointerId !== event.pointerId) return;
+      stopDrag(event.pointerId);
+    };
+
+    const onPointerLeave = (event: PointerEvent) => {
+      if (event.pointerType === 'mouse' && event.buttons === 0) {
+        stopDrag(pointerId);
+      }
+    };
+
+    const onScroll = () => {
+      if (!isDragging) {
+        updateChrome();
+      }
+    };
 
     const onWheel = (event: WheelEvent) => {
-      const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-      if (!delta) return;
+      const horizontalIntent = event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY);
+      const translateVertical = finePointer.matches && Math.abs(event.deltaY) > Math.abs(event.deltaX);
+      const delta = horizontalIntent
+        ? event.deltaX
+        : translateVertical
+          ? event.deltaY * 0.92
+          : 0;
+
+      if (!delta || !canConsume(delta)) return;
+
       event.preventDefault();
-      pushMomentum(delta, prefersReduced ? 0.02 : 0.035);
+      strip.scrollLeft = clampScrollLeft(strip.scrollLeft + delta);
+      updateChrome();
     };
+
     wrap.addEventListener('wheel', onWheel, { passive: false });
     wrap.addEventListener('keydown', handleKeydown);
+    leftBtn.addEventListener('click', onLeftClick);
+    rightBtn.addEventListener('click', onRightClick);
+    strip.addEventListener('pointerdown', onPointerDown);
+    strip.addEventListener('pointermove', onPointerMove);
+    strip.addEventListener('pointerup', onPointerUp);
+    strip.addEventListener('pointercancel', onPointerUp);
+    strip.addEventListener('pointerleave', onPointerLeave);
+    strip.addEventListener('scroll', onScroll, { passive: true });
 
-    const onResize = () => { stopMomentum(); jumpToMiddle(false); };
+    resizeObserver = new ResizeObserver(() => updateChrome());
+    resizeObserver.observe(strip);
+
+    const onResize = () => {
+      strip.scrollLeft = clampScrollLeft(strip.scrollLeft);
+      updateChrome();
+    };
     window.addEventListener('resize', onResize);
+    updateChrome();
 
     return () => {
-      stopMomentum();
+      stopDrag(pointerId);
+      resizeObserver?.disconnect();
       window.removeEventListener('resize', onResize);
       wrap.removeEventListener('wheel', onWheel);
       wrap.removeEventListener('keydown', handleKeydown);
+      leftBtn.removeEventListener('click', onLeftClick);
+      rightBtn.removeEventListener('click', onRightClick);
+      strip.removeEventListener('pointerdown', onPointerDown);
+      strip.removeEventListener('pointermove', onPointerMove);
+      strip.removeEventListener('pointerup', onPointerUp);
+      strip.removeEventListener('pointercancel', onPointerUp);
+      strip.removeEventListener('pointerleave', onPointerLeave);
+      strip.removeEventListener('scroll', onScroll);
     };
   });
 </script>

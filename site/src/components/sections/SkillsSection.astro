@@ -9,7 +9,8 @@ const section = getTranslations(lang).sections.skills;
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <div class="framework-strip-wrap">
+        <div class="framework-strip-wrap" role="region" aria-label={section.title} tabindex="0">
+            <div class="framework-strip-frame" aria-hidden="true"></div>
             <button class="strip-arrow strip-arrow--left" aria-label={section.scrollLeft} type="button">&#8249;</button>
             <div class="framework-strip">
                 {section.cards.map((card) => {
