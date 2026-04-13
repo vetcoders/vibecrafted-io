@@ -1,5 +1,6 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.faqContent;
@@ -22,7 +23,7 @@ const learningPath = [
     { href: `${basePath}/`, label: ui.overview },
 ];
 ---
-<section class="fade-up" id="faq-content">
+<Reveal client:load tag="section" id="faq-content">
     <div class="surface-path">
         <p class="surface-path__label">{ui.pathLabel}</p>
         <p class="surface-path__lead">{ui.pathLead}</p>
@@ -65,7 +66,7 @@ const learningPath = [
             ))}
         </div>
     </details>
-</section>
+</Reveal>
 
 <style>
     .surface-path {

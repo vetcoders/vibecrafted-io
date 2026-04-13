@@ -27,3 +27,29 @@
 >
   <slot />
 </svelte:element>
+
+<style>
+  .fade-up {
+    opacity: 0;
+    transform: translateY(1.35rem);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-up,
+    .fade-up.visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

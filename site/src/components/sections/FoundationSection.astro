@@ -1,5 +1,6 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -71,7 +72,7 @@ const foundationBullets: Record<string, string[]> = {
 };
 ---
 <section class="runtime-view" id="foundation">
-    <div class="container fade-up">
+    <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
@@ -104,7 +105,7 @@ const foundationBullets: Record<string, string[]> = {
                 />
             ))}
         </div>
-    </div>
+    </Reveal>
 </section>
 
 <style>

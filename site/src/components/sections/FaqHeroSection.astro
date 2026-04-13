@@ -1,10 +1,11 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.faqHero;
 ---
-<section class="docs-hero fade-up">
+<Reveal client:load tag="section" class="docs-hero">
     <div class="section-label">{section.label}</div>
     <h1 class="manifesto-title">{section.title}</h1>
     <p class="manifesto-lead">{section.lead}</p>
@@ -13,4 +14,4 @@ const section = getTranslations(lang).sections.faqHero;
         <a class="btn-solid" href={section.primaryHref}>{section.primaryLabel}</a>
         <a class="btn-outline" href={section.secondaryHref}>{section.secondaryLabel}</a>
     </div>
-</section>
+</Reveal>

@@ -5,7 +5,7 @@ import Reveal from '../Reveal.svelte';
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.quickstartHero;
 ---
-<Reveal tag="section" class="docs-hero quickstart-hero-section">
+<Reveal client:load tag="section" class="docs-hero quickstart-hero-section quickstart-hero-section--operations">
     <div class="section-label">{section.label}</div>
     <h1 class="manifesto-title">{section.title}</h1>
     <p class="manifesto-lead">{section.lead}</p>

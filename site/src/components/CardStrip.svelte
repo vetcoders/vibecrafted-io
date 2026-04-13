@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { Spring, prefersReducedMotion } from 'svelte/motion';
+  import { prefersReducedMotion } from 'svelte/motion';
 
   type CardItem = {
     cardClass?: string;
@@ -22,8 +22,6 @@
 
   let wrapElement: HTMLElement | null = $state(null);
   let railElement: HTMLDivElement | null = $state(null);
-  let leftButton: HTMLButtonElement | null = $state(null);
-  let rightButton: HTMLButtonElement | null = $state(null);
 
   let isDragging = $state(false);
   let isScrollable = $state(false);
@@ -32,7 +30,6 @@
   let maxScrollLeft = $state(0);
   let scrollLeft = $state(0);
   let snapPoints = $state<number[]>([]);
-  let finePointerMatches = $state(false);
 
   let dragPointerId: number | null = null;
   let dragStartX = 0;
@@ -41,18 +38,8 @@
   let lastMoveTime = 0;
   let lastMoveScrollLeft = 0;
   let settleTimer: ReturnType<typeof setTimeout> | null = null;
-  let lastWheelAt = 0;
-  let gestureAxis: 'x' | 'y' | null = null;
-  let gestureConsumed = 0;
-
-  const WHEEL_GESTURE_IDLE_MS = 140;
-  const VERTICAL_CAPTURE_LIMIT_FACTOR = 1.15;
-
-  const stripSpring = new Spring(0, {
-    stiffness: 0.16,
-    damping: 0.72,
-    precision: 0.5,
-  });
+  let animationFrame = 0;
+  let isAnimating = false;
 
   const canMoveLeft = $derived(isScrollable && !atStart);
   const canMoveRight = $derived(isScrollable && !atEnd);
@@ -68,10 +55,13 @@
     }
   }
 
-  function resetWheelGesture() {
-    lastWheelAt = 0;
-    gestureAxis = null;
-    gestureConsumed = 0;
+  function clearAnimation() {
+    if (typeof window !== 'undefined' && animationFrame) {
+      window.cancelAnimationFrame(animationFrame);
+    }
+
+    animationFrame = 0;
+    isAnimating = false;
   }
 
   function syncState(nextScrollLeft = railElement?.scrollLeft ?? 0) {
@@ -116,27 +106,67 @@
     return found === -1 ? 0 : found;
   }
 
-  async function animateTo(nextTarget: number, preserveMomentum = 0) {
+  function animateTo(nextTarget: number) {
+    if (!railElement) return;
+
     const clamped = clamp(nextTarget);
-    await stripSpring.set(clamped, prefersReducedMotion.current ? { instant: true } : { preserveMomentum });
+    clearAnimation();
+
+    const start = railElement.scrollLeft;
+    if (prefersReducedMotion.current || Math.abs(clamped - start) <= 1 || typeof window === 'undefined') {
+      railElement.scrollLeft = clamped;
+      syncState(clamped);
+      return;
+    }
+
+    const startedAt = performance.now();
+    const duration = 220;
+    isAnimating = true;
+
+    const tick = (now: number) => {
+      if (!railElement) {
+        clearAnimation();
+        return;
+      }
+
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = start + (clamped - start) * eased;
+
+      railElement.scrollLeft = current;
+      syncState(current);
+
+      if (progress < 1) {
+        animationFrame = window.requestAnimationFrame(tick);
+        return;
+      }
+
+      railElement.scrollLeft = clamped;
+      syncState(clamped);
+      clearAnimation();
+    };
+
+    animationFrame = window.requestAnimationFrame(tick);
   }
 
-  function settleToNearest(base = scrollLeft, preserveMomentum = 0) {
-    void animateTo(snapFor(base), preserveMomentum);
+  function settleToNearest(base = scrollLeft) {
+    animateTo(snapFor(base));
   }
 
-  function scheduleSettle(delay = 120) {
+  function scheduleSettle(base = railElement?.scrollLeft ?? scrollLeft, delay = 120) {
     clearSettleTimer();
+    const settleBase = base;
     settleTimer = setTimeout(() => {
       settleTimer = null;
-      settleToNearest();
+      settleToNearest(settleBase);
     }, delay);
   }
 
   function step(direction: -1 | 1) {
     if (!isScrollable) return;
-    const nextIndex = Math.min(Math.max(indexFor(stripSpring.target) + direction, 0), snapPoints.length - 1);
-    void animateTo(snapPoints[nextIndex]);
+    clearSettleTimer();
+    const nextIndex = Math.min(Math.max(indexFor(railElement?.scrollLeft ?? scrollLeft) + direction, 0), snapPoints.length - 1);
+    animateTo(snapPoints[nextIndex]);
   }
 
   function canConsume(delta: number) {
@@ -146,54 +176,25 @@
     return true;
   }
 
-  function wheelCaptureLimit() {
-    const deltas = snapPoints
-      .slice(1)
-      .map((point, index) => Math.abs(point - snapPoints[index]))
-      .filter(Boolean);
-
-    if (deltas.length > 0) {
-      return deltas[0] * VERTICAL_CAPTURE_LIMIT_FACTOR;
-    }
-
-    return Math.max((railElement?.clientWidth ?? 0) * 0.55, 240);
-  }
-
   function handleWheel(event: WheelEvent) {
     if (!railElement || event.ctrlKey) return;
 
     const absX = Math.abs(event.deltaX);
     const absY = Math.abs(event.deltaY);
-    const now = performance.now();
-    const isNewGesture = now - lastWheelAt > WHEEL_GESTURE_IDLE_MS;
-    if (isNewGesture) {
-      gestureAxis = null;
-      gestureConsumed = 0;
-    }
-    lastWheelAt = now;
-
-    const horizontalIntent = event.shiftKey || absX > absY * 0.9;
-    const verticalIntent = finePointerMatches && absY > 0 && absY >= absX;
-    gestureAxis ??= horizontalIntent ? 'x' : verticalIntent ? 'y' : null;
-
-    let delta = 0;
-    if (gestureAxis === 'x' && horizontalIntent) {
-      delta = absX > 0 ? event.deltaX : event.deltaY;
-    } else if (gestureAxis === 'y' && verticalIntent) {
-      const remaining = wheelCaptureLimit() - Math.abs(gestureConsumed);
-      if (remaining <= 1) return;
-      delta = Math.sign(event.deltaY) * Math.min(absY * 0.88, remaining);
-    }
+    const horizontalIntent = event.shiftKey ? absX > 0 || absY > 0 : absX > absY * 1.08 && absX > 0.5;
+    const delta = event.shiftKey && absX < 0.5 ? event.deltaY : event.deltaX;
 
     if (!delta || !canConsume(delta)) return;
+    if (!horizontalIntent) return;
 
     event.preventDefault();
     clearSettleTimer();
-    void animateTo(stripSpring.target + delta, 120);
-    if (gestureAxis === 'y') {
-      gestureConsumed += delta;
-    }
-    scheduleSettle(140);
+    clearAnimation();
+
+    const nextScrollLeft = clamp(railElement.scrollLeft + delta);
+    railElement.scrollLeft = nextScrollLeft;
+    syncState(nextScrollLeft);
+    scheduleSettle(nextScrollLeft, 110);
   }
 
   function handleKeydown(event: KeyboardEvent) {
@@ -210,7 +211,7 @@
     if (!railElement || event.button !== 0) return;
 
     clearSettleTimer();
-    resetWheelGesture();
+    clearAnimation();
     isDragging = true;
     dragPointerId = event.pointerId;
     dragStartX = event.clientX;
@@ -232,7 +233,6 @@
     dragVelocity = (nextScrollLeft - lastMoveScrollLeft) / deltaTime;
     lastMoveTime = event.timeStamp;
     lastMoveScrollLeft = nextScrollLeft;
-    stripSpring.set(nextScrollLeft, { instant: true });
   }
 
   function stopDrag(pointerId: number | null, cancelled = false) {
@@ -251,7 +251,7 @@
 
     if (!cancelled) {
       const projected = clamp(railElement.scrollLeft + dragVelocity * 180);
-      settleToNearest(projected, 180);
+      settleToNearest(projected);
     }
   }
 
@@ -267,58 +267,37 @@
 
   function handleScroll() {
     if (!railElement) return;
+
     syncState(railElement.scrollLeft);
 
-    if (!isDragging && Math.abs(stripSpring.target - railElement.scrollLeft) > 2) {
-      stripSpring.set(railElement.scrollLeft, { instant: true });
-      scheduleSettle();
+    if (!isDragging && !isAnimating) {
+      scheduleSettle(railElement.scrollLeft, 125);
     }
   }
-
-  $effect(() => {
-    if (!railElement || isDragging) return;
-    railElement.scrollLeft = stripSpring.current;
-    syncState(stripSpring.current);
-  });
 
   $effect(() => {
     if (!railElement || !wrapElement) return;
 
     const resizeObserver = new ResizeObserver(() => {
-      resetWheelGesture();
-      syncState(railElement.scrollLeft);
-      stripSpring.set(clamp(railElement.scrollLeft), { instant: true });
+      const nextScrollLeft = clamp(railElement.scrollLeft);
+      railElement.scrollLeft = nextScrollLeft;
+      syncState(nextScrollLeft);
     });
 
     resizeObserver.observe(railElement);
     resizeObserver.observe(wrapElement);
 
-    syncState(railElement.scrollLeft);
-    stripSpring.set(clamp(railElement.scrollLeft), { instant: true });
+    const nextScrollLeft = clamp(railElement.scrollLeft);
+    railElement.scrollLeft = nextScrollLeft;
+    syncState(nextScrollLeft);
 
     return () => {
       resizeObserver.disconnect();
       clearSettleTimer();
-      resetWheelGesture();
+      clearAnimation();
     };
   });
 
-  $effect(() => {
-    if (typeof window === 'undefined') return;
-
-    const finePointer = window.matchMedia('(pointer: fine)');
-    finePointerMatches = finePointer.matches;
-
-    const syncFinePointer = (event: MediaQueryListEvent) => {
-      finePointerMatches = event.matches;
-    };
-
-    finePointer.addEventListener('change', syncFinePointer);
-
-    return () => {
-      finePointer.removeEventListener('change', syncFinePointer);
-    };
-  });
 </script>
 
 <div
@@ -339,7 +318,6 @@
     aria-label={leftLabel}
     disabled={!canMoveLeft}
     onclick={() => step(-1)}
-    bind:this={leftButton}
   >
     &#8249;
   </button>
@@ -369,7 +347,6 @@
     aria-label={rightLabel}
     disabled={!canMoveRight}
     onclick={() => step(1)}
-    bind:this={rightButton}
   >
     &#8250;
   </button>

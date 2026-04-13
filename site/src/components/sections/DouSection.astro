@@ -1,5 +1,6 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.dou;
@@ -12,7 +13,7 @@ const trajectoryBars = [
 ];
 ---
 <section class="manifesto-section" id="dou">
-    <div class="container fade-up">
+    <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <div class="manifesto-layout">
@@ -45,5 +46,5 @@ const trajectoryBars = [
                 <p class="transition-scoreline">{section.scoreline}</p>
             </div>
         </div>
-    </div>
+    </Reveal>
 </section>

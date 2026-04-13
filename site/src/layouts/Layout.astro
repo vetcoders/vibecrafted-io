@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import CopyButton from '../components/CopyButton.svelte';
+import SiteNav from '../components/SiteNav.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations, type Lang } from '../lib/i18n';
 import '../styles/global.css';
@@ -101,6 +102,7 @@ const navPaths = {
 const isHomePage = normalizedPath === navPaths.home;
 const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
 const isFrameworkPage = normalizedPath === navPaths.demo;
+const showInstallBanner = isHomePage;
 
 const sectionLinks = {
   pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
@@ -124,6 +126,16 @@ const footerLinks = [
     label: navLabels.security,
     external: true,
   },
+];
+
+const primaryLinks = [
+  { href: sectionLinks.pipeline, label: navLabels.pipeline },
+  { href: sectionLinks.skills, label: navLabels.skills },
+  { href: sectionLinks.marbles, label: navLabels.marbles },
+  { href: navPaths.demo, label: navLabels.demo, current: normalizedPath === navPaths.demo },
+  { href: navPaths.quickstart, label: navLabels.quickstart, current: normalizedPath === navPaths.quickstart },
+  { href: navPaths.faq, label: navLabels.faq, current: normalizedPath === navPaths.faq },
+  { href: sectionLinks.dou, label: navLabels.dou },
 ];
 
 const inlineScriptHashes = [
@@ -200,81 +212,62 @@ const contentSecurityPolicy = [
     <a class="skip-link" href="#main-content">{navLabels.skip}</a>
 
     <div class="topbar">
-        <header class="nav-shell" data-nav-open="false" data-nav-shell>
+        <header class="nav-shell" transition:name="site-topbar">
             <a class="brand" href={navPaths.home}>
-                <span class="brand-wordmark">vibecrafted</span>
-                <Image
-                    src={logo32}
-                    alt=""
-                    aria-hidden="true"
-                    class="brand-logo"
-                    width={24}
-                    height={24}
-                    densities={[1, 2]}
-                    format="webp"
-                />
-            </a>
-            <button
-                aria-controls="site-nav"
-                aria-expanded="false"
-                aria-label={navLabels.menu}
-                class="nav-toggle"
-                data-closed-label={navLabels.menu}
-                data-nav-toggle
-                data-open-label={navLabels.closeMenu}
-                type="button"
-            >
-                <span class="nav-toggle__label">{navLabels.menu}</span>
-                <span aria-hidden="true" class="nav-toggle__glyph">
-                    <span></span>
-                    <span></span>
+                <span class="brand-mark" style="display:inline-flex;align-items:center;gap:inherit;" transition:name="site-brand" transition:persist>
+                    <span class="brand-wordmark">vibecrafted</span>
+                    <Image
+                        src={logo32}
+                        alt=""
+                        aria-hidden="true"
+                        class="brand-logo"
+                        width={24}
+                        height={24}
+                        densities={[1, 2]}
+                        format="webp"
+                    />
                 </span>
-            </button>
-            <nav aria-label={navLabels.navPrimary} class="nav-links" data-nav-panel id="site-nav">
-                <a href={sectionLinks.pipeline}>{navLabels.pipeline}</a>
-                <a href={sectionLinks.skills}>{navLabels.skills}</a>
-                <a href={sectionLinks.marbles}>{navLabels.marbles}</a>
-                <a href={navPaths.demo}>{navLabels.demo}</a>
-                <a href={navPaths.quickstart}>{navLabels.quickstart}</a>
-                <a href={navPaths.faq}>{navLabels.faq}</a>
-                <a href={sectionLinks.dou}>{navLabels.dou}</a>
-                <div class="nav-get-zone">
-                    <a href={navPaths.install} id="nav-get-link">{navLabels.install}</a>
-                    <a href={toggleHref} hreflang={toggleHreflang} lang={toggleHreflang} aria-label={navLabels.switchLang}>
-                        {navLabels.toggleShort}
-                    </a>
-                    <a aria-label={navLabels.github} class="nav-icon-link" href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer">
-                        <svg aria-hidden="true" class="nav-icon" viewBox="0 0 24 24">
-                            <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.51v-1.81c-2.94.64-3.56-1.24-3.56-1.24-.48-1.22-1.16-1.55-1.16-1.55-.95-.65.07-.63.07-.63 1.05.07 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.04.87.09-.68.37-1.14.66-1.4-2.35-.27-4.82-1.18-4.82-5.25 0-1.16.41-2.1 1.08-2.84-.11-.27-.47-1.36.1-2.83 0 0 .88-.28 2.89 1.08a10.08 10.08 0 0 1 5.26 0c2-1.36 2.88-1.08 2.88-1.08.58 1.47.22 2.56.11 2.83.67.74 1.08 1.68 1.08 2.84 0 4.08-2.48 4.97-4.85 5.23.38.33.72.97.72 1.95v2.89c0 .28.19.62.73.51A10.5 10.5 0 0 0 12 1.5Z"></path>
-                        </svg>
-                    </a>
-                </div>
-            </nav>
+            </a>
+            <SiteNav
+                client:load
+                links={primaryLinks}
+                installHref={navPaths.install}
+                installLabel={navLabels.install}
+                toggleHref={toggleHref}
+                toggleLabel={navLabels.toggleShort}
+                toggleHreflang={toggleHreflang}
+                toggleLang={toggleHreflang}
+                githubLabel={navLabels.github}
+                menuLabel={navLabels.menu}
+                closeLabel={navLabels.closeMenu}
+            />
         </header>
     </div>
 
-    <div class="curl-banner" id="install-command-banner">
-        <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code>
-        <CopyButton
-            client:visible
-            class="cb-copy"
-            textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui"
-            defaultLabel={copyButton.default}
-            copiedLabel={copyButton.copied}
-            errorLabel={copyButton.error}
-            defaultAriaLabel={copyButton.defaultAria}
-            copiedAriaLabel={copyButton.copiedAria}
-            errorAriaLabel={copyButton.errorAria}
-        />
-    </div>
+    {showInstallBanner && (
+        <div class="curl-banner" id="install-command-banner" transition:name="site-install-banner" transition:persist>
+            <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui</code>
+            <CopyButton
+                client:visible
+                class="cb-copy"
+                textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui"
+                defaultLabel={copyButton.default}
+                copiedLabel={copyButton.copied}
+                errorLabel={copyButton.error}
+                defaultAriaLabel={copyButton.defaultAria}
+                copiedAriaLabel={copyButton.copiedAria}
+                errorAriaLabel={copyButton.errorAria}
+            />
+        </div>
+    )}
 
     <main class:list={['shell', isDocsPage && 'shell--docs', isFrameworkPage && 'shell--framework']} id="main-content">
         <slot />
     </main>
 
-    <footer class="footer-shell" aria-label={footer.ariaLabel}>
+    <footer class="footer-shell" aria-label={footer.ariaLabel} transition:name="site-footer">
         <div class="footer-container">
-            <div class="footer-brand">
+            <div class="footer-brand" transition:name="site-footer-brand" transition:persist>
                 <Image
                     src={logo32}
                     alt=""
@@ -298,7 +291,5 @@ const contentSecurityPolicy = [
             <p class="footer-copyright">{footer.copyright}</p>
         </div>
     </footer>
-
-    <script is:inline src="/site.js"></script>
 </body>
 </html>

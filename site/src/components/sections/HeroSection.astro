@@ -1,12 +1,13 @@
 ---
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const hero = getTranslations(lang).sections.hero;
 ---
 <article class="founder-manifesto">
-    <section class="hero-split fade-up">
+    <Reveal client:load tag="section" class="hero-split">
         <header class="hero-copy">
             <h1 class="manifesto-title">
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
@@ -25,5 +26,5 @@ const hero = getTranslations(lang).sections.hero;
             </div>
         </header>
         <MarbleCanvas client:only="svelte" lang={lang} />
-    </section>
+    </Reveal>
 </article>

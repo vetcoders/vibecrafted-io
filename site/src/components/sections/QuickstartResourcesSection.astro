@@ -1,5 +1,6 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -24,7 +25,7 @@ const pathLinks = [
     { href: `${basePath}/`, label: ui.overview },
 ];
 ---
-<section class="fade-up" id="quickstart-resources">
+<Reveal client:load tag="section" id="quickstart-resources">
     <div class="docs-columns">
         {section.cards.map((card, index) => (
             <ProductDetailCard
@@ -60,7 +61,7 @@ const pathLinks = [
             ))}
         </div>
     </details>
-</section>
+</Reveal>
 
 <style>
     .docs-columns {

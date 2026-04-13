@@ -1,12 +1,13 @@
 ---
 import DiffusionCanvas from '../../components/DiffusionCanvas.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.marbles;
 ---
 <section class="diffusion-section" id="marbles">
-    <div class="container fade-up">
+    <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
@@ -41,5 +42,5 @@ const section = getTranslations(lang).sections.marbles;
                 <p>{section.portal.note}</p>
             </div>
         </div>
-    </div>
+    </Reveal>
 </section>

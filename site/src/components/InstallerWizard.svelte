@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { Tween, prefersReducedMotion } from 'svelte/motion';
   import CopyButton from './CopyButton.svelte';
 
   interface Props {
@@ -18,7 +18,12 @@
   const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui';
 
   const content = $derived(lang === 'pl' ? PL : EN);
-  const progress = $derived((currentStep / (STEPS - 1)) * 100);
+  const progressTween = Tween.of(() => (currentStep / (STEPS - 1)) * 100, {
+    duration: prefersReducedMotion.current ? 0 : 280,
+  });
+  const counterTween = Tween.of(() => currentStep + 1, {
+    duration: prefersReducedMotion.current ? 0 : 220,
+  });
   const copyLabels = $derived(
     lang === 'pl'
       ? {
@@ -96,11 +101,6 @@
       else back();
     }
   }
-
-  onMount(() => {
-    document.addEventListener('keydown', handleKeydown);
-    return () => document.removeEventListener('keydown', handleKeydown);
-  });
 
   const TERM_EN = [
     '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
@@ -283,18 +283,13 @@
   };
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 <div class="wizard" role="region" aria-label={content.steps[currentStep]?.label}>
-
-  <!-- Brand -->
-  <header class="wz-brand-bar">
-    <span class="wz-brand">{content.hero}</span>
-    <span class="wz-ver">{content.version}</span>
-  </header>
-
   <!-- Progress -->
   <nav class="wz-progress" aria-label="Steps">
     <div class="wz-track">
-      <div class="wz-track-fill" style="width: {progress}%"></div>
+      <div class="wz-track-fill" style={`width: ${progressTween.current}%`}></div>
     </div>
     <div class="wz-dots">
       {#each content.steps as step, i}
@@ -440,7 +435,7 @@
     >
       &larr;
     </button>
-    <span class="wz-counter">{currentStep + 1}<span class="wz-counter-sep">/</span>{STEPS}</span>
+    <span class="wz-counter">{Math.round(counterTween.current)}<span class="wz-counter-sep">/</span>{STEPS}</span>
     {#if currentStep < STEPS - 1}
       <button class="wz-btn wz-btn-next" onclick={next} aria-label="Next step">
         &rarr;
@@ -455,9 +450,6 @@
     {/if}
   </nav>
 
-  <footer class="wz-footer">
-    <span>//vibecrafted.</span>
-  </footer>
 </div>
 
 <style>
@@ -495,34 +487,6 @@
     overflow: hidden;
     -webkit-user-select: none;
     user-select: none;
-  }
-
-  /* ---- Brand bar ---- */
-  .wz-brand-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.55rem;
-    padding: 0.15rem 0 0.1rem;
-    flex-shrink: 0;
-  }
-  .wz-brand {
-    font-family: var(--f-mono);
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: var(--c-copper-bright);
-    text-shadow: 0 0 24px var(--c-glow-soft);
-  }
-  .wz-ver {
-    font-family: var(--f-mono);
-    font-size: 0.62rem;
-    color: var(--c-text-dim);
-    padding: 0.22rem 0.5rem;
-    border: 1px solid rgba(163, 184, 199, 0.14);
-    border-radius: 999px;
-    background: rgba(14, 16, 20, 0.54);
-    line-height: 1;
   }
 
   /* ---- Progress track + dots ---- */
@@ -1043,18 +1007,6 @@
     margin: 0 0.125rem;
   }
 
-  /* ---- Footer ---- */
-  .wz-footer {
-    text-align: center;
-    padding: 0.25rem 0 0;
-    font-family: var(--f-mono);
-    font-size: 0.6rem;
-    color: var(--c-text-dim);
-    opacity: 0.46;
-    letter-spacing: 0.16em;
-    flex-shrink: 0;
-  }
-
   /* ---- Responsive ---- */
   @media (max-width: 720px) {
     .wizard {
@@ -1098,10 +1050,6 @@
     .wizard {
       padding-top: 0.7rem;
       gap: 0.7rem;
-    }
-
-    .wz-brand-bar {
-      padding-top: 0;
     }
 
     .wz-stage {

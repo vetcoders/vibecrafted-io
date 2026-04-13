@@ -10,14 +10,14 @@ import SkillsSection from '../../../components/sections/SkillsSection.svelte';
 import MarblesSection from '../../../components/sections/MarblesSection.astro';
 import DouSection from '../../../components/sections/DouSection.astro';
 import GetSection from '../../../components/sections/GetSection.astro';
-import ReferencesSection from '../../../components/sections/ReferencesSection.astro';
+import ReferencesSection from '../../../components/sections/ReferencesSection.svelte';
 
 <HeroSection lang="en" />
 <EvidenceSection lang="en" />
 <FoundationSection lang="en" />
 <PipelineSection lang="en" />
-<SkillsSection lang="en" />
+<SkillsSection client:load lang="en" />
 <MarblesSection lang="en" />
 <DouSection lang="en" />
 <GetSection lang="en" />
-<ReferencesSection lang="en" />
+<ReferencesSection client:load lang="en" />

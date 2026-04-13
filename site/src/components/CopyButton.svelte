@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
+  import { Tween, prefersReducedMotion } from 'svelte/motion';
 
   type CopyState = 'default' | 'copied' | 'error';
 
-  let { 
-    textToCopy, 
-    class: className = '', 
-    defaultLabel = 'Copy', 
+  let {
+    textToCopy,
+    class: className = '',
+    defaultLabel = 'Copy',
     copiedLabel = 'Copied',
     errorLabel = 'Error',
     defaultAriaLabel = 'Copy to clipboard',
@@ -34,6 +35,16 @@
   );
   let timer: ReturnType<typeof setTimeout> | undefined;
 
+  const feedbackScale = Tween.of(() => (state === 'copied' ? 1.06 : state === 'error' ? 0.985 : 1), {
+    duration: prefersReducedMotion.current ? 0 : 180,
+  });
+  const feedbackOffset = Tween.of(() => (state === 'default' ? 0 : -1.5), {
+    duration: prefersReducedMotion.current ? 0 : 180,
+  });
+  const feedbackOpacity = Tween.of(() => (state === 'default' ? 0.92 : 1), {
+    duration: prefersReducedMotion.current ? 0 : 140,
+  });
+
   onDestroy(() => {
     if (timer) {
       clearTimeout(timer);
@@ -49,7 +60,6 @@
         throw new Error('Clipboard API not available');
       }
     } catch {
-      // Fallback
       const textArea = document.createElement('textarea');
       textArea.value = textToCopy;
       textArea.style.position = 'fixed';
@@ -66,7 +76,7 @@
       }
       textArea.remove();
     }
-    
+
     clearTimeout(timer);
     timer = setTimeout(() => {
       state = 'default';
@@ -78,8 +88,43 @@
   class="{className} {state === 'copied' ? 'is-copied' : ''} {state === 'error' ? 'is-error' : ''}"
   type="button"
   data-copy-managed="svelte"
+  data-copy-state={state}
   aria-label={ariaLabel}
   onclick={handleCopy}
 >
-  {label}
+  <span class="copy-button__label" aria-live="polite">
+    {#key state}
+      <span
+        class="copy-button__text"
+        style={`opacity: ${feedbackOpacity.current}; transform: translateY(${feedbackOffset.current}px) scale(${feedbackScale.current});`}
+      >
+        {label}
+      </span>
+    {/key}
+  </span>
 </button>
+
+<style>
+  .copy-button__label {
+    display: inline-grid;
+    place-items: center;
+    min-width: 5ch;
+  }
+
+  .copy-button__text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    transform-origin: center;
+    will-change: transform, opacity;
+  }
+
+  button[data-copy-state='copied'] .copy-button__text {
+    text-shadow: 0 0 12px rgba(90, 138, 122, 0.18);
+  }
+
+  button[data-copy-state='error'] .copy-button__text {
+    text-shadow: 0 0 10px rgba(184, 115, 51, 0.16);
+  }
+</style>
