@@ -1679,18 +1679,19 @@
   :global(body.framework-page) {
     min-height: 100%;
     background:
-      linear-gradient(180deg, rgba(13, 13, 16, 0.9) 0%, rgba(8, 9, 12, 0.98) 100%),
-      radial-gradient(circle at 18% 12%, rgba(184, 115, 51, 0.12), transparent 32%),
+      linear-gradient(180deg, rgba(11, 11, 13, 0.84) 0%, rgba(8, 9, 12, 0.94) 100%),
+      radial-gradient(circle at 18% 12%, rgba(184, 115, 51, 0.14), transparent 32%),
+      radial-gradient(circle at 82% 14%, rgba(212, 198, 171, 0.08), transparent 24%),
       var(--site-paper-substrate);
-    background-attachment: scroll, scroll, scroll;
+    background-attachment: scroll, scroll, scroll, scroll;
   }
 
   :global(.framework-page-shell) {
-    width: min(1320px, calc(100vw - 1.1rem));
+    width: min(1220px, calc(100vw - 0.9rem));
     height: auto;
     min-height: 0;
     margin: 0 auto;
-    padding: calc(var(--nav-height) + 0.7rem) 0.45rem 1.75rem;
+    padding: calc(var(--nav-height) + 0.65rem) 0.35rem clamp(4rem, 10vh, 5.75rem);
     display: grid;
     grid-template-rows: min-content;
     gap: 0;
@@ -1702,19 +1703,21 @@
     max-width: 100%;
     min-width: 0;
     min-height: 0;
-    --framework-stage-height: clamp(17.75rem, 41svh, 26.75rem);
-    --framework-side-width: clamp(220px, 18.5vw, 272px);
+    --framework-stage-height: clamp(16.25rem, 36svh, 24rem);
+    --framework-side-width: clamp(15.5rem, 22vw, 17.75rem);
     height: auto;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: clamp(0.78rem, 1vw, 0.95rem);
+    padding: clamp(0.72rem, 0.95vw, 0.88rem);
     background:
-      radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.08), transparent 26%),
+      radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.1), transparent 26%),
       radial-gradient(circle at 82% 12%, rgba(163, 184, 199, 0.08), transparent 24%),
-      linear-gradient(180deg, rgba(18, 19, 23, 0.86) 0%, rgba(10, 10, 12, 0.92) 100%);
+      linear-gradient(180deg, rgba(18, 19, 23, 0.68) 0%, rgba(10, 10, 12, 0.82) 100%);
     box-shadow: var(--shadow);
     display: grid;
     gap: clamp(0.7rem, 0.9vw, 0.92rem);
+    backdrop-filter: blur(18px) saturate(115%);
+    -webkit-backdrop-filter: blur(18px) saturate(115%);
   }
 
   .framework-playground__sr-heading {
@@ -1732,19 +1735,21 @@
   .framework-playground__body {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: clamp(0.75rem, 0.9vw, 1rem);
+    grid-template-columns: minmax(0, 1.18fr) minmax(15.5rem, var(--framework-side-width));
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'press side'
+      'board side';
+    gap: clamp(0.75rem, 0.95vw, 1rem);
     align-items: start;
     align-content: start;
     justify-content: center;
     position: relative;
-    padding: 0 calc(var(--framework-side-width) + clamp(0.75rem, 0.9vw, 1rem)) 0 0.25rem;
+    padding: 0 0.15rem 0 0.2rem;
   }
 
   .framework-playground__board-column {
-    grid-column: 1;
-    grid-row: 2;
+    grid-area: board;
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
@@ -1754,8 +1759,7 @@
   }
 
   .framework-playground__pressline {
-    grid-column: 1 / -1;
-    grid-row: 1;
+    grid-area: press;
     margin: 0;
     display: flex;
     align-items: center;
@@ -1879,22 +1883,22 @@
   }
 
   .framework-playground__side-column {
-    grid-column: 1;
-    grid-row: 2;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: var(--framework-side-width);
+    grid-area: side;
+    position: sticky;
+    top: calc(var(--nav-height) + 0.75rem);
+    width: auto;
     height: auto;
     min-height: 0;
-    max-height: 100%;
+    max-height: calc(var(--framework-stage-height) + 4.5rem);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 0.65rem;
     min-width: 0;
     overflow: auto;
-    padding: 0.1rem 0.15rem 0.15rem 0;
+    padding: 0.1rem 0.1rem 0.15rem 0.1rem;
+    overscroll-behavior: contain;
+    align-self: start;
   }
 
   .framework-playground__side-kicker {
@@ -2242,14 +2246,14 @@
 
   @media (max-width: 960px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.6rem, 1320px);
+      width: min(100vw - 0.5rem, 1220px);
       height: auto;
       min-height: 0;
-      padding: calc(var(--nav-height) + 0.55rem) 0.3rem 1.2rem;
+      padding: calc(var(--nav-height) + 0.55rem) 0.22rem 2rem;
     }
 
     .framework-playground {
-      --framework-stage-height: clamp(17.85rem, 48svh, 28rem);
+      --framework-stage-height: clamp(17rem, 46svh, 26rem);
     }
 
     .framework-playground__body {
@@ -2281,6 +2285,8 @@
       grid-row: 3;
       position: static;
       width: auto;
+      max-height: none;
+      overflow: visible;
       padding: 0;
     }
 
@@ -2323,14 +2329,14 @@
 
   @media (max-width: 640px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.35rem, 1320px);
-      padding: calc(var(--nav-height) + 0.4rem) 0.12rem 0.8rem;
+      width: min(100vw - 0.3rem, 1220px);
+      padding: calc(var(--nav-height) + 0.38rem) 0.06rem 1.35rem;
     }
 
     .framework-playground {
-      --framework-stage-height: clamp(16.25rem, 44svh, 22.75rem);
-      padding: 0.7rem;
-      gap: 0.7rem;
+      --framework-stage-height: clamp(15rem, 41svh, 21rem);
+      padding: 0.62rem;
+      gap: 0.62rem;
     }
 
     .framework-playground__overlay {
@@ -2346,16 +2352,24 @@
     }
 
     .framework-playground__rail {
-      gap: 0.38rem;
+      overflow-x: auto;
+      padding: 0.1rem 0 0.45rem;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
     }
 
     .framework-playground__rail--stack {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0.45rem;
     }
 
     .framework-playground__chip {
+      flex: 0 0 auto;
+      min-width: max-content;
       min-height: 2.4rem;
       padding: 0.42rem 0.5rem;
+      scroll-snap-align: start;
     }
 
     .framework-playground__chip-label {

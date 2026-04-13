@@ -41,9 +41,6 @@
   let animationFrame = 0;
   let isAnimating = false;
 
-  const canMoveLeft = $derived(isScrollable && !atStart);
-  const canMoveRight = $derived(isScrollable && !atEnd);
-
   function clamp(value: number) {
     return Math.min(Math.max(0, value), maxScrollLeft);
   }
@@ -312,16 +309,6 @@
 >
   <div class="card-strip__frame" aria-hidden="true"></div>
 
-  <button
-    class="card-strip__arrow card-strip__arrow--left"
-    type="button"
-    aria-label={leftLabel}
-    disabled={!canMoveLeft}
-    onclick={() => step(-1)}
-  >
-    &#8249;
-  </button>
-
   <div
     class="card-strip__rail"
     bind:this={railElement}
@@ -340,16 +327,6 @@
       </article>
     {/each}
   </div>
-
-  <button
-    class="card-strip__arrow card-strip__arrow--right"
-    type="button"
-    aria-label={rightLabel}
-    disabled={!canMoveRight}
-    onclick={() => step(1)}
-  >
-    &#8250;
-  </button>
 </div>
 
 <style>
@@ -425,14 +402,34 @@
     overscroll-behavior-y: auto;
     padding: clamp(0.88rem, 1.55vw, 1.02rem) clamp(0.85rem, 1.8vw, 1.15rem) calc(var(--space-md) + 0.12rem);
     scroll-padding-inline: calc(var(--strip-bleed-pad) + 1rem);
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 144, 92, 0.42) rgba(7, 8, 10, 0.16);
     scrollbar-gutter: stable both-edges;
     touch-action: pan-y pinch-zoom;
     cursor: grab;
   }
 
   .card-strip__rail::-webkit-scrollbar {
-    display: none;
+    height: 0.58rem;
+  }
+
+  .card-strip__rail::-webkit-scrollbar-track {
+    background: rgba(7, 8, 10, 0.18);
+    border-radius: 999px;
+  }
+
+  .card-strip__rail::-webkit-scrollbar-thumb {
+    background:
+      linear-gradient(180deg, rgba(240, 214, 184, 0.22), rgba(184, 115, 51, 0.38)),
+      rgba(212, 144, 92, 0.34);
+    border-radius: 999px;
+    border: 1px solid rgba(255, 248, 236, 0.06);
+  }
+
+  .card-strip__rail::-webkit-scrollbar-thumb:hover {
+    background:
+      linear-gradient(180deg, rgba(240, 214, 184, 0.28), rgba(184, 115, 51, 0.48)),
+      rgba(212, 144, 92, 0.42);
   }
 
   .card-strip--dragging .card-strip__rail {
@@ -588,57 +585,6 @@
   .card-strip--at-start::before,
   .card-strip--at-end::after {
     opacity: 0.25;
-  }
-
-  .card-strip__arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--card-border);
-    border-radius: 50%;
-    background: var(--surface-glass);
-    color: var(--stone-light);
-    font-size: 1.4rem;
-    box-shadow: 0 12px 32px var(--shadow-md);
-    backdrop-filter: var(--blur);
-    transform: translateY(-50%);
-    transition:
-      border-color 0.2s ease,
-      background 0.2s ease,
-      opacity 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .card-strip__arrow:hover:not(:disabled) {
-    border-color: var(--copper);
-    background: var(--card-bg);
-    transform: translateY(-50%) scale(1.04);
-  }
-
-  .card-strip__arrow:disabled {
-    opacity: 0.32;
-    cursor: default;
-    border-color: rgba(163, 184, 199, 0.08);
-    background: rgba(14, 14, 17, 0.38);
-    box-shadow: none;
-  }
-
-  .card-strip--static .card-strip__arrow {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .card-strip__arrow--left {
-    left: clamp(0.55rem, 1.4vw, 1rem);
-  }
-
-  .card-strip__arrow--right {
-    right: clamp(0.55rem, 1.4vw, 1rem);
   }
 
   @media (max-width: 720px) {
