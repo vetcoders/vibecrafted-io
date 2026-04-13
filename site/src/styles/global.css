@@ -32,12 +32,12 @@
     /* Surfaces */
     --card-bg: rgba(26, 29, 34, 0.6);
     --card-border: rgba(163, 184, 199, 0.1);
-    --surface-glass: rgba(14, 14, 17, 0.66);
+    --surface-glass: rgba(19, 17, 14, 0.28);
     --surface-overlay: rgba(9, 10, 12, 0.88);
-    --glass-panel-bg: linear-gradient(180deg, rgba(18, 20, 24, 0.58), rgba(8, 9, 12, 0.76));
-    --glass-panel-bg-strong: linear-gradient(180deg, rgba(18, 20, 24, 0.72), rgba(8, 9, 12, 0.86));
-    --glass-panel-border: rgba(196, 212, 224, 0.18);
-    --glass-panel-highlight: rgba(255, 255, 255, 0.08);
+    --glass-panel-bg: linear-gradient(180deg, rgba(28, 24, 19, 0.34), rgba(10, 11, 14, 0.56));
+    --glass-panel-bg-strong: linear-gradient(180deg, rgba(31, 27, 22, 0.46), rgba(10, 11, 13, 0.72));
+    --glass-panel-border: rgba(216, 206, 188, 0.16);
+    --glass-panel-highlight: rgba(255, 248, 236, 0.1);
     --terminal: #0e0e11;
     --terminal-soft: #14171b;
 
@@ -66,19 +66,19 @@
     --copper-shadow: rgba(184, 115, 51, 0.2);
     --copper-glow-faint: rgba(184, 115, 51, 0.12);
     --site-background-overlay: linear-gradient(180deg, rgba(7, 8, 10, 0.68) 0%, rgba(7, 8, 10, 0.88) 100%);
-    --site-paper-substrate: linear-gradient(180deg, rgba(43, 34, 24, 0.18) 0%, rgba(14, 14, 17, 0.12) 38%, rgba(58, 46, 32, 0.16) 100%);
+    --site-paper-substrate: linear-gradient(180deg, rgba(54, 43, 30, 0.28) 0%, rgba(19, 17, 14, 0.12) 26%, rgba(14, 14, 17, 0.08) 56%, rgba(66, 52, 36, 0.22) 100%);
     --site-paper-fiber-overlay:
-    radial-gradient(circle at 14% 18%, rgba(246, 237, 214, 0.06), transparent 24%),
-    radial-gradient(circle at 82% 16%, rgba(184, 115, 51, 0.06), transparent 22%),
-    radial-gradient(circle at 48% 76%, rgba(90, 138, 122, 0.04), transparent 30%),
-    repeating-linear-gradient(118deg, rgba(255, 249, 232, 0.018) 0 2px, transparent 2px 9px),
-    repeating-linear-gradient(32deg, rgba(139, 110, 78, 0.018) 0 1px, transparent 1px 7px);
+    radial-gradient(circle at 14% 18%, rgba(246, 237, 214, 0.075), transparent 24%),
+    radial-gradient(circle at 82% 16%, rgba(184, 115, 51, 0.08), transparent 22%),
+    radial-gradient(circle at 48% 76%, rgba(90, 138, 122, 0.05), transparent 30%),
+    repeating-linear-gradient(118deg, rgba(255, 249, 232, 0.024) 0 2px, transparent 2px 10px),
+    repeating-linear-gradient(32deg, rgba(139, 110, 78, 0.024) 0 1px, transparent 1px 8px);
     --site-paper-grain-overlay:
-    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.03), transparent 18%),
-    radial-gradient(circle at 76% 18%, rgba(212, 182, 138, 0.035), transparent 20%),
-    radial-gradient(circle at 42% 84%, rgba(255, 241, 214, 0.024), transparent 22%),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(139, 110, 78, 0.01) 0 1px, transparent 1px 4px);
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.038), transparent 18%),
+    radial-gradient(circle at 76% 18%, rgba(212, 182, 138, 0.042), transparent 20%),
+    radial-gradient(circle at 42% 84%, rgba(255, 241, 214, 0.03), transparent 22%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(139, 110, 78, 0.012) 0 1px, transparent 1px 4px);
     --site-atmosphere-overlay: linear-gradient(180deg, rgba(232, 223, 201, 0.06) 0%, rgba(232, 223, 201, 0) 24%),
     radial-gradient(circle at 18% 18%, rgba(184, 115, 51, 0.1), transparent 32%),
     radial-gradient(circle at 82% 12%, rgba(212, 198, 171, 0.08), transparent 26%),
@@ -136,10 +136,10 @@
     --framework-page-min-height: 100svh;
 
     /* Docs subpages */
-    --docs-shell-padding-block: calc(var(--nav-height) + 1.6rem) 0 32px;
-    --docs-shell-width-expanded: min(1160px, calc(100% - 1.6rem));
+    --docs-shell-padding-block: calc(var(--nav-height) + 1.35rem) 0 clamp(3rem, 8vh, 4.75rem);
+    --docs-shell-width-expanded: min(1100px, calc(100% - 1.6rem));
     --docs-shell-width-mobile: min(100% - 1rem, 42rem);
-    --docs-shell-gap-expanded: clamp(1.2rem, 2vw, 1.7rem);
+    --docs-shell-gap-expanded: clamp(1rem, 1.8vw, 1.45rem);
     --docs-shell-gap-mobile: var(--space-md);
     --docs-hero-gap-expanded: 0.95rem 1.75rem;
     --docs-hero-gap-mobile: 0.9rem;
@@ -157,11 +157,11 @@
     --docs-inline-links-gap: 0.75rem 1rem;
     --docs-inline-links-gap-mobile: 0.6rem;
     --docs-inline-links-padding: 0.15rem 0.25rem 0;
-    --docs-shell-padding-block-mobile: calc(var(--nav-height) + 1rem) 0 24px;
+    --docs-shell-padding-block-mobile: calc(var(--nav-height) + 0.95rem) 0 2.6rem;
     --docs-hero-quote-size-mobile: 0.98rem;
-    --docs-shell-width-base: min(1120px, var(--page-shell));
-    --docs-shell-gap-base: clamp(1.35rem, 2vw, 1.85rem);
-    --docs-section-gap-base: clamp(1rem, 1.6vw, 1.3rem);
+    --docs-shell-width-base: min(1060px, var(--page-shell));
+    --docs-shell-gap-base: clamp(1rem, 1.65vw, 1.4rem);
+    --docs-section-gap-base: clamp(0.85rem, 1.4vw, 1.1rem);
     --docs-hero-padding-top-base: var(--space-lg);
     --docs-hero-max-width-base: min(60rem, 100%);
     --docs-hero-lead-max-width-base: 45rem;
@@ -256,7 +256,7 @@
     --code-block-copy-radius: 5px;
 
     /* Footer */
-    --footer-shell-margin: 0 auto 1.5rem;
+    --footer-shell-margin: clamp(1.75rem, 5vh, 2.75rem) auto 1.5rem;
     --footer-shell-padding: clamp(1.15rem, 2vw, 1.5rem) clamp(1rem, 2.2vw, 1.6rem);
     --footer-shell-backdrop: blur(22px) saturate(120%);
     --footer-shell-shadow: 0 18px 40px var(--shadow-soft), inset 0 1px 0 var(--glass-panel-highlight);
@@ -328,11 +328,15 @@ html {
 body {
     font-family: var(--font-body);
     background-color: var(--stone-deep);
-    background-image: var(--site-background-overlay), var(--site-paper-substrate), url('/presence/background-stone.webp');
-    background-position: center top;
-    background-size: cover, cover, cover;
-    background-repeat: no-repeat, no-repeat, no-repeat;
-    background-attachment: fixed;
+    background-image:
+        var(--site-background-overlay),
+        radial-gradient(circle at 50% -10%, rgba(247, 236, 212, 0.1), transparent 42%),
+        var(--site-paper-substrate),
+        url('/presence/background-stone.webp');
+    background-position: center top, center top, center top, center top;
+    background-size: cover, 100% 100%, cover, cover;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+    background-attachment: fixed, fixed, fixed, fixed;
     color: var(--stone-light);
     line-height: 1.7;
     overflow-x: hidden;
@@ -396,7 +400,7 @@ body::before {
     position: fixed;
     inset: 0;
     background: var(--site-paper-fiber-overlay), var(--site-atmosphere-overlay);
-    opacity: 0.74;
+    opacity: 0.82;
     mix-blend-mode: soft-light;
     pointer-events: none;
     z-index: -1;
@@ -407,7 +411,7 @@ body::after {
     position: fixed;
     inset: 0;
     background: var(--site-paper-grain-overlay), var(--site-vignette-overlay);
-    opacity: 0.82;
+    opacity: 0.74;
     pointer-events: none;
     z-index: -1;
 }
@@ -425,7 +429,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .shell {
-    padding: 0 0 24px
+    position: relative;
+    z-index: 1;
+    padding: 0 0 clamp(2.75rem, 7vh, 4rem)
 }
 
 .skip-link {
@@ -1862,12 +1868,17 @@ body.modal-open .curl-banner {
     border-color: var(--copper)
 }
 
-html.subpage {
+html.subpage,
+html.framework-subpage {
     scroll-snap-type: none;
 }
 
 .subpage .shell {
     padding: calc(var(--nav-height) + 2rem) 0 24px;
+}
+
+.shell--framework {
+    padding: calc(var(--nav-height) + 0.55rem) 0 clamp(3rem, 7vh, 4.25rem);
 }
 
 .subpage section,
@@ -1917,6 +1928,15 @@ html.subpage {
     flex-wrap: wrap;
 }
 
+.quickstart-hero-section {
+    width: 100%;
+    max-width: none;
+}
+
+.quickstart-hero-section .manifesto-title {
+    max-width: 12ch;
+}
+
 .docs-grid {
     display: grid;
     gap: var(--space-md);
@@ -1934,18 +1954,33 @@ html.subpage {
 
 .docs-card--install {
     display: grid;
-    grid-template-columns: minmax(3rem, 3.75rem) minmax(0, 0.94fr) minmax(20rem, 1.06fr);
-    gap: clamp(0.85rem, 1.6vw, 1.15rem);
+    grid-template-columns: minmax(2.8rem, 3.35rem) minmax(0, 0.9fr) minmax(19rem, 1.1fr);
+    gap: clamp(0.8rem, 1.4vw, 1rem);
     align-items: start;
-    padding: clamp(0.95rem, 1.8vw, 1.15rem);
+    padding: clamp(0.9rem, 1.6vw, 1.05rem);
 }
 
 .docs-card--operation {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(18rem, 0.92fr);
-    gap: clamp(0.95rem, 1.8vw, 1.35rem);
+    grid-template-columns: minmax(0, 0.96fr) minmax(19rem, 1.04fr);
+    gap: clamp(0.85rem, 1.55vw, 1.1rem);
     align-items: start;
-    padding: clamp(1rem, 1.8vw, 1.2rem);
+    padding: clamp(0.95rem, 1.65vw, 1.08rem);
+}
+
+.docs-grid--operation-rows,
+.docs-grid--install-rows {
+    gap: clamp(0.72rem, 1.35vw, 0.92rem);
+}
+
+.docs-card--install-row {
+    grid-template-columns: minmax(2.8rem, 3.25rem) minmax(0, 0.84fr) minmax(20rem, 1.16fr);
+    align-items: center;
+}
+
+.docs-card--operation-row {
+    grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
+    align-items: center;
 }
 
 .docs-card__step {
@@ -1978,6 +2013,16 @@ html.subpage {
     line-height: 1.08;
 }
 
+.docs-card--install-row .docs-card__copy,
+.docs-card--operation-row .docs-card__copy {
+    gap: 0.32rem;
+}
+
+.docs-card--install-row .docs-card__copy h3,
+.docs-card--operation-row .docs-card__copy h3 {
+    font-size: 1.02rem;
+}
+
 .docs-card__copy p {
     color: var(--docs-copy-body-color);
     font-size: 0.92rem;
@@ -1995,6 +2040,11 @@ html.subpage {
 .docs-card__command {
     min-width: 0;
     align-self: start;
+}
+
+.docs-card--install-row .docs-card__command,
+.docs-card--operation-row .docs-card__command {
+    align-self: stretch;
 }
 
 .docs-card__command--bar {
@@ -2025,6 +2075,11 @@ html.subpage {
     font-size: clamp(0.74rem, 0.95vw, 0.86rem);
 }
 
+.docs-card--operation-row .docs-card__command .code-block {
+    height: 100%;
+    align-items: flex-start;
+}
+
 .install-command-bar {
     width: 100%;
     display: grid;
@@ -2039,6 +2094,11 @@ html.subpage {
     -webkit-backdrop-filter: var(--install-command-bar-backdrop);
     box-shadow: inset 0 1px 0 var(--install-command-bar-highlight);
     overflow: hidden;
+}
+
+.docs-card--install-row .install-command-bar {
+    min-height: 100%;
+    align-items: center;
 }
 
 .install-command-bar__prompt,
@@ -2233,7 +2293,7 @@ html.subpage {
 footer {
     scroll-snap-align: start;
     scroll-margin-top: var(--view-offset);
-    width: var(--page-shell);
+    width: min(var(--page-shell), calc(100% - 1rem));
     margin: var(--footer-shell-margin);
     padding: var(--footer-shell-padding);
     border: 1px solid var(--glass-panel-border);
@@ -2253,6 +2313,10 @@ footer {
 
 .footer-shell {
     isolation: isolate;
+}
+
+body.framework-page footer {
+    scroll-snap-align: none;
 }
 
 .footer-container {
@@ -2568,6 +2632,12 @@ footer {
         padding: 1rem;
     }
 
+    .docs-card--install-row,
+    .docs-card--operation-row {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
     .docs-card__step {
         justify-content: flex-start;
         align-self: auto;
@@ -2606,6 +2676,10 @@ footer {
         padding-top: 1rem;
     }
 
+    .quickstart-hero-section {
+        width: 100%;
+    }
+
     .docs-hero .manifesto-title {
         max-width: 11ch;
     }
@@ -2640,7 +2714,7 @@ footer {
     }
 
     .framework-strip .card {
-        flex-basis: min(84vw, 19rem);
+        flex-basis: min(82vw, 18rem);
     }
 
     .framework-strip-wrap::before,
@@ -2729,7 +2803,7 @@ footer {
     width: 100vw;
     margin-left: calc(50% - 50vw);
     padding-inline: var(--strip-bleed-pad);
-    padding-block: clamp(0.65rem, 1.4vw, 0.95rem);
+    padding-block: clamp(0.72rem, 1.25vw, 0.92rem);
     overflow: hidden;
     isolation: isolate;
     perspective: 1200px;
@@ -2740,17 +2814,41 @@ footer {
 .framework-strip-frame {
     position: absolute;
     inset: 0.2rem clamp(0.45rem, 1.5vw, 1.1rem);
-    border: 1px solid rgba(184, 115, 51, 0.18);
+    border: 1px solid rgba(184, 115, 51, 0.2);
     border-radius: calc(var(--radius-lg) + 2px);
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 26%),
-        linear-gradient(180deg, rgba(12, 13, 16, 0.42), rgba(10, 11, 13, 0.12));
+        linear-gradient(180deg, rgba(255, 251, 244, 0.055), transparent 24%),
+        linear-gradient(180deg, rgba(30, 25, 18, 0.18), rgba(10, 11, 13, 0.08)),
+        linear-gradient(180deg, rgba(12, 13, 16, 0.34), rgba(10, 11, 13, 0.08));
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.05),
         0 18px 38px rgba(0, 0, 0, 0.16);
     clip-path: polygon(1.7% 0, 98.3% 0, 100% 100%, 0 100%);
     pointer-events: none;
     z-index: 0;
+}
+
+.framework-strip-wrap--skills .framework-strip-frame::before,
+.framework-strip-wrap--skills .framework-strip-frame::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+.framework-strip-wrap--skills .framework-strip-frame::before {
+    inset: 0.3rem 1.1rem auto 1.1rem;
+    height: 38%;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 248, 236, 0.08), transparent 100%);
+    opacity: 0.78;
+}
+
+.framework-strip-wrap--skills .framework-strip-frame::after {
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 0.42rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(184, 115, 51, 0), rgba(184, 115, 51, 0.52), rgba(229, 236, 245, 0.12), rgba(184, 115, 51, 0));
 }
 
 @media (max-width: 720px) {
@@ -2770,16 +2868,17 @@ footer {
     position: relative;
     z-index: 1;
     display: flex;
-    gap: var(--space-md);
+    gap: clamp(0.85rem, 1.4vw, 1rem);
     overflow-x: auto;
-    scroll-snap-type: x proximity;
+    scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
     overscroll-behavior-y: auto;
-    padding: clamp(0.95rem, 1.8vw, 1.15rem) clamp(0.9rem, 2vw, 1.4rem) calc(var(--space-md) + 0.18rem);
+    padding: clamp(0.88rem, 1.55vw, 1.02rem) clamp(0.85rem, 1.8vw, 1.15rem) calc(var(--space-md) + 0.12rem);
     scroll-padding-inline: calc(var(--strip-bleed-pad) + 1rem);
     scrollbar-width: none;
     cursor: grab;
+    scrollbar-gutter: stable both-edges;
     touch-action: pan-y pinch-zoom;
 }
 
@@ -2793,7 +2892,7 @@ footer {
 }
 
 .framework-strip .card {
-    flex: 0 0 clamp(18rem, 24vw, 21rem);
+    flex: 0 0 clamp(17.35rem, 22vw, 20rem);
     scroll-snap-align: start;
     scroll-snap-stop: always;
     transform-style: preserve-3d;

@@ -1,6 +1,7 @@
 ---
 import CopyButton from '../../components/CopyButton.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const dict = getTranslations(lang);
@@ -8,7 +9,7 @@ const section = dict.sections.get;
 const copyButton = dict.copyButton;
 ---
 <section id="get" class="get-section">
-    <div class="container fade-up">
+    <Reveal tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
@@ -50,5 +51,5 @@ const copyButton = dict.copyButton;
                 </a>
             ))}
         </div>
-    </div>
+    </Reveal>
 </section>

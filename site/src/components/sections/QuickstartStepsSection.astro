@@ -1,13 +1,14 @@
 ---
 import CopyButton from '../../components/CopyButton.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
+import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const dict = getTranslations(lang);
 const section = dict.sections.quickstartSteps;
 const copyButton = dict.copyButton;
 ---
-<section class="fade-up quickstart-steps-section">
+<Reveal tag="section" class="quickstart-steps-section">
     <div class="docs-grid docs-grid--operations docs-grid--operation-rows">
         {section.steps.map((step) => {
             const commands = 'commands' in step ? step.commands : [step.command];
@@ -43,4 +44,4 @@ const copyButton = dict.copyButton;
             );
         })}
     </div>
-</section>
+</Reveal>

@@ -2,8 +2,6 @@
 import { Image } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import CopyButton from '../components/CopyButton.svelte';
-import ScrollObserver from '../components/ScrollObserver.svelte';
-import CardStrip from '../components/CardStrip.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations, type Lang } from '../lib/i18n';
 import '../styles/global.css';
@@ -302,7 +300,5 @@ const contentSecurityPolicy = [
     </footer>
 
     <script is:inline src="/site.js"></script>
-    <ScrollObserver client:load />
-    <CardStrip client:load />
 </body>
 </html>

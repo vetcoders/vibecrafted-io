@@ -1679,17 +1679,18 @@
   :global(body.framework-page) {
     min-height: 100%;
     background:
-      linear-gradient(180deg, rgba(12, 12, 15, 0.94) 0%, rgba(9, 9, 12, 0.98) 100%),
+      linear-gradient(180deg, rgba(13, 13, 16, 0.9) 0%, rgba(8, 9, 12, 0.98) 100%),
+      radial-gradient(circle at 18% 12%, rgba(184, 115, 51, 0.12), transparent 32%),
       var(--site-paper-substrate);
-    background-attachment: scroll, scroll;
+    background-attachment: scroll, scroll, scroll;
   }
 
   :global(.framework-page-shell) {
-    width: min(1480px, calc(100vw - 0.85rem));
+    width: min(1320px, calc(100vw - 1.1rem));
     height: auto;
     min-height: 0;
     margin: 0 auto;
-    padding: calc(var(--nav-height) + 0.75rem) 0.4rem 0.7rem;
+    padding: calc(var(--nav-height) + 0.7rem) 0.45rem 1.75rem;
     display: grid;
     grid-template-rows: min-content;
     gap: 0;
@@ -1701,18 +1702,19 @@
     max-width: 100%;
     min-width: 0;
     min-height: 0;
-    --framework-stage-height: clamp(20.75rem, 48svh, 31.5rem);
+    --framework-stage-height: clamp(17.75rem, 41svh, 26.75rem);
+    --framework-side-width: clamp(220px, 18.5vw, 272px);
     height: auto;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
-    padding: clamp(0.85rem, 1.1vw, 1rem);
+    padding: clamp(0.78rem, 1vw, 0.95rem);
     background:
       radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.08), transparent 26%),
       radial-gradient(circle at 82% 12%, rgba(163, 184, 199, 0.08), transparent 24%),
-      linear-gradient(180deg, rgba(18, 19, 23, 0.94) 0%, rgba(10, 10, 12, 0.96) 100%);
+      linear-gradient(180deg, rgba(18, 19, 23, 0.86) 0%, rgba(10, 10, 12, 0.92) 100%);
     box-shadow: var(--shadow);
     display: grid;
-    gap: clamp(0.8rem, 1vw, 1rem);
+    gap: clamp(0.7rem, 0.9vw, 0.92rem);
   }
 
   .framework-playground__sr-heading {
@@ -1730,13 +1732,14 @@
   .framework-playground__body {
     min-height: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(248px, 20vw, 296px);
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto auto;
-    gap: clamp(0.85rem, 1vw, 1.15rem);
+    gap: clamp(0.75rem, 0.9vw, 1rem);
     align-items: start;
     align-content: start;
     justify-content: center;
-    padding: 0 0.15rem 0 0.4rem;
+    position: relative;
+    padding: 0 calc(var(--framework-side-width) + clamp(0.75rem, 0.9vw, 1rem)) 0 0.25rem;
   }
 
   .framework-playground__board-column {
@@ -1744,7 +1747,7 @@
     grid-row: 2;
     display: flex;
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.55rem;
     min-width: 0;
     min-height: 0;
     align-self: start;
@@ -1756,10 +1759,10 @@
     margin: 0;
     display: flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.45rem;
     min-width: 0;
     color: var(--steel-dark);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     letter-spacing: 0.06em;
     white-space: nowrap;
     overflow: hidden;
@@ -1795,7 +1798,7 @@
     background-position: center;
     background-blend-mode: multiply;
     overflow: hidden;
-    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 0 54px rgba(0, 0, 0, 0.46);
   }
 
   .framework-playground__canvas {
@@ -1806,15 +1809,15 @@
 
   .framework-playground__overlay {
     position: absolute;
-    top: 1.2rem;
-    left: 1.2rem;
+    top: 0.95rem;
+    left: 0.95rem;
     display: grid;
-    gap: 0.45rem;
-    min-width: 150px;
-    padding: 0.85rem 0.95rem;
+    gap: 0.35rem;
+    min-width: 142px;
+    padding: 0.72rem 0.82rem;
     border: 1px solid var(--card-border);
     border-radius: var(--radius-md);
-    background: rgba(8, 9, 11, 0.82);
+    background: rgba(8, 9, 11, 0.74);
     backdrop-filter: var(--blur);
     box-shadow: var(--shadow);
     z-index: 5;
@@ -1832,32 +1835,32 @@
     justify-content: space-between;
     gap: 1rem;
     color: var(--steel);
-    font-size: 0.7rem;
+    font-size: 0.66rem;
   }
 
   .framework-playground__overlay strong {
     color: var(--stone-light);
-    font-size: 0.88rem;
+    font-size: 0.82rem;
   }
 
   .framework-playground__prompt {
     position: absolute;
-    left: 0.9rem;
-    right: 0.9rem;
-    bottom: 0.9rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.6rem;
     width: fit-content;
-    max-width: calc(100% - 1.8rem);
+    max-width: calc(100% - 1.5rem);
     margin: 0;
-    padding: 0.68rem 0.88rem;
+    padding: 0.58rem 0.78rem;
     border: 1px solid rgba(163, 184, 199, 0.14);
     border-radius: 999px;
-    background: rgba(7, 9, 12, 0.78);
+    background: rgba(7, 9, 12, 0.72);
     color: var(--stone-light);
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     backdrop-filter: blur(14px);
@@ -1876,19 +1879,21 @@
   }
 
   .framework-playground__side-column {
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 2;
-    position: sticky;
-    top: calc(var(--nav-height) + 0.8rem);
-    width: auto;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: var(--framework-side-width);
     height: auto;
     min-height: 0;
+    max-height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 0.75rem;
+    gap: 0.65rem;
     min-width: 0;
-    overflow: visible;
+    overflow: auto;
     padding: 0.1rem 0.15rem 0.15rem 0;
   }
 
@@ -1904,9 +1909,9 @@
   .framework-playground__side-copy {
     margin: 0;
     color: var(--steel);
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     line-height: 1.4;
-    min-height: 2.2rem;
+    min-height: 2rem;
   }
 
   .framework-playground__alert-strip {
@@ -1951,7 +1956,7 @@
   .framework-playground__controls-inner {
     display: grid;
     gap: 0.72rem;
-    padding: 0.25rem 0 0.1rem;
+    padding: 0.15rem 0 0.1rem;
   }
 
   .framework-playground__control {
@@ -2131,21 +2136,21 @@
 
   .framework-playground__rail--stack {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.08rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.28rem 0.35rem;
   }
 
   .framework-playground__chip {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     min-width: 0;
-    padding: 0.34rem 0 0.34rem 0.75rem;
-    border: 0;
-    border-left: 1px solid rgba(163, 184, 199, 0.16);
-    border-radius: 0;
-    background: transparent;
+    min-height: 2.05rem;
+    padding: 0.42rem 0.5rem;
+    border: 1px solid rgba(163, 184, 199, 0.12);
+    border-radius: 999px;
+    background: rgba(17, 18, 22, 0.52);
     box-shadow: none;
     color: var(--stone-light);
     cursor: pointer;
@@ -2154,47 +2159,48 @@
 
   .framework-playground__chip:hover,
   .framework-playground__chip:focus-visible {
-    border-left-color: rgba(184, 115, 51, 0.36);
-    background: transparent;
+    border-color: rgba(184, 115, 51, 0.36);
+    background: rgba(24, 19, 15, 0.7);
     outline: none;
   }
 
   .framework-playground__chip.is-active {
-    border-left-color: rgba(184, 115, 51, 0.78);
-    background: transparent;
+    border-color: rgba(184, 115, 51, 0.78);
+    background: rgba(26, 20, 15, 0.88);
     color: var(--copper-bright);
   }
 
   .framework-playground__chip.is-done {
-    border-left-color: rgba(90, 138, 122, 0.3);
+    border-color: rgba(90, 138, 122, 0.24);
   }
 
   .framework-playground__chip[data-tone="patina"].is-active {
-    border-left-color: rgba(90, 138, 122, 0.72);
+    border-color: rgba(90, 138, 122, 0.72);
     color: var(--patina);
   }
 
   .framework-playground__chip[data-tone="alert"].is-active {
-    border-left-color: rgba(224, 85, 68, 0.78);
+    border-color: rgba(224, 85, 68, 0.78);
     color: #ffb8ae;
   }
 
   .framework-playground__chip-label {
     font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 0.71rem;
+    font-size: 0.64rem;
     letter-spacing: 0.07em;
-    line-height: 1;
+    line-height: 1.15;
     text-transform: uppercase;
-    white-space: nowrap;
+    white-space: normal;
+    text-align: center;
   }
 
   .framework-playground__chip::after {
     content: attr(data-tooltip);
     position: absolute;
-    right: calc(100% + 0.8rem);
-    top: 50%;
-    transform: translate(0.35rem, -50%);
-    width: 240px;
+    left: 50%;
+    bottom: calc(100% + 0.55rem);
+    transform: translate(-50%, 0.35rem);
+    width: min(18rem, 26vw);
     padding: 0.72rem 0.82rem;
     border: 1px solid rgba(163, 184, 199, 0.16);
     border-radius: 14px;
@@ -2231,19 +2237,19 @@
   .framework-playground__chip:hover::after,
   .framework-playground__chip:focus-visible::after {
     opacity: 1;
-    transform: translate(0, -50%);
+    transform: translate(-50%, 0);
   }
 
   @media (max-width: 960px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.45rem, 1480px);
+      width: min(100vw - 0.6rem, 1320px);
       height: auto;
       min-height: 0;
-      padding: calc(var(--nav-height) + 0.55rem) 0.25rem 0.6rem;
+      padding: calc(var(--nav-height) + 0.55rem) 0.3rem 1.2rem;
     }
 
     .framework-playground {
-      --framework-stage-height: clamp(21rem, 56svh, 34rem);
+      --framework-stage-height: clamp(17.85rem, 48svh, 28rem);
     }
 
     .framework-playground__body {
@@ -2274,6 +2280,7 @@
     .framework-playground__side-column {
       grid-row: 3;
       position: static;
+      width: auto;
       padding: 0;
     }
 
@@ -2316,20 +2323,20 @@
 
   @media (max-width: 640px) {
     :global(.framework-page-shell) {
-      width: min(100vw - 0.35rem, 1480px);
-      padding: calc(var(--nav-height) + 0.45rem) 0.15rem 0.35rem;
+      width: min(100vw - 0.35rem, 1320px);
+      padding: calc(var(--nav-height) + 0.4rem) 0.12rem 0.8rem;
     }
 
     .framework-playground {
-      --framework-stage-height: clamp(18.75rem, 52svh, 28.5rem);
-      padding: 0.75rem;
-      gap: 0.75rem;
+      --framework-stage-height: clamp(16.25rem, 44svh, 22.75rem);
+      padding: 0.7rem;
+      gap: 0.7rem;
     }
 
     .framework-playground__overlay {
       left: auto;
-      right: 0.75rem;
-      min-width: 132px;
+      right: 0.7rem;
+      min-width: 124px;
     }
 
     .framework-playground__prompt {
