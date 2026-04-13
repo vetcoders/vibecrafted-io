@@ -48,3 +48,162 @@ const trajectoryBars = [
         </div>
     </Reveal>
 </section>
+
+<style>
+    .manifesto-section {
+        background: var(--manifesto-section-surface);
+    }
+
+    .manifesto-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+        gap: 1.5rem;
+        align-items: stretch;
+    }
+
+    .manifesto-block,
+    .transition-visual {
+        padding: clamp(1.35rem, 2vw, 1.9rem);
+        border: 1px solid var(--glass-panel-border);
+        border-radius: var(--radius-lg);
+        background: var(--glass-panel-bg-strong);
+        backdrop-filter: blur(24px) saturate(122%);
+        -webkit-backdrop-filter: blur(24px) saturate(122%);
+        box-shadow: var(--elevated-panel-shadow);
+    }
+
+    .manifesto-block {
+        max-width: min(54rem, 100%);
+    }
+
+    .transition-visual {
+        text-align: center;
+    }
+
+    .transition-visual--dou {
+        height: 100%;
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 1.1rem;
+    }
+
+    .manifesto-block blockquote {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+        border-left: 3px solid var(--copper);
+        color: var(--steel-dark);
+        font-size: 1.05rem;
+        font-style: italic;
+    }
+
+    .manifesto-block .plague-list {
+        list-style: none;
+        margin: 1.5rem 0;
+    }
+
+    .manifesto-block .plague-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.4rem 0;
+        font-size: 0.95rem;
+    }
+
+    .manifesto-block .plague-list .check {
+        color: var(--patina);
+    }
+
+    .manifesto-block .plague-list .cross {
+        color: var(--copper);
+    }
+
+    .manifesto-diagnostic-label {
+        margin-bottom: 0.8rem;
+        font-family: var(--font-head);
+        font-weight: 600;
+    }
+
+    .manifesto-summary {
+        margin-top: 1.5rem;
+    }
+
+    .transition-caption {
+        margin-bottom: 1rem;
+        color: var(--steel-dark);
+        font-family: var(--font-head);
+        font-size: 0.85rem;
+    }
+
+    .transition-scoreline {
+        margin-top: 0.8rem;
+        color: var(--steel-dark);
+        font-family: var(--font-head);
+        font-size: 0.75rem;
+    }
+
+    .trajectory {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 6px;
+        height: 120px;
+        margin: 2rem 0;
+    }
+
+    .trajectory .bar {
+        position: relative;
+        width: 40px;
+        height: 0;
+        border-radius: 4px 4px 0 0;
+        transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .trajectory .bar--copper {
+        background: var(--copper);
+    }
+
+    .trajectory .bar--steel {
+        background: var(--steel);
+    }
+
+    .trajectory .bar--patina {
+        background: var(--patina);
+    }
+
+    .trajectory .bar .bar-label {
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--steel-dark);
+        font-family: var(--font-head);
+        font-size: 0.65rem;
+        white-space: nowrap;
+    }
+
+    .trajectory .bar .bar-score {
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--stone-deep);
+        font-family: var(--font-head);
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    @media (max-width: 980px) {
+        .manifesto-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .trajectory .bar {
+            transition: none;
+        }
+    }
+</style>

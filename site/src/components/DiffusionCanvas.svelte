@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   type Lang = 'en' | 'pl';
 
   interface Slot {
@@ -277,8 +275,8 @@
     ctx.stroke();
   }
 
-  onMount(() => {
-    if (!canvasEl) return;
+  $effect(() => {
+    if (!canvasEl || typeof window === 'undefined') return;
 
     const canvas = canvasEl;
     const ctx = canvas.getContext('2d');
@@ -304,11 +302,14 @@
     let loopDelay = prefersReducedMotion ? 1700 : 2200;
     let resetTimer = 0;
     let rafId = 0;
+    let loopTimeoutId = 0;
+    let resetTimeoutId = 0;
     let resizeFrameId = 0;
     let resizeObserver: ResizeObserver | undefined;
     let intersectionObserver: IntersectionObserver | undefined;
     let canvasVisible = true;
     let pageVisible = document.visibilityState === 'visible';
+    let disposed = false;
 
     function resizeCanvas() {
       const size = Math.min(canvas.offsetWidth, canvas.offsetHeight);
@@ -330,7 +331,7 @@
     }
 
     function shouldAnimate() {
-      return canvasVisible && pageVisible;
+      return canvasVisible && pageVisible && !prefersReducedMotion;
     }
 
     function stopLoop() {
@@ -339,13 +340,99 @@
       rafId = 0;
     }
 
+    function clearReducedMotionTimers() {
+      if (loopTimeoutId) {
+        window.clearTimeout(loopTimeoutId);
+        loopTimeoutId = 0;
+      }
+
+      if (resetTimeoutId) {
+        window.clearTimeout(resetTimeoutId);
+        resetTimeoutId = 0;
+      }
+    }
+
+    function makeSettledMarble(loop: number): Marble {
+      const marble = makeMarble(loop);
+      marble.drop = 0;
+      marble.dropSpeed = 0;
+      marble.alpha = BRIGHT * 0.96;
+      return marble;
+    }
+
+    function scheduleReducedMotionAdvance(delay = currentLoop === 0 ? 800 : 2200 + Math.random() * 520) {
+      if (disposed || !prefersReducedMotion || !canvasVisible || !pageVisible) return;
+      if (loopTimeoutId) return;
+
+      loopTimeoutId = window.setTimeout(() => {
+        loopTimeoutId = 0;
+        if (disposed || !prefersReducedMotion || !canvasVisible || !pageVisible) return;
+        advanceReducedMotionLoop();
+      }, delay);
+    }
+
+    function scheduleReducedMotionReset(delay = 3200) {
+      if (disposed || !prefersReducedMotion || !canvasVisible || !pageVisible) return;
+      if (resetTimeoutId) return;
+
+      resetTimeoutId = window.setTimeout(() => {
+        resetTimeoutId = 0;
+        if (disposed || !prefersReducedMotion || !canvasVisible || !pageVisible) return;
+        buildBoard();
+        render();
+        scheduleReducedMotionAdvance(1200);
+      }, delay);
+    }
+
+    function advanceReducedMotionLoop() {
+      if (currentLoop >= 5) {
+        scheduleReducedMotionReset();
+        return;
+      }
+
+      currentLoop += 1;
+      const target = Math.round(totalSlots * LOOP_FILL[currentLoop]);
+      const empties: number[] = [];
+
+      for (let index = 0; index < slots.length; index += 1) {
+        if (!filled[index]) empties.push(index);
+      }
+
+      shuffle(empties);
+      const current = countFilled();
+      const toFill = Math.max(0, target - current);
+
+      for (let index = 0; index < Math.min(toFill, empties.length); index += 1) {
+        const slotIndex = empties[index];
+        slots[slotIndex].marble = makeSettledMarble(currentLoop);
+        filled[slotIndex] = true;
+      }
+
+      render();
+
+      if (currentLoop >= 5) {
+        scheduleReducedMotionReset();
+      } else {
+        scheduleReducedMotionAdvance();
+      }
+    }
+
     function syncAnimationState() {
-      if (!shouldAnimate()) {
+      if (!canvasVisible || !pageVisible) {
         stopLoop();
+        clearReducedMotionTimers();
         render();
         return;
       }
 
+      if (prefersReducedMotion) {
+        stopLoop();
+        scheduleReducedMotionAdvance();
+        render();
+        return;
+      }
+
+      clearReducedMotionTimers();
       if (!rafId) {
         rafId = window.requestAnimationFrame(tick);
       }
@@ -606,7 +693,9 @@
     }
 
     return () => {
+      disposed = true;
       stopLoop();
+      clearReducedMotionTimers();
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
       if (resizeFrameId) {

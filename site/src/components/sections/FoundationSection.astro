@@ -192,6 +192,29 @@ const foundationBullets: Record<string, string[]> = {
         gap: 1rem;
     }
 
+    .foundation-grid :global(.foundation-icon) {
+        margin-bottom: var(--space-sm);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    .foundation-grid :global(.foundation-icon--steel) {
+        color: var(--steel);
+    }
+
+    .foundation-grid :global(.foundation-icon--copper) {
+        color: var(--copper);
+    }
+
+    .foundation-grid :global(.foundation-icon--patina) {
+        color: var(--patina);
+    }
+
+    .foundation-grid :global(.foundation-icon--muted) {
+        color: var(--steel-dark);
+    }
+
     @media (max-width: 900px) {
         .foundation-grid {
             grid-template-columns: 1fr;

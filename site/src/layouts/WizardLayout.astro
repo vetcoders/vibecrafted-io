@@ -147,6 +147,16 @@ const toggleLang = isPl ? 'en' : 'pl';
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root) {
+      animation-duration: 0.22s;
+      animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    }
+
+    ::view-transition-new(root) {
+      animation-duration: 0.34s;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
     ::view-transition-group(site-topbar),
     ::view-transition-group(site-footer) {
       animation-duration: 0.3s;

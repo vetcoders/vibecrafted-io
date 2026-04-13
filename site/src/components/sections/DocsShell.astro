@@ -167,6 +167,283 @@
     background: var(--glow-muted);
   }
 
+  :is(body.docs-page, html.subpage body) :is(.install-step-card, .resource-card, .docs-card, .faq-group) {
+    display: grid;
+    gap: var(--docs-card-gap);
+    align-content: start;
+    min-height: 100%;
+    padding: var(--surface-card-padding);
+    border: 1px solid var(--glass-panel-border);
+    border-radius: var(--radius-md);
+    background: var(--glass-panel-bg);
+    backdrop-filter: var(--surface-card-backdrop);
+    -webkit-backdrop-filter: var(--surface-card-backdrop);
+    box-shadow: var(--surface-card-shadow);
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.install-step-badge, .resource-kicker, .docs-kicker) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    margin-bottom: var(--surface-badge-margin);
+    padding: var(--surface-badge-padding);
+    border: 1px solid var(--surface-badge-border);
+    border-radius: 999px;
+    color: var(--copper);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.install-step-card h3, .resource-card h3, .docs-card h3, .faq-group h2) {
+    margin-bottom: 0.65rem;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.resource-card p, .docs-card p, .faq-group > p) {
+    color: var(--steel-edge-strong);
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.resource-list, .resource-list li, .resource-links) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--surface-links-gap);
+    margin-top: 1rem;
+    align-items: center;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.resource-links a, .docs-inline-links a) {
+    color: var(--stone-light);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.resource-links a:hover, .resource-links a:focus-visible) {
+    color: var(--copper-bright);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-grid--operations {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(0.85rem, 1.5vw, 1.15rem);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--install {
+    display: grid;
+    grid-template-columns: minmax(2.8rem, 3.35rem) minmax(0, 0.9fr) minmax(19rem, 1.1fr);
+    gap: clamp(0.8rem, 1.4vw, 1rem);
+    align-items: start;
+    padding: clamp(0.9rem, 1.6vw, 1.05rem);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operation {
+    display: grid;
+    grid-template-columns: minmax(0, 0.96fr) minmax(19rem, 1.04fr);
+    gap: clamp(0.85rem, 1.55vw, 1.1rem);
+    align-items: start;
+    padding: clamp(0.95rem, 1.65vw, 1.08rem);
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.docs-grid--operation-rows, .docs-grid--install-rows) {
+    gap: clamp(0.72rem, 1.35vw, 0.92rem);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operational-row {
+    background: linear-gradient(180deg, rgba(27, 23, 18, 0.2), rgba(10, 11, 14, 0.48));
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--install-row {
+    grid-template-columns: minmax(2.7rem, 3.1rem) minmax(0, 1.02fr) minmax(19rem, 0.98fr);
+    align-items: center;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operation-row {
+    grid-template-columns: minmax(0, 1.04fr) minmax(19rem, 0.96fr);
+    align-items: center;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    min-width: 0;
+    padding-bottom: 0;
+    border: 0;
+    border-right: 1px solid var(--glow-subtle);
+    color: var(--copper-bright);
+    font-family: var(--font-mono);
+    font-size: clamp(1.35rem, 1.95vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__copy {
+    display: grid;
+    gap: var(--docs-copy-gap);
+    min-width: 0;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__copy > * {
+    margin: 0;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__copy h3 {
+    font-size: 1.1rem;
+    line-height: 1.08;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.docs-card--install-row .docs-card__copy, .docs-card--operation-row .docs-card__copy) {
+    gap: 0.28rem;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.docs-card--install-row .docs-card__copy h3, .docs-card--operation-row .docs-card__copy h3) {
+    font-size: 1.02rem;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__copy p {
+    color: var(--docs-copy-body-color);
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operation .docs-kicker {
+    margin-bottom: 0.7rem;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operation .docs-note {
+    margin-top: var(--docs-note-margin-top);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__command {
+    min-width: 0;
+    align-self: start;
+  }
+
+  :is(body.docs-page, html.subpage body) :is(.docs-card--install-row .docs-card__command, .docs-card--operation-row .docs-card__command) {
+    align-self: stretch;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__command--bar {
+    display: flex;
+    align-items: stretch;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__command--stack {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block {
+    position: relative;
+    overflow-x: auto;
+    margin: var(--code-block-margin);
+    padding: var(--code-block-padding);
+    border: 1px solid var(--glass-panel-border);
+    border-radius: var(--code-block-radius);
+    background: var(--glass-panel-bg-strong);
+    backdrop-filter: var(--code-block-backdrop);
+    -webkit-backdrop-filter: var(--code-block-backdrop);
+    box-shadow: var(--code-block-shadow);
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block code {
+    display: block;
+    white-space: pre;
+    color: var(--stone-light);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block pre {
+    width: 100%;
+    margin: 0;
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block .comment {
+    color: var(--steel-dark);
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block .copy-btn {
+    position: absolute;
+    top: var(--code-block-copy-offset);
+    right: var(--code-block-copy-offset);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 3rem;
+    padding: var(--code-block-copy-padding);
+    border: 1px solid var(--card-border);
+    border-radius: var(--code-block-copy-radius);
+    background: var(--card-bg);
+    color: var(--steel-dark);
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+  }
+
+  :is(body.docs-page, html.subpage body) .code-block .copy-btn:hover,
+  :is(body.docs-page, html.subpage body) .code-block .copy-btn:focus-visible {
+    color: var(--copper);
+    border-color: var(--copper);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__command .code-block {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0.92rem 4rem 0.92rem 1rem;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card__command .code-block code {
+    font-size: clamp(0.74rem, 0.95vw, 0.86rem);
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card--operation-row .docs-card__command .code-block {
+    height: 100%;
+    align-items: center;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card .code-block {
+    margin-bottom: 0;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-card .code-block + .code-block {
+    margin-top: 1rem;
+  }
+
+  :is(body.docs-page, html.subpage body) .docs-note {
+    margin-top: var(--docs-note-margin-top);
+    color: var(--docs-note-color);
+    font-size: 0.92rem;
+  }
+
+  :is(body.docs-page, html.subpage body) .hterm-tip.on {
+    opacity: 1;
+  }
+
+  :is(body.docs-page, html.subpage body) .hterm-tip.ok {
+    color: var(--patina);
+    border-color: var(--tooltip-ok-border);
+  }
+
+  :is(body.docs-page, html.subpage body) .hterm-tip.err {
+    color: var(--copper);
+    border-color: var(--tooltip-err-border);
+  }
+
   @media (max-width: 1000px) {
     :is(body.docs-page, html.subpage body) .docs-grid--steps {
       grid-template-columns: 1fr;
@@ -208,6 +485,26 @@
     :is(body.docs-page, html.subpage body) .docs-hero > .manifesto-actions .btn-outline {
       width: 100%;
     }
+
+    :is(body.docs-page, html.subpage body) .docs-card--install,
+    :is(body.docs-page, html.subpage body) .docs-card--operation {
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+
+    :is(body.docs-page, html.subpage body) :is(.docs-card--install-row, .docs-card--operation-row) {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+
+    :is(body.docs-page, html.subpage body) .docs-card__step {
+      justify-content: flex-start;
+      align-self: auto;
+      padding-bottom: 0.55rem;
+      border-right: 0;
+      border-bottom: 1px solid var(--glow-subtle);
+    }
   }
 
   @media (max-width: 720px) {
@@ -231,6 +528,21 @@
 
     :is(body.docs-page, html.subpage body) .docs-inline-links {
       gap: var(--docs-inline-links-gap-mobile);
+    }
+
+    :is(body.docs-page, html.subpage body) :is(.resource-links a, .docs-inline-links a, .code-block .copy-btn) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+    }
+
+    :is(body.docs-page, html.subpage body) .code-block {
+      padding-top: 4rem;
+    }
+
+    :is(body.docs-page, html.subpage body) .docs-card__command .code-block {
+      padding-right: 4.25rem;
     }
   }
 </style>

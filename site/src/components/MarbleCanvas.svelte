@@ -547,7 +547,7 @@
       }
     }
 
-    function scheduleReducedMotionCycle(delay = 1500 + Math.random() * 700): void {
+    function scheduleReducedMotionCycle(delay = 3200 + Math.random() * 1200): void {
       clearReducedMotionCycle();
       if (disposed || !reducedMotion || !width || !height) return;
       reducedMotionTimer = window.setTimeout(() => {
@@ -606,6 +606,15 @@
 
     function startMorph(): void {
       if (morphing) return;
+
+      if (reducedMotion) {
+        shapeIndex = pickNextShapeIndex(shapeIndex);
+        buildBoard();
+        renderStaticBoard();
+        scheduleReducedMotionCycle();
+        return;
+      }
+
       morphing = true;
       fadeOutAlpha = 1;
       clearReducedMotionCycle();
@@ -885,3 +894,73 @@
     <span>{labels.converge} <strong>{coveragePct}</strong></span>
   </div>
 </figure>
+
+<style>
+  .hero-canvas {
+    position: relative;
+    align-self: center;
+    justify-self: end;
+    width: min(100%, 34rem);
+    aspect-ratio: 1;
+    max-height: var(--hero-canvas-max);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--hero-canvas-surface);
+    border: 1px solid var(--card-border);
+    backdrop-filter: var(--hero-canvas-backdrop);
+    -webkit-backdrop-filter: var(--hero-canvas-backdrop);
+    box-shadow: var(--hero-canvas-shadow);
+    transform-origin: left center;
+    transform: perspective(1120px) rotateY(-14deg) scaleX(1.04);
+  }
+
+  .hero-canvas canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .hero-canvas-stats {
+    position: absolute;
+    top: var(--hero-canvas-stats-offset-block);
+    right: var(--hero-canvas-stats-offset-inline);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--hero-canvas-stats-gap);
+    padding: var(--hero-canvas-stats-padding);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-panel-border);
+    background: var(--glass-panel-bg-strong);
+    backdrop-filter: blur(14px) saturate(116%);
+    -webkit-backdrop-filter: blur(14px) saturate(116%);
+    box-shadow: inset 0 1px 0 var(--glass-panel-highlight);
+    color: var(--steel-dark);
+    font-family: var(--font-head);
+    font-size: 0.72rem;
+  }
+
+  .hero-canvas-stats strong {
+    color: var(--stone-light);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 900px) {
+    .hero-canvas {
+      max-height: var(--hero-canvas-mobile-max-height);
+      aspect-ratio: auto;
+      height: var(--hero-canvas-mobile-height);
+      width: 100%;
+      justify-self: stretch;
+      transform: none;
+      transform-origin: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-canvas {
+      transform: none;
+      transform-origin: center;
+    }
+  }
+</style>
