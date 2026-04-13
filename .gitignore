@@ -45,3 +45,5 @@ aicx-dashboard.html
 # Vendor snapshot from upstream source repo
 /release
 /docs/_astro
+/docs/vibecrafted/.claude
+/docs/vibecrafted/.ai-context
