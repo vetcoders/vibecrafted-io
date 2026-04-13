@@ -284,7 +284,10 @@
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const pointerQuery = window.matchMedia('(pointer: fine)');
+    let prefersReducedMotion = motionQuery.matches;
+    let canHover = pointerQuery.matches && !prefersReducedMotion;
     const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
 
     let width = 0;
@@ -302,6 +305,9 @@
     let resetTimer = 0;
     let rafId = 0;
     let resizeObserver: ResizeObserver | undefined;
+    let intersectionObserver: IntersectionObserver | undefined;
+    let canvasVisible = true;
+    let pageVisible = document.visibilityState === 'visible';
 
     function resizeCanvas() {
       const size = Math.min(canvas.offsetWidth, canvas.offsetHeight);
@@ -310,6 +316,38 @@
       canvas.height = size * dpr;
       width = canvas.width;
       return true;
+    }
+
+    function updateInteractionProfile() {
+      canHover = pointerQuery.matches && !prefersReducedMotion;
+      hoverRadius = marbleRadius * (prefersReducedMotion ? 6 : 9);
+      loopDelay = prefersReducedMotion ? 1700 : 2200;
+      if (!canHover) {
+        mouseX = -1;
+        mouseY = -1;
+      }
+    }
+
+    function shouldAnimate() {
+      return canvasVisible && pageVisible;
+    }
+
+    function stopLoop() {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    function syncAnimationState() {
+      if (!shouldAnimate()) {
+        stopLoop();
+        render();
+        return;
+      }
+
+      if (!rafId) {
+        rafId = window.requestAnimationFrame(tick);
+      }
     }
 
     function boardLabel() {
@@ -322,7 +360,7 @@
     }
 
     function proximity(x: number, y: number) {
-      if (mouseX < 0) return 0;
+      if (!canHover || mouseX < 0) return 0;
       const dx = x - mouseX;
       const dy = y - mouseY;
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -359,7 +397,7 @@
     function buildBoard() {
       const radius = width * 0.4;
       marbleRadius = Math.max(4, radius * 0.052);
-      hoverRadius = marbleRadius * (prefersReducedMotion ? 6 : 9);
+      updateInteractionProfile();
       slots = hexGridInCircle(width / 2, width / 2, radius, marbleRadius).map((slot) => ({ ...slot, marble: null }));
       totalSlots = slots.length;
       filled = {};
@@ -478,6 +516,11 @@
     }
 
     function tick() {
+      if (!shouldAnimate()) {
+        stopLoop();
+        return;
+      }
+
       loopTimer -= 16;
       if (resetTimer > 0) {
         resetTimer -= 16;
@@ -493,6 +536,7 @@
     }
 
     const handleMouseMove = (event: MouseEvent) => {
+      if (!canHover) return;
       const rect = canvas.getBoundingClientRect();
       mouseX = ((event.clientX - rect.left) / (rect.right - rect.left)) * width;
       mouseY = ((event.clientY - rect.top) / (rect.bottom - rect.top)) * width;
@@ -507,26 +551,62 @@
       if (!resizeCanvas()) return;
       buildBoard();
       render();
+      syncAnimationState();
     };
 
     resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(canvas);
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        canvasVisible = entries.some((entry) => entry.isIntersecting);
+        syncAnimationState();
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+    intersectionObserver.observe(canvas);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
     window.addEventListener('resize', handleResize);
 
+    const handleVisibilityChange = () => {
+      pageVisible = document.visibilityState === 'visible';
+      syncAnimationState();
+    };
+
+    const handleMotionChange = (event: MediaQueryListEvent) => {
+      prefersReducedMotion = event.matches;
+      buildBoard();
+      render();
+      syncAnimationState();
+    };
+
+    const handlePointerChange = () => {
+      updateInteractionProfile();
+      render();
+    };
+
+    motionQuery.addEventListener('change', handleMotionChange);
+    pointerQuery.addEventListener('change', handlePointerChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     if (resizeCanvas()) {
       buildBoard();
       render();
-      rafId = window.requestAnimationFrame(tick);
+      syncAnimationState();
     }
 
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
+      stopLoop();
       resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      motionQuery.removeEventListener('change', handleMotionChange);
+      pointerQuery.removeEventListener('change', handlePointerChange);
     };
   });
 </script>

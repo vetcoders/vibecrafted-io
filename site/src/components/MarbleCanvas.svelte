@@ -411,7 +411,10 @@
     let morphInterval: ReturnType<typeof window.setInterval> | 0 = 0;
     let reducedMotionTimer: ReturnType<typeof window.setTimeout> | 0 = 0;
     let disposed = false;
+    let canvasVisible = true;
+    let pageVisible = document.visibilityState === 'visible';
     let resizeObserver: ResizeObserver | undefined;
+    let intersectionObserver: IntersectionObserver | undefined;
 
     interface Marble {
       x: number; y: number;
@@ -770,10 +773,37 @@
     }
 
     function startLoop(): void {
-      if (disposed || reducedMotion || rafId || !width || !height) return;
+      if (disposed || reducedMotion || rafId || !width || !height || !canvasVisible || !pageVisible) return;
       clearReducedMotionCycle();
       lastAt = performance.now();
       rafId = requestAnimationFrame(tick);
+    }
+
+    function stopLoop(): void {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    function syncMotionState(): void {
+      if (disposed || !width || !height) return;
+
+      if (reducedMotion) {
+        stopLoop();
+        if (canvasVisible && pageVisible) {
+          scheduleReducedMotionCycle();
+        } else {
+          clearReducedMotionCycle();
+        }
+        return;
+      }
+
+      clearReducedMotionCycle();
+      if (canvasVisible && pageVisible) {
+        startLoop();
+      } else {
+        stopLoop();
+      }
     }
 
     function ensureCanvasReady(): void {
@@ -782,49 +812,41 @@
         readyFrameId = requestAnimationFrame(ensureCanvasReady);
         return;
       }
-      startLoop();
+      syncMotionState();
     }
 
     const observedEl = canvas.parentElement ?? canvas;
     resizeObserver = new ResizeObserver(() => {
       if (!resizeCanvas()) return;
-      if (reducedMotion) {
-        if (rafId) {
-          cancelAnimationFrame(rafId);
-          rafId = 0;
-        }
-        scheduleReducedMotionCycle();
-      } else {
-        startLoop();
-      }
+      syncMotionState();
     });
     resizeObserver.observe(observedEl);
 
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        canvasVisible = entries.some((entry) => entry.isIntersecting);
+        syncMotionState();
+      },
+      {
+        threshold: 0.12,
+      }
+    );
+    intersectionObserver.observe(observedEl);
+
     const onWindowResize = () => {
       if (!resizeCanvas()) return;
-      if (reducedMotion) {
-        if (rafId) {
-          cancelAnimationFrame(rafId);
-          rafId = 0;
-        }
-        scheduleReducedMotionCycle();
-      } else {
-        startLoop();
-      }
+      syncMotionState();
     };
 
     const handleMotionChange = (e: MediaQueryListEvent) => {
       onMotionChange(e);
       if (!resizeCanvas()) return;
-      if (reducedMotion) {
-        if (rafId) {
-          cancelAnimationFrame(rafId);
-          rafId = 0;
-        }
-        scheduleReducedMotionCycle();
-      } else {
-        startLoop();
-      }
+      syncMotionState();
+    };
+
+    const handleVisibilityChange = () => {
+      pageVisible = document.visibilityState === 'visible';
+      syncMotionState();
     };
 
     motionQuery.removeEventListener('change', onMotionChange);
@@ -832,16 +854,19 @@
 
     ensureCanvasReady();
     window.addEventListener('resize', onWindowResize);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Cleanup on unmount
     return () => {
       disposed = true;
-      if (rafId) cancelAnimationFrame(rafId);
+      stopLoop();
       if (readyFrameId) cancelAnimationFrame(readyFrameId);
       if (morphInterval) window.clearInterval(morphInterval);
       clearReducedMotionCycle();
       resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
       window.removeEventListener('resize', onWindowResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       motionQuery.removeEventListener('change', handleMotionChange);
     };
   });

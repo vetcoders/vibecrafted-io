@@ -33,6 +33,7 @@
   let { lang, section }: { lang: Lang; section: DocsSearchSection } = $props();
 
   let query = $state('');
+  let activeIndex = $state(-1);
   const searchData = $derived(getDocsSearchData(lang, section));
 
   function tokenize(value: string) {
@@ -83,6 +84,45 @@
       .sort((left, right) => right.score - left.score)
       .slice(0, 6);
   });
+
+  $effect(() => {
+    if (!hasQuery || results.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+
+    if (activeIndex < 0 || activeIndex >= results.length) {
+      activeIndex = 0;
+    }
+  });
+
+  function moveActive(direction: 1 | -1) {
+    if (results.length === 0) return;
+    const baseIndex = activeIndex >= 0 ? activeIndex : 0;
+    activeIndex = (baseIndex + direction + results.length) % results.length;
+  }
+
+  function selectActiveResult() {
+    if (activeIndex < 0 || activeIndex >= results.length) return;
+    window.location.assign(results[activeIndex].href);
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (!hasQuery || results.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      moveActive(1);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveActive(-1);
+    } else if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault();
+      selectActiveResult();
+    } else if (event.key === 'Escape') {
+      activeIndex = -1;
+    }
+  }
 </script>
 
 <div class="docs-search">
@@ -99,6 +139,8 @@
       spellcheck="false"
       placeholder={searchData.placeholder}
       aria-describedby={`docs-search-help-${section}-${lang}`}
+      aria-activedescendant={activeIndex >= 0 ? `docs-search-result-${section}-${lang}-${activeIndex}` : undefined}
+      onkeydown={handleKeydown}
     />
   </div>
   <p class="docs-search__hint" id={`docs-search-help-${section}-${lang}`}>
@@ -111,8 +153,15 @@
 
   {#if hasQuery && results.length > 0}
     <div class="docs-search__results" aria-live="polite">
-      {#each results as result}
-        <a class="docs-search__result" href={result.href}>
+      {#each results as result, index}
+        <a
+          class="docs-search__result"
+          class:docs-search__result--active={index === activeIndex}
+          href={result.href}
+          id={`docs-search-result-${section}-${lang}-${index}`}
+          aria-current={index === activeIndex ? 'true' : undefined}
+          onmouseenter={() => (activeIndex = index)}
+        >
           <span class="docs-search__result-title">{result.title}</span>
           <span class="docs-search__result-body">{result.body}</span>
         </a>
@@ -212,12 +261,19 @@
   }
 
   .docs-search__result:hover,
+  .docs-search__result--active,
   .docs-search__result:focus-visible,
   .docs-search__fallback-links a:hover,
   .docs-search__fallback-links a:focus-visible {
     border-color: rgba(225, 176, 116, 0.38);
     background: rgba(255, 255, 255, 0.06);
     transform: translateY(-1px);
+  }
+
+  .docs-search__result--active {
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.18),
+      0 0 0 1px rgba(225, 176, 116, 0.16);
   }
 
   .docs-search__result-title {
