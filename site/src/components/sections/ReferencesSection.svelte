@@ -1,38 +1,26 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import { Tween, prefersReducedMotion } from 'svelte/motion';
+  import { prefersReducedMotion } from 'svelte/motion';
+  import { fade, scale } from 'svelte/transition';
   import Reveal from '../Reveal.svelte';
   import { getTranslations, type Lang } from '../../lib/i18n';
+
+  // Satisfy Vite's SSR-side import analysis; the template consumes these transitions.
+  const templateTransitions = { fade, scale };
+  void templateTransitions;
 
   let { lang }: { lang: Lang } = $props();
 
   const section = $derived(getTranslations(lang).sections.references);
   const dialogId = `reference-modal-${lang}`;
   let activeLink = $state<{ href: string; label: string } | null>(null);
-  let dialogOpen = $state(false);
-  let closeTimer: ReturnType<typeof setTimeout> | undefined;
-  const overlayOpacity = Tween.of(() => (dialogOpen ? 1 : 0), {
-    duration: prefersReducedMotion.current ? 0 : 160,
-  });
-  const panelScale = Tween.of(() => (dialogOpen ? 1 : 0.965), {
-    duration: prefersReducedMotion.current ? 0 : 180,
-  });
-  const panelTranslateY = Tween.of(() => (dialogOpen ? 0 : 12), {
-    duration: prefersReducedMotion.current ? 0 : 180,
-  });
+  const modalDuration = $derived(prefersReducedMotion.current ? 0 : 180);
 
   function openLink(link: { href: string; label: string }) {
-    clearTimeout(closeTimer);
     activeLink = link;
-    dialogOpen = true;
   }
 
   function closeDialog() {
-    dialogOpen = false;
-    clearTimeout(closeTimer);
-    closeTimer = setTimeout(() => {
-      activeLink = null;
-    }, prefersReducedMotion.current ? 0 : 180);
+    activeLink = null;
   }
 
   function confirmOpen() {
@@ -46,10 +34,6 @@
       closeDialog();
     }
   }
-
-  onDestroy(() => {
-    clearTimeout(closeTimer);
-  });
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -86,7 +70,7 @@
       class="reference-dialog"
       role="presentation"
       onclick={closeDialog}
-      style={`opacity: ${overlayOpacity.current};`}
+      transition:fade={{ duration: modalDuration }}
     >
       <div
         class="reference-dialog__panel"
@@ -94,7 +78,7 @@
         aria-modal="true"
         aria-labelledby={dialogId}
         onclick={(event) => event.stopPropagation()}
-        style={`transform: translateY(${panelTranslateY.current}px) scale(${panelScale.current}); opacity: ${overlayOpacity.current};`}
+        transition:scale={{ duration: modalDuration, start: 0.965 }}
       >
         <p class="reference-dialog__eyebrow">{section.modal.eyebrow}</p>
         <h3 class="reference-dialog__title" id={dialogId}>{section.modal.title}</h3>

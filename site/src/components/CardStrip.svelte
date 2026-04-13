@@ -1,6 +1,11 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { prefersReducedMotion } from 'svelte/motion';
+  import { Spring, prefersReducedMotion } from 'svelte/motion';
+  import { fade } from 'svelte/transition';
+
+  // Satisfy Vite's SSR-side import analysis; the template consumes these transitions.
+  const templateTransitions = { fade };
+  void templateTransitions;
 
   type CardItem = {
     cardClass?: string;
@@ -38,8 +43,12 @@
   let lastMoveTime = 0;
   let lastMoveScrollLeft = 0;
   let settleTimer: ReturnType<typeof setTimeout> | null = null;
-  let animationFrame = 0;
-  let isAnimating = false;
+  let springing = $state(false);
+  const glide = new Spring(0, {
+    stiffness: 0.13,
+    damping: 0.76,
+    precision: 0.35,
+  });
 
   function clamp(value: number) {
     return Math.min(Math.max(0, value), maxScrollLeft);
@@ -50,15 +59,6 @@
       clearTimeout(settleTimer);
       settleTimer = null;
     }
-  }
-
-  function clearAnimation() {
-    if (typeof window !== 'undefined' && animationFrame) {
-      window.cancelAnimationFrame(animationFrame);
-    }
-
-    animationFrame = 0;
-    isAnimating = false;
   }
 
   function syncState(nextScrollLeft = railElement?.scrollLeft ?? 0) {
@@ -103,67 +103,50 @@
     return found === -1 ? 0 : found;
   }
 
-  function animateTo(nextTarget: number) {
+  function applyImmediate(nextScrollLeft: number) {
+    if (!railElement) return;
+
+    const clamped = clamp(nextScrollLeft);
+    springing = false;
+    glide.set(clamped, { instant: true });
+    railElement.scrollLeft = clamped;
+    syncState(clamped);
+  }
+
+  function glideTo(nextTarget: number, preserveMomentum = 0) {
     if (!railElement) return;
 
     const clamped = clamp(nextTarget);
-    clearAnimation();
-
-    const start = railElement.scrollLeft;
-    if (prefersReducedMotion.current || Math.abs(clamped - start) <= 1 || typeof window === 'undefined') {
-      railElement.scrollLeft = clamped;
-      syncState(clamped);
+    if (prefersReducedMotion.current || Math.abs(clamped - railElement.scrollLeft) <= 1) {
+      applyImmediate(clamped);
       return;
     }
 
-    const startedAt = performance.now();
-    const duration = 220;
-    isAnimating = true;
-
-    const tick = (now: number) => {
-      if (!railElement) {
-        clearAnimation();
-        return;
-      }
-
-      const progress = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const current = start + (clamped - start) * eased;
-
-      railElement.scrollLeft = current;
-      syncState(current);
-
-      if (progress < 1) {
-        animationFrame = window.requestAnimationFrame(tick);
-        return;
-      }
-
-      railElement.scrollLeft = clamped;
-      syncState(clamped);
-      clearAnimation();
-    };
-
-    animationFrame = window.requestAnimationFrame(tick);
+    springing = true;
+    glide.set(clamped, preserveMomentum > 0 ? { preserveMomentum } : undefined);
   }
 
-  function settleToNearest(base = scrollLeft) {
-    animateTo(snapFor(base));
+  function settleToNearest(base = scrollLeft, preserveMomentum = 0) {
+    glideTo(snapFor(base), preserveMomentum);
   }
 
-  function scheduleSettle(base = railElement?.scrollLeft ?? scrollLeft, delay = 120) {
+  function scheduleSettle(base = railElement?.scrollLeft ?? scrollLeft, delay = 120, preserveMomentum = 0) {
     clearSettleTimer();
     const settleBase = base;
     settleTimer = setTimeout(() => {
       settleTimer = null;
-      settleToNearest(settleBase);
+      settleToNearest(settleBase, preserveMomentum);
     }, delay);
   }
 
   function step(direction: -1 | 1) {
     if (!isScrollable) return;
     clearSettleTimer();
-    const nextIndex = Math.min(Math.max(indexFor(railElement?.scrollLeft ?? scrollLeft) + direction, 0), snapPoints.length - 1);
-    animateTo(snapPoints[nextIndex]);
+    const nextIndex = Math.min(
+      Math.max(indexFor(springing ? glide.target : railElement?.scrollLeft ?? scrollLeft) + direction, 0),
+      snapPoints.length - 1
+    );
+    glideTo(snapPoints[nextIndex], 140);
   }
 
   function canConsume(delta: number) {
@@ -186,12 +169,10 @@
 
     event.preventDefault();
     clearSettleTimer();
-    clearAnimation();
-
-    const nextScrollLeft = clamp(railElement.scrollLeft + delta);
-    railElement.scrollLeft = nextScrollLeft;
-    syncState(nextScrollLeft);
-    scheduleSettle(nextScrollLeft, 110);
+    const base = springing ? glide.target : railElement.scrollLeft;
+    const nextScrollLeft = clamp(base + delta);
+    applyImmediate(nextScrollLeft);
+    scheduleSettle(nextScrollLeft, 110, 120);
   }
 
   function handleKeydown(event: KeyboardEvent) {
@@ -208,8 +189,9 @@
     if (!railElement || event.button !== 0) return;
 
     clearSettleTimer();
-    clearAnimation();
     isDragging = true;
+    springing = false;
+    glide.set(railElement.scrollLeft, { instant: true });
     dragPointerId = event.pointerId;
     dragStartX = event.clientX;
     dragStartScrollLeft = railElement.scrollLeft;
@@ -223,8 +205,7 @@
     if (!railElement || !isDragging || dragPointerId !== event.pointerId) return;
 
     const nextScrollLeft = clamp(dragStartScrollLeft - (event.clientX - dragStartX));
-    railElement.scrollLeft = nextScrollLeft;
-    syncState(nextScrollLeft);
+    applyImmediate(nextScrollLeft);
 
     const deltaTime = Math.max(1, event.timeStamp - lastMoveTime);
     dragVelocity = (nextScrollLeft - lastMoveScrollLeft) / deltaTime;
@@ -248,7 +229,8 @@
 
     if (!cancelled) {
       const projected = clamp(railElement.scrollLeft + dragVelocity * 180);
-      settleToNearest(projected);
+      const momentum = Math.min(240, Math.max(120, Math.abs(dragVelocity) * 260));
+      settleToNearest(projected, momentum);
     }
   }
 
@@ -267,10 +249,25 @@
 
     syncState(railElement.scrollLeft);
 
-    if (!isDragging && !isAnimating) {
+    if (!isDragging && !springing) {
       scheduleSettle(railElement.scrollLeft, 125);
     }
   }
+
+  $effect(() => {
+    if (!railElement) return;
+
+    const current = clamp(glide.current);
+    if (!isDragging && Math.abs(railElement.scrollLeft - current) > 0.5) {
+      railElement.scrollLeft = current;
+    }
+
+    syncState(current);
+
+    if (springing && Math.abs(glide.target - current) <= 0.5) {
+      springing = false;
+    }
+  });
 
   $effect(() => {
     if (!railElement || !wrapElement) return;
@@ -285,13 +282,11 @@
     resizeObserver.observe(wrapElement);
 
     const nextScrollLeft = clamp(railElement.scrollLeft);
-    railElement.scrollLeft = nextScrollLeft;
-    syncState(nextScrollLeft);
+    applyImmediate(nextScrollLeft);
 
     return () => {
       resizeObserver.disconnect();
       clearSettleTimer();
-      clearAnimation();
     };
   });
 
@@ -308,6 +303,29 @@
   bind:this={wrapElement}
 >
   <div class="card-strip__frame" aria-hidden="true"></div>
+
+  {#if isScrollable}
+    <div class="card-strip__controls" transition:fade={{ duration: prefersReducedMotion.current ? 0 : 160 }}>
+      <button
+        class="card-strip__arrow card-strip__arrow--left"
+        type="button"
+        aria-label={leftLabel}
+        disabled={atStart}
+        onclick={() => step(-1)}
+      >
+        <span aria-hidden="true">←</span>
+      </button>
+      <button
+        class="card-strip__arrow card-strip__arrow--right"
+        type="button"
+        aria-label={rightLabel}
+        disabled={atEnd}
+        onclick={() => step(1)}
+      >
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+  {/if}
 
   <div
     class="card-strip__rail"
@@ -430,6 +448,61 @@
     background:
       linear-gradient(180deg, rgba(240, 214, 184, 0.28), rgba(184, 115, 51, 0.48)),
       rgba(212, 144, 92, 0.42);
+  }
+
+  .card-strip__controls {
+    position: absolute;
+    inset: 50% clamp(0.4rem, 1.2vw, 0.95rem) auto;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    transform: translateY(-50%);
+  }
+
+  .card-strip__arrow {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid rgba(212, 144, 92, 0.2);
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(20, 22, 28, 0.92), rgba(8, 9, 12, 0.92)),
+      rgba(11, 12, 15, 0.84);
+    box-shadow:
+      0 16px 30px rgba(0, 0, 0, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    color: var(--stone-light);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      color 0.18s ease,
+      opacity 0.18s ease;
+  }
+
+  .card-strip__arrow:hover,
+  .card-strip__arrow:focus-visible {
+    border-color: rgba(212, 144, 92, 0.42);
+    color: var(--copper-bright);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow:
+      0 18px 34px rgba(0, 0, 0, 0.28),
+      0 0 0 1px rgba(212, 144, 92, 0.18);
+  }
+
+  .card-strip__arrow:disabled {
+    opacity: 0.34;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+    color: rgba(236, 240, 245, 0.68);
   }
 
   .card-strip--dragging .card-strip__rail {
@@ -597,6 +670,10 @@
 
     .card-strip__frame {
       inset: 0.18rem 0.2rem;
+    }
+
+    .card-strip__controls {
+      display: none;
     }
   }
 

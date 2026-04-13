@@ -35,14 +35,14 @@ const learningPath = [
     </div>
 
     <div class="faq-layout">
-        {section.groups.map((group) => (
+        {section.groups.map((group, groupIndex) => (
             <article class="faq-group">
                 <h2>{group.title}</h2>
-                {group.items.map((item) => {
+                {group.items.map((item, itemIndex) => {
                     const isOpen = 'open' in item && item.open;
 
                     return (
-                        <details class="faq-item" open={isOpen}>
+                        <details class="faq-item" id={`faq-${groupIndex + 1}-${itemIndex + 1}`} open={isOpen}>
                             <summary><Fragment set:html={item.questionHtml} /></summary>
                             <p set:html={item.answerHtml}></p>
                         </details>

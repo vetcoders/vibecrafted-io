@@ -28,14 +28,16 @@ const pathLinks = [
 <Reveal client:load tag="section" id="quickstart-resources">
     <div class="docs-columns">
         {section.cards.map((card, index) => (
-            <ProductDetailCard
-                accent={index === 0 ? 'amber' : 'steel'}
-                eyebrow={card.kicker}
-                title={card.title}
-                bodyHtml={card.items[0]}
-                revealLabel={ui.reveal}
-                bullets={card.items.slice(1)}
-            />
+            <div id={`quickstart-resource-${index + 1}`}>
+                <ProductDetailCard
+                    accent={index === 0 ? 'amber' : 'steel'}
+                    eyebrow={card.kicker}
+                    title={card.title}
+                    bodyHtml={card.items[0]}
+                    revealLabel={ui.reveal}
+                    bullets={card.items.slice(1)}
+                />
+            </div>
         ))}
     </div>
     <div class="surface-path">

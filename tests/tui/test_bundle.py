@@ -51,11 +51,11 @@ def test_write_bundle_uses_current_metadata_and_skill_inventory(tmp_path: Path) 
 
 
 def test_framework_playground_uses_vibecrafted_command_deck() -> None:
-    text = (bundle.REPO_ROOT / "docs" / "presence" / "framework.js").read_text(
+    text = (bundle.REPO_ROOT / "site" / "src" / "components" / "FrameworkPlayground.svelte").read_text(
         encoding="utf-8"
     )
 
     assert "vibecrafted scaffold claude" in text
-    assert "vibecrafted partner claude" in text
-    assert "vibecrafted marbles codex --count " in text
+    assert "vibecrafted workflow claude" in text
+    assert 'vibecrafted marbles codex --prompt "Fill the gaps on the auth module" --count 3' in text
     assert "return 'vc-' + phaseDef.name;" not in text

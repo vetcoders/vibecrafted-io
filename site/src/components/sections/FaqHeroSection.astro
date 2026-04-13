@@ -1,5 +1,6 @@
 ---
 import { getTranslations, type Lang } from '../../lib/i18n';
+import DocsSearch from '../DocsSearch.svelte';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
@@ -14,4 +15,5 @@ const section = getTranslations(lang).sections.faqHero;
         <a class="btn-solid" href={section.primaryHref}>{section.primaryLabel}</a>
         <a class="btn-outline" href={section.secondaryHref}>{section.secondaryLabel}</a>
     </div>
+    <DocsSearch client:load lang={lang} section="faq" />
 </Reveal>

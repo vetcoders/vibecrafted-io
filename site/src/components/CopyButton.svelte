@@ -1,6 +1,11 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
   import { Tween, prefersReducedMotion } from 'svelte/motion';
+  import { fade } from 'svelte/transition';
+
+  // Satisfy Vite's SSR-side import analysis; the template consumes these transitions.
+  const templateTransitions = { fade };
+  void templateTransitions;
 
   type CopyState = 'default' | 'copied' | 'error';
 
@@ -96,6 +101,8 @@
     {#key state}
       <span
         class="copy-button__text"
+        in:fade={{ duration: prefersReducedMotion.current ? 0 : 120 }}
+        out:fade={{ duration: prefersReducedMotion.current ? 0 : 100 }}
         style={`opacity: ${feedbackOpacity.current}; transform: translateY(${feedbackOffset.current}px) scale(${feedbackScale.current});`}
       >
         {label}

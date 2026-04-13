@@ -149,8 +149,7 @@ site-build:
 
 site-deploy: site-build
 	@echo "Deploying site to docs/ for GitHub Pages..."
-	@rm -rf docs/*
-	@cp -R site/dist/* docs/
+	@python3 scripts/sync_site_to_docs.py
 	@echo "Site deployed successfully."
 
 # ============================================================================

@@ -38,15 +38,6 @@
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://vibecrafted.io/en/install/</loc>
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/install/" />
-        <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/install/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/install/" />
-        <lastmod>2026-04-11</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-    </url>
-    <url>
         <loc>https://vibecrafted.io/pl/</loc>
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/" />
         <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/" />
@@ -63,15 +54,6 @@
         <lastmod>2026-04-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
-    </url>
-    <url>
-        <loc>https://vibecrafted.io/pl/install/</loc>
-        <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/install/" />
-        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/install/" />
-        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/install/" />
-        <lastmod>2026-04-11</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
     </url>
     <url>
         <loc>https://vibecrafted.io/pl/faq/</loc>

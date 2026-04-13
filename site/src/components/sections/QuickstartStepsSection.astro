@@ -8,14 +8,17 @@ const dict = getTranslations(lang);
 const section = dict.sections.quickstartSteps;
 const copyButton = dict.copyButton;
 ---
-<Reveal client:load tag="section" class="quickstart-steps-section quickstart-steps-section--operations">
+<Reveal client:load tag="section" id="quickstart-steps" class="quickstart-steps-section quickstart-steps-section--operations">
     <div class="docs-grid docs-grid--operations docs-grid--operation-rows">
-        {section.steps.map((step) => {
+        {section.steps.map((step, index) => {
             const commands = 'commands' in step ? step.commands : [step.command];
             const note = 'note' in step ? step.note : undefined;
 
             return (
-                <article class="docs-card docs-card--operation docs-card--operation-row docs-card--operational-row">
+                <article
+                    id={`quickstart-step-${index + 1}`}
+                    class="docs-card docs-card--operation docs-card--operation-row docs-card--operational-row"
+                >
                     <div class="docs-card__copy">
                         <p class="docs-kicker">{step.kicker}</p>
                         <h3>{step.title}</h3>
