@@ -2897,18 +2897,168 @@ footer {
 .reference-links {
     grid-column: 2;
     margin: 0.1rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-items: center;
     font-family: var(--font-head);
     font-size: 0.74rem;
     line-height: 1.5;
 }
 
-.reference-links a {
+.reference-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.6rem;
+    padding: 0.5rem 0.86rem;
+    border: 1px solid var(--glass-panel-border);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(18, 20, 24, 0.82), rgba(10, 12, 16, 0.92));
+    box-shadow: inset 0 1px 0 var(--glass-panel-highlight);
     color: var(--copper);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
     text-decoration: none;
+    text-transform: uppercase;
+    transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
 }
 
-.reference-links a:hover {
+.reference-link:hover,
+.reference-link:focus-visible {
     color: var(--copper-bright);
+    border-color: rgba(212, 144, 92, 0.54);
+    background: linear-gradient(180deg, rgba(31, 23, 18, 0.92), rgba(18, 14, 12, 0.96));
+    transform: translateY(-1px);
+}
+
+.reference-dialog {
+    width: min(31rem, calc(100vw - 1.5rem));
+    margin: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+}
+
+.reference-dialog::backdrop {
+    background: var(--modal-overlay-bg);
+    backdrop-filter: var(--modal-overlay-backdrop);
+    -webkit-backdrop-filter: var(--modal-overlay-backdrop);
+}
+
+.reference-dialog__panel {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.2rem 1.22rem 1.12rem;
+    border: 1px solid var(--glass-panel-border);
+    border-radius: var(--modal-panel-radius);
+    background: var(--modal-panel-bg);
+    box-shadow: var(--modal-panel-shadow);
+    backdrop-filter: var(--modal-panel-backdrop);
+    -webkit-backdrop-filter: var(--modal-panel-backdrop);
+}
+
+.reference-dialog__eyebrow {
+    margin: 0;
+    color: var(--copper-bright);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.reference-dialog__title {
+    margin: 0;
+    color: var(--stone-light);
+    font-size: clamp(1rem, 2vw, 1.18rem);
+    line-height: 1.35;
+}
+
+.reference-dialog__target {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0.9rem 0.95rem;
+    border: 1px solid rgba(163, 184, 199, 0.16);
+    border-radius: var(--radius-md);
+    background: linear-gradient(180deg, rgba(18, 20, 24, 0.72), rgba(9, 10, 13, 0.88));
+    color: var(--steel-edge-strong);
+}
+
+.reference-dialog__target-label {
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.reference-dialog__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+}
+
+.reference-dialog__action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--glass-panel-border);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(18, 20, 24, 0.8), rgba(10, 12, 16, 0.94));
+    color: var(--stone-light);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.reference-dialog__action::after {
+    content: attr(data-hover);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.55rem);
+    transform: translate(-50%, 0.32rem);
+    opacity: 0;
+    white-space: nowrap;
+    pointer-events: none;
+    padding: 0.35rem 0.58rem;
+    border: 1px solid rgba(163, 184, 199, 0.18);
+    border-radius: 999px;
+    background: rgba(10, 12, 16, 0.94);
+    color: var(--steel-edge-strong);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.reference-dialog__action:hover,
+.reference-dialog__action:focus-visible {
+    color: var(--copper-bright);
+    border-color: rgba(212, 144, 92, 0.54);
+    background: linear-gradient(180deg, rgba(31, 23, 18, 0.92), rgba(18, 14, 12, 0.96));
+    transform: translateY(-1px);
+}
+
+.reference-dialog__action:hover::after,
+.reference-dialog__action:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 720px) {
+    .reference-dialog__actions {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* CONVERGENCE TRAJECTORY */

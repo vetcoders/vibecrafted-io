@@ -643,16 +643,40 @@ flowchart LR
       label: "References",
       title: "Ground Truth & Influences",
       sub: "The bibliography below extends the manifesto list with the structural-modeling and convergence influences surfaced again in internal AICX grounding work.",
+      modal: {
+        eyebrow: "Reference source",
+        title: "The page would be opened in the new tab.",
+        sourceLabel: "Source",
+        backLabel: "<<< Back",
+        openLabel: "Open >>>",
+        backHover: "Back to portal",
+        openHover: "Go to page",
+      },
       items: [
         {
           citationHtml:
             "Morris, K.; B&ouml;ckeler, B. (2026). <em>Humans and Agents in Software Engineering Loops</em>; <em>Harness Engineering</em>; <em>Context Engineering for Coding Agents</em>. Thoughtworks / Martin Fowler.",
           note: "The why-loop / how-loop framing, harness design, and human-guided workflow discipline behind SHACE and the operator role.",
+          links: [
+            {
+              href: "https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html",
+              label: "Humans & Agents",
+            },
+            {
+              href: "https://martinfowler.com/articles/harness-engineering.html",
+              label: "Harness Engineering",
+            },
+            {
+              href: "https://martinfowler.com/articles/exploring-gen-ai/context-engineering-coding-agents.html",
+              label: "Context Engineering",
+            },
+          ],
         },
         {
           citationHtml:
             "Gong, L.; Elhoushi, M.; Cheung, A. (2024). <em>AST-T5: Structure-Aware Pretraining for Code Generation</em>.",
           note: "The structure-aware pretraining thread behind 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.'s insistence that models should not write into a repo blind.",
+          links: [{ href: "https://arxiv.org/abs/2401.03003", label: "arXiv" }],
         },
         {
           citationHtml:
@@ -664,6 +688,12 @@ flowchart LR
           citationHtml:
             "Cunningham, W. (1992) and later technical debt literature.",
           note: "The conceptual ancestor of DoU: working code is not the same thing as a healthy, trustworthy, shippable system.",
+          links: [
+            {
+              href: "https://martinfowler.com/bliki/TechnicalDebt.html",
+              label: "Technical Debt",
+            },
+          ],
         },
         {
           citationHtml:

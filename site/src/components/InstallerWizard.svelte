@@ -10,60 +10,66 @@
   const STEPS = 5;
   let currentStep = $state(0);
   let direction = $state<'forward' | 'backward'>('forward');
-  let transitioning = $state(false);
+  let slideVisible = $state(true);
   let copyState = $state<'idle' | 'copied' | 'error'>('idle');
+  let termLines = $state<string[]>([]);
+  let termRunning = $state(false);
 
   const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui';
 
   const content = $derived(lang === 'pl' ? PL : EN);
+  const progress = $derived((currentStep / (STEPS - 1)) * 100);
+
+  function goToStep(step: number) {
+    if (step === currentStep || !slideVisible) return;
+    direction = step > currentStep ? 'forward' : 'backward';
+    slideVisible = false;
+    setTimeout(() => {
+      currentStep = step;
+      slideVisible = true;
+      if (step === 3 && !termRunning) simulateTerminal();
+    }, 180);
+  }
 
   function next() {
-    if (currentStep < STEPS - 1 && !transitioning) {
-      direction = 'forward';
-      transitioning = true;
-      setTimeout(() => {
-        currentStep++;
-        transitioning = false;
-      }, 200);
-    }
+    if (currentStep < STEPS - 1) goToStep(currentStep + 1);
   }
 
   function back() {
-    if (currentStep > 0 && !transitioning) {
-      direction = 'backward';
-      transitioning = true;
-      setTimeout(() => {
-        currentStep--;
-        transitioning = false;
-      }, 200);
-    }
-  }
-
-  function goTo(step: number) {
-    if (step === currentStep || transitioning) return;
-    direction = step > currentStep ? 'forward' : 'backward';
-    transitioning = true;
-    setTimeout(() => {
-      currentStep = step;
-      transitioning = false;
-    }, 200);
+    if (currentStep > 0) goToStep(currentStep - 1);
   }
 
   async function copyCommand() {
     try {
       await navigator.clipboard.writeText(installCommand);
       copyState = 'copied';
-      setTimeout(() => { copyState = 'idle'; }, 2000);
+      setTimeout(() => { copyState = 'idle'; }, 2200);
     } catch {
       copyState = 'error';
-      setTimeout(() => { copyState = 'idle'; }, 2000);
+      setTimeout(() => { copyState = 'idle'; }, 2200);
     }
+  }
+
+  function simulateTerminal() {
+    if (termRunning) return;
+    termRunning = true;
+    termLines = [];
+    const lines = lang === 'pl' ? TERM_PL : TERM_EN;
+    let i = 0;
+    const tick = () => {
+      if (i < lines.length) {
+        termLines = [...termLines, lines[i]];
+        i++;
+        setTimeout(tick, 120 + Math.random() * 180);
+      }
+    };
+    tick();
   }
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'Enter') next();
     else if (e.key === 'ArrowLeft' || e.key === 'Backspace') back();
-    else if (e.key === 'Escape' && currentStep > 0) goTo(0);
+    else if (e.key === 'Escape' && currentStep > 0) goToStep(0);
   }
 
   let touchStartX = 0;
@@ -88,38 +94,77 @@
     return () => document.removeEventListener('keydown', handleKeydown);
   });
 
+  const TERM_EN = [
+    '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
+    'Resolving channel main...',
+    'Verifying signature... ✓',
+    'Staging vibecrafted-v1.3.0...',
+    '▸ Phase 1/4: Diagnostics',
+    '  python3 ✓  git ✓  make ✓  node ✓',
+    '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
+    '▸ Phase 2/4: Foundations',
+    '  Installing loctree-mcp... done',
+    '  Installing aicx-mcp... done',
+    '▸ Phase 3/4: Skills + Helpers',
+    '  16 skills installed',
+    '  Shell helpers linked',
+    '▸ Phase 4/4: Verification',
+    '  Doctor: 94 ok / 2 warnings / 0 failures',
+    '',
+    '✓ Installation complete. Run: vibecrafted doctor',
+  ];
+
+  const TERM_PL = [
+    '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
+    'Rozwiązywanie kanału main...',
+    'Weryfikacja sygnatury... ✓',
+    'Staging vibecrafted-v1.3.0...',
+    '▸ Faza 1/4: Diagnostyka',
+    '  python3 ✓  git ✓  make ✓  node ✓',
+    '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
+    '▸ Faza 2/4: Fundamenty',
+    '  Instalacja loctree-mcp... gotowe',
+    '  Instalacja aicx-mcp... gotowe',
+    '▸ Faza 3/4: Skille + Helpery',
+    '  16 skilli zainstalowanych',
+    '  Helpery shell podłączone',
+    '▸ Faza 4/4: Weryfikacja',
+    '  Doctor: 94 ok / 2 warnings / 0 failures',
+    '',
+    '✓ Instalacja zakończona. Uruchom: vibecrafted doctor',
+  ];
+
   const EN = {
     hero: '\u{1D689}\u{1D692}\u{1D695}\u{1D696}\u{1D694}\u{1D69B}\u{1D68A}\u{1D699}\u{1D69D}\u{1D696}\u{1D695}.',
     version: 'v1.3.0',
     steps: [
       {
         label: 'Welcome',
-        title: 'Welcome to the installer',
+        title: 'Install in\u00a060\u00a0seconds',
         body: [
-          'This setup will guide you through installing the framework, its foundations, and the agent skill suite.',
-          'Nothing touches your system until you explicitly approve the plan.',
-          'Each step explains what changes, why it matters, and asks for your consent before acting.',
+          'One command stages, verifies, and installs the full framework.',
+          'Nothing touches your system until you approve.',
         ],
-        hint: 'Press \u2192 or Enter to proceed',
+        hint: 'Press \u2192 or swipe to begin',
       },
       {
-        label: 'What\u2019s inside',
-        title: 'What you\u2019re installing',
+        label: 'Inside',
+        title: 'What you get',
         body: [],
         items: [
-          { icon: '\u2692', name: '16 Skills', desc: 'Structured workflows for craft, convergence, and shipping' },
-          { icon: '\u25C8', name: 'Foundations', desc: 'loctree, aicx-mcp, prview, ScreenScribe \u2014 the perception layer' },
-          { icon: '\u21CB', name: 'Agent Views', desc: 'Symlink surfaces for Claude, Codex, and Gemini CLIs' },
-          { icon: '\u2318', name: 'Shell Helpers', desc: 'vc-* commands, prompt functions, and the command deck' },
+          { icon: '\u2692', name: '16 Skills', desc: 'Craft \u2192 Converge \u2192 Ship workflows' },
+          { icon: '\u25C8', name: 'Foundations', desc: 'loctree, aicx-mcp, prview, ScreenScribe' },
+          { icon: '\u21CB', name: 'Agent Views', desc: 'Claude, Codex, and Gemini CLI surfaces' },
+          { icon: '\u2318', name: 'Shell Helpers', desc: 'vc-* commands and the command deck' },
         ],
-        hint: 'These are the components the installer will place',
+        hint: 'Components placed by the installer',
       },
       {
-        label: 'Prerequisites',
-        title: 'Your environment',
+        label: 'Check',
+        title: 'Prerequisites',
         body: [
-          'The installer will check your machine for the required toolchain and optional foundations.',
-          'Missing optional tools are noted but never block installation.',
+          'The installer checks your environment automatically.',
+          'Optional tools are noted but never block installation.',
         ],
         checks: [
           { label: 'python3', required: true },
@@ -129,31 +174,29 @@
           { label: 'claude / codex / gemini', required: true },
           { label: 'loctree-mcp', required: false },
           { label: 'aicx-mcp', required: false },
-          { label: 'mise', required: false },
         ],
-        hint: 'Actual checks run during installation',
+        hint: 'Real checks run during install',
       },
       {
         label: 'Install',
-        title: 'Run the installer',
+        title: 'Run it',
         body: [
-          'Copy the command below and run it in your terminal.',
-          'The script stages a local snapshot, runs diagnostics, and opens the guided installer. No mutation happens without your approval.',
+          'Copy the command and paste it in your terminal.',
         ],
-        hint: 'The command opens the same guided flow in your terminal',
+        hint: 'The guided installer opens automatically',
       },
       {
-        label: 'Next steps',
-        title: 'You\u2019re ready',
+        label: 'Go',
+        title: 'You\u2019re live',
         body: [
-          'Once the installer finishes, the command deck is live.',
+          'The command deck is ready. Start here:',
         ],
         commands: [
-          { cmd: 'vibecrafted doctor', desc: 'Verify installation health' },
-          { cmd: 'vibecrafted init claude', desc: 'Bootstrap a session in your repo' },
-          { cmd: 'vibecrafted help', desc: 'See all available commands' },
+          { cmd: 'vibecrafted doctor', desc: 'Verify health' },
+          { cmd: 'vibecrafted init claude', desc: 'Bootstrap a session' },
+          { cmd: 'vibecrafted help', desc: 'See all commands' },
         ],
-        hint: 'Start with vibecrafted doctor to confirm everything is wired',
+        hint: 'Start with doctor to confirm everything works',
       },
     ],
   };
@@ -164,32 +207,31 @@
     steps: [
       {
         label: 'Witaj',
-        title: 'Witaj w instalatorze',
+        title: 'Instalacja w\u00a060\u00a0sekund',
         body: [
-          'Ten kreator przeprowadzi Ci\u0119 przez instalacj\u0119 frameworka, jego fundament\u00f3w i zestawu umiej\u0119tno\u015bci agent\u00f3w.',
-          'Nic nie zmienia si\u0119 w Twoim systemie, dop\u00f3ki wyra\u017anie nie zatwierdzisz planu.',
-          'Ka\u017cdy krok wyja\u015bnia co si\u0119 zmienia, dlaczego to wa\u017cne i prosi o Twoj\u0105 zgod\u0119 przed dzia\u0142aniem.',
+          'Jedna komenda przygotowuje, weryfikuje i instaluje ca\u0142y framework.',
+          'Nic nie zmienia si\u0119 w systemie, dop\u00f3ki nie zatwierdzisz.',
         ],
-        hint: 'Naci\u015bnij \u2192 lub Enter aby kontynuowa\u0107',
+        hint: 'Naci\u015bnij \u2192 lub przesu\u0144 palcem',
       },
       {
-        label: 'Zawarto\u015b\u0107',
-        title: 'Co instalujesz',
+        label: 'Sk\u0142ad',
+        title: 'Co dostajesz',
         body: [],
         items: [
-          { icon: '\u2692', name: '16 Skilli', desc: 'Strukturyzowane przep\u0142ywy dla budowania, konwergencji i wysy\u0142ki' },
-          { icon: '\u25C8', name: 'Fundamenty', desc: 'loctree, aicx-mcp, prview, ScreenScribe \u2014 warstwa percepcji' },
-          { icon: '\u21CB', name: 'Widoki Agent\u00f3w', desc: 'Symlinki dla CLI Claude, Codex i Gemini' },
-          { icon: '\u2318', name: 'Helpery Shell', desc: 'Komendy vc-*, funkcje promptu i deck komend' },
+          { icon: '\u2692', name: '16 Skilli', desc: 'Buduj \u2192 Konwerguj \u2192 Wysy\u0142aj' },
+          { icon: '\u25C8', name: 'Fundamenty', desc: 'loctree, aicx-mcp, prview, ScreenScribe' },
+          { icon: '\u21CB', name: 'Widoki Agent\u00f3w', desc: 'Powierzchnie CLI Claude, Codex i Gemini' },
+          { icon: '\u2318', name: 'Helpery', desc: 'Komendy vc-* i deck komend' },
         ],
-        hint: 'To s\u0105 komponenty, kt\u00f3re instalator umie\u015bci',
+        hint: 'Komponenty umieszczane przez instalator',
       },
       {
         label: 'Wymagania',
         title: 'Twoje \u015brodowisko',
         body: [
-          'Instalator sprawdzi Tw\u00f3j system pod k\u0105tem wymaganego toolchainu i opcjonalnych fundament\u00f3w.',
-          'Brakuj\u0105ce opcjonalne narz\u0119dzia s\u0105 odnotowane, ale nigdy nie blokuj\u0105 instalacji.',
+          'Instalator automatycznie sprawdza \u015brodowisko.',
+          'Brakuj\u0105ce opcjonalne narz\u0119dzia nie blokuj\u0105 instalacji.',
         ],
         checks: [
           { label: 'python3', required: true },
@@ -199,79 +241,98 @@
           { label: 'claude / codex / gemini', required: true },
           { label: 'loctree-mcp', required: false },
           { label: 'aicx-mcp', required: false },
-          { label: 'mise', required: false },
         ],
-        hint: 'W\u0142a\u015bciwe sprawdzenia odbywaj\u0105 si\u0119 podczas instalacji',
+        hint: 'Sprawdzenia uruchamiane podczas instalacji',
       },
       {
-        label: 'Instalacja',
-        title: 'Uruchom instalator',
+        label: 'Instaluj',
+        title: 'Uruchom',
         body: [
-          'Skopiuj poni\u017csz\u0105 komend\u0119 i uruchom j\u0105 w terminalu.',
-          'Skrypt przygotowuje lokalny snapshot, uruchamia diagnostyk\u0119 i otwiera prowadzony instalator. \u017badna zmiana nie nast\u0105pi bez Twojej zgody.',
+          'Skopiuj komend\u0119 i wklej w terminalu.',
         ],
-        hint: 'Komenda otwiera ten sam prowadzony przep\u0142yw w terminalu',
+        hint: 'Prowadzony instalator otworzy si\u0119 automatycznie',
       },
       {
-        label: 'Dalej',
+        label: 'Start',
         title: 'Gotowe',
         body: [
-          'Po zako\u0144czeniu instalacji deck komend jest aktywny.',
+          'Deck komend jest aktywny. Zacznij tutaj:',
         ],
         commands: [
-          { cmd: 'vibecrafted doctor', desc: 'Sprawd\u017a poprawno\u015b\u0107 instalacji' },
-          { cmd: 'vibecrafted init claude', desc: 'Zainicjuj sesj\u0119 w Twoim repo' },
-          { cmd: 'vibecrafted help', desc: 'Zobacz dost\u0119pne komendy' },
+          { cmd: 'vibecrafted doctor', desc: 'Sprawd\u017a poprawno\u015b\u0107' },
+          { cmd: 'vibecrafted init claude', desc: 'Zainicjuj sesj\u0119' },
+          { cmd: 'vibecrafted help', desc: 'Wszystkie komendy' },
         ],
-        hint: 'Zacznij od vibecrafted doctor aby potwierdzi\u0107 \u017ce wszystko dzia\u0142a',
+        hint: 'Zacznij od doctor \u017ceby potwierdzi\u0107 \u017ce dzia\u0142a',
       },
     ],
   };
 </script>
 
 <div class="wizard" role="region" aria-label={content.steps[currentStep]?.label}>
-  <!-- Header -->
-  <header class="wz-header">
+
+  <!-- Brand -->
+  <header class="wz-brand-bar">
     <span class="wz-brand">{content.hero}</span>
-    <span class="wz-version">{content.version}</span>
+    <span class="wz-ver">{content.version}</span>
   </header>
 
-  <!-- Progress dots -->
-  <nav class="wz-progress" aria-label="Installation steps">
-    {#each content.steps as step, i}
-      <button
-        class="wz-step"
-        class:active={i === currentStep}
-        class:done={i < currentStep}
-        onclick={() => goTo(i)}
-        aria-label="{step.label} \u2014 step {i + 1} of {STEPS}"
-        aria-current={i === currentStep ? 'step' : undefined}
-      >
-        <span class="wz-pip"></span>
-        <span class="wz-step-label">{step.label}</span>
-      </button>
-    {/each}
+  <!-- Progress -->
+  <nav class="wz-progress" aria-label="Steps">
+    <div class="wz-track">
+      <div class="wz-track-fill" style="width: {progress}%"></div>
+    </div>
+    <div class="wz-dots">
+      {#each content.steps as step, i}
+        <button
+          class="wz-dot"
+          class:active={i === currentStep}
+          class:done={i < currentStep}
+          onclick={() => goToStep(i)}
+          aria-label="{step.label} — step {i + 1} of {STEPS}"
+          aria-current={i === currentStep ? 'step' : undefined}
+        >
+          <span class="wz-pip">
+            {#if i < currentStep}
+              <svg viewBox="0 0 12 12" width="10" height="10"><polyline points="2,6 5,9 10,3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            {/if}
+          </span>
+          <span class="wz-dot-label">{step.label}</span>
+        </button>
+      {/each}
+    </div>
   </nav>
 
-  <!-- Slide rail: contained scroll, no page scroll -->
+  <!-- Slide area -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div class="wz-rail" ontouchstart={handleTouchStart} ontouchend={handleTouchEnd}>
+  <div class="wz-stage" ontouchstart={handleTouchStart} ontouchend={handleTouchEnd}>
     <div
       class="wz-slide"
-      class:exit-left={transitioning && direction === 'forward'}
-      class:exit-right={transitioning && direction === 'backward'}
+      class:slide-in-right={slideVisible && direction === 'forward'}
+      class:slide-in-left={slideVisible && direction === 'backward'}
+      class:slide-out-left={!slideVisible && direction === 'forward'}
+      class:slide-out-right={!slideVisible && direction === 'backward'}
+      class:slide-initial={slideVisible && currentStep === 0 && direction === 'forward'}
     >
-      {#if currentStep === 0}
-        <h2 class="wz-title">{content.steps[0].title}</h2>
-        {#each content.steps[0].body as paragraph}
-          <p class="wz-body">{paragraph}</p>
-        {/each}
 
+      <!-- Step 0: Welcome -->
+      {#if currentStep === 0}
+        <div class="wz-center">
+          <h2 class="wz-title">{content.steps[0].title}</h2>
+          {#each content.steps[0].body as p}
+            <p class="wz-body">{p}</p>
+          {/each}
+          <button class="wz-cta" onclick={next}>
+            {lang === 'pl' ? 'Zaczynamy' : 'Get started'} <span class="wz-cta-arrow">&rarr;</span>
+          </button>
+        </div>
+
+      <!-- Step 1: What's inside -->
       {:else if currentStep === 1}
         <h2 class="wz-title">{content.steps[1].title}</h2>
         <div class="wz-grid">
-          {#each (content.steps[1] as any).items as item}
-            <div class="wz-card">
+          {#each (content.steps[1] as any).items as item, idx}
+            <div class="wz-card" style="animation-delay: {idx * 60}ms">
               <span class="wz-card-icon">{item.icon}</span>
               <div>
                 <strong class="wz-card-name">{item.name}</strong>
@@ -281,14 +342,15 @@
           {/each}
         </div>
 
+      <!-- Step 2: Prerequisites -->
       {:else if currentStep === 2}
         <h2 class="wz-title">{content.steps[2].title}</h2>
-        {#each content.steps[2].body as paragraph}
-          <p class="wz-body">{paragraph}</p>
+        {#each content.steps[2].body as p}
+          <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-checks">
-          {#each (content.steps[2] as any).checks as check}
-            <div class="wz-check">
+          {#each (content.steps[2] as any).checks as check, idx}
+            <div class="wz-check" style="animation-delay: {idx * 40}ms">
               <span class="wz-badge" class:req={check.required} class:opt={!check.required}>
                 {check.required ? '\u25CF' : '\u25CB'}
               </span>
@@ -300,29 +362,46 @@
           {/each}
         </div>
 
+      <!-- Step 3: Install command + terminal sim -->
       {:else if currentStep === 3}
         <h2 class="wz-title">{content.steps[3].title}</h2>
-        {#each content.steps[3].body as paragraph}
-          <p class="wz-body">{paragraph}</p>
+        {#each content.steps[3].body as p}
+          <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-cmd-block">
           <div class="wz-cmd-bar">
             <span class="wz-cmd-prompt">$</span>
             <code class="wz-cmd-text">{installCommand}</code>
-            <button class="wz-cmd-copy" onclick={copyCommand} aria-label="Copy command">
-              {copyState === 'copied' ? '\u2713' : copyState === 'error' ? '\u2715' : '\u2398'}
+            <button
+              class="wz-cmd-copy"
+              class:copied={copyState === 'copied'}
+              onclick={copyCommand}
+              aria-label="Copy command"
+            >
+              {copyState === 'copied' ? '\u2713 Copied' : copyState === 'error' ? '\u2715' : 'Copy'}
             </button>
           </div>
         </div>
+        {#if termLines.length > 0}
+          <div class="wz-terminal">
+            {#each termLines as line}
+              <div class="wz-term-line">{line}</div>
+            {/each}
+            {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+              <span class="wz-cursor">_</span>
+            {/if}
+          </div>
+        {/if}
 
+      <!-- Step 4: Next steps -->
       {:else if currentStep === 4}
         <h2 class="wz-title">{content.steps[4].title}</h2>
-        {#each content.steps[4].body as paragraph}
-          <p class="wz-body">{paragraph}</p>
+        {#each content.steps[4].body as p}
+          <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-next-cmds">
-          {#each (content.steps[4] as any).commands as cmd}
-            <div class="wz-next-cmd">
+          {#each (content.steps[4] as any).commands as cmd, idx}
+            <div class="wz-next-cmd" style="animation-delay: {idx * 80}ms">
               <code class="wz-next-cmd-code">{cmd.cmd}</code>
               <span class="wz-next-cmd-desc">{cmd.desc}</span>
             </div>
@@ -343,261 +422,336 @@
       disabled={currentStep === 0}
       aria-label="Previous step"
     >
-      \u2190 {lang === 'pl' ? 'Wstecz' : 'Back'}
+      &larr;
     </button>
-    <span class="wz-counter">{currentStep + 1} / {STEPS}</span>
+    <span class="wz-counter">{currentStep + 1}<span class="wz-counter-sep">/</span>{STEPS}</span>
     {#if currentStep < STEPS - 1}
-      <button
-        class="wz-btn wz-btn-next"
-        onclick={next}
-        aria-label="Next step"
-      >
-        {lang === 'pl' ? 'Dalej' : 'Next'} \u2192
+      <button class="wz-btn wz-btn-next" onclick={next} aria-label="Next step">
+        &rarr;
       </button>
     {:else}
       <a
         class="wz-btn wz-btn-next wz-btn-done"
         href={lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/'}
       >
-        Quick Start \u2192
+        Quick Start &rarr;
       </a>
     {/if}
   </nav>
 
-  <!-- Footer -->
   <footer class="wz-footer">
-    <span>\uD83C\uDD75\u00B7\uD83C\uDD41\u00B7\uD83C\uDD30\u00B7\uD83C\uDD3C\u00B7\uD83C\uDD34\u00B7\uD83C\uDD46\u00B7\uD83C\uDD5E\u00B7\uD83C\uDD41\u00B7\uD83C\uDD5A</span>
+    <span>//vibecrafted.</span>
   </footer>
 </div>
 
 <style>
-  /*
-   * Wizard shell: EXACTLY viewport height. No page scroll.
-   * All overflow lives inside .wz-rail.
-   * Tokens linked to global.css design language.
-   */
+  /* ===================================================================
+   *  Onboarding Wizard — viewport-locked, slide-based, minimalist
+   *  Design tokens inherit from global.css.
+   * =================================================================== */
   .wizard {
     --c-copper: var(--copper, #b87333);
     --c-copper-bright: var(--copper-bright, #d4905c);
     --c-steel: var(--steel, #a3b8c7);
     --c-stone: var(--stone-deep, #0e0e11);
-    --c-surface: var(--card-bg, rgba(26, 29, 34, 0.6));
+    --c-surface: var(--card-bg, rgba(26, 29, 34, 0.55));
     --c-border: var(--card-border, rgba(163, 184, 199, 0.1));
     --c-text: var(--text-primary, rgba(229, 236, 245, 0.88));
-    --c-text-dim: var(--text-secondary, rgba(229, 236, 245, 0.52));
-    --c-glow: var(--glow-subtle, rgba(184, 115, 51, 0.16));
+    --c-text-dim: var(--text-secondary, rgba(229, 236, 245, 0.48));
+    --c-glow: rgba(184, 115, 51, 0.2);
     --f-mono: 'JetBrains Mono', 'SF Mono', monospace;
     --f-sans: 'Poppins', -apple-system, sans-serif;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
 
     width: 100%;
-    max-width: 640px;
+    max-width: 580px;
     margin: 0 auto;
     padding: 1rem 1.5rem;
     font-family: var(--f-sans);
     color: var(--c-text);
-
-    /* THE CONTRACT: exactly viewport height, no page scroll */
     height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
-  /* ---- Header ---- */
-  .wz-header {
+  /* ---- Brand bar ---- */
+  .wz-brand-bar {
     text-align: center;
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--c-border);
-    margin-bottom: 1rem;
+    padding: 0.375rem 0 0.625rem;
     flex-shrink: 0;
   }
   .wz-brand {
     font-family: var(--f-mono);
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     color: var(--c-copper-bright);
   }
-  .wz-version {
+  .wz-ver {
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     color: var(--c-text-dim);
-    margin-left: 0.5rem;
+    margin-left: 0.375rem;
+    vertical-align: middle;
   }
 
-  /* ---- Progress dots ---- */
+  /* ---- Progress track + dots ---- */
   .wz-progress {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    margin-bottom: 1rem;
     flex-shrink: 0;
-  }
-  .wz-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.25rem 0.625rem;
+    margin-bottom: 1.25rem;
     position: relative;
-    transition: opacity 0.2s;
   }
-  .wz-step:hover { opacity: 1; }
-  .wz-pip {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid var(--c-border);
-    background: transparent;
-    transition: all 0.25s ease;
+  .wz-track {
+    position: absolute;
+    top: 5px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: var(--c-border);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .wz-track-fill {
+    height: 100%;
+    background: var(--c-copper);
+    border-radius: 1px;
+    transition: width 0.35s var(--ease);
+  }
+  .wz-dots {
+    display: flex;
+    justify-content: space-between;
     position: relative;
     z-index: 1;
   }
-  .wz-step.active .wz-pip {
+  .wz-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex: 1;
+  }
+  .wz-pip {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--c-border);
+    background: var(--c-stone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s var(--ease);
+    color: var(--c-stone);
+  }
+  .wz-dot.active .wz-pip {
     border-color: var(--c-copper);
     background: var(--c-copper);
-    box-shadow: 0 0 8px var(--c-glow);
+    box-shadow: 0 0 10px var(--c-glow), 0 0 20px rgba(184, 115, 51, 0.08);
+    transform: scale(1.2);
   }
-  .wz-step.done .wz-pip {
+  .wz-dot.done .wz-pip {
     border-color: var(--c-copper-bright);
     background: var(--c-copper-bright);
+    color: var(--c-stone);
   }
-  .wz-step-label {
+  .wz-dot.done .wz-pip svg { display: block; }
+  .wz-pip svg { display: none; }
+  .wz-dot-label {
     font-family: var(--f-mono);
-    font-size: 0.5625rem;
+    font-size: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: var(--c-text-dim);
-    white-space: nowrap;
     transition: color 0.2s;
   }
-  .wz-step.active .wz-step-label { color: var(--c-copper-bright); }
-  .wz-step.done .wz-step-label { color: var(--c-text); }
+  .wz-dot.active .wz-dot-label { color: var(--c-copper-bright); }
+  .wz-dot.done .wz-dot-label { color: var(--c-text); }
 
-  /* Connector lines */
-  .wz-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: calc(0.25rem + 4px);
-    left: calc(50% + 10px);
-    width: calc(100% - 20px);
-    height: 2px;
-    background: var(--c-border);
-    z-index: 0;
-  }
-  .wz-step.done:not(:last-child)::after {
-    background: var(--c-copper-bright);
-  }
-
-  /* ---- Slide rail: THIS is the contained scroll zone ---- */
-  .wz-rail {
+  /* ---- Slide stage ---- */
+  .wz-stage {
     flex: 1 1 0;
-    min-height: 0; /* critical for flex shrink */
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
     scrollbar-width: thin;
     scrollbar-color: var(--c-copper) transparent;
   }
-  .wz-rail::-webkit-scrollbar { width: 4px; }
-  .wz-rail::-webkit-scrollbar-track { background: transparent; }
-  .wz-rail::-webkit-scrollbar-thumb { background: var(--c-copper); border-radius: 2px; }
+  .wz-stage::-webkit-scrollbar { width: 3px; }
+  .wz-stage::-webkit-scrollbar-track { background: transparent; }
+  .wz-stage::-webkit-scrollbar-thumb { background: var(--c-copper); border-radius: 2px; }
 
   .wz-slide {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    opacity: 1;
-    transform: translateX(0);
-    padding: 0.5rem 0;
-  }
-  .wz-slide.exit-left {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  .wz-slide.exit-right {
-    opacity: 0;
-    transform: translateX(20px);
+    padding: 0.25rem 0;
+    will-change: transform, opacity;
   }
 
-  /* ---- Slide content ---- */
+  /* Slide transitions */
+  .slide-initial { opacity: 1; transform: none; }
+
+  .slide-in-right {
+    animation: slideInRight 0.28s var(--ease) forwards;
+  }
+  .slide-in-left {
+    animation: slideInLeft 0.28s var(--ease) forwards;
+  }
+  .slide-out-left {
+    animation: slideOutLeft 0.16s var(--ease) forwards;
+  }
+  .slide-out-right {
+    animation: slideOutRight 0.16s var(--ease) forwards;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideOutLeft {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-30px); }
+  }
+  @keyframes slideOutRight {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(30px); }
+  }
+
+  /* ---- Content typography ---- */
+  .wz-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 100%;
+    gap: 0.5rem;
+  }
   .wz-title {
     font-family: var(--f-sans);
-    font-size: 1.25rem;
+    font-size: clamp(1.125rem, 3vw, 1.375rem);
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     color: var(--c-text);
-    line-height: 1.3;
+    line-height: 1.25;
   }
   .wz-body {
-    font-family: var(--f-sans);
-    font-size: 0.875rem;
-    line-height: 1.6;
+    font-size: 0.8125rem;
+    line-height: 1.65;
     color: var(--c-text-dim);
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.375rem;
+    max-width: 44ch;
   }
-  .wz-body:last-of-type { margin-bottom: 0; }
 
-  /* Items grid (step 1) */
+  /* CTA button on welcome */
+  .wz-cta {
+    margin-top: 1rem;
+    font-family: var(--f-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.625rem 1.75rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--c-copper);
+    color: var(--c-stone);
+    cursor: pointer;
+    transition: all 0.25s var(--ease);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .wz-cta:hover {
+    background: var(--c-copper-bright);
+    box-shadow: 0 0 20px var(--c-glow);
+    transform: translateY(-1px);
+  }
+  .wz-cta-arrow {
+    transition: transform 0.2s;
+  }
+  .wz-cta:hover .wz-cta-arrow {
+    transform: translateX(3px);
+  }
+
+  /* ---- Cards grid (step 1) ---- */
   .wz-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.625rem;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
   }
   @media (max-width: 480px) {
     .wz-grid { grid-template-columns: 1fr; }
   }
   .wz-card {
     display: flex;
-    gap: 0.625rem;
-    padding: 0.75rem;
+    gap: 0.5rem;
+    padding: 0.625rem 0.75rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
-    border-radius: 8px;
+    border-radius: 10px;
     align-items: flex-start;
+    animation: cardIn 0.35s var(--ease) both;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .wz-card:hover {
+    border-color: rgba(184, 115, 51, 0.25);
+    box-shadow: 0 0 12px rgba(184, 115, 51, 0.06);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .wz-card-icon {
-    font-size: 1rem;
+    font-size: 0.875rem;
     flex-shrink: 0;
-    width: 1.25rem;
+    width: 1.125rem;
     text-align: center;
+    line-height: 1.5;
   }
   .wz-card-name {
     font-family: var(--f-mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     color: var(--c-text);
     display: block;
     margin-bottom: 0.125rem;
   }
   .wz-card-desc {
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     color: var(--c-text-dim);
-    line-height: 1.4;
+    line-height: 1.45;
+    margin: 0;
   }
 
-  /* Check list (step 2) */
+  /* ---- Checklist (step 2) ---- */
   .wz-checks {
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.1875rem;
   }
   .wz-check {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.375rem 0.625rem;
+    padding: 0.3125rem 0.5rem;
     border-radius: 6px;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
     font-family: var(--f-mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
+    animation: cardIn 0.3s var(--ease) both;
   }
   .wz-badge {
-    font-size: 0.5rem;
-    width: 0.875rem;
+    font-size: 0.4375rem;
+    width: 0.75rem;
     text-align: center;
     flex-shrink: 0;
   }
@@ -608,10 +762,10 @@
     color: var(--c-text);
   }
   .wz-tag {
-    font-size: 0.5625rem;
+    font-size: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 0.125rem 0.375rem;
+    padding: 0.0625rem 0.3125rem;
     border-radius: 3px;
   }
   .wz-tag.req {
@@ -619,19 +773,19 @@
     color: var(--c-copper-bright);
   }
   .wz-tag.opt {
-    background: rgba(163, 184, 199, 0.08);
+    background: rgba(163, 184, 199, 0.06);
     color: var(--c-text-dim);
   }
 
-  /* Command block (step 3) */
+  /* ---- Command block (step 3) ---- */
   .wz-cmd-block {
-    margin-top: 1.25rem;
+    margin-top: 0.75rem;
   }
   .wz-cmd-bar {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 0.875rem;
+    padding: 0.625rem 0.75rem;
     background: rgba(14, 14, 17, 0.92);
     border: 1px solid var(--c-copper);
     border-radius: 8px;
@@ -640,69 +794,110 @@
   .wz-cmd-prompt {
     font-family: var(--f-mono);
     color: var(--c-copper-bright);
-    font-weight: 600;
+    font-weight: 700;
     flex-shrink: 0;
   }
   .wz-cmd-text {
     font-family: var(--f-mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     color: var(--c-text);
     flex: 1;
     word-break: break-all;
+    -webkit-user-select: all;
     user-select: all;
   }
   .wz-cmd-copy {
+    font-family: var(--f-mono);
+    font-size: 0.625rem;
     background: none;
     border: 1px solid var(--c-border);
-    border-radius: 4px;
+    border-radius: 5px;
     color: var(--c-text-dim);
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8125rem;
+    padding: 0.1875rem 0.5rem;
     transition: all 0.2s;
     flex-shrink: 0;
+    white-space: nowrap;
   }
   .wz-cmd-copy:hover {
     border-color: var(--c-copper);
     color: var(--c-copper-bright);
   }
+  .wz-cmd-copy.copied {
+    border-color: var(--c-copper-bright);
+    color: var(--c-copper-bright);
+    background: rgba(184, 115, 51, 0.08);
+  }
 
-  /* Next commands (step 4) */
+  /* ---- Terminal sim ---- */
+  .wz-terminal {
+    margin-top: 0.625rem;
+    padding: 0.5rem 0.625rem;
+    background: rgba(14, 14, 17, 0.85);
+    border: 1px solid var(--c-border);
+    border-radius: 6px;
+    font-family: var(--f-mono);
+    font-size: 0.5625rem;
+    line-height: 1.55;
+    color: var(--c-text-dim);
+    max-height: 12rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-copper) transparent;
+  }
+  .wz-term-line {
+    white-space: pre;
+    animation: termIn 0.15s ease both;
+  }
+  @keyframes termIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .wz-cursor {
+    animation: blink 0.8s step-end infinite;
+    color: var(--c-copper);
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  /* ---- Next commands (step 4) ---- */
   .wz-next-cmds {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
   }
   .wz-next-cmd {
     display: flex;
     align-items: baseline;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    gap: 0.625rem;
+    padding: 0.4375rem 0.625rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
     border-radius: 6px;
+    animation: cardIn 0.35s var(--ease) both;
   }
   .wz-next-cmd-code {
     font-family: var(--f-mono);
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     color: var(--c-copper-bright);
     white-space: nowrap;
     flex-shrink: 0;
   }
   .wz-next-cmd-desc {
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
     color: var(--c-text-dim);
   }
 
   /* ---- Hint ---- */
   .wz-hint {
     font-family: var(--f-mono);
-    font-size: 0.625rem;
+    font-size: 0.5625rem;
     color: var(--c-text-dim);
     text-align: center;
-    margin: 0.75rem 0 0.5rem;
-    opacity: 0.7;
+    margin: 0.5rem 0 0.375rem;
+    opacity: 0.6;
     flex-shrink: 0;
   }
 
@@ -711,17 +906,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    padding: 0.375rem 0;
     border-top: 1px solid var(--c-border);
     flex-shrink: 0;
   }
   .wz-btn {
     font-family: var(--f-mono);
-    font-size: 0.75rem;
-    padding: 0.4375rem 1rem;
-    border-radius: 6px;
+    font-size: 0.8125rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s var(--ease);
     text-decoration: none;
   }
   .wz-btn-back {
@@ -734,50 +933,62 @@
     color: var(--c-text);
   }
   .wz-btn-back:disabled {
-    opacity: 0.3;
+    opacity: 0.2;
     cursor: not-allowed;
   }
   .wz-btn-next {
     background: var(--c-copper);
     border: 1px solid var(--c-copper);
     color: var(--c-stone);
-    font-weight: 600;
+    font-weight: 700;
   }
   .wz-btn-next:hover {
     background: var(--c-copper-bright);
     border-color: var(--c-copper-bright);
-    box-shadow: 0 0 12px var(--c-glow);
+    box-shadow: 0 0 14px var(--c-glow);
+    transform: scale(1.05);
   }
   .wz-btn-done {
-    display: inline-flex;
-    align-items: center;
+    border-radius: 1.25rem;
+    width: auto;
+    padding: 0 1rem;
+    font-size: 0.6875rem;
+    gap: 0.25rem;
   }
   .wz-counter {
     font-family: var(--f-mono);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     color: var(--c-text-dim);
+  }
+  .wz-counter-sep {
+    opacity: 0.4;
+    margin: 0 0.125rem;
   }
 
   /* ---- Footer ---- */
   .wz-footer {
     text-align: center;
-    padding: 0.5rem 0 0;
-    font-size: 0.625rem;
+    padding: 0.25rem 0 0;
+    font-family: var(--f-mono);
+    font-size: 0.5625rem;
     color: var(--c-text-dim);
-    opacity: 0.4;
-    letter-spacing: 0.12em;
+    opacity: 0.3;
+    letter-spacing: 0.08em;
     flex-shrink: 0;
   }
 
-  /* ---- Responsive: short viewports ---- */
+  /* ---- Responsive ---- */
   @media (max-height: 600px) {
-    .wizard { padding: 0.5rem 1rem; }
-    .wz-header { padding: 0.25rem 0; margin-bottom: 0.5rem; }
-    .wz-progress { margin-bottom: 0.5rem; }
-    .wz-title { font-size: 1.125rem; margin-bottom: 0.625rem; }
-    .wz-body { font-size: 0.8125rem; }
-    .wz-hint { margin: 0.375rem 0 0.25rem; }
-    .wz-nav { padding: 0.375rem 0; }
-    .wz-footer { padding: 0.25rem 0 0; }
+    .wizard { padding: 0.375rem 1rem; }
+    .wz-brand-bar { padding: 0.125rem 0 0.375rem; }
+    .wz-progress { margin-bottom: 0.75rem; }
+    .wz-title { font-size: 1rem; margin-bottom: 0.5rem; }
+    .wz-body { font-size: 0.75rem; }
+    .wz-hint { margin: 0.25rem 0; }
+    .wz-nav { padding: 0.25rem 0; }
+  }
+  @media (max-width: 360px) {
+    .wizard { padding: 0.5rem 0.75rem; }
+    .wz-dot-label { display: none; }
   }
 </style>

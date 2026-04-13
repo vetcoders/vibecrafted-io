@@ -640,16 +640,40 @@ flowchart LR
       label: "Referencje",
       title: "Ground Truth i inspiracje",
       sub: "Poniższa bibliografia rozszerza listę manifestu o wpływy modelowania strukturalnego i konwergencji wyłonione ponownie w wewnętrznej pracy groundingowej AICX.",
+      modal: {
+        eyebrow: "Źródło referencji",
+        title: "Ta strona zostanie otwarta w nowej karcie.",
+        sourceLabel: "Źródło",
+        backLabel: "<<< Wróć",
+        openLabel: "Otwórz >>>",
+        backHover: "Powrót do portalu",
+        openHover: "Przejdź do strony",
+      },
       items: [
         {
           citationHtml:
             "Morris, K.; B&ouml;ckeler, B. (2026). <em>Humans and Agents in Software Engineering Loops</em>; <em>Harness Engineering</em>; <em>Context Engineering for Coding Agents</em>. Thoughtworks / Martin Fowler.",
           note: "Framing why-loop / how-loop, projektowanie harnessów i dyscyplina workflow prowadzonego przez człowieka stojące za SHACE i rolą operatora.",
+          links: [
+            {
+              href: "https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html",
+              label: "Humans & Agents",
+            },
+            {
+              href: "https://martinfowler.com/articles/harness-engineering.html",
+              label: "Harness Engineering",
+            },
+            {
+              href: "https://martinfowler.com/articles/exploring-gen-ai/context-engineering-coding-agents.html",
+              label: "Context Engineering",
+            },
+          ],
         },
         {
           citationHtml:
             "Gong, L.; Elhoushi, M.; Cheung, A. (2024). <em>AST-T5: Structure-Aware Pretraining for Code Generation</em>.",
           note: "Wątek pretreningu świadomego struktury stojący za insistencją 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍., że modele nie powinny pisać do repo na ślepo.",
+          links: [{ href: "https://arxiv.org/abs/2401.03003", label: "arXiv" }],
         },
         {
           citationHtml:
@@ -661,6 +685,12 @@ flowchart LR
           citationHtml:
             "Cunningham, W. (1992) i późniejsza literatura o długu technicznym.",
           note: "Konceptualny przodek DoU: działający kod to nie to samo co zdrowy, godny zaufania, gotowy do wysyłki system.",
+          links: [
+            {
+              href: "https://martinfowler.com/bliki/TechnicalDebt.html",
+              label: "Technical Debt",
+            },
+          ],
         },
         {
           citationHtml:
