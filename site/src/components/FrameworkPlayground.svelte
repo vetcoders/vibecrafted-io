@@ -1758,13 +1758,7 @@
   }
 
   .framework-playground__board-column {
-    grid-area: board;
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    min-width: 0;
-    min-height: 0;
-    align-self: start;
+    display: contents;
   }
 
   .framework-playground__pressline {
@@ -1797,9 +1791,9 @@
   }
 
   .framework-playground__stage {
+    grid-area: board;
     position: relative;
     width: 100%;
-    flex: 0 0 auto;
     height: var(--framework-stage-height);
     min-height: 0;
     border-radius: var(--radius-lg);
@@ -1861,19 +1855,20 @@
     left: 0.75rem;
     right: 0.75rem;
     bottom: 0.75rem;
-    display: inline-flex;
-    align-items: center;
+    display: flex;
+    align-items: flex-start;
     gap: 0.6rem;
     width: fit-content;
     max-width: calc(100% - 1.5rem);
     margin: 0;
     padding: 0.58rem 0.78rem;
     border: 1px solid rgba(163, 184, 199, 0.14);
-    border-radius: 999px;
+    border-radius: 0.5rem;
     background: rgba(7, 9, 12, 0.72);
     color: var(--stone-light);
     font-family: var(--font-mono);
     font-size: 0.72rem;
+    line-height: 1.4;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     backdrop-filter: blur(14px);
@@ -1884,11 +1879,14 @@
 
   .framework-playground__prompt-mark {
     color: var(--steel-dark);
+    flex-shrink: 0;
   }
 
   .framework-playground__prompt-command {
     min-width: 0;
     color: var(--stone-light);
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .framework-playground__side-column {
@@ -2273,21 +2271,20 @@
     }
 
     .framework-playground__pressline,
-    .framework-playground__board-column,
+    .framework-playground__stage,
     .framework-playground__side-column {
       grid-column: 1;
     }
 
     .framework-playground__pressline {
       grid-row: 1;
-    }
-
-    .framework-playground__board-column {
-      grid-row: 2;
+      margin-bottom: 0;
     }
 
     .framework-playground__stage {
+      grid-row: 2;
       height: var(--framework-stage-height);
+      margin-top: 0;
     }
 
     .framework-playground__side-column {
