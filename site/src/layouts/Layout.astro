@@ -214,7 +214,7 @@ const contentSecurityPolicy = [
     <div class="topbar">
         <header class="nav-shell" transition:name="site-topbar">
             <a class="brand" href={navPaths.home}>
-                <span class="brand-mark" style="display:inline-flex;align-items:center;gap:inherit;" transition:name="site-brand" transition:persist>
+                <span class="brand-mark" transition:name="site-brand" transition:persist>
                     <span class="brand-wordmark">vibecrafted</span>
                     <Image
                         src={logo32}
@@ -293,3 +293,358 @@ const contentSecurityPolicy = [
     </footer>
 </body>
 </html>
+
+<style is:global>
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    background: var(--surface-glass);
+    backdrop-filter: var(--blur);
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .nav-shell {
+    width: var(--page-shell);
+    max-width: var(--page-shell);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    height: 100%;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: inherit;
+    border-radius: 999px;
+    padding: 0.18rem 0.35rem;
+    box-shadow: var(--brand-mark-shadow);
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease;
+  }
+
+  .brand:hover .brand-mark,
+  .brand:focus-visible .brand-mark {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(229, 236, 245, 0.24),
+      0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .brand-wordmark {
+    color: var(--steel-edge);
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+  }
+
+  .brand-logo {
+    margin-left: 0;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--steel-border-soft);
+  }
+
+  .curl-banner {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 6px 5vw;
+    border-bottom: 1px solid var(--card-border);
+    background: var(--surface-banner);
+    backdrop-filter: var(--blur);
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.12s ease;
+  }
+
+  .topbar:has(.nav-get-zone:hover, .nav-get-zone:focus-within) + .curl-banner,
+  .curl-banner:hover,
+  .curl-banner:focus-within {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .curl-banner code {
+    color: var(--text-secondary);
+    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.76rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .curl-banner .cb-g {
+    color: var(--copper);
+    margin-right: 8px;
+  }
+
+  .curl-banner .cb-copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    flex-shrink: 0;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--copper-border);
+    border-radius: 4px;
+    background: none;
+    color: var(--copper);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .curl-banner .cb-copy:hover,
+  .curl-banner .cb-copy:focus-visible {
+    background: var(--copper);
+    color: var(--stone-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(184, 115, 51, 0.18);
+  }
+
+  .footer-shell {
+    width: min(var(--page-shell), calc(100% - 1.25rem));
+    margin: clamp(2rem, 6vh, 3rem) auto 1.25rem;
+    padding: var(--footer-shell-padding);
+    border: 1px solid var(--glass-panel-border);
+    border-radius: var(--radius-lg);
+    background: var(--glass-panel-bg-strong);
+    backdrop-filter: var(--footer-shell-backdrop);
+    -webkit-backdrop-filter: var(--footer-shell-backdrop);
+    box-shadow: var(--footer-shell-shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--footer-shell-gap);
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+    scroll-snap-align: start;
+    scroll-margin-top: var(--view-offset);
+    text-align: center;
+    z-index: 1;
+  }
+
+  body.framework-page .footer-shell {
+    scroll-snap-align: none;
+  }
+
+  .footer-container {
+    width: min(100%, 56rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.72rem;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .footer-logo {
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--steel-border-soft);
+  }
+
+  .footer-title {
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .footer-tagline {
+    margin: 0;
+    max-width: 34rem;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    text-align: center;
+    text-transform: none;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--footer-links-gap);
+    margin: 0;
+  }
+
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: auto;
+    padding: 0.15rem 0;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.69rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      color 0.2s ease,
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      text-shadow 0.18s ease;
+  }
+
+  .footer-links a:hover,
+  .footer-links a:focus-visible {
+    color: var(--steel);
+    transform: translateY(-1px);
+    text-shadow: 0 0 14px rgba(163, 184, 199, 0.1);
+  }
+
+  .footer-copyright {
+    margin: 0;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 900px) {
+    .curl-banner {
+      padding: 6px 4vw;
+      gap: 10px;
+    }
+
+    .curl-banner code {
+      font-size: 0.65rem;
+    }
+  }
+
+  @media (max-width: 720px) {
+    html.subpage {
+      --nav-height: 64px;
+    }
+
+    :root {
+      --nav-height: 76px;
+      --banner-height: 48px;
+      --chrome-offset: calc(var(--nav-height) + var(--banner-height));
+      --page-shell: min(100% - 1rem, 42rem);
+    }
+
+    .topbar {
+      height: auto;
+      min-height: var(--nav-height);
+    }
+
+    .nav-shell {
+      width: min(100% - 1rem, 42rem);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 0.65rem 0.75rem;
+      height: auto;
+      padding: 0.55rem 0 0.7rem;
+      overflow: visible;
+    }
+
+    .brand {
+      min-height: 3rem;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .subpage .topbar {
+      height: auto;
+      min-height: var(--nav-height);
+    }
+
+    .subpage .nav-shell {
+      padding: 0.55rem 0 0.7rem;
+    }
+
+    .subpage .brand {
+      gap: 0.45rem;
+    }
+
+    .subpage .brand-wordmark {
+      font-size: 0.84rem;
+      letter-spacing: 0.16em;
+    }
+
+    .footer-tagline {
+      width: auto;
+      padding: 0;
+      margin-left: 0;
+      border-left: 0;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .footer-links {
+      gap: 0.75rem 1rem;
+      padding: 0 1rem;
+    }
+
+    .footer-links a,
+    .curl-banner .cb-copy {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 3rem;
+    }
+  }
+</style>

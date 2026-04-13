@@ -115,6 +115,15 @@
     padding: 1.8rem 0 0.45rem;
   }
 
+  :global(body.modal-open) {
+    overflow: hidden;
+  }
+
+  :global(body.modal-open .curl-banner) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .container {
     width: min(var(--page-shell), 980px);
     display: grid;

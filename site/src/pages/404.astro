@@ -1,5 +1,6 @@
 ---
 import { getEntry, render } from 'astro:content';
+import NotFoundLocaleSwitch from '../components/NotFoundLocaleSwitch.svelte';
 import Layout from '../layouts/Layout.astro';
 
 const entryEn = await getEntry('pages', 'en/404');
@@ -12,29 +13,29 @@ const { Content: ContentPl } = await render(entryPl);
 ---
 
 <Layout title={entryEn.data.title} description={entryEn.data.description} lang="en">
+    <NotFoundLocaleSwitch client:load />
     <div id="not-found-en">
         <ContentEn />
     </div>
     <div id="not-found-pl" hidden>
         <ContentPl />
     </div>
-    <script is:inline>
-        (function() {
-            var path = window.location.pathname;
-            var isPl = path.startsWith('/pl');
-            if (!isPl) {
-                var lang = navigator.language || navigator.userLanguage || '';
-                isPl = lang.startsWith('pl');
-            }
-            if (isPl) {
-                var en = document.getElementById('not-found-en');
-                var pl = document.getElementById('not-found-pl');
-                if (en && pl) {
-                    en.hidden = true;
-                    pl.hidden = false;
-                }
-                document.documentElement.lang = 'pl';
-            }
-        })();
-    </script>
 </Layout>
+
+<style is:global>
+  html[lang='pl'] #not-found-en {
+    display: none;
+  }
+
+  html[lang='pl'] #not-found-pl {
+    display: block;
+  }
+
+  html[lang='en'] #not-found-en {
+    display: block;
+  }
+
+  html[lang='en'] #not-found-pl {
+    display: none;
+  }
+</style>

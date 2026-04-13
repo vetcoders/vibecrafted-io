@@ -77,7 +77,7 @@ const toggleLang = isPl ? 'en' : 'pl';
         <div class="wizard-shell__frame">
             <header class="wizard-shell__topbar" transition:name="site-topbar">
                 <a class="brand" href={homeHref}>
-                    <span class="brand-mark" style="display:inline-flex;align-items:center;gap:inherit;" transition:name="site-brand" transition:persist>
+                    <span class="brand-mark" transition:name="site-brand" transition:persist>
                         <span class="brand-wordmark">vibecrafted</span>
                         <Image
                             src={logo32}
@@ -277,9 +277,72 @@ const toggleLang = isPl ? 'en' : 'pl';
     transform: translateY(-1px);
   }
 
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: inherit;
+    border-radius: 999px;
+    padding: 0.18rem 0.35rem;
+    box-shadow: var(--brand-mark-shadow);
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease;
+  }
+
+  .brand:hover .brand-mark,
+  .brand:focus-visible .brand-mark {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(229, 236, 245, 0.24),
+      0 12px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .brand-wordmark {
+    color: var(--steel-edge);
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+  }
+
+  .brand-logo {
+    margin-left: 0;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--steel-border-soft);
+  }
+
   .wizard-shell__content {
     flex: 1;
     min-height: 0;
+  }
+
+  .footer-shell {
+    width: 100%;
+    margin: 0;
+    padding: var(--footer-shell-padding);
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--footer-shell-gap);
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+    box-shadow: none;
   }
 
   .footer-shell--wizard {
@@ -294,6 +357,95 @@ const toggleLang = isPl ? 'en' : 'pl';
     width: 100%;
     gap: 0.4rem;
     padding-block: 0.85rem;
+  }
+
+  .footer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.72rem;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .footer-logo {
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--steel-border-soft);
+  }
+
+  .footer-title {
+    color: var(--steel-edge);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .footer-tagline {
+    margin: 0;
+    max-width: 34rem;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    text-align: center;
+    text-transform: none;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--footer-links-gap);
+    margin: 0;
+  }
+
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: auto;
+    padding: 0.15rem 0;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.69rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      color 0.2s ease,
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      text-shadow 0.18s ease;
+  }
+
+  .footer-links a:hover,
+  .footer-links a:focus-visible {
+    color: var(--steel);
+    transform: translateY(-1px);
+    text-shadow: 0 0 14px rgba(163, 184, 199, 0.1);
+  }
+
+  .footer-copyright {
+    margin: 0;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
   }
 
   @media (max-width: 720px) {
@@ -322,9 +474,32 @@ const toggleLang = isPl ? 'en' : 'pl';
       gap: 0.35rem 0.7rem;
     }
 
+    .brand {
+      gap: 0.45rem;
+    }
+
+    .brand-wordmark {
+      font-size: 0.84rem;
+      letter-spacing: 0.16em;
+    }
+
     .footer-container--wizard {
       padding-inline: 0.95rem;
       padding-block: 0.72rem;
+    }
+
+    .footer-tagline {
+      width: auto;
+      padding: 0;
+      margin-left: 0;
+      border-left: 0;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .footer-links {
+      gap: 0.75rem 1rem;
+      padding: 0 1rem;
     }
   }
 </style>

@@ -112,6 +112,18 @@
 </button>
 
 <style>
+  button[data-copy-managed='svelte'] {
+    transform-origin: center;
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease,
+      filter 0.22s ease;
+  }
+
+  button[data-copy-managed='svelte']:active {
+    transform: scale(0.985);
+  }
+
   .copy-button__label {
     display: inline-grid;
     place-items: center;
@@ -131,7 +143,20 @@
     text-shadow: 0 0 12px rgba(90, 138, 122, 0.18);
   }
 
+  button[data-copy-state='copied'] {
+    box-shadow:
+      0 10px 24px rgba(90, 138, 122, 0.16),
+      0 0 0 1px rgba(90, 138, 122, 0.18);
+    filter: saturate(1.05);
+  }
+
   button[data-copy-state='error'] .copy-button__text {
     text-shadow: 0 0 10px rgba(184, 115, 51, 0.16);
+  }
+
+  button[data-copy-state='error'] {
+    box-shadow:
+      0 10px 24px rgba(184, 115, 51, 0.12),
+      0 0 0 1px rgba(184, 115, 51, 0.16);
   }
 </style>

@@ -53,3 +53,136 @@ const copyButton = dict.copyButton;
         </div>
     </Reveal>
 </section>
+
+<style>
+  #get .section-sub {
+    margin-bottom: 1.5rem;
+  }
+
+  .install-command-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--install-command-bar-gap);
+    padding: var(--install-command-bar-padding);
+    border: 1px solid var(--install-command-bar-border);
+    border-radius: var(--radius-md);
+    background: var(--install-command-bar-bg);
+    backdrop-filter: var(--install-command-bar-backdrop);
+    -webkit-backdrop-filter: var(--install-command-bar-backdrop);
+    box-shadow: inset 0 1px 0 var(--install-command-bar-highlight);
+    overflow: hidden;
+  }
+
+  .docs-card--install-row .install-command-bar {
+    min-height: 100%;
+    align-items: center;
+  }
+
+  .install-command-bar__prompt,
+  .install-command-bar__code,
+  .install-command-bar__copy {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  .install-command-bar__prompt {
+    color: var(--copper-bright);
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  .install-command-bar__code {
+    min-width: 0;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: var(--text-primary);
+    font-size: clamp(0.76rem, 0.9vw, 0.86rem);
+    letter-spacing: 0.01em;
+    line-height: 1.45;
+  }
+
+  .install-command-bar__copy {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: var(--install-command-copy-padding);
+    border: 1px solid var(--glow-hover);
+    border-radius: calc(var(--radius-sm) + 4px);
+    background: var(--install-command-copy-bg);
+    color: var(--copper-bright);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .install-command-bar__copy:hover,
+  .install-command-bar__copy:focus-visible {
+    border-color: var(--install-command-copy-hover-border);
+    color: var(--stone-light);
+    background: var(--glow-subtle);
+  }
+
+  .get-wizard-cta {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .get-wizard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 2rem;
+    border: 1px solid var(--copper);
+    border-radius: var(--radius-sm);
+    background: var(--copper);
+    box-shadow: 0 0 16px rgba(184, 115, 51, 0.2);
+    color: var(--stone-deep);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .get-wizard-btn:hover,
+  .get-wizard-btn:focus-visible {
+    background: var(--copper-bright);
+    border-color: var(--copper-bright);
+    box-shadow: 0 0 24px rgba(184, 115, 51, 0.35);
+  }
+
+  #get .docs-inline-links {
+    margin-top: var(--docs-inline-links-margin-top);
+  }
+
+  @media (max-width: 720px) {
+    .install-command-bar {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.7rem;
+      padding: 0.72rem 0.78rem 0.72rem 0.86rem;
+    }
+
+    .install-command-bar__code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      font-size: 0.76rem;
+    }
+
+    .install-command-bar__copy {
+      grid-column: 1 / -1;
+      width: 100%;
+    }
+  }
+</style>
