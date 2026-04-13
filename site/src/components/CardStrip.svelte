@@ -13,6 +13,13 @@
     let dragStartX = 0;
     let dragStartScrollLeft = 0;
     let isDragging = false;
+    let settleTimer: number | null = null;
+    let lastWheelAt = 0;
+    let gestureAxis: 'x' | 'y' | null = null;
+    let gestureConsumed = 0;
+
+    const WHEEL_GESTURE_IDLE_MS = 140;
+    const VERTICAL_CAPTURE_LIMIT_FACTOR = 1.15;
 
     function getScrollAmount(): number {
       const styles = window.getComputedStyle(strip);
@@ -22,12 +29,77 @@
       return width + gap;
     }
 
+    function getCardElements(): HTMLElement[] {
+      const originalCards = Array.from(strip.querySelectorAll<HTMLElement>('.card:not(.card--clone)'));
+      if (originalCards.length > 0) return originalCards;
+      return Array.from(strip.querySelectorAll<HTMLElement>('.card'));
+    }
+
     function getMaxScrollLeft(): number {
       return Math.max(0, strip.scrollWidth - strip.clientWidth);
     }
 
     function clampScrollLeft(value: number): number {
       return Math.min(Math.max(0, value), getMaxScrollLeft());
+    }
+
+    function getSnapPoint(card: HTMLElement): number {
+      const styles = window.getComputedStyle(strip);
+      const inlineStart = parseFloat(styles.paddingInlineStart || styles.paddingLeft || '0');
+      return clampScrollLeft(card.offsetLeft - inlineStart);
+    }
+
+    function getNearestSnapPoint(base = strip.scrollLeft): number {
+      const cards = getCardElements();
+      if (cards.length === 0) return clampScrollLeft(base);
+
+      let nearestPoint = getSnapPoint(cards[0]);
+      let nearestDistance = Math.abs(base - nearestPoint);
+
+      for (const card of cards.slice(1)) {
+        const point = getSnapPoint(card);
+        const distance = Math.abs(base - point);
+        if (distance < nearestDistance) {
+          nearestPoint = point;
+          nearestDistance = distance;
+        }
+      }
+
+      return nearestPoint;
+    }
+
+    function clearSettleTimer(): void {
+      if (settleTimer !== null) {
+        window.clearTimeout(settleTimer);
+        settleTimer = null;
+      }
+    }
+
+    function settleToNearestCard(): void {
+      if (isDragging || getMaxScrollLeft() <= 1) return;
+
+      const target = getNearestSnapPoint();
+      if (Math.abs(target - strip.scrollLeft) <= 6) return;
+
+      strip.scrollTo({
+        left: target,
+        behavior: prefersReduced.matches ? 'auto' : 'smooth',
+      });
+      updateChrome();
+    }
+
+    function scheduleSettle(delay = 120): void {
+      clearSettleTimer();
+      settleTimer = window.setTimeout(() => {
+        settleTimer = null;
+        settleToNearestCard();
+      }, delay);
+    }
+
+    function resetWheelGesture(): void {
+      gestureAxis = null;
+      gestureConsumed = 0;
+      lastWheelAt = 0;
     }
 
     function updateChrome(): void {
@@ -62,10 +134,15 @@
 
     function stopDrag(pointer?: number | null): void {
       if (pointerId !== null && pointer === pointerId) {
-        strip.releasePointerCapture?.(pointerId);
+        try {
+          strip.releasePointerCapture?.(pointerId);
+        } catch {
+          // Pointer capture may already be released during fast route or device changes.
+        }
       }
       pointerId = null;
       isDragging = false;
+      scheduleSettle(150);
       updateChrome();
     }
 
@@ -84,6 +161,7 @@
 
     const onPointerDown = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      clearSettleTimer();
       pointerId = event.pointerId;
       isDragging = true;
       dragStartX = event.clientX;
@@ -117,19 +195,41 @@
     };
 
     const onWheel = (event: WheelEvent) => {
-      const horizontalIntent = event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY);
-      const translateVertical = finePointer.matches && Math.abs(event.deltaY) > Math.abs(event.deltaX);
-      const delta = horizontalIntent
-        ? event.deltaX
-        : translateVertical
-          ? event.deltaY * 0.92
-          : 0;
+      if (event.ctrlKey) return;
+
+      const absX = Math.abs(event.deltaX);
+      const absY = Math.abs(event.deltaY);
+      const now = performance.now();
+      const isNewGesture = now - lastWheelAt > WHEEL_GESTURE_IDLE_MS;
+      if (isNewGesture) {
+        gestureAxis = null;
+        gestureConsumed = 0;
+      }
+      lastWheelAt = now;
+
+      const horizontalIntent = event.shiftKey || absX > absY * 0.9;
+      const verticalIntent = finePointer.matches && absY > 0 && absY >= absX;
+      gestureAxis ??= horizontalIntent ? 'x' : verticalIntent ? 'y' : null;
+
+      let delta = 0;
+      if (gestureAxis === 'x' && horizontalIntent) {
+        delta = absX > 0 ? event.deltaX : event.deltaY;
+      } else if (gestureAxis === 'y' && verticalIntent) {
+        const remaining = getScrollAmount() * VERTICAL_CAPTURE_LIMIT_FACTOR - Math.abs(gestureConsumed);
+        if (remaining <= 1) return;
+        delta = Math.sign(event.deltaY) * Math.min(absY * 0.88, remaining);
+      }
 
       if (!delta || !canConsume(delta)) return;
 
       event.preventDefault();
+      clearSettleTimer();
       strip.scrollLeft = clampScrollLeft(strip.scrollLeft + delta);
+      if (gestureAxis === 'y') {
+        gestureConsumed += delta;
+      }
       updateChrome();
+      scheduleSettle();
     };
 
     wrap.addEventListener('wheel', onWheel, { passive: false });
@@ -147,6 +247,8 @@
     resizeObserver.observe(strip);
 
     const onResize = () => {
+      clearSettleTimer();
+      resetWheelGesture();
       strip.scrollLeft = clampScrollLeft(strip.scrollLeft);
       updateChrome();
     };
@@ -154,6 +256,8 @@
     updateChrome();
 
     return () => {
+      clearSettleTimer();
+      resetWheelGesture();
       stopDrag(pointerId);
       resizeObserver?.disconnect();
       window.removeEventListener('resize', onResize);

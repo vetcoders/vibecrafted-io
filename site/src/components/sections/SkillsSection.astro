@@ -4,12 +4,12 @@ import { getTranslations, type Lang } from '../../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.skills;
 ---
-<section id="skills">
+<section id="skills" class="skills-section">
     <div class="container fade-up">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <div class="framework-strip-wrap" role="region" aria-label={section.title} tabindex="0">
+        <div class="framework-strip-wrap framework-strip-wrap--skills" role="region" aria-label={section.title} tabindex="0">
             <div class="framework-strip-frame" aria-hidden="true"></div>
             <button class="strip-arrow strip-arrow--left" aria-label={section.scrollLeft} type="button">&#8249;</button>
             <div class="framework-strip">

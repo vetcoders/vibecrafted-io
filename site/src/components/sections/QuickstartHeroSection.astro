@@ -4,7 +4,7 @@ import { getTranslations, type Lang } from '../../lib/i18n';
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.quickstartHero;
 ---
-<section class="docs-hero fade-up">
+<section class="docs-hero quickstart-hero-section fade-up">
     <div class="section-label">{section.label}</div>
     <h1 class="manifesto-title">{section.title}</h1>
     <p class="manifesto-lead">{section.lead}</p>

@@ -7,14 +7,14 @@ const dict = getTranslations(lang);
 const section = dict.sections.get;
 const copyButton = dict.copyButton;
 ---
-<section id="get">
+<section id="get" class="get-section">
     <div class="container fade-up">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <div class="docs-grid docs-grid--operations docs-grid--install-flow">
+        <div class="docs-grid docs-grid--operations docs-grid--install-flow docs-grid--install-rows">
             {section.cards.map((card) => (
-                <article class="docs-card docs-card--install">
+                <article class="docs-card docs-card--install docs-card--install-row">
                     <div class="docs-card__step" aria-hidden="true">{card.step}</div>
                     <div class="docs-card__copy">
                         <h3>{card.title}</h3>

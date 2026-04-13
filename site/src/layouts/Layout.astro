@@ -152,7 +152,7 @@ const contentSecurityPolicy = [
 ---
 
 <!DOCTYPE html>
-<html lang={lang} class:list={[isDocsPage && 'subpage']}>
+<html lang={lang} class:list={[isDocsPage && 'subpage', isFrameworkPage && 'framework-subpage']}>
 <head>
     <ClientRouter />
     <meta charset="UTF-8">
@@ -270,7 +270,7 @@ const contentSecurityPolicy = [
         />
     </div>
 
-    <main class="shell" id="main-content">
+    <main class:list={['shell', isDocsPage && 'shell--docs', isFrameworkPage && 'shell--framework']} id="main-content">
         <slot />
     </main>
 
