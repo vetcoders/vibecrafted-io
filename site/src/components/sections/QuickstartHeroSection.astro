@@ -17,3 +17,15 @@ const section = getTranslations(lang).sections.quickstartHero;
     </div>
     <DocsSearch client:load lang={lang} section="quickstart" />
 </Reveal>
+
+<style>
+  :global(.quickstart-hero-section),
+  :global(.quickstart-hero-section--operations) {
+    width: 100%;
+    max-width: none;
+  }
+
+  :global(.quickstart-hero-section) .manifesto-title {
+    max-width: 12ch;
+  }
+</style>

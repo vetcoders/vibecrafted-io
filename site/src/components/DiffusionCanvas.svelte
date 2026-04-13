@@ -304,6 +304,7 @@
     let loopDelay = prefersReducedMotion ? 1700 : 2200;
     let resetTimer = 0;
     let rafId = 0;
+    let resizeFrameId = 0;
     let resizeObserver: ResizeObserver | undefined;
     let intersectionObserver: IntersectionObserver | undefined;
     let canvasVisible = true;
@@ -553,8 +554,15 @@
       render();
       syncAnimationState();
     };
+    const scheduleResize = () => {
+      if (resizeFrameId) return;
+      resizeFrameId = window.requestAnimationFrame(() => {
+        resizeFrameId = 0;
+        handleResize();
+      });
+    };
 
-    resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver = new ResizeObserver(scheduleResize);
     resizeObserver.observe(canvas);
     intersectionObserver = new IntersectionObserver(
       (entries) => {
@@ -568,7 +576,7 @@
     intersectionObserver.observe(canvas);
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', scheduleResize);
 
     const handleVisibilityChange = () => {
       pageVisible = document.visibilityState === 'visible';
@@ -601,9 +609,12 @@
       stopLoop();
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
+      if (resizeFrameId) {
+        window.cancelAnimationFrame(resizeFrameId);
+      }
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', scheduleResize);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       motionQuery.removeEventListener('change', handleMotionChange);
       pointerQuery.removeEventListener('change', handlePointerChange);

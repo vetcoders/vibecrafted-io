@@ -272,20 +272,32 @@
   $effect(() => {
     if (!railElement || !wrapElement) return;
 
+    let resizeFrame = 0;
+    const syncMeasuredState = () => {
+      if (!railElement) return;
+      syncState(clamp(railElement.scrollLeft));
+    };
+    const scheduleMeasure = () => {
+      if (resizeFrame || typeof window === 'undefined') return;
+      resizeFrame = window.requestAnimationFrame(() => {
+        resizeFrame = 0;
+        syncMeasuredState();
+      });
+    };
+
     const resizeObserver = new ResizeObserver(() => {
-      const nextScrollLeft = clamp(railElement.scrollLeft);
-      railElement.scrollLeft = nextScrollLeft;
-      syncState(nextScrollLeft);
+      scheduleMeasure();
     });
 
-    resizeObserver.observe(railElement);
     resizeObserver.observe(wrapElement);
 
-    const nextScrollLeft = clamp(railElement.scrollLeft);
-    applyImmediate(nextScrollLeft);
+    syncMeasuredState();
 
     return () => {
       resizeObserver.disconnect();
+      if (resizeFrame && typeof window !== 'undefined') {
+        window.cancelAnimationFrame(resizeFrame);
+      }
       clearSettleTimer();
     };
   });

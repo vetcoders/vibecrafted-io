@@ -161,7 +161,64 @@ const learningPath = [
     }
 
     .faq-item {
-        border-top-color: rgba(218, 197, 167, 0.12);
+        border-top: 1px solid rgba(218, 197, 167, 0.12);
+        padding-top: 0.8rem;
+    }
+
+    .faq-item + .faq-item {
+        margin-top: 0.8rem;
+    }
+
+    .faq-item:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .faq-item summary {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.5rem;
+        cursor: pointer;
+        color: rgba(236, 240, 245, 0.96);
+        font-family: var(--font-head);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.35;
+        list-style: none;
+    }
+
+    .faq-item summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .faq-item summary::after {
+        content: '+';
+        flex-shrink: 0;
+        min-width: 1ch;
+        color: rgba(225, 176, 116, 0.94);
+        font-family: var(--font-mono);
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .faq-item[open] summary {
+        color: rgba(225, 176, 116, 0.96);
+    }
+
+    .faq-item[open] summary::after {
+        content: '−';
+    }
+
+    .faq-item p,
+    .faq-item ul {
+        margin-top: 0.7rem;
+        color: rgba(209, 216, 224, 0.82);
+        line-height: 1.65;
+    }
+
+    .faq-item ul {
+        padding-left: 1.1rem;
     }
 
     .source-layer {
@@ -190,5 +247,11 @@ const learningPath = [
         flex-wrap: wrap;
         gap: 0.55rem;
         padding: 0.9rem 0 0.8rem;
+    }
+
+    @media (min-width: 900px) {
+        .faq-layout {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
     }
 </style>

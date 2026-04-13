@@ -1422,8 +1422,16 @@
   onMount(() => {
     reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
     prefersReducedMotion = reducedMotionMedia.matches;
+    let resizeFrameId = 0;
     const handleMotionChange = (event: MediaQueryListEvent) => {
       prefersReducedMotion = event.matches;
+    };
+    const scheduleResize = () => {
+      if (resizeFrameId) return;
+      resizeFrameId = window.requestAnimationFrame(() => {
+        resizeFrameId = 0;
+        resizeCanvas();
+      });
     };
     reducedMotionMedia.addEventListener('change', handleMotionChange);
 
@@ -1431,14 +1439,15 @@
     resizeCanvas();
     showPhase(0);
 
-    resizeObserver = new ResizeObserver(() => {
-      resizeCanvas();
-    });
+    resizeObserver = new ResizeObserver(scheduleResize);
     if (stageEl) {
       resizeObserver.observe(stageEl);
     }
 
     return () => {
+      if (resizeFrameId) {
+        window.cancelAnimationFrame(resizeFrameId);
+      }
       reducedMotionMedia?.removeEventListener('change', handleMotionChange);
       resizeObserver?.disconnect();
     };

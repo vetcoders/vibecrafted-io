@@ -413,6 +413,7 @@
     let disposed = false;
     let canvasVisible = true;
     let pageVisible = document.visibilityState === 'visible';
+    let resizeFrameId = 0;
     let resizeObserver: ResizeObserver | undefined;
     let intersectionObserver: IntersectionObserver | undefined;
 
@@ -815,11 +816,17 @@
       syncMotionState();
     }
 
+    function scheduleResize(): void {
+      if (disposed || resizeFrameId) return;
+      resizeFrameId = requestAnimationFrame(() => {
+        resizeFrameId = 0;
+        if (!resizeCanvas()) return;
+        syncMotionState();
+      });
+    }
+
     const observedEl = canvas.parentElement ?? canvas;
-    resizeObserver = new ResizeObserver(() => {
-      if (!resizeCanvas()) return;
-      syncMotionState();
-    });
+    resizeObserver = new ResizeObserver(scheduleResize);
     resizeObserver.observe(observedEl);
 
     intersectionObserver = new IntersectionObserver(
@@ -834,14 +841,12 @@
     intersectionObserver.observe(observedEl);
 
     const onWindowResize = () => {
-      if (!resizeCanvas()) return;
-      syncMotionState();
+      scheduleResize();
     };
 
     const handleMotionChange = (e: MediaQueryListEvent) => {
       onMotionChange(e);
-      if (!resizeCanvas()) return;
-      syncMotionState();
+      scheduleResize();
     };
 
     const handleVisibilityChange = () => {
@@ -861,6 +866,7 @@
       disposed = true;
       stopLoop();
       if (readyFrameId) cancelAnimationFrame(readyFrameId);
+      if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
       if (morphInterval) window.clearInterval(morphInterval);
       clearReducedMotionCycle();
       resizeObserver?.disconnect();

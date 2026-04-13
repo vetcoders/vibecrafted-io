@@ -1495,72 +1495,10 @@ html.framework-subpage {
     scroll-snap-type: none;
 }
 
-.subpage .shell {
-    padding: calc(var(--nav-height) + 1.7rem) 0 clamp(3.25rem, 8vh, 4.4rem);
-}
-
 .shell--framework {
     padding: calc(var(--nav-height) + 0.55rem) 0 clamp(4rem, 9vh, 5.4rem);
 }
 
-.subpage section,
-.subpage .view {
-    display: block;
-    min-height: auto;
-    padding: 0 0 var(--space-xl);
-    scroll-snap-align: none;
-}
-
-.docs-shell {
-    width: var(--docs-shell-width-base);
-    margin: 0 auto;
-    display: grid;
-    gap: var(--docs-shell-gap-base);
-}
-
-.docs-shell > section {
-    display: grid;
-    gap: var(--docs-section-gap-base);
-    align-items: start;
-}
-
-.docs-shell > section > * {
-    min-width: 0;
-}
-
-.docs-hero {
-    padding-top: var(--docs-hero-padding-top-base);
-    max-width: var(--docs-hero-max-width-base);
-    justify-items: start;
-}
-
-.docs-hero .manifesto-lead {
-    max-width: var(--docs-hero-lead-max-width-base);
-}
-
-.docs-hero .manifesto-title {
-    max-width: 13ch;
-}
-
-.docs-hero .manifesto-quote {
-    margin-bottom: 0;
-}
-
-.docs-hero .manifesto-actions {
-    flex-wrap: wrap;
-}
-
-.quickstart-hero-section {
-    width: 100%;
-    max-width: none;
-}
-
-.quickstart-hero-section .manifesto-title {
-    max-width: 12ch;
-}
-
-.quickstart-hero-section--operations,
-.quickstart-steps-section--operations,
 .get-section--operations {
     width: 100%;
 }
@@ -1735,80 +1673,6 @@ html.framework-subpage {
     font-size: 0.92rem;
 }
 
-.docs-columns {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-md);
-}
-
-.faq-layout {
-    display: grid;
-    gap: var(--space-md);
-}
-
-.faq-group h2 {
-    font-size: 1.2rem;
-}
-
-.faq-item + .faq-item {
-    margin-top: var(--faq-item-gap);
-}
-
-.faq-item {
-    border-top: 1px solid var(--steel-border-muted);
-    padding-top: var(--faq-item-gap);
-}
-
-.faq-item:first-of-type {
-    border-top: 0;
-    padding-top: 0;
-}
-
-.faq-item summary {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--space-sm);
-    cursor: pointer;
-    color: var(--stone-light);
-    font-family: var(--font-head);
-    font-size: 1rem;
-    font-weight: 600;
-    list-style: none;
-}
-
-.faq-item summary::-webkit-details-marker {
-    display: none;
-}
-
-.faq-item summary::after {
-    content: '+';
-    flex-shrink: 0;
-    min-width: 1ch;
-    color: var(--copper-bright);
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    line-height: 1;
-}
-
-.faq-item[open] summary {
-    color: var(--copper-bright);
-}
-
-.faq-item[open] summary::after {
-    content: '−';
-}
-
-.faq-item p,
-.faq-item ul {
-    color: var(--steel-dark);
-    margin-top: var(--faq-item-content-gap);
-}
-
-.faq-item ul {
-    padding-left: var(--faq-item-list-padding);
-}
-
 .hterm-tip.on {
     opacity: 1;
 }
@@ -1847,8 +1711,7 @@ html.framework-subpage {
     .install-flow,
     .resource-grid,
     .docs-grid--steps,
-    .docs-grid--operations,
-    .docs-columns {
+    .docs-grid--operations {
         grid-template-columns: 1fr;
     }
 
@@ -1880,35 +1743,6 @@ html.framework-subpage {
 
     .docs-card__command .code-block {
         padding-right: 4.25rem;
-    }
-
-    .docs-shell {
-        width: min(100% - 1.35rem, 42rem);
-        gap: 1.2rem;
-    }
-
-    .docs-hero {
-        padding-top: 1rem;
-    }
-
-    .quickstart-hero-section {
-        width: 100%;
-    }
-
-    .docs-hero .manifesto-title {
-        max-width: 11ch;
-    }
-
-    .docs-hero .manifesto-actions {
-        width: 100%;
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .docs-hero .manifesto-actions .btn-solid,
-    .docs-hero .manifesto-actions .btn-outline {
-        width: 100%;
-        text-align: center;
     }
 
     .docs-inline-links {

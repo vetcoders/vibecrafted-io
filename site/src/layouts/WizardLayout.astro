@@ -75,9 +75,9 @@ const toggleLang = isPl ? 'en' : 'pl';
 <body class="wizard-page">
     <main class="wizard-shell">
         <div class="wizard-shell__frame">
-            <header class="wizard-shell__topbar" transition:name="site-topbar">
+            <header class="wizard-shell__topbar vt-site-topbar">
                 <a class="brand" href={homeHref}>
-                    <span class="brand-mark" transition:name="site-brand" transition:persist>
+                    <span class="brand-mark vt-site-brand" transition:persist>
                         <span class="brand-wordmark">vibecrafted</span>
                         <Image
                             src={logo32}
@@ -100,9 +100,9 @@ const toggleLang = isPl ? 'en' : 'pl';
             <div class="wizard-shell__content">
                 <slot />
             </div>
-            <footer class="footer-shell footer-shell--wizard" aria-label={footer.ariaLabel} transition:name="site-footer">
+            <footer class="footer-shell footer-shell--wizard vt-site-footer" aria-label={footer.ariaLabel}>
                 <div class="footer-container footer-container--wizard">
-                    <div class="footer-brand" transition:name="site-footer-brand" transition:persist>
+                    <div class="footer-brand vt-site-footer-brand" transition:persist>
                         <Image
                             src={logo32}
                             alt=""
@@ -130,6 +130,22 @@ const toggleLang = isPl ? 'en' : 'pl';
 </html>
 
 <style is:global>
+  .vt-site-topbar {
+    view-transition-name: site-topbar;
+  }
+
+  .vt-site-brand {
+    view-transition-name: site-brand;
+  }
+
+  .vt-site-footer {
+    view-transition-name: site-footer;
+  }
+
+  .vt-site-footer-brand {
+    view-transition-name: site-footer-brand;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     ::view-transition-group(site-topbar),
     ::view-transition-group(site-footer) {

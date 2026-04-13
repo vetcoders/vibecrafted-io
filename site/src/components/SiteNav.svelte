@@ -210,6 +210,7 @@
   .nav-link {
     position: relative;
     display: inline-flex;
+    isolation: isolate;
     align-items: center;
     min-height: 3rem;
     padding-block: var(--space-xs);
@@ -220,6 +221,27 @@
       color 0.2s ease,
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
       text-shadow 0.18s ease;
+  }
+
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    inset: 0.38rem -0.55rem;
+    z-index: -1;
+    border: 1px solid rgba(212, 144, 92, 0.08);
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
+      linear-gradient(135deg, rgba(184, 115, 51, 0.12), rgba(163, 184, 199, 0.04));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 10px 24px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    transform: scale(0.94);
+    transition:
+      opacity 0.18s ease,
+      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.18s ease;
   }
 
   .nav-link::after {
@@ -246,6 +268,13 @@
     text-shadow: 0 0 14px rgba(163, 184, 199, 0.12);
   }
 
+  .nav-link:hover::before,
+  .nav-link:focus-visible::before,
+  .nav-link--current::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
   .nav-link:hover::after,
   .nav-link:focus-visible::after,
   .nav-link--current::after {
@@ -255,6 +284,13 @@
 
   .nav-link--current {
     color: var(--copper);
+  }
+
+  .nav-link--current::before {
+    border-color: rgba(212, 144, 92, 0.18);
+    background:
+      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
+      linear-gradient(135deg, rgba(184, 115, 51, 0.16), rgba(163, 184, 199, 0.05));
   }
 
   .nav-get-zone {
@@ -430,11 +466,16 @@
       animation-delay: calc(var(--nav-item-index, 0) * 28ms);
     }
 
-    .nav-links--mobile .nav-link {
+  .nav-links--mobile .nav-link {
       border-radius: 0.9rem;
       padding-inline: 0.8rem;
       background: rgba(255, 255, 255, 0.02);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .nav-links--mobile .nav-link::before {
+      inset: 0;
+      border-radius: inherit;
     }
 
     .nav-links--mobile .nav-link:hover,

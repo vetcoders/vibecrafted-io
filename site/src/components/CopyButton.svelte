@@ -113,11 +113,51 @@
 
 <style>
   button[data-copy-managed='svelte'] {
+    position: relative;
+    overflow: hidden;
     transform-origin: center;
     transition:
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.22s ease,
       filter 0.22s ease;
+  }
+
+  button[data-copy-managed='svelte']::before,
+  button[data-copy-managed='svelte']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  button[data-copy-managed='svelte']::before {
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 0%, rgba(240, 214, 184, 0.14), transparent 58%);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+  }
+
+  button[data-copy-managed='svelte']::after {
+    top: -120%;
+    bottom: -120%;
+    left: -38%;
+    width: 42%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0),
+      rgba(255, 248, 236, 0.18),
+      rgba(255, 255, 255, 0)
+    );
+    opacity: 0;
+    transform: translateX(0) rotate(16deg);
+    transition:
+      opacity 0.18s ease,
+      transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  button[data-copy-managed='svelte']:hover::before,
+  button[data-copy-managed='svelte']:focus-visible::before {
+    opacity: 1;
   }
 
   button[data-copy-managed='svelte']:active {
@@ -150,6 +190,11 @@
     filter: saturate(1.05);
   }
 
+  button[data-copy-state='copied']::after {
+    opacity: 1;
+    transform: translateX(240%) rotate(16deg);
+  }
+
   button[data-copy-state='error'] .copy-button__text {
     text-shadow: 0 0 10px rgba(184, 115, 51, 0.16);
   }
@@ -158,5 +203,10 @@
     box-shadow:
       0 10px 24px rgba(184, 115, 51, 0.12),
       0 0 0 1px rgba(184, 115, 51, 0.16);
+  }
+
+  button[data-copy-state='error']::after {
+    opacity: 1;
+    transform: translateX(170%) rotate(16deg);
   }
 </style>
