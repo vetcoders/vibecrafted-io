@@ -42,7 +42,7 @@ Answers from the trenches. This is the truth as of April 2026.
 
 - **What does `make doctor` actually check?**
   It verifies: 1) Central store integrity, 2) Symlink health (no broken links), 3) Foundation binaries (aicx, loctree,
-  prview, etc.), 4) Shell helper availability, and 5) "Dumb terminal" quietness — ensuring your interactive shell
+  prview, ScreenScribe, etc.), 4) Shell helper availability, and 5) "Dumb terminal" quietness — ensuring your interactive shell
   doesn't leak noise that breaks agent parsers.
 
 - **How do I completely remove 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. from my system?**
@@ -163,6 +163,13 @@ Answers from the trenches. This is the truth as of April 2026.
 - **What is ScreenScribe and when would I use it instead of a bug report?**
   ScreenScribe turns screen recordings (narrated bug demos) into structured engineering findings. Use it when "it's
   broken" is easier to show than to type. It's the ultimate "bridge" from product to engineering.
+
+- **What if `screenscribe review` fails before analysis starts?**
+  Fix the runtime surface first, not the narration. The reproducible path is:
+  1) ensure the CLI is actually on `PATH` (if you installed it via `uv`, that usually means `$HOME/.local/bin`),
+  2) keep `~/.config/screenscribe/config.env` aligned with the Libraxis defaults, and
+  3) use `SCREENSCRIBE_LLM_MODEL=ai-suggestions`, keep `SCREENSCRIBE_VISION_MODEL=ai-suggestions`, set `SCREENSCRIBE_VISION=false` as operator intent, and remember that the current CLI still overrides that stored flag during `review`, so the launcher surface must inject `--no-vision` for plain review runs on the current Libraxis path.
+  The repo-local source of truth for this gate is [`docs/runtime/SCREENSCRIBE_REVIEW.md`](./runtime/SCREENSCRIBE_REVIEW.md).
 
 ## Workflow
 

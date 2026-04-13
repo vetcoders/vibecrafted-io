@@ -67,8 +67,8 @@ reports that feed into followup agents and convergence loops.
 ## ScreenScribe — Ears
 
 **What it does**: Turns screen recordings with narration into structured
-engineering findings. Bridges the gap between "it's broken" shown on
-screen and a formal bug report.
+engineering findings. Narrated runtime review for the real product
+surface.
 
 **Why it matters**: Some bugs are easier to show than to type. ScreenScribe
 converts narrated demos into actionable input for agent workflows.
@@ -78,7 +78,19 @@ converts narrated demos into actionable input for agent workflows.
 **Used by**: `vc-decorate` (visual verification), `vc-followup` (UI audit),
 `vc-dou` (product surface check).
 
-**Install**: `pip install screenscribe` (not yet on PyPI — install from source)
+**Install**: Install from source or a `uv` tool pointed at the
+[VetCoders/ScreenScribe](https://github.com/VetCoders/ScreenScribe)
+repo, then make sure the CLI is reachable on `PATH` (typically
+`$HOME/.local/bin`). The verified Libraxis model/config path lives in
+[`docs/runtime/SCREENSCRIBE_REVIEW.md`](./runtime/SCREENSCRIBE_REVIEW.md).
+If `screenscribe review` fails with `Vision model 'programmer' not found`,
+the local config is only half the story. For the default LibraxisAI path, set
+`SCREENSCRIBE_LLM_MODEL=ai-suggestions`,
+`SCREENSCRIBE_VISION_MODEL=ai-suggestions`, and
+`SCREENSCRIBE_VISION=false`, then use the launcher surface that injects
+`--no-vision` for plain review runs until the upstream CLI stops overriding the
+stored flag. If you switch to OpenAI endpoints, keep both the endpoint and the
+model names consistent with that provider.
 
 ## Foundation in the Installer
 

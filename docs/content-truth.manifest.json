@@ -1,0 +1,135 @@
+{
+  "updated_at": "2026-04-13",
+  "notes": [
+    "This is a human-maintained truth map for public site surfaces.",
+    "Statuses use: match, partial, contradiction, stale.",
+    "Canonical docs are the first stop; site copy should compress them, not fork them."
+  ],
+  "mappings": [
+    {
+      "source": "docs/FOUNDATION.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.foundation",
+          "status": "match",
+          "notes": "Landing-page runtime foundations copy and outbound links."
+        },
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.foundation",
+          "status": "match",
+          "notes": "Polish landing-page runtime foundations copy and outbound links."
+        },
+        {
+          "file": "site/src/components/InstallerWizard.svelte",
+          "surface": "EN/PL prerequisites + terminal summary",
+          "status": "partial",
+          "notes": "Installer wizard references the optional foundation layer but does not restate the full foundation doctrine."
+        }
+      ]
+    },
+    {
+      "source": "docs/QUICK_START.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.quickstartHero + quickstartResources + quickstartSteps",
+          "status": "match",
+          "notes": "English quickstart page copy, commands, and canonical links."
+        },
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.quickstartHero + quickstartResources + quickstartSteps",
+          "status": "match",
+          "notes": "Polish quickstart page copy, commands, and canonical links."
+        },
+        {
+          "file": "site/src/components/InstallerWizard.svelte",
+          "surface": "guided install walkthrough",
+          "status": "partial",
+          "notes": "Wizard is a compression of the quickstart, not the long-form guide."
+        }
+      ]
+    },
+    {
+      "source": "docs/FAQ-ANSWERED.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.faqHero + faqContent",
+          "status": "match",
+          "notes": "English FAQ page is now aligned on install path, doctor checks, and ScreenScribe guidance."
+        },
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.faqHero + faqContent",
+          "status": "match",
+          "notes": "Polish FAQ page mirrors the same operator truths."
+        }
+      ]
+    },
+    {
+      "source": "docs/runtime/README.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.hero + pipeline + quickstartResources.links",
+          "status": "partial",
+          "notes": "The site compresses the runtime overview into positioning copy plus direct links to runtime docs."
+        },
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.hero + pipeline + quickstartResources.links",
+          "status": "partial",
+          "notes": "Polish positioning copy compresses the same runtime overview."
+        }
+      ]
+    },
+    {
+      "source": "docs/runtime/MANIFESTO_EN.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.hero + evidence + marbles + references",
+          "status": "partial",
+          "notes": "English public positioning distills the manifesto into landing-page language and a canonical reference link."
+        }
+      ]
+    },
+    {
+      "source": "docs/runtime/MANIFESTO_PL.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.hero + evidence + marbles + references",
+          "status": "partial",
+          "notes": "Polish public positioning distills the manifesto and now links to the Polish manifesto source."
+        }
+      ]
+    },
+    {
+      "source": "docs/runtime/CONTRACT.md",
+      "consumers": [
+        {
+          "file": "site/src/lib/i18n/en.ts",
+          "surface": "sections.quickstartSteps[4] + quickstartResources.links",
+          "status": "partial",
+          "notes": "The quickstart teaches the friendly launcher surface and points to the runtime contract for the portable spawn-script doctrine."
+        },
+        {
+          "file": "site/src/lib/i18n/pl.ts",
+          "surface": "sections.quickstartSteps[4] + quickstartResources.links",
+          "status": "partial",
+          "notes": "Polish quickstart mirrors the same launcher-versus-contract relationship."
+        },
+        {
+          "file": "site/src/components/FrameworkPlayground.svelte",
+          "surface": "phase command examples",
+          "status": "partial",
+          "notes": "The playground uses public command-deck examples instead of whimsical prompt strings."
+        }
+      ]
+    }
+  ]
+}

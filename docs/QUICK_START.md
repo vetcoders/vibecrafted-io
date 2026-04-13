@@ -5,6 +5,19 @@ and start converging.
 
 ## 1. Install
 
+Prefer the guided browser path when you want the same install truth as the
+public onboarding surface:
+
+```bash
+curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
+```
+
+It stages a local snapshot under
+`$VIBECRAFTED_ROOT/.vibecrafted/tools/`, opens the guided installer,
+and keeps the same install truth as the automation path.
+
+If you already want the compact terminal-only flow, use:
+
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
@@ -12,6 +25,8 @@ curl -fsSL https://vibecrafted.io/install.sh | bash
 Non-destructive. Interactive. Tells you what it does before it does it.
 Asks before touching your shell config. Everything reversible with
 `make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current uninstall`.
+If you want the browser-guided installer instead of the public bootstrap path,
+run `make vibecrafted` inside the repo.
 
 After install, open a new terminal or:
 
@@ -22,10 +37,17 @@ source "${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh"
 ## 2. Verify
 
 ```bash
+vibecrafted doctor
+```
+
+If shell helpers are not loaded yet, the repo-local fallback is:
+
+```bash
 make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 ```
 
-Green means ready. Yellow means the doctor tells you why.
+Green means ready. Yellow means the doctor tells you why, including
+optional foundation gaps.
 
 ## 3. Orient your agent
 

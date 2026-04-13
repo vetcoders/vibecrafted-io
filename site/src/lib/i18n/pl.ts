@@ -1,3 +1,6 @@
+// Kanoniczne źródła publicznego copy są zmapowane w
+// docs/content-truth.manifest.json i opisane dla ludzi w
+// docs/runtime/CONTENT_TRUTH.md.
 export const pl = {
   nav: {
     pipeline: "Pipeline",
@@ -97,44 +100,44 @@ flowchart LR
     },
     foundation: {
       label: "Fundamenty runtime",
-      title: "Substrat pod frameworkiem.",
-      sub: "Narzędzia, które trzymają agentów zakotwiczonych w prawdzie repo, zamiast w ich własnych halucynacjach.",
+      title: "Infrastruktura pod frameworkiem.",
+      sub: "To są fundamenty, a nie skille: wzrok, pamięć, artefakty review i narracyjny dowód z runtime dla warstwy agentowej.",
       cards: [
         {
           number: "01",
           href: "https://loct.io",
           name: "loctree",
           iconClass: "foundation-icon foundation-icon--steel",
-          role: "Silnik percepcji",
-          body: "Pamięć architektoniczna wzbogacona AST. Oczy każdego agenta — zmusza LLM-y do zobaczenia pełnej struktury repo przed modyfikacją jakiegokolwiek pliku.",
+          role: "Oczy",
+          body: "Strukturalna inteligencja codebase. Mapuje pliki, zależności, huby i blast radius zanim agent dotknie jakiejkolwiek zmiany.",
           linkLabel: "loct.io",
         },
         {
           number: "02",
-          href: "https://github.com/VetCoders/ai-contexters",
-          name: "aicx-mcp",
+          href: "https://github.com/VetCoders/ai-contexters/releases",
+          name: "aicx",
           iconClass: "foundation-icon foundation-icon--copper",
-          role: "Odzyskiwanie historii",
-          body: "Indeksuje decyzje, intencje i wyniki z każdej sesji AI. Agenci odzyskują co zdecydowano i dlaczego, zapewniając ciągłość między sesjami.",
-          linkLabel: "github.com/VetCoders/ai-contexters",
+          role: "Pamięć",
+          body: "Odzyskiwanie decyzji dla warstwy agentowej. CLI `aicx` / serwer `aicx-mcp` indeksują decyzje, intencje i wyniki, żeby sesje mogły odtworzyć co zostało ustalone i dlaczego.",
+          linkLabel: "github.com/VetCoders/ai-contexters/releases",
         },
         {
           number: "03",
-          href: "https://github.com/VetCoders/prview",
+          href: "https://github.com/VetCoders/prview/releases",
           name: "prview",
           iconClass: "foundation-icon foundation-icon--patina",
-          role: "Audyt i bramka jakości",
-          body: "Generuje trwałe paczki review PR z findingami na poziomie linii. Bramka merge, która zamienia zrzuty terminala w rzeczywiste artefakty.",
-          linkLabel: "github.com/VetCoders/prview",
+          role: "Review",
+          body: "Ustrukturyzowane artefakty review. Zamienia zmiany w kodzie w trwałe findingi, które mogą czytać kolejne agenty i ludzie.",
+          linkLabel: "github.com/VetCoders/prview/releases",
         },
         {
           number: "04",
-          href: "https://github.com/VetCoders/screenscribe",
+          href: "https://github.com/VetCoders/ScreenScribe",
           name: "ScreenScribe",
           iconClass: "foundation-icon foundation-icon--muted",
-          role: "Wizualny recenzent",
-          body: "Zamienia nagrane screencasty w ustrukturyzowane findingi inżynierskie. Oko orkiestratora na rzeczywistą powierzchnię produktu.",
-          linkLabel: "github.com/VetCoders/screenscribe",
+          role: "Uszy",
+          body: "Narracyjny review runtime. Zamienia nagrania ekranu z komentarzem w ustrukturyzowane findingi o realnej powierzchni produktu.",
+          linkLabel: "github.com/VetCoders/ScreenScribe",
         },
       ],
     },
@@ -374,14 +377,13 @@ flowchart LR
     get: {
       label: "Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       title: "Zainstaluj silnik release'u. Uruchom pętlę.",
-      sub: "Zbootstrapuj control plane, otwórz guided installer, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu.",
+      sub: "Zbootstrapuj control plane przez publiczną ścieżkę instalacji, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu.",
       cards: [
         {
           step: "01",
           title: "Zbootstrapuj control plane",
-          body: "Zainstaluj framework lokalnie i otwórz guided installer, żeby zobaczyć prawdę o maszynie, zanim cokolwiek dotknie systemu.",
-          command:
-            "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+          body: "Zainstaluj framework lokalnie przez publiczną ścieżkę bootstrapu. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo.",
+          command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
         },
         {
           step: "02",
@@ -413,13 +415,13 @@ flowchart LR
     },
     quickstartHero: {
       label: "Szybki start",
-      title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..",
+      title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska.",
       quote: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
       primaryHref: "/pl/",
       primaryLabel: "Wróć do przeglądu",
-      secondaryHref: "https://github.com/VetCoders/vibecrafted",
-      secondaryLabel: "Zobacz na GitHubie",
+      secondaryHref: "/pl/framework/",
+      secondaryLabel: "Otwórz framework",
     },
     quickstartResources: {
       cards: [
@@ -454,6 +456,18 @@ flowchart LR
           href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md",
           label: "Szybki start w Markdownie",
         },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
+          label: "Kontrakt runtime",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          label: "Bramka review ScreenScribe",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          label: "Matryca prawdy contentowej",
+        },
       ],
     },
     quickstartSteps: {
@@ -461,9 +475,8 @@ flowchart LR
         {
           kicker: "Krok 1",
           title: "Zainstaluj 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. lokalnie",
-          body: "Użyj publicznej guided ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code>, otwiera browser installer i trzyma ten sam install truth co automatyzacja.",
-          command:
-            "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+          body: "Użyj publicznej ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code> i trzyma ten sam install truth co automatyzacja. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo.",
+          command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
           note: "Bezpośredniej ścieżki <code>| bash</code> używaj tylko wtedy, gdy celowo wybierasz compact automation zamiast guided kickoffu.",
         },
         {
@@ -496,6 +509,7 @@ flowchart LR
           body: "Ta ścieżka służy do pracy równoległej i zostawia trwałe artefakty. Chodzi o realne porównanie wyników, nie o pokaz.",
           command:
             "vibecrafted codex implement .vibecrafted/plans/my-plan.md\nvibecrafted claude research .vibecrafted/plans/my-plan.md\nvibecrafted gemini implement .vibecrafted/plans/my-plan.md",
+          note: "To są wygodne powierzchnie launchera. Przenośny kontrakt oparty o skrypty spawn jest opisany w kontrakcie runtime.",
         },
         {
           kicker: "Krok 6",
@@ -539,7 +553,7 @@ flowchart LR
               questionHtml:
                 "Co dokładnie sprawdza <code>vibecrafted doctor</code>?",
               answerHtml:
-                "Polecenie <code>doctor</code> sprawdza centralny magazyn, dostępność helperów, stan odwołań agentów, opcjonalne zależności, takie jak loctree, aicx i prview, oraz to, czy środowisko nie przeszkadza narzędziom agentowym w stabilnej pracy.",
+                "Polecenie <code>doctor</code> sprawdza centralny magazyn, dostępność helperów, stan odwołań agentów, opcjonalne fundamenty, takie jak loctree, aicx, prview i ScreenScribe, oraz to, czy środowisko nie przeszkadza narzędziom agentowym w stabilnej pracy.",
             },
             {
               questionHtml:
@@ -569,6 +583,12 @@ flowchart LR
                 "Czy mogę używać 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez loctree albo aicx?",
               answerHtml:
                 "Technicznie tak, ale tracisz rozumienie struktury i ciągłość między sesjami. Framework dalej działa, tylko agent pracuje na dużo słabszym kontekście.",
+            },
+            {
+              questionHtml:
+                "Jak przepchnąć <code>screenscribe review</code> przez wczesną walidację modeli?",
+              answerHtml:
+                "Potraktuj to jak prawdę runtime, a nie rytuał. CLI musi być widoczny na <code>PATH</code>, <code>~/.config/screenscribe/config.env</code> musi być zgodne z domyślną konfiguracją Libraxis, dla aliasów modeli używaj <code>ai-suggestions</code>, ustaw <code>SCREENSCRIBE_VISION=false</code> jako intencję operatora i pamiętaj, że obecny CLI nadal nadpisuje tę flagę podczas <code>review</code>, więc launcher musi wstrzykiwać <code>--no-vision</code> dla zwykłych uruchomień review na obecnej ścieżce Libraxis. Lokalnym źródłem prawdy w repo jest dokument ScreenScribe Review Gate.",
             },
             {
               questionHtml: "Co to jest pętla Marbles?",
@@ -629,6 +649,14 @@ flowchart LR
         {
           href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
           label: "Pełne FAQ - markdown",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          label: "Bramka review ScreenScribe",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          label: "Matryca prawdy contentowej",
         },
         {
           href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE",
@@ -708,7 +736,7 @@ flowchart LR
           note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i założycielskiej Definicji Niezrobionego jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..",
           links: [
             {
-              href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_EN.md",
+              href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_PL.md",
               label: "Przeczytaj manifest",
             },
           ],

@@ -1,3 +1,5 @@
+// Canonical public-copy sources are mapped in docs/content-truth.manifest.json
+// and summarized for humans in docs/runtime/CONTENT_TRUTH.md.
 export const en = {
   nav: {
     pipeline: "Pipeline",
@@ -97,44 +99,44 @@ flowchart LR
     },
     foundation: {
       label: "Runtime Foundations",
-      title: "The substrate beneath the framework.",
-      sub: "The tooling that keeps frontier agents anchored to repo truth, instead of their own hallucinations.",
+      title: "Infrastructure beneath the framework.",
+      sub: "These are foundations, not skills: sight, memory, review artifacts, and narrated runtime evidence for the agent layer.",
       cards: [
         {
           number: "01",
           href: "https://loct.io",
           name: "loctree",
           iconClass: "foundation-icon foundation-icon--steel",
-          role: "Perception Engine",
-          body: "AST-augmented architectural memory. The eyes for every agent — forces LLMs to see the full repo structure before modifying a single file.",
+          role: "Eyes",
+          body: "Structural code intelligence. Maps files, dependencies, hubs, and blast radius before an agent edits anything.",
           linkLabel: "loct.io",
         },
         {
           number: "02",
-          href: "https://github.com/VetCoders/ai-contexters",
-          name: "aicx-mcp",
+          href: "https://github.com/VetCoders/ai-contexters/releases",
+          name: "aicx",
           iconClass: "foundation-icon foundation-icon--copper",
-          role: "History Retrieval",
-          body: "Indexes decisions, intents, and outcomes from every AI session. Agents retrieve what was decided and why, ensuring session-to-session continuity.",
-          linkLabel: "github.com/VetCoders/ai-contexters",
+          role: "Memory",
+          body: "Decision retrieval for the agent layer. The `aicx` CLI / `aicx-mcp` server indexes decisions, intents, and outcomes so sessions can recover what was decided and why.",
+          linkLabel: "github.com/VetCoders/ai-contexters/releases",
         },
         {
           number: "03",
-          href: "https://github.com/VetCoders/prview",
+          href: "https://github.com/VetCoders/prview/releases",
           name: "prview",
           iconClass: "foundation-icon foundation-icon--patina",
-          role: "Audit & Quality Gate",
-          body: "Generates durable PR review packs with line-level findings. The merge gate that turns terminal dumps into actual artifacts.",
-          linkLabel: "github.com/VetCoders/prview",
+          role: "Review",
+          body: "Structured review artifacts. Turns code changes into durable findings that other agents and humans can consume.",
+          linkLabel: "github.com/VetCoders/prview/releases",
         },
         {
           number: "04",
-          href: "https://github.com/VetCoders/screenscribe",
+          href: "https://github.com/VetCoders/ScreenScribe",
           name: "ScreenScribe",
           iconClass: "foundation-icon foundation-icon--muted",
-          role: "Visual Reviewer",
-          body: "Turns narrated screencasts into structured engineering findings. The orchestrator's eye on the real product surface.",
-          linkLabel: "github.com/VetCoders/screenscribe",
+          role: "Ears",
+          body: "Narrated runtime review. Turns screen recordings with commentary into structured engineering findings about the real product surface.",
+          linkLabel: "github.com/VetCoders/ScreenScribe",
         },
       ],
     },
@@ -374,14 +376,13 @@ flowchart LR
     get: {
       label: "Get 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       title: "Install the release engine. Start the loop.",
-      sub: "Bootstrap the control plane, open the guided installer, verify your local surface, and enter the first shippable workflow through the command deck.",
+      sub: "Bootstrap the control plane with the public install path, verify your local surface, and enter the first shippable workflow through the command deck.",
       cards: [
         {
           step: "01",
           title: "Bootstrap the control plane",
-          body: "Stage the framework locally and open the guided installer so the machine shape is visible before anything touches your system.",
-          command:
-            "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+          body: "Stage the framework locally with the public bootstrap path. If you want the browser-guided installer, use <code>make vibecrafted</code> from the repo.",
+          command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
         },
         {
           step: "02",
@@ -418,8 +419,8 @@ flowchart LR
       quote: "From AI-generated repo to launch-ready product.",
       primaryHref: "/en/",
       primaryLabel: "Back to Overview",
-      secondaryHref: "https://github.com/VetCoders/vibecrafted",
-      secondaryLabel: "View on GitHub",
+      secondaryHref: "/en/framework/",
+      secondaryLabel: "Open Framework",
     },
     quickstartResources: {
       cards: [
@@ -454,6 +455,18 @@ flowchart LR
           href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md",
           label: "Markdown Version",
         },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
+          label: "Runtime Contract",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          label: "ScreenScribe Review Gate",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          label: "Content Truth Matrix",
+        },
       ],
     },
     quickstartSteps: {
@@ -461,9 +474,8 @@ flowchart LR
         {
           kicker: "Step 1",
           title: "Install the framework",
-          body: "Use the public guided bootstrap path. It stages a local snapshot under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code>, opens the browser installer, and keeps the same install truth as automation.",
-          command:
-            "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+          body: "Use the public bootstrap path. It stages a local snapshot under <code>$VIBECRAFTED_ROOT/.vibecrafted/tools/</code> and keeps the same install truth as automation. If you want the browser-guided installer, use <code>make vibecrafted</code> in the repo.",
+          command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
           note: "Use the direct <code>| bash</code> path only when you already want compact automation instead of the guided kickoff.",
         },
         {
@@ -496,6 +508,7 @@ flowchart LR
           body: "External agent helpers are there for parallel fieldwork and durable artifacts, not for theatre.",
           command:
             "vibecrafted codex implement .vibecrafted/plans/my-plan.md\nvibecrafted claude research .vibecrafted/plans/my-plan.md\nvibecrafted gemini implement .vibecrafted/plans/my-plan.md",
+          note: "These are the friendly launcher surfaces. The portable spawn-script contract lives in the Runtime Contract.",
         },
         {
           kicker: "Step 6",
@@ -539,7 +552,7 @@ flowchart LR
               questionHtml:
                 "What does <code>make doctor</code> actually check?",
               answerHtml:
-                "The doctor verifies the central store, helper availability, symlink health, optional foundations such as loctree/aicx/prview, and whether your shell environment is quiet enough for agent tooling.",
+                "The doctor verifies the central store, helper availability, symlink health, optional foundations such as loctree, aicx, prview, and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling.",
             },
             {
               questionHtml:
@@ -569,6 +582,12 @@ flowchart LR
               questionHtml: "Can I use 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. without loctree or aicx?",
               answerHtml:
                 "Technically yes, but you lose structural perception and session continuity. The framework still runs, but the agent is operating with much weaker context.",
+            },
+            {
+              questionHtml:
+                "How do I get <code>screenscribe review</code> past early model validation?",
+              answerHtml:
+                "Treat it as runtime truth, not folklore. Keep the CLI reachable on <code>PATH</code>, keep <code>~/.config/screenscribe/config.env</code> aligned with the Libraxis defaults, use <code>ai-suggestions</code> for the model aliases, set <code>SCREENSCRIBE_VISION=false</code> as operator intent, and remember that the current CLI still overrides that stored flag during <code>review</code>, so the launcher surface must inject <code>--no-vision</code> for plain review runs on the current Libraxis path. The repo-local source of truth is the ScreenScribe Review Gate doc.",
             },
             {
               questionHtml: "What is the Marbles loop?",
@@ -632,6 +651,14 @@ flowchart LR
         {
           href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
           label: "Long-form Markdown FAQ",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          label: "ScreenScribe Review Gate",
+        },
+        {
+          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          label: "Content Truth Matrix",
         },
         {
           href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE",

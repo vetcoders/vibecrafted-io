@@ -24,7 +24,7 @@ The framework consists of:
 - [loctree](https://loct.io) — Codebase mapping and architectural perception.
 - [aicx](https://github.com/VetCoders/aicx) — Context boundaries and intentions retrieval.
 - [prview](https://github.com/VetCoders/prview) — Continuous review pipelines.
-- [ScreenScribe](https://github.com/VetCoders/ScreenScribe) — Voice-to-text context ingestion.
+- [ScreenScribe](https://github.com/VetCoders/ScreenScribe) — Narrated runtime review and structured engineering findings.
 
 The main VetCoders native framework drivers, designed to make
 non-programmers capable of production-grade implementation of
@@ -61,6 +61,14 @@ delegated work.
 | Document                     | What it covers                                                                                                                                   |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [CONTRACT.md](./CONTRACT.md) | Session ownership, zellij layout, plan templates, living tree rule, spawn commands, output conventions, observation, quality gates, safety rules |
+| [CONTENT_TRUTH.md](./CONTENT_TRUTH.md) | Canonical-doc to live-surface mapping and the ScreenScribe repair path |
+| [SCREENSCRIBE_REVIEW.md](./SCREENSCRIBE_REVIEW.md) | ScreenScribe CLI path, verified config, model defaults, and the reproducible narrated-runtime-review gate |
+
+## Canonical Truth
+
+When site copy and docs disagree, treat the docs as the source of truth and
+the i18n surfaces as consumers. The current mapping is maintained in
+[`CONTENT_TRUTH.md`](./CONTENT_TRUTH.md).
 
 ---
 

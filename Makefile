@@ -6,7 +6,7 @@ SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
 SOURCE   := $(CURDIR)
 BRANCH   ?= main
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-build site-deploy bundle-build bundle-sign
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-build site-deploy bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -27,6 +27,7 @@ help:
 	@printf "  \033[32m↻\033[0m  make update        \033[2mPull latest + re-install\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make list          \033[2mShow bundle + runtime foundations\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle        \033[2mRefresh marketplace plugin bundle\033[0m\n"
+	@printf "  \033[32m◇\033[0m  make content-truth \033[2mRender the canonical docs → site surface truth matrix\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make test          \033[2mRun installer + marketplace pytest gates\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make check         \033[2mRun basic linters on shell scripts\033[0m\n"
 	@printf "\n"
@@ -82,6 +83,9 @@ list:
 
 bundle:
 	@$(PYTHON) scripts/build_marketplace_bundle.py --output "$(SOURCE)/vibecrafted-framework.plugin"
+
+content-truth:
+	@$(PYTHON) scripts/content_truth_report.py --format markdown
 
 semgrep:
 	@semgrep scan --config auto --error --quiet --exclude-rule html.security.audit.missing-integrity.missing-integrity .
