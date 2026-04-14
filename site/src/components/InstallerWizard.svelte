@@ -1,12 +1,14 @@
 <script lang="ts">
   import { Tween, prefersReducedMotion } from 'svelte/motion';
   import CopyButton from './CopyButton.svelte';
+  import importedManifest from '../lib/generated/install-manifest.json';
 
   interface Props {
     lang?: 'en' | 'pl';
+    manifest?: any;
   }
 
-  let { lang = 'en' }: Props = $props();
+  let { lang = 'en', manifest = importedManifest }: Props = $props();
 
   const STEPS = 5;
   let currentStep = $state(0);
@@ -16,6 +18,31 @@
   let termRunning = $state(false);
 
   const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui';
+
+  const requiredCategories = ['toolchains', 'agents'];
+  const dynamicChecks = (() => {
+    const checks = [];
+    const diags = manifest.diagnostics;
+    if (diags && diags.categories) {
+      for (const cat of diags.categories) {
+        if (diags.commands && diags.commands[cat]) {
+          const isRequired = requiredCategories.includes(cat);
+          for (const cmd of diags.commands[cat]) {
+            checks.push({ label: cmd, required: isRequired });
+          }
+        }
+      }
+    }
+    return checks;
+  })();
+
+  const phaseIcons = ['\u25C8', '\u21CB', '\u2318', '\u21B3'];
+  const dynamicPhases = (manifest.phases || []).map((p, idx) => ({
+    icon: phaseIcons[idx % phaseIcons.length],
+    name: p.label,
+    desc: p.reason.split('\n')[0] || p.reason
+  }));
+
 
   const content = $derived(lang === 'pl' ? PL : EN);
   const progressTween = Tween.of(() => (currentStep / (STEPS - 1)) * 100, {
@@ -43,6 +70,36 @@
           errorAria: 'Failed to copy command',
         }
   );
+  const uiLabels = $derived(
+    lang === 'pl'
+      ? {
+          steps: 'Kroki',
+          required: 'wymagane',
+          optional: 'opcjonalne',
+          previous: 'Poprzedni krok',
+          next: 'Następny krok',
+          quickStart: 'Quick Start',
+          stepAria: 'krok',
+          ofAria: 'z',
+          terminalKicker: 'Podgląd instalacji',
+          terminalBody: 'Skrypt startowy uruchamia lokalny instalator w przeglądarce, a dalsze komunikaty lecą już w tym widoku.',
+          welcomeCta: 'Pokaż jak to działa',
+        }
+      : {
+          steps: 'Steps',
+          required: 'required',
+          optional: 'optional',
+          previous: 'Previous step',
+          next: 'Next step',
+          quickStart: 'Quick Start',
+          stepAria: 'step',
+          ofAria: 'of',
+          terminalKicker: 'Install preview',
+          terminalBody: 'The startup script opens the local browser installer, and all further progress continues there.',
+          welcomeCta: 'See how it works',
+        }
+  );
+  const welcomeNotes = $derived(lang === 'pl' ? WELCOME_NOTES_PL : WELCOME_NOTES_EN);
 
   function goToStep(step: number) {
     if (step === currentStep || !slideVisible) return;
@@ -104,180 +161,162 @@
 
   const TERM_EN = [
     '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
-    'Resolving channel main...',
-    'Verifying signature... ✓',
-    'Staging vibecrafted-v1.3.0...',
-    '▸ Phase 1/4: Diagnostics',
-    '  python3 ✓  git ✓  make ✓  node ✓',
-    '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
-    '  prview ○  screenscribe ○',
-    '▸ Phase 2/4: Foundations',
-    '  Installing loctree-mcp... done',
-    '  Installing aicx-mcp... done',
-    '▸ Phase 3/4: Skills + Helpers',
-    '  16 skills installed',
-    '  Shell helpers linked',
-    '▸ Phase 4/4: Verification',
-    '  Doctor: 94 ok / 2 warnings / 0 failures',
+    '[bootstrap] Downloading install.sh...',
+    '[bootstrap] Resolving channel main...',
+    '[bootstrap] Verifying integrity... SHA256 ✓  Signature ✓',
+    '[bootstrap] Preparing local files under ~/.vibecrafted/tools/vibecrafted-main',
     '',
-    '✓ Installation complete. Run: vibecrafted doctor',
+    '[bootstrap] Opening browser installer at http://127.0.0.1:48217',
+    '',
+    '[browser] Welcome -> Explain -> Diagnostics -> Checklist',
+    '[browser] This view remains read-only until you start the installation.',
+    '[browser] Start installation',
+    '[browser] [stage] Bootstrap foundations',
+    '[browser] [stage] Install Vibecrafted',
+    '[browser] Streaming real installer output...',
   ];
 
   const TERM_PL = [
     '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
-    'Rozwiązywanie kanału main...',
-    'Weryfikacja sygnatury... ✓',
-    'Staging vibecrafted-v1.3.0...',
-    '▸ Faza 1/4: Diagnostyka',
-    '  python3 ✓  git ✓  make ✓  node ✓',
-    '  claude ✓  loctree-mcp ✓  aicx-mcp ✓',
-    '  prview ○  screenscribe ○',
-    '▸ Faza 2/4: Fundamenty',
-    '  Instalacja loctree-mcp... gotowe',
-    '  Instalacja aicx-mcp... gotowe',
-    '▸ Faza 3/4: Skille + Helpery',
-    '  16 skilli zainstalowanych',
-    '  Helpery shell podłączone',
-    '▸ Faza 4/4: Weryfikacja',
-    '  Doctor: 94 ok / 2 warnings / 0 failures',
+    '[bootstrap] Pobieranie install.sh...',
+    '[bootstrap] Rozwiązywanie kanału main...',
+    '[bootstrap] Weryfikacja integralności... SHA256 ✓  Signature ✓',
+    '[bootstrap] Przygotowywanie lokalnej kopii pod ~/.vibecrafted/tools/vibecrafted-main',
     '',
-    '✓ Instalacja zakończona. Uruchom: vibecrafted doctor',
+    '[bootstrap] Otwieranie instalatora w przeglądarce pod http://127.0.0.1:48217',
+    '',
+    '[przeglądarka] Witaj -> Wyjaśnienie -> Diagnostyka -> Lista kontrolna',
+    '[przeglądarka] Ten widok pozostaje tylko informacyjny, dopóki nie uruchomisz instalacji.',
+    '[przeglądarka] Uruchamianie instalacji',
+    '[przeglądarka] [etap] Bootstrap fundamentów',
+    '[przeglądarka] [etap] Instalacja Vibecrafted',
+    '[przeglądarka] Strumień prawdziwych komunikatów z instalatora...',
+  ];
+
+  const WELCOME_NOTES_EN = [
+    {
+      label: 'Terminal only launches',
+      value: 'The bootstrap command prepares the local files and opens the installer in your browser.',
+    },
+    {
+      label: 'Changes happen after consent',
+      value: 'The installer explains the plan first and asks right before making any real changes on your machine.',
+    },
+  ];
+
+  const WELCOME_NOTES_PL = [
+    {
+      label: 'Terminal tylko startuje',
+      value: 'Komenda bootstrapująca przygotowuje lokalną kopię i otwiera instalator w przeglądarce.',
+    },
+    {
+      label: 'Zmiany dopiero po zgodzie',
+      value: 'Instalator najpierw pokazuje plan i pyta tuż przed tym, zanim cokolwiek zmieni na Twojej maszynie.',
+    },
   ];
 
   const EN = {
-    hero: '\u{1D689}\u{1D692}\u{1D695}\u{1D696}\u{1D694}\u{1D69B}\u{1D68A}\u{1D699}\u{1D69D}\u{1D696}\u{1D695}.',
-    version: 'v1.3.0',
     steps: [
       {
         label: 'Welcome',
-        title: 'Install in\u00a060\u00a0seconds',
+        title: 'Browser installer',
         body: [
-          'One command stages, verifies, and installs the full framework.',
-          'Nothing touches your system until you approve.',
+          'The public entry point is the browser view. The terminal command only launches it.',
+          'The real installation and live output continue there instead of getting buried in shell logs.',
         ],
-        hint: 'Press \u2192 or swipe to begin',
+        hint: 'Browser first. Same installer engine underneath.',
       },
       {
         label: 'Inside',
-        title: 'What you get',
+        title: 'What happens under the hood',
         body: [],
-        items: [
-          { icon: '\u2692', name: '16 Skills', desc: 'Craft \u2192 Converge \u2192 Ship workflows' },
-          { icon: '\u25C8', name: 'Foundations', desc: 'loctree, aicx-mcp, prview, ScreenScribe' },
-          { icon: '\u21CB', name: 'Agent Views', desc: 'Claude, Codex, and Gemini CLI surfaces' },
-          { icon: '\u2318', name: 'Shell Helpers', desc: 'vc-* commands and the command deck' },
-        ],
-        hint: 'Components placed by the installer',
+        items: dynamicPhases,
+        hint: 'One browser interface, one installation engine',
       },
       {
         label: 'Check',
-        title: 'Prerequisites',
+        title: 'Your environment',
         body: [
-          'The installer checks your environment automatically.',
-          'Optional tools are noted but never block installation.',
+          'The installer checks your system before starting any steps that modify your machine.',
+          'Missing optional tools are shown clearly, so you know what you might need before starting the install.',
         ],
-        checks: [
-          { label: 'python3', required: true },
-          { label: 'git', required: true },
-          { label: 'make', required: true },
-          { label: 'node', required: false },
-          { label: 'claude / codex / gemini', required: true },
-          { label: 'loctree-mcp', required: false },
-          { label: 'aicx-mcp', required: false },
-          { label: 'prview', required: false },
-          { label: 'screenscribe', required: false },
-        ],
-        hint: 'Real checks run during install',
+        checks: dynamicChecks,
+        hint: 'Explain first, make changes later',
       },
       {
         label: 'Install',
-        title: 'Run it',
+        title: 'Run the installer',
         body: [
-          'Copy the command and paste it in your terminal.',
+          'Use the startup command to open the local installer in your browser.',
+          'From there the process stays in the browser, shows live progress, and asks for confirmation right before making real changes.',
         ],
-        hint: 'The guided installer opens automatically',
+        hint: 'The preview below shows the moment the browser takes over',
       },
       {
         label: 'Go',
-        title: 'You\u2019re live',
+        title: 'After the installation finishes',
         body: [
-          'The command deck is ready. Start here:',
+          'The command deck becomes available locally after the browser installation completes successfully. Start here:',
         ],
         commands: [
           { cmd: 'vibecrafted doctor', desc: 'Verify health' },
           { cmd: 'vibecrafted init claude', desc: 'Bootstrap a session' },
           { cmd: 'vibecrafted help', desc: 'See all commands' },
         ],
-        hint: 'Start with doctor to confirm everything works',
+        hint: 'Start with doctor after the installation',
       },
     ],
   };
 
   const PL = {
-    hero: '\u{1D689}\u{1D692}\u{1D695}\u{1D696}\u{1D694}\u{1D69B}\u{1D68A}\u{1D699}\u{1D69D}\u{1D696}\u{1D695}.',
-    version: 'v1.3.0',
     steps: [
       {
         label: 'Witaj',
-        title: 'Instalacja w\u00a060\u00a0sekund',
+        title: 'Instalator w przeglądarce',
         body: [
-          'Jedna komenda przygotowuje, weryfikuje i instaluje ca\u0142y framework.',
-          'Nic nie zmienia si\u0119 w systemie, dop\u00f3ki nie zatwierdzisz.',
+          'Publicznym wejściem jest widok w przeglądarce. Komenda w terminalu tylko go uruchamia.',
+          'Prawdziwa instalacja i komunikaty na żywo lecą już tam, zamiast ginąć w scrollu shella.',
         ],
-        hint: 'Naci\u015bnij \u2192 lub przesu\u0144 palcem',
+        hint: 'Najpierw przeglądarka. Pod spodem ten sam silnik instalacji.',
       },
       {
         label: 'Sk\u0142ad',
-        title: 'Co dostajesz',
+        title: 'Co dzieje się pod spodem',
         body: [],
-        items: [
-          { icon: '\u2692', name: '16 Skilli', desc: 'Buduj \u2192 Konwerguj \u2192 Wysy\u0142aj' },
-          { icon: '\u25C8', name: 'Fundamenty', desc: 'loctree, aicx-mcp, prview, ScreenScribe' },
-          { icon: '\u21CB', name: 'Widoki Agent\u00f3w', desc: 'Powierzchnie CLI Claude, Codex i Gemini' },
-          { icon: '\u2318', name: 'Helpery', desc: 'Komendy vc-* i deck komend' },
-        ],
-        hint: 'Komponenty umieszczane przez instalator',
+        items: dynamicPhases,
+        hint: 'Jedna powierzchnia w przeglądarce, jeden mechanizm instalacji',
       },
       {
         label: 'Wymagania',
         title: 'Twoje \u015brodowisko',
         body: [
-          'Instalator automatycznie sprawdza \u015brodowisko.',
-          'Brakuj\u0105ce opcjonalne narz\u0119dzia nie blokuj\u0105 instalacji.',
+          'Instalator w przeglądarce sprawdza stan Twojej maszyny zanim ruszą kroki zmieniające system.',
+          'Braki opcjonalnych narzędzi pokazuje jasno, żebyś wiedział, czego brakuje przed startem instalacji.',
         ],
-        checks: [
-          { label: 'python3', required: true },
-          { label: 'git', required: true },
-          { label: 'make', required: true },
-          { label: 'node', required: false },
-          { label: 'claude / codex / gemini', required: true },
-          { label: 'loctree-mcp', required: false },
-          { label: 'aicx-mcp', required: false },
-          { label: 'prview', required: false },
-          { label: 'screenscribe', required: false },
-        ],
-        hint: 'Sprawdzenia uruchamiane podczas instalacji',
+        checks: dynamicChecks,
+        hint: 'Najpierw wyjaśnienie, potem zmiany',
       },
       {
         label: 'Instaluj',
-        title: 'Uruchom',
+        title: 'Uruchom instalator',
         body: [
-          'Skopiuj komend\u0119 i wklej w terminalu.',
+          'Użyj komendy bootstrapującej, żeby otworzyć lokalny widok instalatora w przeglądarce.',
+          'Od tego momentu instalacja zostaje w przeglądarce, pokazuje komunikaty na żywo i pyta dopiero tuż przed realnymi zmianami.',
         ],
-        hint: 'Prowadzony instalator otworzy si\u0119 automatycznie',
+        hint: 'Podgląd poniżej pokazuje moment, w którym przeglądarka przejmuje instalację',
       },
       {
         label: 'Start',
-        title: 'Gotowe',
+        title: 'Po zakończeniu instalacji',
         body: [
-          'Deck komend jest aktywny. Zacznij tutaj:',
+          'Deck komend pojawi się lokalnie po czystym zakończeniu instalacji w przeglądarce. Zacznij tutaj:',
         ],
         commands: [
           { cmd: 'vibecrafted doctor', desc: 'Sprawd\u017a poprawno\u015b\u0107' },
           { cmd: 'vibecrafted init claude', desc: 'Zainicjuj sesj\u0119' },
           { cmd: 'vibecrafted help', desc: 'Wszystkie komendy' },
         ],
-        hint: 'Zacznij od doctor \u017ceby potwierdzi\u0107 \u017ce dzia\u0142a',
+        hint: 'Zacznij od doctor po instalacji',
       },
     ],
   };
@@ -287,7 +326,7 @@
 
 <div class="wizard" role="region" aria-label={content.steps[currentStep]?.label}>
   <!-- Progress -->
-  <nav class="wz-progress" aria-label="Steps">
+  <nav class="wz-progress" aria-label={uiLabels.steps}>
     <div class="wz-track">
       <div class="wz-track-fill" style={`width: ${progressTween.current}%`}></div>
     </div>
@@ -298,7 +337,7 @@
           class:active={i === currentStep}
           class:done={i < currentStep}
           onclick={() => goToStep(i)}
-          aria-label="{step.label} — step {i + 1} of {STEPS}"
+          aria-label={`${step.label} — ${uiLabels.stepAria} ${i + 1} ${uiLabels.ofAria} ${STEPS}`}
           aria-current={i === currentStep ? 'step' : undefined}
         >
           <span class="wz-pip">
@@ -331,8 +370,16 @@
           {#each content.steps[0].body as p}
             <p class="wz-body">{p}</p>
           {/each}
+          <div class="wz-welcome-notes">
+            {#each welcomeNotes as item}
+              <div class="wz-welcome-note">
+                <span class="wz-welcome-note-label">{item.label}</span>
+                <p class="wz-welcome-note-value">{item.value}</p>
+              </div>
+            {/each}
+          </div>
           <button class="wz-cta" onclick={next}>
-            {lang === 'pl' ? 'Zaczynamy' : 'Get started'} <span class="wz-cta-arrow">&rarr;</span>
+            {uiLabels.welcomeCta} <span class="wz-cta-arrow">&rarr;</span>
           </button>
         </div>
 
@@ -365,7 +412,7 @@
               </span>
               <span class="wz-check-label">{check.label}</span>
               <span class="wz-tag" class:req={check.required} class:opt={!check.required}>
-                {check.required ? 'required' : 'optional'}
+                {check.required ? uiLabels.required : uiLabels.optional}
               </span>
             </div>
           {/each}
@@ -394,13 +441,19 @@
           </div>
         </div>
         {#if termLines.length > 0}
-          <div class="wz-terminal">
-            {#each termLines as line}
-              <div class="wz-term-line">{line}</div>
-            {/each}
-            {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
-              <span class="wz-cursor">_</span>
-            {/if}
+          <div class="wz-terminal-shell">
+            <div class="wz-terminal-meta">
+              <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
+              <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
+            </div>
+            <div class="wz-terminal">
+              {#each termLines as line}
+                <div class="wz-term-line">{line}</div>
+              {/each}
+              {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+                <span class="wz-cursor">_</span>
+              {/if}
+            </div>
           </div>
         {/if}
 
@@ -431,13 +484,13 @@
       class="wz-btn wz-btn-back"
       onclick={back}
       disabled={currentStep === 0}
-      aria-label="Previous step"
+      aria-label={uiLabels.previous}
     >
       &larr;
     </button>
     <span class="wz-counter">{Math.round(counterTween.current)}<span class="wz-counter-sep">/</span>{STEPS}</span>
     {#if currentStep < STEPS - 1}
-      <button class="wz-btn wz-btn-next" onclick={next} aria-label="Next step">
+      <button class="wz-btn wz-btn-next" onclick={next} aria-label={uiLabels.next}>
         &rarr;
       </button>
     {:else}
@@ -445,7 +498,7 @@
         class="wz-btn wz-btn-next wz-btn-done"
         href={lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/'}
       >
-        Quick Start &rarr;
+        {uiLabels.quickStart} &rarr;
       </a>
     {/if}
   </nav>
@@ -654,6 +707,38 @@
     margin-bottom: 0;
     max-width: 40ch;
   }
+  .wz-welcome-notes {
+    width: min(100%, 38rem);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-top: 0.35rem;
+  }
+  .wz-welcome-note {
+    padding: 0.8rem 0.9rem;
+    border-radius: calc(var(--radius-md, 12px) + 1px);
+    border: 1px solid rgba(212, 144, 92, 0.18);
+    background:
+      linear-gradient(180deg, rgba(17, 18, 23, 0.88), rgba(11, 12, 16, 0.94)),
+      radial-gradient(circle at top right, rgba(184, 115, 51, 0.08), transparent 46%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    text-align: left;
+  }
+  .wz-welcome-note-label {
+    display: inline-flex;
+    margin-bottom: 0.35rem;
+    font-family: var(--f-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-copper-bright);
+  }
+  .wz-welcome-note-value {
+    margin: 0;
+    font-size: 0.74rem;
+    line-height: 1.6;
+    color: var(--c-text-dim);
+  }
 
   /* CTA button on welcome */
   .wz-cta {
@@ -861,8 +946,33 @@
   }
 
   /* ---- Terminal sim ---- */
-  .wz-terminal {
+  .wz-terminal-shell {
     margin-top: 0.85rem;
+  }
+  .wz-terminal-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+  .wz-terminal-kicker {
+    font-family: var(--f-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-copper-bright);
+    white-space: nowrap;
+  }
+  .wz-terminal-copy {
+    margin: 0;
+    max-width: 34ch;
+    font-size: 0.72rem;
+    line-height: 1.55;
+    color: var(--c-text-dim);
+    text-align: right;
+  }
+  .wz-terminal {
     padding: 0.92rem 1rem;
     background: linear-gradient(180deg, rgba(13, 15, 18, 0.92), rgba(8, 9, 12, 0.98));
     border: 1px solid var(--c-border);
@@ -1023,6 +1133,10 @@
       gap: 0.65rem;
     }
 
+    .wz-welcome-notes {
+      grid-template-columns: 1fr;
+    }
+
     .wz-cmd-bar {
       grid-template-columns: auto minmax(0, 1fr);
     }
@@ -1030,6 +1144,15 @@
     .wz-cmd-copy {
       grid-column: 1 / -1;
       width: 100%;
+    }
+
+    .wz-terminal-meta {
+      flex-direction: column;
+    }
+
+    .wz-terminal-copy {
+      max-width: none;
+      text-align: left;
     }
 
     .wz-next-cmd {

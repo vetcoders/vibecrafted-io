@@ -3,16 +3,19 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF_USAGE'
-Usage: install.sh [--gui] [--ref <branch>] [--archive-url <url> | --archive-file <path>] [--tools-dir <dir>] [make-target]
+Usage: install.sh [--gui] [--yes] [--ref <branch>] [--archive-url <url> | --archive-file <path>] [--tools-dir <dir>] [make-target]
 
 Bootstrap a local 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. source snapshot into $VIBECRAFTED_ROOT/.vibecrafted/tools and then
 run a local staged install path from that copy.
 
 Use `--gui` when you want the browser-based guided installer.
+Interactive attended runs pause for explicit consent before download, staging, or installer launch.
+Use `--yes` to skip that consent prompt when you already trust the source and want one-shot bootstrap.
 Non-interactive runs without `--gui` bypass the browser and call the compact installer directly.
 
 Examples:
   curl -fsSL https://vibecrafted.io/install.sh | bash
+  curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --yes
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --ref develop
   bash install.sh doctor
@@ -31,6 +34,80 @@ info() {
 
 is_interactive_session() {
   [[ -t 0 && -t 1 ]]
+}
+
+has_attended_tty() {
+  if exec 9<>/dev/tty 2>/dev/null; then
+    exec 9>&- 9<&- || true
+    return 0
+  fi
+  return 1
+}
+
+describe_bootstrap_next_step() {
+  if [[ "$target" == "vibecrafted" && "$use_gui" == "1" ]]; then
+    printf '%s\n' "Launch the guided installer UI from the staged copy."
+    return
+  fi
+  if [[ "$target" == "vibecrafted" ]]; then
+    printf '%s\n' "Launch the terminal-native installer from the staged copy."
+    return
+  fi
+  printf '%s\n' "Run make target '$target' from the staged copy."
+}
+
+confirm_attended_bootstrap() {
+  [[ "$assume_yes" == "1" ]] && return 0
+  has_attended_tty || return 0
+
+  {
+    printf '\n'
+    printf 'Bootstrap consent required.\n'
+    printf 'This attended run will:\n'
+  } > /dev/tty
+  if [[ -n "$archive_file" ]]; then
+    {
+      printf '  1. Unpack the local archive you selected:\n'
+      printf '     %s\n' "$archive_file"
+    } > /dev/tty
+  else
+    printf '  1. Resolve and download the snapshot for ref: %s\n' "$ref" > /dev/tty
+  fi
+  {
+    printf '  2. Stage the control plane under:\n'
+    printf '     %s\n' "$tools_dir"
+    printf '  3. %s\n' "$(describe_bootstrap_next_step)"
+  } > /dev/tty
+  if [[ "$target" == "vibecrafted" && "$use_gui" != "1" ]]; then
+    printf '  4. If `uv` is missing, bootstrap it under $HOME/.local/bin to run the installer.\n' > /dev/tty
+  fi
+  {
+    printf '\n'
+    printf 'Nothing will be staged or installed until you say yes.\n'
+    printf 'Use --yes to skip this prompt when you have already approved this bootstrap path.\n'
+  } > /dev/tty
+
+  local bootstrap_consent=""
+  while true; do
+    printf 'Proceed? [y/N] ' > /dev/tty
+    if ! IFS= read -r bootstrap_consent < /dev/tty; then
+      printf '\nBootstrap cancelled: no confirmation received.\n' > /dev/tty
+      exit 1
+    fi
+    case "$bootstrap_consent" in
+      [yY]|[yY][eE][sS])
+        printf '\n' > /dev/tty
+        return 0
+        ;;
+      ""|[nN]|[nN][oO])
+        printf '\nCancelled. Nothing was staged or installed.\n' > /dev/tty
+        exit 0
+        ;;
+      *)
+        printf 'Please answer yes or no.\n' > /dev/tty
+        ;;
+    esac
+  done
 }
 
 default_vibecrafted_home() {
@@ -56,11 +133,15 @@ archive_file=""
 tools_dir="$default_tools_dir"
 target="vibecrafted"
 use_gui=0
+assume_yes=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --gui)
       use_gui=1
+      ;;
+    --yes|-y)
+      assume_yes=1
       ;;
     --ref)
       shift
@@ -106,6 +187,8 @@ fi
 if [[ "$use_gui" == "1" && "$target" != "vibecrafted" ]]; then
   die "--gui can only be used with the default vibecrafted install target"
 fi
+
+confirm_attended_bootstrap
 
 if [[ -z "$archive_url" && -z "$archive_file" ]]; then
   # Resolve latest version from the channel manifest instead of hard-pinning.

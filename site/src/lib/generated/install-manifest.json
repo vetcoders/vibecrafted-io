@@ -1,0 +1,98 @@
+{
+  "title": "\u2692 Vibecrafted.",
+  "version": "1.3.0",
+  "persist": true,
+  "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+  "phases": [
+    {
+      "key": "diagnostics",
+      "label": "Diagnostics",
+      "optional": true,
+      "reason": "We will check your environment for:\n  - Any existing framework installation\n    foundations \u00b7 workflows \u00b7 helpers \u00b7 binaries\n  - Toolchains\n    node \u00b7 python \u00b7 rust\n  - Agents\n    claude-code \u00b7 codex \u00b7 gemini-cli\n  - Additional tools\n    zellji \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide",
+      "reasonLines": [
+        "We will check your environment for:",
+        "- Any existing framework installation",
+        "foundations \u00b7 workflows \u00b7 helpers \u00b7 binaries",
+        "- Toolchains",
+        "node \u00b7 python \u00b7 rust",
+        "- Agents",
+        "claude-code \u00b7 codex \u00b7 gemini-cli",
+        "- Additional tools",
+        "zellji \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide"
+      ],
+      "commands": ["python3 scripts/vetcoders_install.py list --source ."]
+    },
+    {
+      "key": "installation",
+      "label": "Installation",
+      "optional": false,
+      "reason": "We will install:\n  - Missing dependencies\n  - Workflows (9 basic, 7 advanced)\n  - Helpers and binaries (executables and functions)",
+      "reasonLines": [
+        "We will install:",
+        "- Missing dependencies",
+        "- Workflows (9 basic, 7 advanced)",
+        "- Helpers and binaries (executables and functions)"
+      ],
+      "commands": ["bash scripts/install-foundations.sh"]
+    },
+    {
+      "key": "post-install",
+      "label": "Post-installation setup",
+      "optional": false,
+      "reason": "We will configure:\n  - Workspace directories (in $VIBECRAFTED_ROOT/.vibecrafted/)\n  - Symlinks for AI coding agents (in $HOME/.agents/)",
+      "reasonLines": [
+        "We will configure:",
+        "- Workspace directories (in $VIBECRAFTED_ROOT/.vibecrafted/)",
+        "- Symlinks for AI coding agents (in $HOME/.agents/)"
+      ],
+      "commands": [
+        "bash skills/vc-agents/scripts/install-frontier-config.sh --source \".\" || printf '[warn] Frontier config skipped (non-fatal)\\n'",
+        "python3 scripts/vetcoders_install.py install --source \".\" --with-shell --compact --non-interactive"
+      ]
+    },
+    {
+      "key": "verification",
+      "label": "Verification and quick tour",
+      "optional": true,
+      "reason": "We will run `vibecrafted doctor` and surface the quick tour of\nthe framework's most useful commands.",
+      "reasonLines": [
+        "We will run `vibecrafted doctor` and surface the quick tour of",
+        "the framework's most useful commands."
+      ],
+      "commands": ["python3 scripts/vetcoders_install.py doctor"]
+    }
+  ],
+  "diagnostics": {
+    "categories": [
+      "frameworks",
+      "foundations",
+      "toolchains",
+      "agents",
+      "additional_tools"
+    ],
+    "labels": {
+      "frameworks": "Frameworks",
+      "foundations": "Foundations",
+      "toolchains": "Toolchains",
+      "agents": "Agents",
+      "additional_tools": "Additional tools"
+    },
+    "commands": {
+      "foundations": ["loctree-mcp", "aicx-mcp", "prview", "screenscribe"],
+      "toolchains": ["python3", "node", "git", "rsync"],
+      "agents": ["claude", "codex", "gemini"],
+      "additional_tools": ["mise", "starship", "atuin", "zoxide"]
+    },
+    "paths": {
+      "store_dir": "$VIBECRAFTED_ROOT/.vibecrafted/skills",
+      "helpers": "$XDG_CONFIG_HOME/vetcoders/vc-skills.sh",
+      "binaries": ["vibecraft", "vibecrafted"],
+      "symlinks": [
+        "$HOME/.agents",
+        "$HOME/.claude",
+        "$HOME/.codex",
+        "$HOME/.gemini"
+      ]
+    }
+  }
+}

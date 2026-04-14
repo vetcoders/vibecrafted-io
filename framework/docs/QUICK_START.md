@@ -11,11 +11,18 @@ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
 ```
 
 This path stages the control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
+Attended runs pause before download, staging, or installer launch; add `--yes` only when you have already approved the bootstrap path and want one-shot execution.
 
 Direct compact path for automation or terminal-native installs:
 
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
+```
+
+Skip the attended bootstrap consent prompt explicitly only when that is intentional:
+
+```bash
+curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --yes
 ```
 
 Non-destructive. Interactive. Tells you what it does before it does it.
