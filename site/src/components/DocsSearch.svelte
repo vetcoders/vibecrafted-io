@@ -30,10 +30,11 @@
     },
   } as const;
 
-  let { lang, section }: { lang: Lang; section: DocsSearchSection } = $props();
+  let { lang, section, autofocus = false }: { lang: Lang; section: DocsSearchSection; autofocus?: boolean } = $props();
 
   let query = $state('');
   let activeIndex = $state(-1);
+  let searchInput: HTMLInputElement | null = null;
   const searchData = $derived(getDocsSearchData(lang, section));
 
   function tokenize(value: string) {
@@ -123,6 +124,13 @@
       activeIndex = -1;
     }
   }
+
+  $effect(() => {
+    if (autofocus && searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  });
 </script>
 
 <div class="docs-search">
@@ -134,6 +142,7 @@
       id={`docs-search-${section}-${lang}`}
       class="docs-search__field"
       type="search"
+      bind:this={searchInput}
       bind:value={query}
       autocomplete="off"
       spellcheck="false"

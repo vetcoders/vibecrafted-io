@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import CopyButton from '../components/CopyButton.svelte';
+import SearchShell from '../components/SearchShell.svelte';
 import SiteNav from '../components/SiteNav.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations, type Lang } from '../lib/i18n';
@@ -93,7 +94,7 @@ const toggleHref = alternates ? (isPl ? alternates.en : alternates.pl) : (isPl ?
 const toggleHreflang = isPl ? 'en' : 'pl';
 const navPaths = {
   home: isPl ? '/pl/' : '/en/',
-  demo: isPl ? '/pl/framework/' : '/en/framework/',
+  framework: isPl ? '/pl/framework/' : '/en/framework/',
   quickstart: isPl ? '/pl/quickstart/' : '/en/quickstart/',
   faq: isPl ? '/pl/faq/' : '/en/faq/',
   install: isPl ? '/pl/install/' : '/en/install/',
@@ -101,8 +102,9 @@ const navPaths = {
 
 const isHomePage = normalizedPath === navPaths.home;
 const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
-const isFrameworkPage = normalizedPath === navPaths.demo;
+const isFrameworkPage = normalizedPath === navPaths.framework;
 const showInstallBanner = isHomePage;
+const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'quickstart';
 
 const sectionLinks = {
   pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
@@ -132,7 +134,7 @@ const primaryLinks = [
   { href: sectionLinks.pipeline, label: navLabels.pipeline },
   { href: sectionLinks.skills, label: navLabels.skills },
   { href: sectionLinks.marbles, label: navLabels.marbles },
-  { href: navPaths.demo, label: navLabels.demo, current: normalizedPath === navPaths.demo },
+  { href: navPaths.framework, label: navLabels.framework, current: normalizedPath === navPaths.framework },
   { href: navPaths.quickstart, label: navLabels.quickstart, current: normalizedPath === navPaths.quickstart },
   { href: navPaths.faq, label: navLabels.faq, current: normalizedPath === navPaths.faq },
   { href: sectionLinks.dou, label: navLabels.dou },
@@ -238,6 +240,7 @@ const contentSecurityPolicy = [
                 toggleHreflang={toggleHreflang}
                 toggleLang={toggleHreflang}
                 githubLabel={navLabels.github}
+                searchLabel={navLabels.search}
                 menuLabel={navLabels.menu}
                 closeLabel={navLabels.closeMenu}
             />
@@ -291,6 +294,8 @@ const contentSecurityPolicy = [
             <p class="footer-copyright">{footer.copyright}</p>
         </div>
     </footer>
+
+    <SearchShell client:load lang={lang} defaultSection={searchDefaultSection} />
 </body>
 </html>
 
