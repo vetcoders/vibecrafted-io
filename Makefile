@@ -6,7 +6,12 @@ SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
 SOURCE   := $(CURDIR)
 BRANCH   ?= main
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-build site-deploy bundle-build bundle-sign content-truth
+# Caddy deployment target (libraxis-vm, file server at /srv/vibecrafted/docs)
+DEPLOY_HOST ?= libraxis-vm
+DEPLOY_ROOT ?= /srv/vibecrafted/docs
+DEPLOY_OWNER ?= caddy:caddy
+
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-build site-deploy site-deploy-pages bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -34,9 +39,10 @@ help:
 	@printf "  \033[33m◆\033[0m  make migrate       \033[2mMigrate .ai-agents/ to \$$VIBECRAFTED_ROOT/.vibecrafted/artifacts/\033[0m\n"
 	@printf "  \033[33m◇\033[0m  make migrate-dry   \033[2mPreview migration (dry run)\033[0m\n"
 	@printf "\n"
-	@printf "  \033[36m▸\033[0m  make site-dev      \033[2mStart Astro dev server for vibecrafted.io\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-build    \033[2mBuild static site (Astro + Svelte)\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-deploy   \033[2mBuild and copy to docs/ for GitHub Pages\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-dev          \033[2mStart Astro dev server for vibecrafted.io\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-build        \033[2mBuild static site (Astro + Svelte)\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-deploy       \033[2mBuild + rsync to libraxis-vm Caddy ($(DEPLOY_HOST):$(DEPLOY_ROOT))\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-deploy-pages \033[2mBuild + sync to local docs/ (GitHub Pages fallback)\033[0m\n"
 	@printf "\n"
 	@printf "  \033[32m◇\033[0m  make bundle-build  \033[2mBuild tarball bundle without heavy dirs\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle-sign   \033[2mSign bundle tarball with RSA private key\033[0m\n"
@@ -148,9 +154,19 @@ site-build:
 	@cd site && pnpm run build
 
 site-deploy: site-build
-	@echo "Deploying site to docs/ for GitHub Pages..."
+	@echo "Deploying site to $(DEPLOY_HOST):$(DEPLOY_ROOT) (Caddy file_server)..."
+	@rsync -avzh --delete --human-readable \
+		--exclude='.DS_Store' \
+		site/dist/ \
+		$(DEPLOY_HOST):$(DEPLOY_ROOT)/
+	@ssh $(DEPLOY_HOST) "chown -R $(DEPLOY_OWNER) $(DEPLOY_ROOT) && echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
+	@echo ""
+	@echo "  ✓ https://vibecrafted.io now serves version $$(cat framework/VERSION)"
+
+site-deploy-pages: site-build
+	@echo "Syncing built site to local docs/ (GitHub Pages fallback)..."
 	@python3 scripts/sync_site_to_docs.py
-	@echo "Site deployed successfully."
+	@echo "Local docs/ updated. Commit + push to trigger Pages workflow."
 
 # ============================================================================
 # Bundled Builds & Codesigning
