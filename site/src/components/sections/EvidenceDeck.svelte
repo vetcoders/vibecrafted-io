@@ -23,7 +23,6 @@
           <span class="evidence-num">{item.number}</span>
           <h3>{item.title}</h3>
           <p>{item.body}</p>
-          <span class="evidence-item__reveal">{section.revealLabel}</span>
         </div>
 
         <div class="evidence-item__face evidence-item__face--back" aria-hidden="true">

@@ -95,6 +95,12 @@ const toggleLang = isPl ? 'en' : 'pl';
                     <a href={quickstartHref}>{navLabels.quickstart}</a>
                     <a href={faqHref}>{navLabels.faq}</a>
                     <a href={toggleHref} hreflang={toggleLang} lang={toggleLang}>{navLabels.toggleShort}</a>
+                    <a href={homeHref} aria-label="Close Installer" class="wizard-close-btn" title="Close">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </a>
                 </nav>
             </header>
             <div class="wizard-shell__content">
@@ -332,6 +338,26 @@ const toggleLang = isPl ? 'en' : 'pl';
   .wizard-shell__links a:focus-visible {
     color: var(--copper-bright, #d4905c);
     transform: translateY(-1px);
+  }
+
+  .wizard-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0.5rem;
+    padding: 0.35rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(229, 236, 245, 0.6);
+    transition: all 0.18s ease;
+  }
+
+  .wizard-close-btn:hover,
+  .wizard-close-btn:focus-visible {
+    background: rgba(212, 144, 92, 0.15) !important;
+    border-color: rgba(212, 144, 92, 0.4) !important;
+    color: var(--copper-bright, #d4905c) !important;
   }
 
   .brand {
