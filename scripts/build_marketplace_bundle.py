@@ -90,9 +90,19 @@ def load_listing_metadata(repo_root: Path) -> ListingMetadata:
     return parse_listing_metadata(listing_path.read_text(encoding="utf-8"))
 
 
+def bundle_source_root(repo_root: Path) -> Path:
+    if (repo_root / "skills").is_dir():
+        return repo_root
+    release_root = repo_root / "release"
+    if (release_root / "skills").is_dir():
+        return release_root
+    return repo_root
+
+
 def discover_bundle_skills(repo_root: Path) -> list[Path]:
+    source_root = bundle_source_root(repo_root)
     return sorted(
-        (skill for skill in discover_skills(repo_root) if skill.name.startswith("vc-")),
+        (skill for skill in discover_skills(source_root) if skill.name.startswith("vc-")),
         key=lambda path: path.name,
     )
 
@@ -106,7 +116,7 @@ def discover_foundation_skills(repo_root: Path) -> list[Path]:
     ship them so relative links from pipeline skills (e.g. ../foundations/vc-loctree)
     resolve inside the extracted plugin tree.
     """
-    foundations_dir = repo_root / "skills" / "foundations"
+    foundations_dir = bundle_source_root(repo_root) / "skills" / "foundations"
     if not foundations_dir.exists() or not foundations_dir.is_dir():
         return []
     return sorted(

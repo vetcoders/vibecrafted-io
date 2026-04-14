@@ -8,6 +8,13 @@ on:
       - "site/**"
       - "Makefile"
       - "install.sh"
+      - "install.sh.sig"
+      - "VERSION"
+      - "SHA256SUMS"
+      - "vibecrafted-signing.pub"
+      - "vibecrafted-v*.tar.gz"
+      - "vibecrafted-v*.tar.gz.sig"
+      - "scripts/sync_site_release_assets.py"
       - ".github/workflows/deploy-pages.yml"
 
   workflow_dispatch:

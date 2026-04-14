@@ -1,0 +1,8 @@
+{
+  "name": "VC Hydrate",
+  "description": "Packaging and go-to-market bridging. Use /vc-hydrate to invoke.",
+  "author": {
+    "name": "VetCoders",
+    "email": "hello@vetcoders.io"
+  }
+}

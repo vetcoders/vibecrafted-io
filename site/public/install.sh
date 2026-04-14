@@ -119,9 +119,9 @@ if [[ -z "$archive_url" && -z "$archive_file" ]]; then
     archive_url="$resolved_url"
     info "Resolved from channel ($ref): $archive_url"
   else
-    # Fallback: frozen URL for offline / pre-channel deployments.
-    archive_url="https://vibecrafted.io/vibecrafted-v1.2.1.tar.gz"
-    info "[note] Channel manifest not available — using frozen v1.2.1 URL"
+    # Fallback: source snapshot for pre-channel / pre-deploy kickoffs.
+    archive_url="https://github.com/VetCoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
+    info "[note] Channel manifest not available — using GitHub source snapshot for ${ref}"
   fi
 fi
 
@@ -226,7 +226,7 @@ info "  $current_link"
 # Extract version from the archive URL or staged Makefile for the post-install banner.
 _installed_version=""
 if [[ -f "$staged_dir/Makefile" ]]; then
-  _installed_version="$(grep -oP 'VERSION\\s*:?=\\s*\\K\\S+' "$staged_dir/Makefile" 2>/dev/null || true)"
+  _installed_version="$(grep -oP 'VERSION\s*:?=\s*\K\S+' "$staged_dir/Makefile" 2>/dev/null || true)"
 fi
 [[ -n "$_installed_version" ]] || _installed_version="$(basename "$archive_url" .tar.gz 2>/dev/null || echo 'unknown')"
 
@@ -281,6 +281,42 @@ if [[ "$target" == "vibecrafted" ]] && ! is_interactive_session; then
   info "  python3 $installer install --source $current_link --with-shell --compact --non-interactive"
   printf '\n'
   exec python3 "$installer" install --source "$current_link" --with-shell --compact --non-interactive
+fi
+
+# Interactive terminal session: default target is the built-in
+# vetcoders-installer sequential runner, executed out of the staged repo's
+# own scripts/installer/ sub-package via `uv run --project`. The browser
+# GUI is opt-in via `--gui` (handled above). Other make targets still fall
+# through to the Makefile.
+if [[ "$target" == "vibecrafted" ]]; then
+  manifest="$current_link/install.toml"
+  installer_dir="$current_link/scripts/installer"
+  [[ -f "$manifest" ]] || die "Install manifest not found: $manifest"
+  [[ -d "$installer_dir" ]] || die "Built-in installer package not found: $installer_dir"
+
+  # Make sure user-local binaries (cargo, .local) are visible to the installer's
+  # subprocesses — otherwise tools installed outside PATH won't be detected.
+  for _p in "${vibecrafted_home}/bin" "${vibecrafted_home}/tools/node/bin" "$HOME/.cargo/bin" "$HOME/.local/bin"; do
+    case ":${PATH}:" in
+      *":${_p}:"*) ;;
+      *) [[ -d "$_p" ]] && export PATH="${_p}:${PATH}" ;;
+    esac
+  done
+
+  if ! command -v uv >/dev/null 2>&1; then
+    info "Bootstrapping uv (one-time setup)..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh \
+      || die "Failed to bootstrap uv"
+    # shellcheck disable=SC1090
+    [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
+    export PATH="$HOME/.local/bin:$PATH"
+  fi
+
+  post_install_banner
+  info "Running built-in installer:"
+  info "  uv run --project $installer_dir vetcoders-installer $manifest"
+  printf '\n'
+  exec uv run --project "$installer_dir" --quiet vetcoders-installer "$manifest"
 fi
 
 post_install_banner
