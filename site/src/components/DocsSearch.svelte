@@ -191,9 +191,9 @@
 <style>
   .docs-search {
     display: grid;
-    gap: 0.55rem;
-    width: min(100%, 42rem);
-    padding: 0.95rem 1rem;
+    gap: 0.72rem;
+    width: 100%;
+    padding: 1.05rem 1.1rem;
     border: 1px solid rgba(218, 197, 167, 0.14);
     border-radius: 1rem;
     background:
@@ -221,8 +221,8 @@
 
   .docs-search__field {
     width: 100%;
-    min-height: 3rem;
-    padding: 0.75rem 0.95rem;
+    min-height: 3.2rem;
+    padding: 0.82rem 1rem;
     border: 1px solid rgba(218, 197, 167, 0.18);
     border-radius: 0.8rem;
     background: rgba(7, 9, 12, 0.72);
@@ -244,7 +244,7 @@
   .docs-search__hint {
     margin: 0;
     color: rgba(209, 216, 224, 0.72);
-    font-size: 0.84rem;
+    font-size: 0.9rem;
     line-height: 1.5;
   }
 
@@ -287,13 +287,13 @@
 
   .docs-search__result-title {
     color: rgba(243, 241, 236, 0.96);
-    font-size: 0.92rem;
+    font-size: 0.98rem;
     font-weight: 600;
   }
 
   .docs-search__result-body {
     color: rgba(209, 216, 224, 0.78);
-    font-size: 0.82rem;
+    font-size: 0.88rem;
     line-height: 1.5;
   }
 

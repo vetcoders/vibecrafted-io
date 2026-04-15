@@ -53,11 +53,20 @@
 
 <div class="search-shell" aria-label={dict.nav.search}>
   {#if open}
+    <button
+      class="search-shell__backdrop"
+      type="button"
+      aria-label={dict.nav.searchClose}
+      onclick={closeSearch}
+      in:fade={{ duration: panelDuration }}
+      out:fade={{ duration: panelDuration }}
+    ></button>
     <section
       class="search-shell__panel"
       aria-label={dict.nav.search}
       in:fly={{ duration: panelDuration, y: 14 }}
       out:fade={{ duration: panelDuration }}
+      onclick={(event) => event.stopPropagation()}
     >
       <div class="search-shell__header">
         <div class="search-shell__title-group">
@@ -121,14 +130,28 @@
     right: clamp(0.75rem, 1.8vw, 1.5rem);
     bottom: clamp(0.75rem, 1.8vw, 1.5rem);
     z-index: 130;
-    width: min(100vw - 1.5rem, 38rem);
+    width: auto;
     display: flex;
     justify-content: flex-end;
     pointer-events: none;
   }
 
+  .search-shell__backdrop {
+    position: fixed;
+    inset: 0;
+    border: 0;
+    background:
+      radial-gradient(circle at 22% 14%, rgba(225, 176, 116, 0.1), transparent 26%),
+      radial-gradient(circle at 84% 8%, rgba(163, 184, 199, 0.08), transparent 24%),
+      rgba(5, 7, 10, 0.72);
+    backdrop-filter: blur(14px) saturate(112%);
+    -webkit-backdrop-filter: blur(14px) saturate(112%);
+    pointer-events: auto;
+  }
+
   .search-shell__trigger,
-  .search-shell__panel {
+  .search-shell__panel,
+  .search-shell__backdrop {
     pointer-events: auto;
   }
 
@@ -186,14 +209,18 @@
   }
 
   .search-shell__panel {
-    width: min(100%, 38rem);
-    max-height: min(78vh, 46rem);
+    position: fixed;
+    top: clamp(4rem, 8vh, 6rem);
+    left: max(0.75rem, calc(50% - 31rem));
+    right: max(0.75rem, calc(50% - 31rem));
+    width: auto;
+    max-height: min(82vh, 52rem);
     overflow: auto;
     display: grid;
-    gap: 0.75rem;
-    padding: 0.95rem;
+    gap: 1rem;
+    padding: 1.2rem 1.25rem;
     border: 1px solid rgba(218, 197, 167, 0.16);
-    border-radius: 1.15rem;
+    border-radius: 1.35rem;
     background:
       radial-gradient(circle at top right, rgba(184, 115, 51, 0.12), transparent 28%),
       linear-gradient(180deg, rgba(18, 20, 24, 0.92), rgba(10, 12, 15, 0.9));
@@ -237,8 +264,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.7rem;
-    height: 2.7rem;
+    width: 2.9rem;
+    height: 2.9rem;
     border: 1px solid rgba(218, 197, 167, 0.16);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.03);
@@ -312,8 +339,12 @@
     }
 
     .search-shell__panel {
-      padding: 0.85rem;
-      max-height: min(82vh, 36rem);
+      top: 0.8rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      padding: 0.92rem;
+      max-height: calc(100dvh - 1.6rem);
+      border-radius: 1rem;
     }
 
     .search-shell__trigger {

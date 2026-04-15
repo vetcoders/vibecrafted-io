@@ -28,7 +28,8 @@ export const pl = {
   footer: {
     ariaLabel: "Stopka strony",
     brand: "VIBECRAFTED",
-    tagline: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
+    tagline:
+      "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
     copyright: "© 2026 VetCoders",
   },
   copyButton: {
@@ -110,7 +111,7 @@ flowchart LR
           href: "https://loct.io",
           name: "loctree",
           iconClass: "foundation-icon foundation-icon--steel",
-          role: "Oczy",
+          role: "Struktura",
           body: "Strukturalna inteligencja codebase. Mapuje pliki, zależności, huby i blast radius zanim agent dotknie jakiejkolwiek zmiany.",
           linkLabel: "loct.io",
         },
@@ -137,7 +138,7 @@ flowchart LR
           href: "https://github.com/VetCoders/ScreenScribe",
           name: "ScreenScribe",
           iconClass: "foundation-icon foundation-icon--muted",
-          role: "Uszy",
+          role: "Runtime",
           body: "Narracyjny review runtime. Zamienia nagrania ekranu z komentarzem w ustrukturyzowane findingi o realnej powierzchni produktu.",
           linkLabel: "github.com/VetCoders/ScreenScribe",
         },
@@ -446,7 +447,8 @@ flowchart LR
       label: "Szybki start",
       title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska.",
-      quote: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
+      quote:
+        "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
       primaryHref: "/pl/",
       primaryLabel: "Wróć do przeglądu",
       secondaryHref: "/pl/framework/",
@@ -554,7 +556,8 @@ flowchart LR
       label: "FAQ",
       title: "Pytania, które padają na początku.",
       lead: "Tutaj wyjaśniamy, jak działa 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji.",
-      quote: "Installer, docs i command deck muszą obiecywać dokładnie to samo.",
+      quote:
+        "Installer, docs i command deck muszą obiecywać dokładnie to samo.",
       primaryHref: "/pl/quickstart/",
       primaryLabel: "Szybki start",
       secondaryHref: "/pl/",

@@ -45,7 +45,7 @@ export const en = {
         'Release <span class="manifesto-title__framework-accent">engine</span> for AI-built software',
       lead: "Ship AI-built software without the vibe hangover.",
       quoteHtml:
-        'Take the repo your agents already produced and turn it into something a stranger can install, trust, and use.',
+        "Take the repo your agents already produced and turn it into something a stranger can install, trust, and use.",
       evidence: "See the Evidence",
       quickstart: "Open Quick Start",
       quickstartHref: "/en/quickstart/",
@@ -109,7 +109,7 @@ flowchart LR
           href: "https://loct.io",
           name: "loctree",
           iconClass: "foundation-icon foundation-icon--steel",
-          role: "Eyes",
+          role: "Structure",
           body: "Structural code intelligence. Maps files, dependencies, hubs, and blast radius before an agent edits anything.",
           linkLabel: "loct.io",
         },
@@ -136,7 +136,7 @@ flowchart LR
           href: "https://github.com/VetCoders/ScreenScribe",
           name: "ScreenScribe",
           iconClass: "foundation-icon foundation-icon--muted",
-          role: "Ears",
+          role: "Runtime",
           body: "Narrated runtime review. Turns screen recordings with commentary into structured engineering findings about the real product surface.",
           linkLabel: "github.com/VetCoders/ScreenScribe",
         },
@@ -200,7 +200,7 @@ flowchart LR
           details: [
             "One run is not evidence. The loop keeps cutting the highest-risk lie until the runtime surface agrees with the promise.",
             "Early loops remove structural falsehoods; later loops compress roughness into a calmer, more repeatable product shape.",
-            "The target is not \"nice output\" but a state where P0/P1/P2 issues converge toward zero.",
+            'The target is not "nice output" but a state where P0/P1/P2 issues converge toward zero.',
           ],
         },
         {
@@ -553,7 +553,8 @@ flowchart LR
       label: "Answered FAQ",
       title: "The questions strangers ask first.",
       lead: "This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits.",
-      quote: "The installer, docs, and command deck should all promise the same thing.",
+      quote:
+        "The installer, docs, and command deck should all promise the same thing.",
       primaryHref: "/en/quickstart/",
       primaryLabel: "Read Quick Start",
       secondaryHref: "/en/",

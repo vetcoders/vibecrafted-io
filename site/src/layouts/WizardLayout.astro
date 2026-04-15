@@ -30,6 +30,8 @@ const quickstartHref = isPl ? '/pl/quickstart/' : '/en/quickstart/';
 const faqHref = isPl ? '/pl/faq/' : '/en/faq/';
 const toggleHref = isPl ? '/en/install/' : '/pl/install/';
 const toggleLang = isPl ? 'en' : 'pl';
+const closeInstallerLabel = isPl ? 'Zamknij instalator' : 'Close installer';
+const closeInstallerShort = isPl ? 'Zamknij' : 'Close';
 ---
 
 <!DOCTYPE html>
@@ -74,6 +76,12 @@ const toggleLang = isPl ? 'en' : 'pl';
 </head>
 <body class="wizard-page">
     <main class="wizard-shell">
+        <a
+            class="wizard-shell__outside-close"
+            href={homeHref}
+            aria-label={closeInstallerLabel}
+            tabindex="-1"
+        ></a>
         <div class="wizard-shell__frame">
             <header class="wizard-shell__topbar vt-site-topbar">
                 <a class="brand" href={homeHref}>
@@ -95,7 +103,8 @@ const toggleLang = isPl ? 'en' : 'pl';
                     <a href={quickstartHref}>{navLabels.quickstart}</a>
                     <a href={faqHref}>{navLabels.faq}</a>
                     <a href={toggleHref} hreflang={toggleLang} lang={toggleLang}>{navLabels.toggleShort}</a>
-                    <a href={homeHref} aria-label="Close Installer" class="wizard-close-btn" title="Close">
+                    <a href={homeHref} aria-label={closeInstallerLabel} class="wizard-close-btn" title={closeInstallerLabel}>
+                        <span class="wizard-close-btn__label">{closeInstallerShort}</span>
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -239,6 +248,12 @@ const toggleLang = isPl ? 'en' : 'pl';
     min-height: min(calc(100dvh - 1.6rem), 46rem);
   }
 
+  .wizard-shell__outside-close {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
   .wizard-shell::before,
   .wizard-shell::after {
     content: "";
@@ -267,6 +282,7 @@ const toggleLang = isPl ? 'en' : 'pl';
 
   .wizard-shell__frame {
     position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -344,13 +360,22 @@ const toggleLang = isPl ? 'en' : 'pl';
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 0.4rem;
     margin-left: 0.5rem;
-    padding: 0.35rem;
+    padding: 0.35rem 0.62rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(229, 236, 245, 0.6);
+    color: rgba(229, 236, 245, 0.78);
     transition: all 0.18s ease;
+  }
+
+  .wizard-close-btn__label {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
 
   .wizard-close-btn:hover,
@@ -438,8 +463,8 @@ const toggleLang = isPl ? 'en' : 'pl';
 
   .footer-container--wizard {
     width: 100%;
-    gap: 0.4rem;
-    padding-block: 0.85rem;
+    gap: 0.25rem;
+    padding-block: 0.52rem;
   }
 
   .footer-container {
@@ -485,6 +510,7 @@ const toggleLang = isPl ? 'en' : 'pl';
     line-height: 1.35;
     text-align: center;
     text-transform: none;
+    display: none;
   }
 
   .footer-links {

@@ -136,6 +136,10 @@
     tick();
   }
 
+  $effect(() => {
+    if (!termRunning) simulateTerminal();
+  });
+
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'ArrowRight' || e.key === 'Enter') next();
     else if (e.key === 'ArrowLeft' || e.key === 'Backspace') back();
@@ -192,6 +196,9 @@
     '[przeglądarka] [etap] Instalacja Vibecrafted',
     '[przeglądarka] Strumień prawdziwych komunikatów z instalatora...',
   ];
+
+  const terminalSeedLines = $derived((lang === 'pl' ? TERM_PL : TERM_EN).slice(0, 8));
+  const terminalPreviewLines = $derived(termLines.length > 0 ? termLines : terminalSeedLines);
 
   const WELCOME_NOTES_EN = [
     {
@@ -365,22 +372,39 @@
 
       <!-- Step 0: Welcome -->
       {#if currentStep === 0}
-        <div class="wz-center">
-          <h2 class="wz-title">{content.steps[0].title}</h2>
-          {#each content.steps[0].body as p}
-            <p class="wz-body">{p}</p>
-          {/each}
-          <div class="wz-welcome-notes">
-            {#each welcomeNotes as item}
-              <div class="wz-welcome-note">
-                <span class="wz-welcome-note-label">{item.label}</span>
-                <p class="wz-welcome-note-value">{item.value}</p>
-              </div>
+        <div class="wz-welcome-split">
+          <div class="wz-welcome-main">
+            <h2 class="wz-title">{content.steps[0].title}</h2>
+            {#each content.steps[0].body as p}
+              <p class="wz-body">{p}</p>
             {/each}
+            <div class="wz-welcome-notes">
+              {#each welcomeNotes as item}
+                <div class="wz-welcome-note">
+                  <span class="wz-welcome-note-label">{item.label}</span>
+                  <p class="wz-welcome-note-value">{item.value}</p>
+                </div>
+              {/each}
+            </div>
+            <button class="wz-cta" onclick={next}>
+              {uiLabels.welcomeCta} <span class="wz-cta-arrow">&rarr;</span>
+            </button>
           </div>
-          <button class="wz-cta" onclick={next}>
-            {uiLabels.welcomeCta} <span class="wz-cta-arrow">&rarr;</span>
-          </button>
+
+          <div class="wz-terminal-shell wz-terminal-shell--hero">
+            <div class="wz-terminal-meta">
+              <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
+              <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
+            </div>
+            <div class="wz-terminal">
+              {#each terminalPreviewLines as line}
+                <div class="wz-term-line">{line}</div>
+              {/each}
+              {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+                <span class="wz-cursor">_</span>
+              {/if}
+            </div>
+          </div>
         </div>
 
       <!-- Step 1: What's inside -->
@@ -424,6 +448,20 @@
         {#each content.steps[3].body as p}
           <p class="wz-body">{p}</p>
         {/each}
+        <div class="wz-terminal-shell wz-terminal-shell--primary">
+          <div class="wz-terminal-meta">
+            <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
+            <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
+          </div>
+          <div class="wz-terminal">
+            {#each terminalPreviewLines as line}
+              <div class="wz-term-line">{line}</div>
+            {/each}
+            {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+              <span class="wz-cursor">_</span>
+            {/if}
+          </div>
+        </div>
         <div class="wz-cmd-block">
           <div class="wz-cmd-bar">
             <span class="wz-cmd-prompt">$</span>
@@ -440,22 +478,6 @@
             />
           </div>
         </div>
-        {#if termLines.length > 0}
-          <div class="wz-terminal-shell">
-            <div class="wz-terminal-meta">
-              <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
-              <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
-            </div>
-            <div class="wz-terminal">
-              {#each termLines as line}
-                <div class="wz-term-line">{line}</div>
-              {/each}
-              {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
-                <span class="wz-cursor">_</span>
-              {/if}
-            </div>
-          </div>
-        {/if}
 
       <!-- Step 4: Next steps -->
       {:else if currentStep === 4}
@@ -527,7 +549,7 @@
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
     width: 100%;
-    max-width: 42rem;
+    max-width: 66rem;
     margin: 0 auto;
     min-height: 100%;
     height: 100%;
@@ -691,6 +713,18 @@
     min-height: 100%;
     gap: 0.75rem;
   }
+  .wz-welcome-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 1rem;
+    align-items: stretch;
+    min-height: 100%;
+  }
+  .wz-welcome-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.72rem;
+  }
   .wz-title {
     font-family: var(--f-sans);
     font-size: clamp(1.45rem, 3vw, 1.95rem);
@@ -705,10 +739,10 @@
     line-height: 1.72;
     color: var(--c-text-dim);
     margin-bottom: 0;
-    max-width: 40ch;
+    max-width: 56ch;
   }
   .wz-welcome-notes {
-    width: min(100%, 38rem);
+    width: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.7rem;
@@ -877,7 +911,7 @@
 
   /* ---- Command block (step 3) ---- */
   .wz-cmd-block {
-    margin-top: 0.75rem;
+    margin-top: 0.9rem;
   }
   .wz-cmd-bar {
     display: grid;
@@ -947,7 +981,22 @@
 
   /* ---- Terminal sim ---- */
   .wz-terminal-shell {
-    margin-top: 0.85rem;
+    margin-top: 0.95rem;
+  }
+  .wz-terminal-shell--hero {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+  .wz-terminal-shell--hero .wz-terminal {
+    flex: 1;
+    min-height: 16rem;
+    max-height: 22rem;
+  }
+  .wz-terminal-shell--primary .wz-terminal {
+    min-height: 13rem;
+    max-height: 19rem;
   }
   .wz-terminal-meta {
     display: flex;
@@ -966,22 +1015,22 @@
   }
   .wz-terminal-copy {
     margin: 0;
-    max-width: 34ch;
-    font-size: 0.72rem;
+    max-width: 46ch;
+    font-size: 0.78rem;
     line-height: 1.55;
     color: var(--c-text-dim);
     text-align: right;
   }
   .wz-terminal {
-    padding: 0.92rem 1rem;
+    padding: 1rem 1.05rem;
     background: linear-gradient(180deg, rgba(13, 15, 18, 0.92), rgba(8, 9, 12, 0.98));
     border: 1px solid var(--c-border);
     border-radius: calc(var(--radius-md, 12px) + 1px);
     font-family: var(--f-mono);
-    font-size: 0.68rem;
+    font-size: 0.78rem;
     line-height: 1.62;
     color: var(--c-text-dim);
-    max-height: 15rem;
+    max-height: 18rem;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--c-copper) transparent;
@@ -1137,6 +1186,10 @@
       grid-template-columns: 1fr;
     }
 
+    .wz-welcome-split {
+      grid-template-columns: 1fr;
+    }
+
     .wz-cmd-bar {
       grid-template-columns: auto minmax(0, 1fr);
     }
@@ -1191,6 +1244,12 @@
     .wz-check,
     .wz-next-cmd {
       padding-block: 0.55rem;
+    }
+  }
+
+  @media (max-width: 980px) {
+    .wz-welcome-split {
+      grid-template-columns: 1fr;
     }
   }
 
