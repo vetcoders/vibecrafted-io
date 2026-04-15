@@ -1,6 +1,9 @@
 {
   "title": "\u2692 Vibecrafted.",
-  "phases": [
+  "version_file": "VERSION",
+  "log": "~/.vibecrafted/logs/installer/install-{ts}.log",
+  "persist": true,
+  "phase": [
     {
       "key": "diagnostics",
       "label": "Diagnostics",
@@ -38,6 +41,27 @@
       "optional": true
     }
   ],
+  "branding": {
+    "header": "\u2692 V A P O R C R A F T \u2692",
+    "name": "Vibecrafted.",
+    "tagline": "The framework for making real products with agent CLIs.",
+    "footer_tagline": "You can Vibecraft your first project now!"
+  },
+  "intro": {
+    "screens": [
+      "0_welcome_step.zsh.md",
+      "1_Explain_step.zsh.md",
+      "2_listing.zsh.md"
+    ],
+    "textual_screens": [
+      "0_welcome_step.zsh.md",
+      "1_Explain_step.zsh.md",
+      "2_listing.zsh.md",
+      "3_examine.zsh.md",
+      "4_result.zsh.md",
+      "5_installation.zsh.md"
+    ]
+  },
   "diagnostics": {
     "categories": [
       "frameworks",

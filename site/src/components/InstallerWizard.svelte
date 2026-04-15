@@ -17,7 +17,7 @@
   let termLines = $state<string[]>([]);
   let termRunning = $state(false);
 
-  const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui';
+  const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash';
 
   const requiredCategories = ['toolchains', 'agents'];
   const dynamicChecks = (() => {
@@ -78,11 +78,11 @@
           optional: 'opcjonalne',
           previous: 'Poprzedni krok',
           next: 'Następny krok',
-          quickStart: 'Quick Start',
+          quickStart: 'Start',
           stepAria: 'krok',
           ofAria: 'z',
           terminalKicker: 'Podgląd instalacji',
-          terminalBody: 'Skrypt startowy uruchamia lokalny instalator w przeglądarce, a dalsze komunikaty lecą już w tym widoku.',
+          terminalBody: 'Skrypt przygotowuje środowisko, a instalacja jest kontynuowana w przeglądarce.',
           welcomeCta: 'Pokaż jak to działa',
         }
       : {
@@ -91,11 +91,11 @@
           optional: 'optional',
           previous: 'Previous step',
           next: 'Next step',
-          quickStart: 'Quick Start',
+          quickStart: 'Start',
           stepAria: 'step',
           ofAria: 'of',
           terminalKicker: 'Install preview',
-          terminalBody: 'The startup script opens the local browser installer, and all further progress continues there.',
+          terminalBody: 'The script prepares the environment, and the installation continues in the browser.',
           welcomeCta: 'See how it works',
         }
   );
@@ -130,7 +130,7 @@
       if (i < lines.length) {
         termLines = [...termLines, lines[i]];
         i++;
-        setTimeout(tick, 120 + Math.random() * 180);
+        setTimeout(tick, 100 + Math.random() * 150);
       }
     };
     tick();
@@ -164,37 +164,37 @@
   }
 
   const TERM_EN = [
-    '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
-    '[bootstrap] Downloading install.sh...',
-    '[bootstrap] Resolving channel main...',
-    '[bootstrap] Verifying integrity... SHA256 ✓  Signature ✓',
-    '[bootstrap] Preparing local files under ~/.vibecrafted/tools/vibecrafted-main',
+    '$ curl -fsSL https://vibecrafted.io/install.sh | bash',
+    '[bootstrap] Downloading install.sh...', 
+    '[bootstrap] Resolving channel main...', 
+    '[bootstrap] Verifying integrity... SHA256 \u2713  Signature \u2713',
+    '[bootstrap] Preparing local environment under ~/.vibecrafted/',
     '',
-    '[bootstrap] Opening browser installer at http://127.0.0.1:48217',
+    '[bootstrap] Launching the installer...',
     '',
-    '[browser] Welcome -> Explain -> Diagnostics -> Checklist',
-    '[browser] This view remains read-only until you start the installation.',
-    '[browser] Start installation',
-    '[browser] [stage] Bootstrap foundations',
-    '[browser] [stage] Install Vibecrafted',
-    '[browser] Streaming real installer output...',
+    '[installer] Welcome -> Explain -> Environment Check -> Checklist',
+    '[installer] The process continues in your browser for better visibility.',
+    '[installer] Starting installation...', 
+    '[installer] [stage] Setup foundations',
+    '[installer] [stage] Installing Vibecrafted',
+    '[installer] Real-time logs will appear here...', 
   ];
 
   const TERM_PL = [
-    '$ curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
-    '[bootstrap] Pobieranie install.sh...',
-    '[bootstrap] Rozwiązywanie kanału main...',
-    '[bootstrap] Weryfikacja integralności... SHA256 ✓  Signature ✓',
-    '[bootstrap] Przygotowywanie lokalnej kopii pod ~/.vibecrafted/tools/vibecrafted-main',
+    '$ curl -fsSL https://vibecrafted.io/install.sh | bash',
+    '[bootstrap] Pobieranie install.sh...', 
+    '[bootstrap] Rozwiązywanie kanału main...', 
+    '[bootstrap] Weryfikacja integralności... SHA256 \u2713  Signature \u2713',
+    '[bootstrap] Przygotowywanie środowiska lokalnego w ~/.vibecrafted/',
     '',
-    '[bootstrap] Otwieranie instalatora w przeglądarce pod http://127.0.0.1:48217',
+    '[bootstrap] Uruchamianie instalatora...', 
     '',
-    '[przeglądarka] Witaj -> Wyjaśnienie -> Diagnostyka -> Lista kontrolna',
-    '[przeglądarka] Ten widok pozostaje tylko informacyjny, dopóki nie uruchomisz instalacji.',
-    '[przeglądarka] Uruchamianie instalacji',
-    '[przeglądarka] [etap] Bootstrap fundamentów',
-    '[przeglądarka] [etap] Instalacja Vibecrafted',
-    '[przeglądarka] Strumień prawdziwych komunikatów z instalatora...',
+    '[instalator] Witaj -> Wyjaśnienie -> Sprawdzenie -> Lista kontrolna',
+    '[instalator] Proces będzie kontynuowany w przeglądarce dla lepszej czytelności.',
+    '[instalator] Rozpoczynanie instalacji...', 
+    '[instalator] [etap] Konfiguracja fundamentów',
+    '[instalator] [etap] Instalacja Vibecrafted',
+    '[instalator] Tutaj będą pojawiać się komunikaty na żywo...', 
   ];
 
   const terminalSeedLines = $derived((lang === 'pl' ? TERM_PL : TERM_EN).slice(0, 8));
@@ -202,23 +202,23 @@
 
   const WELCOME_NOTES_EN = [
     {
-      label: 'Terminal only launches',
-      value: 'The bootstrap command prepares the local files and opens the installer in your browser.',
+      label: 'Terminal launch',
+      value: 'The bootstrap command prepares the local environment and hands over to the browser.',
     },
     {
-      label: 'Changes happen after consent',
-      value: 'The installer explains the plan first and asks right before making any real changes on your machine.',
+      label: 'Explicit consent',
+      value: 'The installer defines the exact plan and waits for your confirmation before modifying the system.',
     },
   ];
 
   const WELCOME_NOTES_PL = [
     {
-      label: 'Terminal tylko startuje',
-      value: 'Komenda bootstrapująca przygotowuje lokalną kopię i otwiera instalator w przeglądarce.',
+      label: 'Start w terminalu',
+      value: 'Komenda inicjująca przygotowuje środowisko i przekazuje sterowanie do przeglądarki.',
     },
     {
-      label: 'Zmiany dopiero po zgodzie',
-      value: 'Instalator najpierw pokazuje plan i pyta tuż przed tym, zanim cokolwiek zmieni na Twojej maszynie.',
+      label: 'Jawna zgoda',
+      value: 'Instalator definiuje plan działań i czeka na autoryzację przed modyfikacją systemu.',
     },
   ];
 
@@ -226,51 +226,51 @@
     steps: [
       {
         label: 'Welcome',
-        title: 'Browser installer',
+        title: 'Browser-based Installer',
         body: [
-          'The public entry point is the browser view. The terminal command only launches it.',
-          'The real installation and live output continue there instead of getting buried in shell logs.',
+          'The installation surfaces in the browser for better state visibility.',
+          'The terminal handles the underlying execution while this view tracks the progress.',
         ],
-        hint: 'Browser first. Same installer engine underneath.',
+        hint: 'Visual state tracking.',
       },
       {
         label: 'Inside',
-        title: 'What happens under the hood',
+        title: 'Installation manifest',
         body: [],
         items: dynamicPhases,
-        hint: 'One browser interface, one installation engine',
+        hint: 'Core framework components.',
       },
       {
         label: 'Check',
-        title: 'Your environment',
+        title: 'Environment verification',
         body: [
-          'The installer checks your system before starting any steps that modify your machine.',
-          'Missing optional tools are shown clearly, so you know what you might need before starting the install.',
+          'The system state is verified before execution.',
+          'Missing and available dependencies are mapped explicitly.',
         ],
         checks: dynamicChecks,
-        hint: 'Explain first, make changes later',
+        hint: 'No blind changes.',
       },
       {
         label: 'Install',
-        title: 'Run the installer',
+        title: 'Execute installation',
         body: [
-          'Use the startup command to open the local installer in your browser.',
-          'From there the process stays in the browser, shows live progress, and asks for confirmation right before making real changes.',
+          'The bootstrap command mounts the visual installer locally.',
+          'The execution requires final confirmation before altering the system.',
         ],
-        hint: 'The preview below shows the moment the browser takes over',
+        hint: 'Terminal bootstraps the UI.',
       },
       {
-        label: 'Go',
-        title: 'After the installation finishes',
+        label: 'Ready',
+        title: 'Framework deployed',
         body: [
-          'The command deck becomes available locally after the browser installation completes successfully. Start here:',
+          'The command deck is now available locally. Next steps:',
         ],
         commands: [
           { cmd: 'vibecrafted doctor', desc: 'Verify health' },
-          { cmd: 'vibecrafted init claude', desc: 'Bootstrap a session' },
-          { cmd: 'vibecrafted help', desc: 'See all commands' },
+          { cmd: 'vibecrafted init claude', desc: 'Bootstrap session' },
+          { cmd: 'vibecrafted help', desc: 'Command reference' },
         ],
-        hint: 'Start with doctor after the installation',
+        hint: 'The substrate is ready.',
       },
     ],
   };
@@ -279,51 +279,51 @@
     steps: [
       {
         label: 'Witaj',
-        title: 'Instalator w przeglądarce',
+        title: 'Widok instalatora',
         body: [
-          'Publicznym wejściem jest widok w przeglądarce. Komenda w terminalu tylko go uruchamia.',
-          'Prawdziwa instalacja i komunikaty na żywo lecą już tam, zamiast ginąć w scrollu shella.',
+          'Instalacja używa przeglądarki do przejrzystego śledzenia stanu.',
+          'Terminal wykonuje logikę bazową, podczas gdy ten widok monitoruje postęp.',
         ],
-        hint: 'Najpierw przeglądarka. Pod spodem ten sam silnik instalacji.',
+        hint: 'Wizualne śledzenie stanu.',
       },
       {
         label: 'Sk\u0142ad',
-        title: 'Co dzieje się pod spodem',
+        title: 'Manifest instalacji',
         body: [],
         items: dynamicPhases,
-        hint: 'Jedna powierzchnia w przeglądarce, jeden mechanizm instalacji',
+        hint: 'Główne komponenty frameworka.',
       },
       {
-        label: 'Wymagania',
-        title: 'Twoje \u015brodowisko',
+        label: 'Stan',
+        title: 'Weryfikacja \u015brodowiska',
         body: [
-          'Instalator w przeglądarce sprawdza stan Twojej maszyny zanim ruszą kroki zmieniające system.',
-          'Braki opcjonalnych narzędzi pokazuje jasno, żebyś wiedział, czego brakuje przed startem instalacji.',
+          'Stan systemu jest weryfikowany przed egzekucją.',
+          'Dostępne i brakujące zależności są mapowane jawnie.',
         ],
         checks: dynamicChecks,
-        hint: 'Najpierw wyjaśnienie, potem zmiany',
+        hint: 'Brak modyfikacji w ciemno.',
       },
       {
         label: 'Instaluj',
-        title: 'Uruchom instalator',
+        title: 'Egzekucja instalacji',
         body: [
-          'Użyj komendy bootstrapującej, żeby otworzyć lokalny widok instalatora w przeglądarce.',
-          'Od tego momentu instalacja zostaje w przeglądarce, pokazuje komunikaty na żywo i pyta dopiero tuż przed realnymi zmianami.',
+          'Komenda startowa montuje instalator lokalnie.',
+          'Proces wymaga ostatecznej autoryzacji przed modyfikacją systemu.',
         ],
-        hint: 'Podgląd poniżej pokazuje moment, w którym przeglądarka przejmuje instalację',
+        hint: 'Terminal inicjuje interfejs.',
       },
       {
-        label: 'Start',
-        title: 'Po zakończeniu instalacji',
+        label: 'Gotowe',
+        title: 'Framework wdro\u017cony',
         body: [
-          'Deck komend pojawi się lokalnie po czystym zakończeniu instalacji w przeglądarce. Zacznij tutaj:',
+          'Deck komend jest dostępny lokalnie. Kolejne kroki:',
         ],
         commands: [
-          { cmd: 'vibecrafted doctor', desc: 'Sprawd\u017a poprawno\u015b\u0107' },
-          { cmd: 'vibecrafted init claude', desc: 'Zainicjuj sesj\u0119' },
-          { cmd: 'vibecrafted help', desc: 'Wszystkie komendy' },
+          { cmd: 'vibecrafted doctor', desc: 'Weryfikacja stanu' },
+          { cmd: 'vibecrafted init claude', desc: 'Inicjalizacja sesji' },
+          { cmd: 'vibecrafted help', desc: 'Referencja komend' },
         ],
-        hint: 'Zacznij od doctor po instalacji',
+        hint: 'Środowisko jest gotowe.',
       },
     ],
   };
@@ -980,6 +980,43 @@
   }
 
   /* ---- Terminal sim ---- */
+  .wz-terminal {
+    padding: 1.25rem 1.5rem;
+    background: #0d0f14;
+    border: 1px solid rgba(184, 115, 51, 0.2);
+    border-radius: calc(var(--radius-md, 12px) + 1px);
+    font-family: var(--f-mono);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #e6edf3;
+    max-height: 20rem;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-copper) transparent;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+  .wz-term-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-bottom: 0.2rem;
+    animation: termIn 0.1s ease both;
+  }
+  @keyframes termIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .wz-cursor {
+    display: inline-block;
+    width: 0.5rem;
+    height: 1.1rem;
+    background: var(--c-copper-bright);
+    animation: blink 0.8s step-end infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
   .wz-terminal-shell {
     margin-top: 0.95rem;
   }
@@ -1000,56 +1037,25 @@
   }
   .wz-terminal-meta {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.85rem;
-    margin-bottom: 0.5rem;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    padding: 0 0.5rem;
   }
   .wz-terminal-kicker {
     font-family: var(--f-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.14em;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-copper-bright);
-    white-space: nowrap;
   }
   .wz-terminal-copy {
     margin: 0;
-    max-width: 46ch;
-    font-size: 0.78rem;
-    line-height: 1.55;
-    color: var(--c-text-dim);
-    text-align: right;
-  }
-  .wz-terminal {
-    padding: 1rem 1.05rem;
-    background: linear-gradient(180deg, rgba(13, 15, 18, 0.92), rgba(8, 9, 12, 0.98));
-    border: 1px solid var(--c-border);
-    border-radius: calc(var(--radius-md, 12px) + 1px);
-    font-family: var(--f-mono);
-    font-size: 0.78rem;
-    line-height: 1.62;
-    color: var(--c-text-dim);
-    max-height: 18rem;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--c-copper) transparent;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-  .wz-term-line {
-    white-space: pre;
-    animation: termIn 0.15s ease both;
-  }
-  @keyframes termIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  .wz-cursor {
-    animation: blink 0.8s step-end infinite;
-    color: var(--c-copper);
-  }
-  @keyframes blink {
-    50% { opacity: 0; }
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--c-text);
   }
 
   /* ---- Next commands (step 4) ---- */

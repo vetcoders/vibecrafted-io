@@ -361,7 +361,7 @@ START_HERE_FILE = "START_HERE.md"
 class InstallState:
     """Persisted installation state."""
 
-    version: str = "2.0"
+    version: str = "2.1"
     framework_version: str = ""
     installed_at: str = ""
     updated_at: str = ""
@@ -372,6 +372,8 @@ class InstallState:
     foundations: Dict[str, Dict] = field(default_factory=dict)
     shell_helpers: bool = False
     install_path: str = ""
+    launcher_entries: List[str] = field(default_factory=list)
+    helper_files: List[str] = field(default_factory=list)
 
     @classmethod
     def load(cls, store_path: Path) -> InstallState:
@@ -965,6 +967,7 @@ def create_backup(
     runtimes: List[str],
     bundle_names: List[str],
     orphaned_entries: Optional[List[Tuple[str, Path]]] = None,
+    launchers: Optional[List[str]] = None,
     dry_run: bool = False,
 ) -> Optional[str]:
     """Snapshot existing state before install. Returns backup timestamp or None."""
@@ -998,6 +1001,30 @@ def create_backup(
                 else:
                     dst.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copytree(entry, dst, symlinks=True)
+                anything_backed = True
+
+    # Back up launchers
+    if launchers:
+        for l_path_str in launchers:
+            src = Path(l_path_str)
+            if src.exists():
+                # We need a way to store the original absolute path to restore it
+                # For now we'll use a relative-to-root scheme in backup_dir
+                # or just mirror the full path under backup_dir/files/
+                dst = (
+                    backup_dir / "files" / src.relative_to(Path.home())
+                    if src.is_relative_to(Path.home())
+                    else backup_dir / "absolute" / str(src).lstrip("/")
+                )
+                if dry_run:
+                    print(f"  {dim('backup')} {src} -> {dst}")
+                else:
+                    dst.parent.mkdir(parents=True, exist_ok=True)
+                    if src.is_symlink():
+                        # Store as symlink
+                        dst.symlink_to(os.readlink(src))
+                    elif src.is_file():
+                        shutil.copy2(src, dst)
                 anything_backed = True
 
     # Back up orphaned vc-* entries before pruning so restore can bring them back.
@@ -2915,8 +2942,9 @@ def _cmd_install_verbose(args: argparse.Namespace, repo_root: Path) -> int:
     return 0
 
 
-def _install_launcher(repo_root: Path, dry_run: bool) -> None:
+def _install_launcher(repo_root: Path, dry_run: bool) -> List[str]:
     """Install vibecrafted launcher to portable and legacy bin surfaces."""
+    tracked: List[str] = []
     launcher_src = repo_root / "scripts" / "vibecrafted"
     if launcher_src.exists():
         if not dry_run:
@@ -2926,19 +2954,28 @@ def _install_launcher(repo_root: Path, dry_run: bool) -> None:
                 launcher_dst = launcher_bin_dir / "vibecrafted"
                 shutil.copy2(launcher_src, launcher_dst)
                 launcher_dst.chmod(0o755)
+                tracked.append(str(launcher_dst))
+
                 for wrapper in LAUNCHER_WRAPPERS:
-                    create_symlink(Path("vibecrafted"), launcher_bin_dir / wrapper)
+                    wrapper_path = launcher_bin_dir / wrapper
+                    create_symlink(Path("vibecrafted"), wrapper_path)
+                    tracked.append(str(wrapper_path))
+
                 # Replace legacy vibecraft binary with a thin redirect
                 legacy_dst = launcher_bin_dir / "vibecraft"
                 if legacy_redirect_src.exists():
                     shutil.copy2(legacy_redirect_src, legacy_dst)
                     legacy_dst.chmod(0o755)
+                    tracked.append(str(legacy_dst))
         else:
             for launcher_bin_dir in _launcher_bin_dirs():
+                tracked.append(str(launcher_bin_dir / "vibecrafted"))
                 for wrapper in LAUNCHER_WRAPPERS:
-                    create_symlink(
-                        Path("vibecrafted"), launcher_bin_dir / wrapper, dry_run=True
-                    )
+                    wrapper_path = launcher_bin_dir / wrapper
+                    create_symlink(Path("vibecrafted"), wrapper_path, dry_run=True)
+                    tracked.append(str(wrapper_path))
+                tracked.append(str(launcher_bin_dir / "vibecraft"))
+
         # Ensure $HOME/.local/bin is in PATH via shell rc files
         path_line = _launcher_path_line()
         path_comment = "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. launcher"
@@ -2956,7 +2993,7 @@ def _install_launcher(repo_root: Path, dry_run: bool) -> None:
                     changed = True
                 if changed and not dry_run:
                     rcfile.write_text(cleaned)
-        print()
+    return tracked
 
 
 def _print_unicode_summary(
@@ -3208,7 +3245,7 @@ def _cmd_install_compact(args: argparse.Namespace, repo_root: Path) -> int:
         _compact_line(out, green("\u2713"), "Store", store_display)
 
         # Launcher
-        _install_launcher(repo_root, dry_run)
+        launcher_files = _install_launcher(repo_root, dry_run)
 
         # Fix Gemini plan.directory if it points into .vibecrafted
         _configure_gemini_plans(dry_run)
@@ -3226,6 +3263,7 @@ def _cmd_install_compact(args: argparse.Namespace, repo_root: Path) -> int:
             foundations=installed_foundations,
             shell_helpers=install_shell,
             install_path=str(store_path),
+            launcher_entries=launcher_files,
         )
         if not dry_run:
             state.save(store_path)
@@ -3462,6 +3500,23 @@ def cmd_list(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 
 
+def _parse_manifest_launchers() -> List[str]:
+    """Heuristic to find existing launchers if manifest is missing."""
+    tracked: List[str] = []
+    # LAUNCHER_WRAPPERS is expected to be defined in global scope
+    wrappers = set(LAUNCHER_WRAPPERS) | {"vibecrafted", "vibecraft"}
+    for bin_dir in _launcher_bin_dirs():
+        if not bin_dir.exists():
+            continue
+        try:
+            for entry in bin_dir.iterdir():
+                if entry.name in wrappers or entry.name.startswith("vc-"):
+                    tracked.append(str(entry))
+        except PermissionError:
+            continue
+    return sorted(list(set(tracked)))
+
+
 def cmd_uninstall(args: argparse.Namespace) -> int:
     shared_home = vibecrafted_home()
     store_path = shared_home / "skills"
@@ -3477,30 +3532,50 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
         else [rt for rt in SYMLINK_TARGET_CHOICES if runtime_skills_dir(rt).exists()]
     )
 
+    # Launcher and helpers tracking
+    launchers = (
+        state.launcher_entries
+        if state.launcher_entries
+        else _parse_manifest_launchers()
+    )
+
     print(f"\n{bold('𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Uninstall')}\n")
 
-    if not skill_names:
-        print(dim("Nothing to uninstall — no manifest and no known skills found."))
+    if not skill_names and not launchers:
+        print(
+            dim(
+                "Nothing to uninstall — no manifest and no known skills/launchers found."
+            )
+        )
         return 0
 
     print(f"  Will remove {len(skill_names)} skills from:")
     print(f"    Store: {store_path}")
     for rt in runtimes:
         print(f"    Symlinks: $VIBECRAFTED_ROOT/.{rt}/skills/")
+
+    if launchers:
+        print(f"  Will remove {len(launchers)} launcher/bin entries:")
+        for launcher_item in launchers:
+            print(f"    {launcher_item}")
     print()
 
     if _IS_TTY and not dry_run:
-        if not ask_yn("Remove the installed 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bundle?", default=False):
+        if not ask_yn(
+            "Remove the installed 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bundle and launchers?", default=False
+        ):
             print("Uninstall cancelled.")
             return 0
         print()
 
     # Backup before removing
     print(bold("Saving current state..."))
-    backup_ts = create_backup(store_path, runtimes, skill_names, dry_run=dry_run)
+    backup_ts = create_backup(
+        store_path, runtimes, skill_names, launchers=launchers, dry_run=dry_run
+    )
     if backup_ts:
         print(f"  {OK} Backup saved: {_backup_root(store_path) / backup_ts}")
-        print(f"  {dim('Use `make restore` to undo this uninstall.')}")
+        print(f"  {dim('Use `vibecrafted restore` to undo this uninstall.')}")
     print()
 
     # Remove symlinks from per-runtime dirs
@@ -3521,6 +3596,19 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
                         shutil.rmtree(link)
                     print(f"  {dim('-')} {rt}/{name}")
     print()
+
+    # Remove launcher entries
+    if launchers:
+        print(bold("Removing launchers..."))
+        for l_path_str in launchers:
+            l_path = Path(l_path_str)
+            if l_path.exists() or l_path.is_symlink():
+                if dry_run:
+                    print(f"  {dim('rm')} {l_path}")
+                else:
+                    l_path.unlink()
+                    print(f"  {dim('-')} {l_path}")
+        print()
 
     # Remove skills from shared store
     print(bold("Removing shared skills..."))
@@ -3561,37 +3649,33 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
             if not rcfile.exists():
                 continue
             content = rcfile.read_text()
-            changed = False
+            cleaned = content
+            removed_total = 0
             for line, comment in source_entries:
-                if line not in content and (
-                    not comment or f"# {comment}" not in content
-                ):
-                    continue
-                if not _is_writable(rcfile):
-                    print(f"  {WARN} {rcfile} is locked — cannot remove source line")
-                    break
-                elif dry_run:
-                    print(f"  {dim('remove source line from')} {rcfile}")
-                else:
-                    content, removed = _strip_rc_entry(content, line, comment)
-                    changed = changed or removed > 0
-            if changed and not dry_run:
-                rcfile.write_text(content)
-                print(f"  {dim('-')} source line from {rcfile}")
-        print()
+                cleaned, removed = _strip_rc_entry(cleaned, line, comment)
+                removed_total += removed
 
-    # Remove manifest
-    state_file = store_path / STATE_FILE
-    if state_file.exists():
-        if dry_run:
-            print(f"  {dim('rm')} {state_file}")
-        else:
+            if removed_total > 0:
+                if dry_run:
+                    print(f"  {dim('would clean')} {removed_total} lines from {rcname}")
+                else:
+                    rcfile.write_text(cleaned)
+                    print(f"  {OK} Cleaned {rcname}")
+
+    if not dry_run:
+        # Clear manifest
+        state_file = store_path / STATE_FILE
+        if state_file.exists():
             state_file.unlink()
 
-    print(green(bold("Removed.")))
+        # Prune empty skills dir
+        if store_path.exists() and not any(store_path.iterdir()):
+            store_path.rmdir()
+
+    print(f"\n{green(OK)} Uninstall complete.")
     if backup_ts:
         print(dim(f"  Backup at: {_backup_root(store_path) / backup_ts}"))
-        print(dim("  Run 'make restore' to undo."))
+        print(dim("  Run 'vibecrafted restore' to undo."))
     print()
     return 0
 
@@ -3611,11 +3695,21 @@ def cmd_restore(args: argparse.Namespace) -> int:
 
     # Find latest backup
     latest_file = backup_root / "latest"
-    if not latest_file.exists():
-        print(red("No backup found. Nothing to restore."))
-        return 1
+    ts = ""
+    if latest_file.exists():
+        ts = latest_file.read_text().strip()
+    else:
+        # Fallback: check directories in backup_root
+        dirs = [
+            d
+            for d in backup_root.iterdir()
+            if d.is_dir() and d.name != "latest" and "_" in d.name
+        ]
+        if not dirs:
+            print(red("No backup found. Nothing to restore."))
+            return 1
+        ts = sorted([d.name for d in dirs])[-1]
 
-    ts = latest_file.read_text().strip()
     backup_dir = backup_root / ts
     if not backup_dir.is_dir():
         print(red(f"Backup directory not found: {backup_dir}"))
@@ -3663,12 +3757,48 @@ def cmd_restore(args: argparse.Namespace) -> int:
                 restored += 1
         print()
 
-    # Restore helpers
+    # Restore tracked home files
+    files_backup = backup_dir / "files"
+    if files_backup.is_dir():
+        print(bold("Restoring tracked files..."))
+        for root, dirs, files in os.walk(files_backup):
+            rel_root = Path(root).relative_to(files_backup)
+            for f in files:
+                src = Path(root) / f
+                dst = Path.home() / rel_root / f
+                if dry_run:
+                    print(f"  {dim('restore')} {dst}")
+                else:
+                    _restore_path_from_backup(src, dst)
+                    print(f"  {OK} {dst}")
+                restored += 1
+        print()
+
+    # Restore absolute files
+    abs_backup = backup_dir / "absolute"
+    if abs_backup.is_dir():
+        print(bold("Restoring absolute files..."))
+        for root, dirs, files in os.walk(abs_backup):
+            rel_root = Path(root).relative_to(abs_backup)
+            for f in files:
+                src = Path(root) / f
+                dst = Path("/") / rel_root / f
+                if dry_run:
+                    print(f"  {dim('restore')} {dst}")
+                else:
+                    try:
+                        _restore_path_from_backup(src, dst)
+                        print(f"  {OK} {dst}")
+                        restored += 1
+                    except PermissionError:
+                        print(f"  {red('FAIL')} {dst} (permission denied)")
+        print()
+
+    # Restore helpers (legacy)
     helper_backup = backup_dir / "helpers"
     if helper_backup.is_dir():
         print(bold("Restoring helpers..."))
         # Helper file
-        # Try new name first, then legacy
         backed_helper = helper_backup / "vc-skills.sh"
         if not backed_helper.exists():
             backed_helper = helper_backup / "vc-skills.zsh"
