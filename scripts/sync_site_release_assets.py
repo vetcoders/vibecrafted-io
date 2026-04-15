@@ -4,8 +4,12 @@ from __future__ import annotations
 import json
 import shlex
 import shutil
-import tomllib
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11
+    import tomli as tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUNDLE_ROOT = REPO_ROOT / "framework"
