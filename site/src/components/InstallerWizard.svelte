@@ -20,15 +20,16 @@
   const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash';
 
   const requiredCategories = ['toolchains', 'agents'];
+  const requiredCommands = ['loctree-mcp', 'aicx-mcp'];
   const dynamicChecks = (() => {
     const checks = [];
     const diags = manifest.diagnostics;
     if (diags && diags.categories) {
       for (const cat of diags.categories) {
         if (diags.commands && diags.commands[cat]) {
-          const isRequired = requiredCategories.includes(cat);
+          const catRequired = requiredCategories.includes(cat);
           for (const cmd of diags.commands[cat]) {
-            checks.push({ label: cmd, required: isRequired });
+            checks.push({ label: cmd, required: catRequired || requiredCommands.includes(cmd) });
           }
         }
       }

@@ -153,7 +153,14 @@ def test_install_sh_archive_install_runs_local_make_target(tmp_path: Path) -> No
     env["PYTHON_CAPTURE"] = str(python_capture)
 
     subprocess.run(
-        ["bash", str(INSTALL_SH), "--archive-file", str(archive_path), "install"],
+        [
+            "bash",
+            str(INSTALL_SH),
+            "--archive-file",
+            str(archive_path),
+            "--yes",
+            "install",
+        ],
         check=True,
         cwd=REPO_ROOT,
         env=env,
@@ -325,7 +332,14 @@ def test_install_sh_gui_bootstrap_runs_local_guided_installer(tmp_path: Path) ->
     env["MAKE_CAPTURE"] = str(make_capture)
 
     subprocess.run(
-        ["bash", str(INSTALL_SH), "--archive-file", str(archive_path), "--gui"],
+        [
+            "bash",
+            str(INSTALL_SH),
+            "--archive-file",
+            str(archive_path),
+            "--yes",
+            "--gui",
+        ],
         check=True,
         cwd=REPO_ROOT,
         env=env,
