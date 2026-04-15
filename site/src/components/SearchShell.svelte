@@ -15,6 +15,7 @@
   const dict = $derived(getTranslations(lang));
   let open = $state(false);
   let activeSection = $state<DocsSearchSection>(defaultSection);
+  let panelEl: HTMLElement | null = $state(null);
   const panelDuration = $derived(prefersReducedMotion.current ? 0 : 200);
   const triggerDuration = $derived(prefersReducedMotion.current ? 0 : 160);
 
@@ -39,6 +40,13 @@
     openSearch(customEvent.detail?.section ?? activeSection);
   }
 
+  function handlePointerDown(event: PointerEvent) {
+    if (!open || !panelEl) return;
+    if (!(event.target instanceof Node)) return;
+    if (panelEl.contains(event.target)) return;
+    closeSearch();
+  }
+
   $effect(() => {
     window.addEventListener('keydown', handleShortcut);
     window.addEventListener('vibecrafted:search-toggle', handleWindowEvent);
@@ -49,24 +57,19 @@
   });
 </script>
 
-<svelte:window onkeydown={(event) => open && event.key === 'Escape' && closeSearch()} />
+<svelte:window
+  onkeydown={(event) => open && event.key === 'Escape' && closeSearch()}
+  onpointerdown={handlePointerDown}
+/>
 
 <div class="search-shell" aria-label={dict.nav.search}>
   {#if open}
-    <button
-      class="search-shell__backdrop"
-      type="button"
-      aria-label={dict.nav.searchClose}
-      onclick={closeSearch}
-      in:fade={{ duration: panelDuration }}
-      out:fade={{ duration: panelDuration }}
-    ></button>
     <section
       class="search-shell__panel"
+      bind:this={panelEl}
       aria-label={dict.nav.search}
       in:fly={{ duration: panelDuration, y: 14 }}
       out:fade={{ duration: panelDuration }}
-      onclick={(event) => event.stopPropagation()}
     >
       <div class="search-shell__header">
         <div class="search-shell__title-group">
@@ -136,22 +139,8 @@
     pointer-events: none;
   }
 
-  .search-shell__backdrop {
-    position: fixed;
-    inset: 0;
-    border: 0;
-    background:
-      radial-gradient(circle at 22% 14%, rgba(225, 176, 116, 0.1), transparent 26%),
-      radial-gradient(circle at 84% 8%, rgba(163, 184, 199, 0.08), transparent 24%),
-      rgba(5, 7, 10, 0.72);
-    backdrop-filter: blur(14px) saturate(112%);
-    -webkit-backdrop-filter: blur(14px) saturate(112%);
-    pointer-events: auto;
-  }
-
   .search-shell__trigger,
-  .search-shell__panel,
-  .search-shell__backdrop {
+  .search-shell__panel {
     pointer-events: auto;
   }
 
@@ -209,25 +198,21 @@
   }
 
   .search-shell__panel {
-    position: fixed;
-    top: clamp(4rem, 8vh, 6rem);
-    left: max(0.75rem, calc(50% - 31rem));
-    right: max(0.75rem, calc(50% - 31rem));
-    width: auto;
-    max-height: min(82vh, 52rem);
+    width: min(100vw - 1.5rem, 34rem);
+    max-height: min(76vh, 40rem);
     overflow: auto;
     display: grid;
-    gap: 1rem;
-    padding: 1.2rem 1.25rem;
+    gap: 0.82rem;
+    padding: 0.92rem 1rem;
     border: 1px solid rgba(218, 197, 167, 0.16);
-    border-radius: 1.35rem;
+    border-radius: 1.1rem;
     background:
       radial-gradient(circle at top right, rgba(184, 115, 51, 0.12), transparent 28%),
       linear-gradient(180deg, rgba(18, 20, 24, 0.92), rgba(10, 12, 15, 0.9));
-    backdrop-filter: blur(20px) saturate(116%);
-    -webkit-backdrop-filter: blur(20px) saturate(116%);
+    backdrop-filter: blur(14px) saturate(110%);
+    -webkit-backdrop-filter: blur(14px) saturate(110%);
     box-shadow:
-      0 22px 52px rgba(0, 0, 0, 0.3),
+      0 20px 46px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
@@ -339,11 +324,9 @@
     }
 
     .search-shell__panel {
-      top: 0.8rem;
-      left: 0.5rem;
-      right: 0.5rem;
+      width: 100%;
       padding: 0.92rem;
-      max-height: calc(100dvh - 1.6rem);
+      max-height: min(72vh, 34rem);
       border-radius: 1rem;
     }
 
