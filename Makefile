@@ -150,6 +150,8 @@ site-dev:
 	@cd site && pnpm run dev --host
 
 site-build:
+	@echo "Installing site deps..."
+	@cd site && pnpm install --frozen-lockfile=false
 	@echo "Building static site..."
 	@cd site && pnpm run build
 

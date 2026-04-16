@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { reveal, type RevealOptions } from '../lib/actions/reveal';
 
   type RevealProps = RevealOptions &
     Record<string, unknown> & {
       tag?: string;
       class?: string;
+      children?: Snippet;
     };
 
   let {
@@ -15,6 +17,7 @@
     once = true,
     rootMargin = '0px 0px -8% 0px',
     threshold = 0.12,
+    children,
     ...restProps
   }: RevealProps = $props();
 </script>
@@ -25,7 +28,7 @@
   use:reveal={{ delay, disabled, once, rootMargin, threshold }}
   {...restProps}
 >
-  <slot />
+  {@render children?.()}
 </svelte:element>
 
 <style>
