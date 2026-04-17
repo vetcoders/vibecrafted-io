@@ -273,7 +273,12 @@ const primaryLinks = [
         </div>
     </footer>
 
-    <SearchShell client:load lang={lang} defaultSection={searchDefaultSection} />
+    <SearchShell
+        client:load
+        transition:persist="search-shell"
+        lang={lang}
+        defaultSection={searchDefaultSection}
+    />
 </body>
 </html>
 
