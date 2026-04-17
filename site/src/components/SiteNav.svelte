@@ -24,6 +24,7 @@
     searchLabel: string;
     menuLabel: string;
     closeLabel: string;
+    primaryNavLabel: string;
   }
 
   let {
@@ -38,6 +39,7 @@
     searchLabel,
     menuLabel,
     closeLabel,
+    primaryNavLabel,
   }: Props = $props();
 
   let mobileOpen = $state(false);
@@ -74,7 +76,7 @@
 <svelte:window bind:innerWidth={innerWidth} onkeydown={handleKeydown} />
 
 <div class="site-nav">
-  <nav aria-label="Primary" class="nav-links nav-links--desktop">
+  <nav aria-label={primaryNavLabel} class="nav-links nav-links--desktop">
     {#each links as link}
       <a
         class="nav-link"
@@ -142,7 +144,7 @@
       out:fade={{ duration: backdropDuration }}
     ></button>
     <nav
-      aria-label="Primary mobile"
+      aria-label={primaryNavLabel}
       class="nav-links nav-links--mobile"
       id="site-nav-mobile"
       in:fly={{ duration: panelDuration, y: -10 }}

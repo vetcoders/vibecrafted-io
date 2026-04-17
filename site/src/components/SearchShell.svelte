@@ -21,6 +21,9 @@
   let activeSection = $state<DocsSearchSection>(defaultSection);
   let activeIndex = $state(-1);
   let focused = $state(false);
+  let coarsePointer = $state(false);
+  let compactViewport = $state(false);
+  let shortcutLabel = $state('Ctrl K');
   let inputEl: HTMLInputElement | null = $state(null);
   let containerEl: HTMLElement | null = $state(null);
   let previousRouteKey = `${lang}:${defaultSection}`;
@@ -31,6 +34,8 @@
   const results = $derived(searchDocs(searchData.items, lang, query));
   const expanded = $derived(focused || hasQuery);
   const panelDuration = $derived(prefersReducedMotion.current ? 0 : 180);
+  const showShortcut = $derived(!coarsePointer && !compactViewport && query.length === 0);
+  const shortcutKeys = $derived(shortcutLabel === '⌘K' ? 'Meta+K' : 'Control+K');
 
   $effect(() => {
     const nextRouteKey = `${lang}:${defaultSection}`;
@@ -113,6 +118,24 @@
     if (containerEl.contains(event.target)) return;
     focused = false;
   }
+
+  $effect(() => {
+    const coarseMedia = window.matchMedia('(pointer: coarse)');
+    const compactMedia = window.matchMedia('(max-width: 560px)');
+    const updatePointerState = () => {
+      coarsePointer = coarseMedia.matches;
+      compactViewport = compactMedia.matches;
+      shortcutLabel = /Mac|iPhone|iPad|iPod/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
+    };
+
+    updatePointerState();
+    coarseMedia.addEventListener('change', updatePointerState);
+    compactMedia.addEventListener('change', updatePointerState);
+    return () => {
+      coarseMedia.removeEventListener('change', updatePointerState);
+      compactMedia.removeEventListener('change', updatePointerState);
+    };
+  });
 
   $effect(() => {
     window.addEventListener('keydown', handleShortcut);
@@ -206,6 +229,7 @@
       spellcheck="false"
       placeholder={searchData.placeholder}
       aria-label={dict.nav.search}
+      aria-keyshortcuts={showShortcut ? shortcutKeys : undefined}
       aria-expanded={expanded}
       aria-controls="search-shell-panel"
       onfocus={() => (focused = true)}
@@ -220,8 +244,8 @@
       >
         ×
       </button>
-    {:else}
-      <span class="search-shell__shortcut" aria-hidden="true">⌘K</span>
+    {:else if showShortcut}
+      <span class="search-shell__shortcut" aria-hidden="true">{shortcutLabel}</span>
     {/if}
   </div>
 </div>
