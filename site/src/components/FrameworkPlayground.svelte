@@ -1855,29 +1855,35 @@
     left: 0.75rem;
     right: 0.75rem;
     bottom: 0.75rem;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: flex-start;
-    gap: 0.6rem;
-    width: fit-content;
-    max-width: calc(100% - 1.5rem);
+    gap: 0.68rem;
+    width: auto;
     margin: 0;
-    padding: 0.58rem 0.78rem;
-    border: 1px solid rgba(163, 184, 199, 0.14);
-    border-radius: 0.5rem;
-    background: rgba(7, 9, 12, 0.72);
+    padding: 0.72rem 0.88rem 0.78rem;
+    border: 1px solid rgba(163, 184, 199, 0.16);
+    border-radius: 0.82rem;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 72%),
+      linear-gradient(180deg, rgba(7, 9, 12, 0.88), rgba(4, 5, 8, 0.76));
     color: var(--stone-light);
     font-family: var(--font-mono);
     font-size: 0.72rem;
     line-height: 1.4;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
-    z-index: 5;
+    backdrop-filter: blur(18px) saturate(118%);
+    -webkit-backdrop-filter: blur(18px) saturate(118%);
+    box-shadow:
+      0 18px 36px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    z-index: 6;
   }
 
   .framework-playground__prompt-mark {
+    display: inline-flex;
+    align-items: center;
     color: var(--steel-dark);
     flex-shrink: 0;
   }
@@ -1885,7 +1891,8 @@
   .framework-playground__prompt-command {
     min-width: 0;
     color: var(--stone-light);
-    white-space: pre-wrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
     word-break: break-word;
   }
 
@@ -1923,6 +1930,7 @@
     font-size: 0.76rem;
     line-height: 1.4;
     min-height: 2rem;
+    overflow-wrap: anywhere;
   }
 
   .framework-playground__alert-strip {
@@ -2355,6 +2363,11 @@
       left: 0.75rem;
       right: 0.75rem;
       width: auto;
+      bottom: 0.7rem;
+      padding: 0.64rem 0.72rem 0.68rem;
+      gap: 0.56rem;
+      font-size: 0.68rem;
+      line-height: 1.45;
     }
 
     .framework-playground__rail {
