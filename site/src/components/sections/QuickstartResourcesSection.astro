@@ -5,24 +5,13 @@ import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.quickstartResources;
-const basePath = lang === 'pl' ? '/pl' : '/en';
-const ui = {
-    reveal: lang === 'pl' ? 'Zobacz więcej' : 'See more',
-    pathLabel: lang === 'pl' ? 'Następny krok' : 'Next step',
-    pathLead:
-        lang === 'pl'
-            ? 'Kiedy quickstart już ma sens, skieruj się do warstwy wyjaśniającej.'
-            : 'Once quickstart makes sense, move into the explanatory layer.',
-    faq: 'FAQ',
-    foundation: lang === 'pl' ? 'Fundamenty' : 'Foundation',
-    overview: lang === 'pl' ? 'Przegląd' : 'Overview',
-    sourceLabel: lang === 'pl' ? 'Źródła kanoniczne' : 'Canonical sources',
-};
+const basePath = `/${lang}`;
+const nextStep = section.nextStep;
 
 const pathLinks = [
-    { href: `${basePath}/faq/`, label: ui.faq },
-    { href: `${basePath}/#foundation`, label: ui.foundation },
-    { href: `${basePath}/`, label: ui.overview },
+    { href: `${basePath}/faq/`, label: nextStep.faq },
+    { href: `${basePath}/#foundation`, label: nextStep.foundation },
+    { href: `${basePath}/`, label: nextStep.overview },
 ];
 ---
 <Reveal client:load tag="section" id="quickstart-resources">
@@ -34,15 +23,15 @@ const pathLinks = [
                     eyebrow={card.kicker}
                     title={card.title}
                     bodyHtml={card.items[0]}
-                    revealLabel={ui.reveal}
+                    revealLabel={section.reveal}
                     bullets={card.items.slice(1)}
                 />
             </div>
         ))}
     </div>
     <div class="surface-path">
-        <p class="surface-path__label">{ui.pathLabel}</p>
-        <p class="surface-path__lead">{ui.pathLead}</p>
+        <p class="surface-path__label">{nextStep.label}</p>
+        <p class="surface-path__lead">{nextStep.lead}</p>
         <div class="surface-path__links">
             {pathLinks.map((link) => (
                 <a href={link.href}>{link.label}</a>
@@ -50,7 +39,7 @@ const pathLinks = [
         </div>
     </div>
     <details class="source-layer">
-        <summary>{ui.sourceLabel}</summary>
+        <summary>{section.sourceLabel}</summary>
         <div class="source-layer__content">
             {section.links.map((link) => (
                 <a

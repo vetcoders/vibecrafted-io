@@ -4,29 +4,19 @@ import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.faqContent;
-const basePath = lang === 'pl' ? '/pl' : '/en';
-const ui = {
-    pathLabel: lang === 'pl' ? 'Ścieżka nauki' : 'Learning path',
-    pathLead:
-        lang === 'pl'
-            ? 'Najpierw ścieżka produktu, dopiero potem źródła.'
-            : 'Product path first, source material later.',
-    quickstart: lang === 'pl' ? 'Szybki start' : 'Quick Start',
-    foundation: lang === 'pl' ? 'Fundamenty' : 'Foundation',
-    overview: lang === 'pl' ? 'Przegląd' : 'Overview',
-    sourceLabel: lang === 'pl' ? 'Źródła kanoniczne' : 'Canonical sources',
-};
+const basePath = `/${lang}`;
+const learningPathCopy = section.learningPath;
 
 const learningPath = [
-    { href: `${basePath}/quickstart/`, label: ui.quickstart },
-    { href: `${basePath}/#foundation`, label: ui.foundation },
-    { href: `${basePath}/`, label: ui.overview },
+    { href: `${basePath}/quickstart/`, label: learningPathCopy.quickstart },
+    { href: `${basePath}/#foundation`, label: learningPathCopy.foundation },
+    { href: `${basePath}/`, label: learningPathCopy.overview },
 ];
 ---
 <Reveal client:load tag="section" id="faq-content">
     <div class="surface-path">
-        <p class="surface-path__label">{ui.pathLabel}</p>
-        <p class="surface-path__lead">{ui.pathLead}</p>
+        <p class="surface-path__label">{learningPathCopy.label}</p>
+        <p class="surface-path__lead">{learningPathCopy.lead}</p>
         <div class="surface-path__links">
             {learningPath.map((link) => (
                 <a href={link.href}>{link.label}</a>
@@ -53,7 +43,7 @@ const learningPath = [
     </div>
 
     <details class="source-layer">
-        <summary>{ui.sourceLabel}</summary>
+        <summary>{section.sourceLabel}</summary>
         <div class="source-layer__content">
             {section.links.map((link) => (
                 <a

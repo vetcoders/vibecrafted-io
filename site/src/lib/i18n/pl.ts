@@ -12,6 +12,7 @@ export const pl = {
     dou: "DoU",
     get: "Pobierz",
     search: "Szukaj dokumentacji",
+    searchAll: "Cała powierzchnia",
     searchClose: "Zamknij wyszukiwanie",
     install: "Instaluj",
     github: "GitHub",
@@ -105,6 +106,36 @@ flowchart LR
       label: "Fundamenty runtime",
       title: "Infrastruktura pod frameworkiem.",
       sub: "To są fundamenty, a nie skille: wzrok, pamięć, artefakty review i narracyjny dowód z runtime dla warstwy agentowej.",
+      learnPath: {
+        label: "Najpierw ucz się tutaj",
+        lead: "Najpierw zrozum powierzchnię produktu, dopiero potem schodź do źródeł.",
+        quickstart: "Szybki start",
+        faq: "FAQ",
+        framework: "Framework",
+      },
+      reveal: "Otwórz warstwę",
+      bullets: {
+        loctree: [
+          "Mapuje repozytorium zanim ktokolwiek zacznie je zmieniać.",
+          "Chroni przed ślepymi refaktorami i błędnym poczuciem pewności.",
+          "Używaj go, gdy ryzykiem jest struktura.",
+        ],
+        aicx: [
+          "Odzyskuje wcześniejsze decyzje, zamiary i kontekst.",
+          "Utrzymuje ciągłość pracy między sesjami.",
+          "Najbardziej przydatny przy zadaniach rozciągniętych w czasie.",
+        ],
+        prview: [
+          "Pakietuje review w trwałe findingi i czytelny gate.",
+          "Zamyka lukę między terminal dumpem a realnym artefaktem.",
+          "Używaj przed merge i przed release.",
+        ],
+        ScreenScribe: [
+          "Zamienia nagrania ekranu w ustrukturyzowane dowody.",
+          "Patrzy na to, co użytkownik naprawdę zobaczył.",
+          "Najlepszy, gdy trzeba zebrać dowód z runtime.",
+        ],
+      },
       cards: [
         {
           number: "01",
@@ -455,6 +486,15 @@ flowchart LR
       secondaryLabel: "Otwórz framework",
     },
     quickstartResources: {
+      reveal: "Zobacz więcej",
+      nextStep: {
+        label: "Następny krok",
+        lead: "Kiedy quickstart już ma sens, skieruj się do warstwy wyjaśniającej.",
+        faq: "FAQ",
+        foundation: "Fundamenty",
+        overview: "Przegląd",
+      },
+      sourceLabel: "Źródła kanoniczne",
       cards: [
         {
           kicker: "Czego potrzebujesz",
@@ -564,6 +604,14 @@ flowchart LR
       secondaryLabel: "Wróć do przeglądu",
     },
     faqContent: {
+      learningPath: {
+        label: "Ścieżka nauki",
+        lead: "Najpierw ścieżka produktu, dopiero potem źródła.",
+        quickstart: "Szybki start",
+        foundation: "Fundamenty",
+        overview: "Przegląd",
+      },
+      sourceLabel: "Źródła kanoniczne",
       groups: [
         {
           title: "Instalacja",
@@ -774,6 +822,186 @@ flowchart LR
           ],
         },
       ],
+    },
+    wizardLayout: {
+      defaultDescription:
+        "Prowadzony instalator silnika release'u Vibecrafted.",
+      closeInstaller: "Zamknij instalator",
+      closeInstallerShort: "Zamknij",
+    },
+    diffusionCanvas: {
+      boardLabel: "Plansza",
+      loopPrefix: "Pętla",
+    },
+    marbleCanvas: {
+      marbles: "Marbles",
+      converge: "Konwergencja",
+    },
+    installer: {
+      wizard: {
+        terminalKicker: "Podgląd instalacji",
+        terminalBody:
+          "Skrypt przygotowuje środowisko, a instalacja jest kontynuowana w przeglądarce.",
+        welcomeCta: "Pokaż jak to działa",
+        steps: {
+          labels: {
+            steps: "Kroki",
+            required: "wymagane",
+            optional: "opcjonalne",
+            previous: "Poprzedni krok",
+            next: "Następny krok",
+            quickStart: "Start",
+            stepAria: "krok",
+            ofAria: "z",
+          },
+        },
+        welcomeNotes: [
+          {
+            label: "Start w terminalu",
+            value:
+              "Komenda inicjująca przygotowuje środowisko i przekazuje sterowanie do przeglądarki.",
+          },
+          {
+            label: "Jawna zgoda",
+            value:
+              "Instalator definiuje plan działań i czeka na autoryzację przed modyfikacją systemu.",
+          },
+        ],
+        terminal: [
+          "$ curl -fsSL https://vibecrafted.io/install.sh | bash",
+          "[bootstrap] Pobieranie install.sh...",
+          "[bootstrap] Rozwiązywanie kanału main...",
+          "[bootstrap] Weryfikacja integralności... SHA256 \u2713  Signature \u2713",
+          "[bootstrap] Przygotowywanie środowiska lokalnego w ~/.vibecrafted/",
+          "",
+          "[bootstrap] Uruchamianie instalatora...",
+          "",
+          "[instalator] Witaj -> Wyjaśnienie -> Sprawdzenie -> Lista kontrolna",
+          "[instalator] Proces będzie kontynuowany w przeglądarce dla lepszej czytelności.",
+          "[instalator] Rozpoczynanie instalacji...",
+          "[instalator] [etap] Konfiguracja fundamentów",
+          "[instalator] [etap] Instalacja Vibecrafted",
+          "[instalator] Tutaj będą pojawiać się komunikaty na żywo...",
+        ],
+        pages: [
+          {
+            label: "Witaj",
+            title: "Widok instalatora",
+            body: [
+              "Instalacja używa przeglądarki do przejrzystego śledzenia stanu.",
+              "Terminal wykonuje logikę bazową, podczas gdy ten widok monitoruje postęp.",
+            ],
+            hint: "Wizualne śledzenie stanu.",
+          },
+          {
+            label: "Skład",
+            title: "Manifest instalacji",
+            body: [],
+            hint: "Główne komponenty frameworka.",
+          },
+          {
+            label: "Stan",
+            title: "Weryfikacja środowiska",
+            body: [
+              "Stan systemu jest weryfikowany przed egzekucją.",
+              "Dostępne i brakujące zależności są mapowane jawnie.",
+            ],
+            hint: "Brak modyfikacji w ciemno.",
+          },
+          {
+            label: "Instaluj",
+            title: "Egzekucja instalacji",
+            body: [
+              "Komenda startowa montuje instalator lokalnie.",
+              "Proces wymaga ostatecznej autoryzacji przed modyfikacją systemu.",
+            ],
+            hint: "Terminal inicjuje interfejs.",
+          },
+          {
+            label: "Gotowe",
+            title: "Framework wdrożony",
+            body: ["Deck komend jest dostępny lokalnie. Kolejne kroki:"],
+            hint: "Środowisko jest gotowe.",
+          },
+        ],
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Weryfikacja stanu" },
+          { cmd: "vibecrafted init claude", desc: "Inicjalizacja sesji" },
+          { cmd: "vibecrafted help", desc: "Referencja komend" },
+        ],
+      },
+      live: {
+        regionLabel: "Instalator Vibecrafted",
+        stepsAria: "Kroki",
+        brandFallback: "Vibecrafted.",
+        labels: {
+          welcome: "Start",
+          diagnostics: "Diagnostyka",
+          plan: "Plan",
+          consent: "Zgoda",
+          execute: "Instaluj",
+          ready: "Gotowe",
+        },
+        welcome: {
+          title: "Vibecrafted. instaluje się na Twojej maszynie",
+          leads: [
+            "Instalator działa lokalnie. Każdy krok jest jawny — żadnych cichych zmian.",
+            "Ta karta przeglądarki to panel sterowania. Terminal to silnik.",
+          ],
+          cta: "Zaczynamy",
+          componentsDetected: "komponenty wykryte",
+        },
+        diagnostics: {
+          title: "Co znaleziono",
+          present: "Obecne",
+          missing: "Brakujące",
+          empty:
+            "Nic jeszcze nie wykryto. Odśwież preflight jeśli to wygląda na błąd.",
+        },
+        plan: {
+          title: "Co się wydarzy",
+          empty: "Brak planu. Sprawdź źródła i spróbuj odświeżyć.",
+          stepLabel: "Krok",
+        },
+        consent: {
+          title: "Potwierdź instalację",
+          body: "Zaakceptuj, by uruchomić instalator. Nic nie wystartuje zanim klikniesz Zainstaluj.",
+          accept: "Zapoznałem się z planem i akceptuję",
+          withShell: "Zintegruj helpery shella (zalecane)",
+          cta: "Zainstaluj teraz",
+          again: "Instalacja już zakończona — możesz uruchomić ponownie.",
+          running: "Instalacja już trwa. Przejdź do kroku postępu.",
+        },
+        execute: {
+          title: "Trwa instalacja",
+          stage: "Aktualny etap",
+          waiting: "Czekam na pierwszą linię outputu…",
+        },
+        ready: {
+          titleOk: "Zainstalowano",
+          titleFail: "Instalacja nie zakończyła się czysto",
+          exit: "Kod wyjścia",
+          openGuide: "Otwórz START_HERE.md",
+          nextSteps: "Następne kroki",
+          reinstall: "Uruchom ponownie",
+        },
+        nav: {
+          back: "Wstecz",
+          next: "Dalej",
+          refresh: "Odśwież preflight",
+        },
+        status: {
+          loadingPreflight: "Ładuję preflight…",
+          loadFailed: "Preflight się nie powiódł",
+          notConnected:
+            "Lokalny instalator nieosiągalny. Uruchom komendę curl i zostaw terminal otwarty.",
+        },
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Weryfikacja stanu" },
+          { cmd: "vibecrafted init claude", desc: "Inicjalizacja sesji" },
+          { cmd: "vibecrafted help", desc: "Lista komend" },
+        ],
+      },
     },
   },
 } as const;

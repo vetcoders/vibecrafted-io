@@ -5,18 +5,8 @@ import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.foundation;
-const basePath = lang === 'pl' ? '/pl' : '/en';
-const ui = {
-    learnPath: lang === 'pl' ? 'Najpierw ucz się tutaj' : 'Learn here first',
-    learnPathLead:
-        lang === 'pl'
-            ? 'Najpierw zrozum powierzchnię produktu, dopiero potem schodź do źródeł.'
-            : 'Understand the product surface first, then move toward source material.',
-    quickstart: lang === 'pl' ? 'Szybki start' : 'Quick Start',
-    faq: 'FAQ',
-    framework: lang === 'pl' ? 'Framework' : 'Framework',
-    reveal: lang === 'pl' ? 'Otwórz warstwę' : 'Open layer',
-};
+const basePath = `/${lang}`;
+const ui = section.learnPath;
 
 const surfacePaths = [
     { href: `${basePath}/quickstart/`, label: ui.quickstart },
@@ -24,52 +14,7 @@ const surfacePaths = [
     { href: `${basePath}/framework/`, label: ui.framework },
 ];
 
-const foundationBullets: Record<string, string[]> = {
-    loctree: [
-        lang === 'pl'
-            ? 'Mapuje repozytorium zanim ktokolwiek zacznie je zmieniać.'
-            : 'Maps the repository before anyone starts changing it.',
-        lang === 'pl'
-            ? 'Chroni przed ślepymi refaktorami i błędnym poczuciem pewności.'
-            : 'Protects against blind refactors and false confidence.',
-        lang === 'pl'
-            ? 'Używaj go, gdy ryzykiem jest struktura.'
-            : 'Use it when structure is the risk.',
-    ],
-    aicx: [
-        lang === 'pl'
-            ? 'Odzyskuje wcześniejsze decyzje, zamiary i kontekst.'
-            : 'Retrieves prior decisions, intent, and context.',
-        lang === 'pl'
-            ? 'Utrzymuje ciągłość pracy między sesjami.'
-            : 'Keeps multi-session work coherent.',
-        lang === 'pl'
-            ? 'Najbardziej przydatny przy zadaniach rozciągniętych w czasie.'
-            : 'Most useful when the work stretches across days.',
-    ],
-    prview: [
-        lang === 'pl'
-            ? 'Pakietuje review w trwałe findingi i czytelny gate.'
-            : 'Packages review into durable findings and a readable gate.',
-        lang === 'pl'
-            ? 'Zamyka lukę między terminal dumpem a realnym artefaktem.'
-            : 'Closes the gap between terminal dump and a real artifact.',
-        lang === 'pl'
-            ? 'Używaj przed merge i przed release.'
-            : 'Use it before merge and before release.',
-    ],
-    ScreenScribe: [
-        lang === 'pl'
-            ? 'Zamienia nagrania ekranu w ustrukturyzowane dowody.'
-            : 'Turns screen recordings into structured evidence.',
-        lang === 'pl'
-            ? 'Patrzy na to, co użytkownik naprawdę zobaczył.'
-            : 'Looks at what the user actually saw.',
-        lang === 'pl'
-            ? 'Najlepszy, gdy trzeba zebrać dowód z runtime.'
-            : 'Best when runtime truth needs evidence.',
-    ],
-};
+const foundationBullets: Record<string, readonly string[]> = section.bullets;
 ---
 <section class="runtime-view" id="foundation">
     <Reveal client:load tag="div" class="container">
@@ -77,8 +22,8 @@ const foundationBullets: Record<string, string[]> = {
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
         <div class="surface-path">
-            <p class="surface-path__label">{ui.learnPath}</p>
-            <p class="surface-path__lead">{ui.learnPathLead}</p>
+            <p class="surface-path__label">{ui.label}</p>
+            <p class="surface-path__lead">{ui.lead}</p>
             <div class="surface-path__links">
                 {surfacePaths.map((link) => (
                     <a href={link.href}>{link.label}</a>
@@ -100,8 +45,8 @@ const foundationBullets: Record<string, string[]> = {
                     eyebrow={`${card.number} · ${card.role}`}
                     title={card.name}
                     bodyHtml={card.body}
-                    revealLabel={ui.reveal}
-                    bullets={foundationBullets[card.name] ?? []}
+                    revealLabel={section.reveal}
+                    bullets={[...(foundationBullets[card.name] ?? [])]}
                 />
             ))}
         </div>

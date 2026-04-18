@@ -2,13 +2,21 @@
   import { Tween, prefersReducedMotion } from 'svelte/motion';
   import CopyButton from './CopyButton.svelte';
   import importedManifest from '../lib/generated/install-manifest.json';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
-    lang?: 'en' | 'pl';
+    lang?: Lang;
     manifest?: any;
   }
 
   let { lang = 'en', manifest = importedManifest }: Props = $props();
+
+  const dict = $derived(getTranslations(lang));
+  const wizardCopy = $derived(dict.sections.installer.wizard);
+  const copyLabels = $derived(dict.copyButton);
+  const uiLabels = $derived(wizardCopy.steps.labels);
+  const welcomeNotes = $derived(wizardCopy.welcomeNotes);
+  const terminalLines = $derived(wizardCopy.terminal);
 
   const STEPS = 5;
   let currentStep = $state(0);
@@ -22,7 +30,7 @@
   const requiredCategories = ['toolchains', 'agents'];
   const requiredCommands = ['loctree-mcp', 'aicx-mcp'];
   const dynamicChecks = (() => {
-    const checks = [];
+    const checks: Array<{ label: string; required: boolean }> = [];
     const diags = manifest.diagnostics;
     if (diags && diags.categories) {
       for (const cat of diags.categories) {
@@ -38,69 +46,21 @@
   })();
 
   const phaseIcons = ['\u25C8', '\u21CB', '\u2318', '\u21B3'];
-  const dynamicPhases = (manifest.phases || []).map((p, idx) => ({
+  const dynamicPhases = (manifest.phases || []).map((p: { label: string; reason: string }, idx: number) => ({
     icon: phaseIcons[idx % phaseIcons.length],
     name: p.label,
-    desc: p.reason.split('\n')[0] || p.reason
+    desc: p.reason.split('\n')[0] || p.reason,
   }));
 
+  const pages = $derived(wizardCopy.pages);
+  const activePage = $derived(pages[currentStep]);
 
-  const content = $derived(lang === 'pl' ? PL : EN);
   const progressTween = Tween.of(() => (currentStep / (STEPS - 1)) * 100, {
     duration: prefersReducedMotion.current ? 0 : 280,
   });
   const counterTween = Tween.of(() => currentStep + 1, {
     duration: prefersReducedMotion.current ? 0 : 220,
   });
-  const copyLabels = $derived(
-    lang === 'pl'
-      ? {
-          default: 'Kopiuj',
-          copied: 'Skopiowano',
-          error: 'Błąd',
-          defaultAria: 'Kopiuj komendę',
-          copiedAria: 'Komenda skopiowana',
-          errorAria: 'Nie udało się skopiować komendy',
-        }
-      : {
-          default: 'Copy',
-          copied: 'Copied',
-          error: 'Error',
-          defaultAria: 'Copy command',
-          copiedAria: 'Command copied',
-          errorAria: 'Failed to copy command',
-        }
-  );
-  const uiLabels = $derived(
-    lang === 'pl'
-      ? {
-          steps: 'Kroki',
-          required: 'wymagane',
-          optional: 'opcjonalne',
-          previous: 'Poprzedni krok',
-          next: 'Następny krok',
-          quickStart: 'Start',
-          stepAria: 'krok',
-          ofAria: 'z',
-          terminalKicker: 'Podgląd instalacji',
-          terminalBody: 'Skrypt przygotowuje środowisko, a instalacja jest kontynuowana w przeglądarce.',
-          welcomeCta: 'Pokaż jak to działa',
-        }
-      : {
-          steps: 'Steps',
-          required: 'required',
-          optional: 'optional',
-          previous: 'Previous step',
-          next: 'Next step',
-          quickStart: 'Start',
-          stepAria: 'step',
-          ofAria: 'of',
-          terminalKicker: 'Install preview',
-          terminalBody: 'The script prepares the environment, and the installation continues in the browser.',
-          welcomeCta: 'See how it works',
-        }
-  );
-  const welcomeNotes = $derived(lang === 'pl' ? WELCOME_NOTES_PL : WELCOME_NOTES_EN);
 
   function goToStep(step: number) {
     if (step === currentStep || !slideVisible) return;
@@ -125,7 +85,7 @@
     if (termRunning) return;
     termRunning = true;
     termLines = [];
-    const lines = lang === 'pl' ? TERM_PL : TERM_EN;
+    const lines = terminalLines;
     let i = 0;
     const tick = () => {
       if (i < lines.length) {
@@ -164,182 +124,20 @@
     }
   }
 
-  const TERM_EN = [
-    '$ curl -fsSL https://vibecrafted.io/install.sh | bash',
-    '[bootstrap] Downloading install.sh...', 
-    '[bootstrap] Resolving channel main...', 
-    '[bootstrap] Verifying integrity... SHA256 \u2713  Signature \u2713',
-    '[bootstrap] Preparing local environment under ~/.vibecrafted/',
-    '',
-    '[bootstrap] Launching the installer...',
-    '',
-    '[installer] Welcome -> Explain -> Environment Check -> Checklist',
-    '[installer] The process continues in your browser for better visibility.',
-    '[installer] Starting installation...', 
-    '[installer] [stage] Setup foundations',
-    '[installer] [stage] Installing Vibecrafted',
-    '[installer] Real-time logs will appear here...', 
-  ];
-
-  const TERM_PL = [
-    '$ curl -fsSL https://vibecrafted.io/install.sh | bash',
-    '[bootstrap] Pobieranie install.sh...', 
-    '[bootstrap] Rozwiązywanie kanału main...', 
-    '[bootstrap] Weryfikacja integralności... SHA256 \u2713  Signature \u2713',
-    '[bootstrap] Przygotowywanie środowiska lokalnego w ~/.vibecrafted/',
-    '',
-    '[bootstrap] Uruchamianie instalatora...', 
-    '',
-    '[instalator] Witaj -> Wyjaśnienie -> Sprawdzenie -> Lista kontrolna',
-    '[instalator] Proces będzie kontynuowany w przeglądarce dla lepszej czytelności.',
-    '[instalator] Rozpoczynanie instalacji...', 
-    '[instalator] [etap] Konfiguracja fundamentów',
-    '[instalator] [etap] Instalacja Vibecrafted',
-    '[instalator] Tutaj będą pojawiać się komunikaty na żywo...', 
-  ];
-
-  const terminalSeedLines = $derived((lang === 'pl' ? TERM_PL : TERM_EN).slice(0, 8));
+  const terminalSeedLines = $derived(terminalLines.slice(0, 8));
   const terminalPreviewLines = $derived(termLines.length > 0 ? termLines : terminalSeedLines);
-
-  const WELCOME_NOTES_EN = [
-    {
-      label: 'Terminal launch',
-      value: 'The bootstrap command prepares the local environment and hands over to the browser.',
-    },
-    {
-      label: 'Explicit consent',
-      value: 'The installer defines the exact plan and waits for your confirmation before modifying the system.',
-    },
-  ];
-
-  const WELCOME_NOTES_PL = [
-    {
-      label: 'Start w terminalu',
-      value: 'Komenda inicjująca przygotowuje środowisko i przekazuje sterowanie do przeglądarki.',
-    },
-    {
-      label: 'Jawna zgoda',
-      value: 'Instalator definiuje plan działań i czeka na autoryzację przed modyfikacją systemu.',
-    },
-  ];
-
-  const EN = {
-    steps: [
-      {
-        label: 'Welcome',
-        title: 'Browser-based Installer',
-        body: [
-          'The installation surfaces in the browser for better state visibility.',
-          'The terminal handles the underlying execution while this view tracks the progress.',
-        ],
-        hint: 'Visual state tracking.',
-      },
-      {
-        label: 'Inside',
-        title: 'Installation manifest',
-        body: [],
-        items: dynamicPhases,
-        hint: 'Core framework components.',
-      },
-      {
-        label: 'Check',
-        title: 'Environment verification',
-        body: [
-          'The system state is verified before execution.',
-          'Missing and available dependencies are mapped explicitly.',
-        ],
-        checks: dynamicChecks,
-        hint: 'No blind changes.',
-      },
-      {
-        label: 'Install',
-        title: 'Execute installation',
-        body: [
-          'The bootstrap command mounts the visual installer locally.',
-          'The execution requires final confirmation before altering the system.',
-        ],
-        hint: 'Terminal bootstraps the UI.',
-      },
-      {
-        label: 'Ready',
-        title: 'Framework deployed',
-        body: [
-          'The command deck is now available locally. Next steps:',
-        ],
-        commands: [
-          { cmd: 'vibecrafted doctor', desc: 'Verify health' },
-          { cmd: 'vibecrafted init claude', desc: 'Bootstrap session' },
-          { cmd: 'vibecrafted help', desc: 'Command reference' },
-        ],
-        hint: 'The substrate is ready.',
-      },
-    ],
-  };
-
-  const PL = {
-    steps: [
-      {
-        label: 'Witaj',
-        title: 'Widok instalatora',
-        body: [
-          'Instalacja używa przeglądarki do przejrzystego śledzenia stanu.',
-          'Terminal wykonuje logikę bazową, podczas gdy ten widok monitoruje postęp.',
-        ],
-        hint: 'Wizualne śledzenie stanu.',
-      },
-      {
-        label: 'Sk\u0142ad',
-        title: 'Manifest instalacji',
-        body: [],
-        items: dynamicPhases,
-        hint: 'Główne komponenty frameworka.',
-      },
-      {
-        label: 'Stan',
-        title: 'Weryfikacja \u015brodowiska',
-        body: [
-          'Stan systemu jest weryfikowany przed egzekucją.',
-          'Dostępne i brakujące zależności są mapowane jawnie.',
-        ],
-        checks: dynamicChecks,
-        hint: 'Brak modyfikacji w ciemno.',
-      },
-      {
-        label: 'Instaluj',
-        title: 'Egzekucja instalacji',
-        body: [
-          'Komenda startowa montuje instalator lokalnie.',
-          'Proces wymaga ostatecznej autoryzacji przed modyfikacją systemu.',
-        ],
-        hint: 'Terminal inicjuje interfejs.',
-      },
-      {
-        label: 'Gotowe',
-        title: 'Framework wdro\u017cony',
-        body: [
-          'Deck komend jest dostępny lokalnie. Kolejne kroki:',
-        ],
-        commands: [
-          { cmd: 'vibecrafted doctor', desc: 'Weryfikacja stanu' },
-          { cmd: 'vibecrafted init claude', desc: 'Inicjalizacja sesji' },
-          { cmd: 'vibecrafted help', desc: 'Referencja komend' },
-        ],
-        hint: 'Środowisko jest gotowe.',
-      },
-    ],
-  };
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="wizard" role="region" aria-label={content.steps[currentStep]?.label}>
+<div class="wizard" role="region" aria-label={activePage?.label}>
   <!-- Progress -->
   <nav class="wz-progress" aria-label={uiLabels.steps}>
     <div class="wz-track">
       <div class="wz-track-fill" style={`width: ${progressTween.current}%`}></div>
     </div>
     <div class="wz-dots">
-      {#each content.steps as step, i}
+      {#each pages as step, i}
         <button
           class="wz-dot"
           class:active={i === currentStep}
@@ -375,8 +173,8 @@
       {#if currentStep === 0}
         <div class="wz-welcome-split">
           <div class="wz-welcome-main">
-            <h2 class="wz-title">{content.steps[0].title}</h2>
-            {#each content.steps[0].body as p}
+            <h2 class="wz-title">{pages[0].title}</h2>
+            {#each pages[0].body as p}
               <p class="wz-body">{p}</p>
             {/each}
             <div class="wz-welcome-notes">
@@ -388,20 +186,20 @@
               {/each}
             </div>
             <button class="wz-cta" onclick={next}>
-              {uiLabels.welcomeCta} <span class="wz-cta-arrow">&rarr;</span>
+              {wizardCopy.welcomeCta} <span class="wz-cta-arrow">&rarr;</span>
             </button>
           </div>
 
           <div class="wz-terminal-shell wz-terminal-shell--hero">
             <div class="wz-terminal-meta">
-              <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
-              <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
+              <span class="wz-terminal-kicker">{wizardCopy.terminalKicker}</span>
+              <p class="wz-terminal-copy">{wizardCopy.terminalBody}</p>
             </div>
             <div class="wz-terminal">
               {#each terminalPreviewLines as line}
                 <div class="wz-term-line">{line}</div>
               {/each}
-              {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+              {#if termLines.length < terminalLines.length}
                 <span class="wz-cursor">_</span>
               {/if}
             </div>
@@ -410,9 +208,9 @@
 
       <!-- Step 1: What's inside -->
       {:else if currentStep === 1}
-        <h2 class="wz-title">{content.steps[1].title}</h2>
+        <h2 class="wz-title">{pages[1].title}</h2>
         <div class="wz-grid">
-          {#each (content.steps[1] as any).items as item, idx}
+          {#each dynamicPhases as item, idx}
             <div class="wz-card" style="animation-delay: {idx * 60}ms">
               <span class="wz-card-icon">{item.icon}</span>
               <div>
@@ -425,12 +223,12 @@
 
       <!-- Step 2: Prerequisites -->
       {:else if currentStep === 2}
-        <h2 class="wz-title">{content.steps[2].title}</h2>
-        {#each content.steps[2].body as p}
+        <h2 class="wz-title">{pages[2].title}</h2>
+        {#each pages[2].body as p}
           <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-checks">
-          {#each (content.steps[2] as any).checks as check, idx}
+          {#each dynamicChecks as check, idx}
             <div class="wz-check" style="animation-delay: {idx * 40}ms">
               <span class="wz-badge" class:req={check.required} class:opt={!check.required}>
                 {check.required ? '\u25CF' : '\u25CB'}
@@ -445,20 +243,20 @@
 
       <!-- Step 3: Install command + terminal sim -->
       {:else if currentStep === 3}
-        <h2 class="wz-title">{content.steps[3].title}</h2>
-        {#each content.steps[3].body as p}
+        <h2 class="wz-title">{pages[3].title}</h2>
+        {#each pages[3].body as p}
           <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-terminal-shell wz-terminal-shell--primary">
           <div class="wz-terminal-meta">
-            <span class="wz-terminal-kicker">{uiLabels.terminalKicker}</span>
-            <p class="wz-terminal-copy">{uiLabels.terminalBody}</p>
+            <span class="wz-terminal-kicker">{wizardCopy.terminalKicker}</span>
+            <p class="wz-terminal-copy">{wizardCopy.terminalBody}</p>
           </div>
           <div class="wz-terminal">
             {#each terminalPreviewLines as line}
               <div class="wz-term-line">{line}</div>
             {/each}
-            {#if termLines.length < (lang === 'pl' ? TERM_PL.length : TERM_EN.length)}
+            {#if termLines.length < terminalLines.length}
               <span class="wz-cursor">_</span>
             {/if}
           </div>
@@ -482,12 +280,12 @@
 
       <!-- Step 4: Next steps -->
       {:else if currentStep === 4}
-        <h2 class="wz-title">{content.steps[4].title}</h2>
-        {#each content.steps[4].body as p}
+        <h2 class="wz-title">{pages[4].title}</h2>
+        {#each pages[4].body as p}
           <p class="wz-body">{p}</p>
         {/each}
         <div class="wz-next-cmds">
-          {#each (content.steps[4] as any).commands as cmd, idx}
+          {#each wizardCopy.nextCommands as cmd, idx}
             <div class="wz-next-cmd" style="animation-delay: {idx * 80}ms">
               <code class="wz-next-cmd-code">{cmd.cmd}</code>
               <span class="wz-next-cmd-desc">{cmd.desc}</span>
@@ -499,7 +297,7 @@
   </div>
 
   <!-- Hint -->
-  <p class="wz-hint">{content.steps[currentStep]?.hint}</p>
+  <p class="wz-hint">{activePage?.hint}</p>
 
   <!-- Navigation -->
   <nav class="wz-nav">
@@ -519,7 +317,7 @@
     {:else}
       <a
         class="wz-btn wz-btn-next wz-btn-done"
-        href={lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/'}
+        href={`/${lang}/quickstart/`}
       >
         {uiLabels.quickStart} &rarr;
       </a>

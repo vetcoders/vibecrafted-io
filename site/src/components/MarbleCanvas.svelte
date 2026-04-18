@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { getTranslations, type Lang } from '../lib/i18n';
+
   // ── Props ──────────────────────────────────────────────────────────
-  let { lang = 'en' } = $props<{ lang?: 'en' | 'pl' }>();
+  let { lang = 'en' } = $props<{ lang?: Lang }>();
 
   // ── Reactive DOM state ─────────────────────────────────────────────
   let marbleCount = $state(0);
@@ -11,11 +13,7 @@
   let reducedMotion = $state(false);
 
   // ── i18n labels (derived from prop, no DOM sniffing) ───────────────
-  let labels = $derived(
-    lang === 'pl'
-      ? { marbles: 'Marbles', converge: 'Konwergencja' }
-      : { marbles: 'Marbles', converge: 'Converge' }
-  );
+  let labels = $derived(getTranslations(lang).sections.marbleCanvas);
 
   // ═══════════════════════════════════════════════════════════════════
   // MARBLE FACTORY — sprite rendering (pure functions, no reactivity)

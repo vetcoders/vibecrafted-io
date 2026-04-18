@@ -7,9 +7,10 @@
     type PreflightPayload,
     type PreflightStatus,
   } from '../lib/installer/api';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
-    lang?: 'en' | 'pl';
+    lang?: Lang;
   }
 
   let { lang = 'en' }: Props = $props();
@@ -36,7 +37,7 @@
     duration: prefersReducedMotion.current ? 0 : 240,
   });
 
-  const L = $derived(lang === 'pl' ? LOCALE_PL : LOCALE_EN);
+  const L = $derived(getTranslations(lang).sections.installer.live);
 
   onMount(() => {
     void refreshPreflight();
@@ -131,135 +132,7 @@
     }
   });
 
-  const LOCALE_EN = {
-    labels: {
-      welcome: 'Welcome',
-      diagnostics: 'Diagnostics',
-      plan: 'Plan',
-      consent: 'Consent',
-      execute: 'Install',
-      ready: 'Ready',
-    },
-    welcome: {
-      title: 'Vibecrafted. is installing on your machine',
-      leads: [
-        'The installer is running locally. Every step is explicit — no silent changes.',
-        'This browser tab is the control surface. Your terminal is the engine.',
-      ],
-      cta: 'Begin',
-    },
-    diagnostics: {
-      title: 'What we found',
-      present: 'Present',
-      missing: 'Missing',
-      empty: 'Nothing detected yet. Run the preflight again if this looks wrong.',
-    },
-    plan: {
-      title: 'What will happen',
-      empty: 'No plan produced. Check the source tree and try refreshing.',
-      stepLabel: 'Step',
-    },
-    consent: {
-      title: 'Confirm installation',
-      body: 'Accept to let the installer run. Nothing runs before you click Install.',
-      accept: 'I reviewed the plan and accept',
-      withShell: 'Integrate shell helpers (recommended)',
-      cta: 'Install now',
-      again: 'Installation already completed — you can re-run it.',
-      running: 'Installation is already running. Switch to the progress step.',
-    },
-    execute: {
-      title: 'Running',
-      stage: 'Current stage',
-      waiting: 'Waiting for the first line of output…',
-    },
-    ready: {
-      titleOk: 'Installed',
-      titleFail: 'Installation did not finish cleanly',
-      exit: 'Exit code',
-      openGuide: 'Open START_HERE.md',
-      nextSteps: 'Next steps',
-      reinstall: 'Re-run installation',
-    },
-    nav: {
-      back: 'Back',
-      next: 'Next',
-      refresh: 'Refresh preflight',
-    },
-    status: {
-      loadingPreflight: 'Loading preflight…',
-      loadFailed: 'Preflight failed',
-      notConnected: 'Local installer not reachable. Run the curl install command and keep that terminal open.',
-    },
-  };
-
-  const LOCALE_PL = {
-    labels: {
-      welcome: 'Start',
-      diagnostics: 'Diagnostyka',
-      plan: 'Plan',
-      consent: 'Zgoda',
-      execute: 'Instaluj',
-      ready: 'Gotowe',
-    },
-    welcome: {
-      title: 'Vibecrafted. instaluje się na Twojej maszynie',
-      leads: [
-        'Instalator działa lokalnie. Każdy krok jest jawny — żadnych cichych zmian.',
-        'Ta karta przeglądarki to panel sterowania. Terminal to silnik.',
-      ],
-      cta: 'Zaczynamy',
-    },
-    diagnostics: {
-      title: 'Co znaleziono',
-      present: 'Obecne',
-      missing: 'Brakujące',
-      empty: 'Nic jeszcze nie wykryto. Odśwież preflight jeśli to wygląda na błąd.',
-    },
-    plan: {
-      title: 'Co się wydarzy',
-      empty: 'Brak planu. Sprawdź źródła i spróbuj odświeżyć.',
-      stepLabel: 'Krok',
-    },
-    consent: {
-      title: 'Potwierdź instalację',
-      body: 'Zaakceptuj, by uruchomić instalator. Nic nie wystartuje zanim klikniesz Zainstaluj.',
-      accept: 'Zapoznałem się z planem i akceptuję',
-      withShell: 'Zintegruj helpery shella (zalecane)',
-      cta: 'Zainstaluj teraz',
-      again: 'Instalacja już zakończona — możesz uruchomić ponownie.',
-      running: 'Instalacja już trwa. Przejdź do kroku postępu.',
-    },
-    execute: {
-      title: 'Trwa instalacja',
-      stage: 'Aktualny etap',
-      waiting: 'Czekam na pierwszą linię outputu…',
-    },
-    ready: {
-      titleOk: 'Zainstalowano',
-      titleFail: 'Instalacja nie zakończyła się czysto',
-      exit: 'Kod wyjścia',
-      openGuide: 'Otwórz START_HERE.md',
-      nextSteps: 'Następne kroki',
-      reinstall: 'Uruchom ponownie',
-    },
-    nav: {
-      back: 'Wstecz',
-      next: 'Dalej',
-      refresh: 'Odśwież preflight',
-    },
-    status: {
-      loadingPreflight: 'Ładuję preflight…',
-      loadFailed: 'Preflight się nie powiódł',
-      notConnected: 'Lokalny instalator nieosiągalny. Uruchom komendę curl i zostaw terminal otwarty.',
-    },
-  };
-
-  const nextCommands = [
-    { cmd: 'vibecrafted doctor', desc: lang === 'pl' ? 'Weryfikacja stanu' : 'Verify health' },
-    { cmd: 'vibecrafted init claude', desc: lang === 'pl' ? 'Inicjalizacja sesji' : 'Bootstrap session' },
-    { cmd: 'vibecrafted help', desc: lang === 'pl' ? 'Lista komend' : 'Command reference' },
-  ];
+  const nextCommands = $derived(L.nextCommands);
 
   const outputTail = $derived(status?.output ?? []);
   const planLabels = $derived(status?.plan_labels ?? []);
@@ -270,14 +143,14 @@
   const installCompleted = $derived(Boolean(status?.completed));
 </script>
 
-<div class="live-wizard" role="region" aria-label="Vibecrafted installer">
+<div class="live-wizard" role="region" aria-label={L.regionLabel}>
   <header class="lw-header">
     <div class="lw-brand">
       {#if preflight?.brand}
         <span class="lw-brand-product">{preflight.brand.product_line}</span>
         <span class="lw-brand-tagline">{preflight.brand.tagline}</span>
       {:else}
-        <span class="lw-brand-product">Vibecrafted.</span>
+        <span class="lw-brand-product">{L.brandFallback}</span>
       {/if}
     </div>
     {#if preflight}
@@ -288,7 +161,7 @@
     {/if}
   </header>
 
-  <nav class="lw-progress" aria-label="Steps">
+  <nav class="lw-progress" aria-label={L.stepsAria}>
     <div class="lw-track">
       <div class="lw-track-fill" style={`width: ${progressTween.current}%`}></div>
     </div>
@@ -325,7 +198,7 @@
           {:else if preflight}
             <span>
               <strong>{preflight.found_count}</strong> / {preflight.found_count + preflight.missing_count}
-              &nbsp;{lang === 'pl' ? 'komponenty wykryte' : 'components detected'}
+              &nbsp;{L.welcome.componentsDetected}
             </span>
           {/if}
         </div>

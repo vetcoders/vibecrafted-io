@@ -11,6 +11,7 @@ export const en = {
     dou: "DoU",
     get: "Get",
     search: "Search docs",
+    searchAll: "All surfaces",
     searchClose: "Close search",
     install: "Install",
     github: "GitHub",
@@ -103,6 +104,36 @@ flowchart LR
       label: "Runtime Foundations",
       title: "Infrastructure beneath the framework.",
       sub: "These are foundations, not skills: sight, memory, review artifacts, and narrated runtime evidence for the agent layer.",
+      learnPath: {
+        label: "Learn here first",
+        lead: "Understand the product surface first, then move toward source material.",
+        quickstart: "Quick Start",
+        faq: "FAQ",
+        framework: "Framework",
+      },
+      reveal: "Open layer",
+      bullets: {
+        loctree: [
+          "Maps the repository before anyone starts changing it.",
+          "Protects against blind refactors and false confidence.",
+          "Use it when structure is the risk.",
+        ],
+        aicx: [
+          "Retrieves prior decisions, intent, and context.",
+          "Keeps multi-session work coherent.",
+          "Most useful when the work stretches across days.",
+        ],
+        prview: [
+          "Packages review into durable findings and a readable gate.",
+          "Closes the gap between terminal dump and a real artifact.",
+          "Use it before merge and before release.",
+        ],
+        ScreenScribe: [
+          "Turns screen recordings into structured evidence.",
+          "Looks at what the user actually saw.",
+          "Best when runtime truth needs evidence.",
+        ],
+      },
       cards: [
         {
           number: "01",
@@ -452,6 +483,15 @@ flowchart LR
       secondaryLabel: "Open Framework",
     },
     quickstartResources: {
+      reveal: "See more",
+      nextStep: {
+        label: "Next step",
+        lead: "Once quickstart makes sense, move into the explanatory layer.",
+        faq: "FAQ",
+        foundation: "Foundation",
+        overview: "Overview",
+      },
+      sourceLabel: "Canonical sources",
       cards: [
         {
           kicker: "What you need",
@@ -561,6 +601,14 @@ flowchart LR
       secondaryLabel: "Back to Overview",
     },
     faqContent: {
+      learningPath: {
+        label: "Learning path",
+        lead: "Product path first, source material later.",
+        quickstart: "Quick Start",
+        foundation: "Foundation",
+        overview: "Overview",
+      },
+      sourceLabel: "Canonical sources",
       groups: [
         {
           title: "Installation",
@@ -775,6 +823,187 @@ flowchart LR
           ],
         },
       ],
+    },
+    wizardLayout: {
+      defaultDescription:
+        "Guided installer for the Vibecrafted release engine.",
+      closeInstaller: "Close installer",
+      closeInstallerShort: "Close",
+    },
+    diffusionCanvas: {
+      boardLabel: "Board",
+      loopPrefix: "Loop",
+    },
+    marbleCanvas: {
+      marbles: "Marbles",
+      converge: "Converge",
+    },
+    installer: {
+      wizard: {
+        terminalKicker: "Install preview",
+        terminalBody:
+          "The script prepares the environment, and the installation continues in the browser.",
+        welcomeCta: "See how it works",
+        steps: {
+          labels: {
+            steps: "Steps",
+            required: "required",
+            optional: "optional",
+            previous: "Previous step",
+            next: "Next step",
+            quickStart: "Start",
+            stepAria: "step",
+            ofAria: "of",
+          },
+        },
+        welcomeNotes: [
+          {
+            label: "Terminal launch",
+            value:
+              "The bootstrap command prepares the local environment and hands over to the browser.",
+          },
+          {
+            label: "Explicit consent",
+            value:
+              "The installer defines the exact plan and waits for your confirmation before modifying the system.",
+          },
+        ],
+        terminal: [
+          "$ curl -fsSL https://vibecrafted.io/install.sh | bash",
+          "[bootstrap] Downloading install.sh...",
+          "[bootstrap] Resolving channel main...",
+          "[bootstrap] Verifying integrity... SHA256 \u2713  Signature \u2713",
+          "[bootstrap] Preparing local environment under ~/.vibecrafted/",
+          "",
+          "[bootstrap] Launching the installer...",
+          "",
+          "[installer] Welcome -> Explain -> Environment Check -> Checklist",
+          "[installer] The process continues in your browser for better visibility.",
+          "[installer] Starting installation...",
+          "[installer] [stage] Setup foundations",
+          "[installer] [stage] Installing Vibecrafted",
+          "[installer] Real-time logs will appear here...",
+        ],
+        pages: [
+          {
+            label: "Welcome",
+            title: "Browser-based Installer",
+            body: [
+              "The installation surfaces in the browser for better state visibility.",
+              "The terminal handles the underlying execution while this view tracks the progress.",
+            ],
+            hint: "Visual state tracking.",
+          },
+          {
+            label: "Inside",
+            title: "Installation manifest",
+            body: [],
+            hint: "Core framework components.",
+          },
+          {
+            label: "Check",
+            title: "Environment verification",
+            body: [
+              "The system state is verified before execution.",
+              "Missing and available dependencies are mapped explicitly.",
+            ],
+            hint: "No blind changes.",
+          },
+          {
+            label: "Install",
+            title: "Execute installation",
+            body: [
+              "The bootstrap command mounts the visual installer locally.",
+              "The execution requires final confirmation before altering the system.",
+            ],
+            hint: "Terminal bootstraps the UI.",
+          },
+          {
+            label: "Ready",
+            title: "Framework deployed",
+            body: ["The command deck is now available locally. Next steps:"],
+            hint: "The substrate is ready.",
+          },
+        ],
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Verify health" },
+          { cmd: "vibecrafted init claude", desc: "Bootstrap session" },
+          { cmd: "vibecrafted help", desc: "Command reference" },
+        ],
+      },
+      live: {
+        regionLabel: "Vibecrafted installer",
+        stepsAria: "Steps",
+        brandFallback: "Vibecrafted.",
+        labels: {
+          welcome: "Welcome",
+          diagnostics: "Diagnostics",
+          plan: "Plan",
+          consent: "Consent",
+          execute: "Install",
+          ready: "Ready",
+        },
+        welcome: {
+          title: "Vibecrafted. is installing on your machine",
+          leads: [
+            "The installer is running locally. Every step is explicit — no silent changes.",
+            "This browser tab is the control surface. Your terminal is the engine.",
+          ],
+          cta: "Begin",
+          componentsDetected: "components detected",
+        },
+        diagnostics: {
+          title: "What we found",
+          present: "Present",
+          missing: "Missing",
+          empty:
+            "Nothing detected yet. Run the preflight again if this looks wrong.",
+        },
+        plan: {
+          title: "What will happen",
+          empty: "No plan produced. Check the source tree and try refreshing.",
+          stepLabel: "Step",
+        },
+        consent: {
+          title: "Confirm installation",
+          body: "Accept to let the installer run. Nothing runs before you click Install.",
+          accept: "I reviewed the plan and accept",
+          withShell: "Integrate shell helpers (recommended)",
+          cta: "Install now",
+          again: "Installation already completed — you can re-run it.",
+          running:
+            "Installation is already running. Switch to the progress step.",
+        },
+        execute: {
+          title: "Running",
+          stage: "Current stage",
+          waiting: "Waiting for the first line of output…",
+        },
+        ready: {
+          titleOk: "Installed",
+          titleFail: "Installation did not finish cleanly",
+          exit: "Exit code",
+          openGuide: "Open START_HERE.md",
+          nextSteps: "Next steps",
+          reinstall: "Re-run installation",
+        },
+        nav: {
+          back: "Back",
+          next: "Next",
+          refresh: "Refresh preflight",
+        },
+        status: {
+          loadingPreflight: "Loading preflight…",
+          loadFailed: "Preflight failed",
+          notConnected:
+            "Local installer not reachable. Run the curl install command and keep that terminal open.",
+        },
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Verify health" },
+          { cmd: "vibecrafted init claude", desc: "Bootstrap session" },
+          { cmd: "vibecrafted help", desc: "Command reference" },
+        ],
+      },
     },
   },
 } as const;

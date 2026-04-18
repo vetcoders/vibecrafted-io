@@ -11,11 +11,7 @@ interface Props {
   lang?: 'en' | 'pl';
 }
 
-const {
-  title,
-  description = 'Guided installer for the Vibecrafted release engine.',
-  lang = 'en',
-} = Astro.props;
+const { title, description, lang = 'en' } = Astro.props;
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
@@ -24,14 +20,17 @@ const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
 const dict = getTranslations(lang);
 const navLabels = dict.nav;
 const footer = dict.footer;
-const isPl = lang === 'pl';
-const homeHref = isPl ? '/pl/' : '/en/';
-const quickstartHref = isPl ? '/pl/quickstart/' : '/en/quickstart/';
-const faqHref = isPl ? '/pl/faq/' : '/en/faq/';
-const toggleHref = isPl ? '/en/install/' : '/pl/install/';
-const toggleLang = isPl ? 'en' : 'pl';
-const closeInstallerLabel = isPl ? 'Zamknij instalator' : 'Close installer';
-const closeInstallerShort = isPl ? 'Zamknij' : 'Close';
+const wizardLayoutCopy = dict.sections.wizardLayout;
+const resolvedDescription = description ?? wizardLayoutCopy.defaultDescription;
+const basePath = `/${lang}`;
+const otherLang = lang === 'pl' ? 'en' : 'pl';
+const homeHref = `${basePath}/`;
+const quickstartHref = `${basePath}/quickstart/`;
+const faqHref = `${basePath}/faq/`;
+const toggleHref = `/${otherLang}/install/`;
+const toggleLang = otherLang;
+const closeInstallerLabel = wizardLayoutCopy.closeInstaller;
+const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 ---
 
 <!DOCTYPE html>
@@ -41,9 +40,9 @@ const closeInstallerShort = isPl ? 'Zamknij' : 'Close';
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>{title}</title>
-    <meta content={description} name="description">
+    <meta content={resolvedDescription} name="description">
     <meta content={title} property="og:title">
-    <meta content={description} property="og:description">
+    <meta content={resolvedDescription} property="og:description">
     <meta content={ogImageUrl} property="og:image">
     <meta content="website" property="og:type">
     <meta content={canonicalUrl} property="og:url">
@@ -51,7 +50,7 @@ const closeInstallerShort = isPl ? 'Zamknij' : 'Close';
     <meta content={ogLocale} property="og:locale">
     <meta content="summary_large_image" name="twitter:card">
     <meta content={title} name="twitter:title">
-    <meta content={description} name="twitter:description">
+    <meta content={resolvedDescription} name="twitter:description">
     <meta content={ogImageUrl} name="twitter:image">
     <meta content="@VetCoders" name="twitter:site">
     <meta content="index,follow" name="robots">
