@@ -1,6 +1,6 @@
 ---
 import WizardLayout from '../../layouts/WizardLayout.astro';
-import InstallerWizard from '../../components/InstallerWizard.svelte';
+import InstallerShell from '../../components/InstallerShell.svelte';
 import installManifest from '../../lib/generated/install-manifest.json';
 ---
 
@@ -9,5 +9,5 @@ import installManifest from '../../lib/generated/install-manifest.json';
   description="Prowadzony instalator frameworka Vibecrafted. Przejdź przez wymagania, sprawdź plan i zbootstrapuj framework."
   lang="pl"
 >
-  <InstallerWizard client:load lang="pl" manifest={installManifest} />
+  <InstallerShell client:load lang="pl" manifest={installManifest} />
 </WizardLayout>

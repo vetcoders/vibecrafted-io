@@ -1,0 +1,966 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { Tween, prefersReducedMotion } from 'svelte/motion';
+  import { fade, fly } from 'svelte/transition';
+  import {
+    installerApi,
+    type PreflightPayload,
+    type PreflightStatus,
+  } from '../lib/installer/api';
+
+  interface Props {
+    lang?: 'en' | 'pl';
+  }
+
+  let { lang = 'en' }: Props = $props();
+
+  const STEPS = ['welcome', 'diagnostics', 'plan', 'consent', 'execute', 'ready'] as const;
+  type StepId = (typeof STEPS)[number];
+
+  let currentStep = $state<StepId>('welcome');
+  let preflight = $state<PreflightPayload | null>(null);
+  let preflightError = $state<string | null>(null);
+  let preflightLoading = $state(true);
+
+  let status = $state<PreflightStatus | null>(null);
+  let statusError = $state<string | null>(null);
+  let pollHandle: ReturnType<typeof setInterval> | null = null;
+
+  let accepted = $state(false);
+  let withShell = $state(true);
+  let startError = $state<string | null>(null);
+  let startInFlight = $state(false);
+
+  const stepIndex = $derived(STEPS.indexOf(currentStep));
+  const progressTween = Tween.of(() => (stepIndex / (STEPS.length - 1)) * 100, {
+    duration: prefersReducedMotion.current ? 0 : 240,
+  });
+
+  const L = $derived(lang === 'pl' ? LOCALE_PL : LOCALE_EN);
+
+  onMount(() => {
+    void refreshPreflight();
+    return () => stopPolling();
+  });
+
+  async function refreshPreflight() {
+    preflightLoading = true;
+    preflightError = null;
+    try {
+      preflight = await installerApi.preflight();
+      status = preflight.status;
+    } catch (err) {
+      preflightError = err instanceof Error ? err.message : String(err);
+    } finally {
+      preflightLoading = false;
+    }
+  }
+
+  function startPolling() {
+    if (pollHandle) return;
+    pollHandle = setInterval(async () => {
+      try {
+        status = await installerApi.status();
+        statusError = null;
+        if (status.completed) stopPolling();
+      } catch (err) {
+        statusError = err instanceof Error ? err.message : String(err);
+      }
+    }, 900);
+  }
+
+  function stopPolling() {
+    if (pollHandle) {
+      clearInterval(pollHandle);
+      pollHandle = null;
+    }
+  }
+
+  async function startInstall() {
+    startInFlight = true;
+    startError = null;
+    try {
+      const response = await installerApi.startInstall(withShell);
+      if (!response.ok) {
+        startError = response.message;
+        return;
+      }
+      currentStep = 'execute';
+      startPolling();
+    } catch (err) {
+      startError = err instanceof Error ? err.message : String(err);
+    } finally {
+      startInFlight = false;
+    }
+  }
+
+  async function openGuide() {
+    try {
+      await installerApi.openStartHere();
+    } catch (err) {
+      statusError = err instanceof Error ? err.message : String(err);
+    }
+  }
+
+  function goTo(step: StepId) {
+    currentStep = step;
+    if (step === 'ready' && status && !status.completed) {
+      startPolling();
+    }
+  }
+
+  function nextStep() {
+    const i = stepIndex;
+    if (i < STEPS.length - 1) currentStep = STEPS[i + 1];
+  }
+
+  function prevStep() {
+    const i = stepIndex;
+    if (i > 0) currentStep = STEPS[i - 1];
+  }
+
+  $effect(() => {
+    if (status?.completed && currentStep === 'execute') {
+      currentStep = 'ready';
+    }
+  });
+
+  $effect(() => {
+    if (currentStep === 'execute' && status && !status.completed && !pollHandle) {
+      startPolling();
+    }
+  });
+
+  const LOCALE_EN = {
+    labels: {
+      welcome: 'Welcome',
+      diagnostics: 'Diagnostics',
+      plan: 'Plan',
+      consent: 'Consent',
+      execute: 'Install',
+      ready: 'Ready',
+    },
+    welcome: {
+      title: 'Vibecrafted. is installing on your machine',
+      leads: [
+        'The installer is running locally. Every step is explicit — no silent changes.',
+        'This browser tab is the control surface. Your terminal is the engine.',
+      ],
+      cta: 'Begin',
+    },
+    diagnostics: {
+      title: 'What we found',
+      present: 'Present',
+      missing: 'Missing',
+      empty: 'Nothing detected yet. Run the preflight again if this looks wrong.',
+    },
+    plan: {
+      title: 'What will happen',
+      empty: 'No plan produced. Check the source tree and try refreshing.',
+      stepLabel: 'Step',
+    },
+    consent: {
+      title: 'Confirm installation',
+      body: 'Accept to let the installer run. Nothing runs before you click Install.',
+      accept: 'I reviewed the plan and accept',
+      withShell: 'Integrate shell helpers (recommended)',
+      cta: 'Install now',
+      again: 'Installation already completed — you can re-run it.',
+      running: 'Installation is already running. Switch to the progress step.',
+    },
+    execute: {
+      title: 'Running',
+      stage: 'Current stage',
+      waiting: 'Waiting for the first line of output…',
+    },
+    ready: {
+      titleOk: 'Installed',
+      titleFail: 'Installation did not finish cleanly',
+      exit: 'Exit code',
+      openGuide: 'Open START_HERE.md',
+      nextSteps: 'Next steps',
+      reinstall: 'Re-run installation',
+    },
+    nav: {
+      back: 'Back',
+      next: 'Next',
+      refresh: 'Refresh preflight',
+    },
+    status: {
+      loadingPreflight: 'Loading preflight…',
+      loadFailed: 'Preflight failed',
+      notConnected: 'Local installer not reachable. Run the curl install command and keep that terminal open.',
+    },
+  };
+
+  const LOCALE_PL = {
+    labels: {
+      welcome: 'Start',
+      diagnostics: 'Diagnostyka',
+      plan: 'Plan',
+      consent: 'Zgoda',
+      execute: 'Instaluj',
+      ready: 'Gotowe',
+    },
+    welcome: {
+      title: 'Vibecrafted. instaluje się na Twojej maszynie',
+      leads: [
+        'Instalator działa lokalnie. Każdy krok jest jawny — żadnych cichych zmian.',
+        'Ta karta przeglądarki to panel sterowania. Terminal to silnik.',
+      ],
+      cta: 'Zaczynamy',
+    },
+    diagnostics: {
+      title: 'Co znaleziono',
+      present: 'Obecne',
+      missing: 'Brakujące',
+      empty: 'Nic jeszcze nie wykryto. Odśwież preflight jeśli to wygląda na błąd.',
+    },
+    plan: {
+      title: 'Co się wydarzy',
+      empty: 'Brak planu. Sprawdź źródła i spróbuj odświeżyć.',
+      stepLabel: 'Krok',
+    },
+    consent: {
+      title: 'Potwierdź instalację',
+      body: 'Zaakceptuj, by uruchomić instalator. Nic nie wystartuje zanim klikniesz Zainstaluj.',
+      accept: 'Zapoznałem się z planem i akceptuję',
+      withShell: 'Zintegruj helpery shella (zalecane)',
+      cta: 'Zainstaluj teraz',
+      again: 'Instalacja już zakończona — możesz uruchomić ponownie.',
+      running: 'Instalacja już trwa. Przejdź do kroku postępu.',
+    },
+    execute: {
+      title: 'Trwa instalacja',
+      stage: 'Aktualny etap',
+      waiting: 'Czekam na pierwszą linię outputu…',
+    },
+    ready: {
+      titleOk: 'Zainstalowano',
+      titleFail: 'Instalacja nie zakończyła się czysto',
+      exit: 'Kod wyjścia',
+      openGuide: 'Otwórz START_HERE.md',
+      nextSteps: 'Następne kroki',
+      reinstall: 'Uruchom ponownie',
+    },
+    nav: {
+      back: 'Wstecz',
+      next: 'Dalej',
+      refresh: 'Odśwież preflight',
+    },
+    status: {
+      loadingPreflight: 'Ładuję preflight…',
+      loadFailed: 'Preflight się nie powiódł',
+      notConnected: 'Lokalny instalator nieosiągalny. Uruchom komendę curl i zostaw terminal otwarty.',
+    },
+  };
+
+  const nextCommands = [
+    { cmd: 'vibecrafted doctor', desc: lang === 'pl' ? 'Weryfikacja stanu' : 'Verify health' },
+    { cmd: 'vibecrafted init claude', desc: lang === 'pl' ? 'Inicjalizacja sesji' : 'Bootstrap session' },
+    { cmd: 'vibecrafted help', desc: lang === 'pl' ? 'Lista komend' : 'Command reference' },
+  ];
+
+  const outputTail = $derived(status?.output ?? []);
+  const planLabels = $derived(status?.plan_labels ?? []);
+  const currentStage = $derived(status?.current_stage ?? null);
+  const exitCode = $derived(status?.exit_code ?? null);
+  const installedOk = $derived(exitCode === 0);
+  const installRunning = $derived(Boolean(status?.running));
+  const installCompleted = $derived(Boolean(status?.completed));
+</script>
+
+<div class="live-wizard" role="region" aria-label="Vibecrafted installer">
+  <header class="lw-header">
+    <div class="lw-brand">
+      {#if preflight?.brand}
+        <span class="lw-brand-product">{preflight.brand.product_line}</span>
+        <span class="lw-brand-tagline">{preflight.brand.tagline}</span>
+      {:else}
+        <span class="lw-brand-product">Vibecrafted.</span>
+      {/if}
+    </div>
+    {#if preflight}
+      <div class="lw-meta">
+        <span class="lw-meta-item"><span class="lw-meta-label">v</span>{preflight.version}</span>
+        <span class="lw-meta-item">{preflight.source_dir_display}</span>
+      </div>
+    {/if}
+  </header>
+
+  <nav class="lw-progress" aria-label="Steps">
+    <div class="lw-track">
+      <div class="lw-track-fill" style={`width: ${progressTween.current}%`}></div>
+    </div>
+    <ol class="lw-steps">
+      {#each STEPS as step, i}
+        <li>
+          <button
+            class="lw-step"
+            class:active={step === currentStep}
+            class:done={i < stepIndex}
+            onclick={() => goTo(step)}
+            aria-current={step === currentStep ? 'step' : undefined}
+          >
+            <span class="lw-step-pip"></span>
+            <span class="lw-step-label">{L.labels[step]}</span>
+          </button>
+        </li>
+      {/each}
+    </ol>
+  </nav>
+
+  <div class="lw-stage">
+    {#if currentStep === 'welcome'}
+      <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.welcome.title}</h2>
+        {#each L.welcome.leads as lead}
+          <p class="lw-lead">{lead}</p>
+        {/each}
+        <div class="lw-welcome-stat">
+          {#if preflightLoading}
+            <span class="lw-muted">{L.status.loadingPreflight}</span>
+          {:else if preflightError}
+            <span class="lw-error">{L.status.loadFailed}: {preflightError}</span>
+          {:else if preflight}
+            <span>
+              <strong>{preflight.found_count}</strong> / {preflight.found_count + preflight.missing_count}
+              &nbsp;{lang === 'pl' ? 'komponenty wykryte' : 'components detected'}
+            </span>
+          {/if}
+        </div>
+        <button class="lw-cta" onclick={nextStep} disabled={preflightLoading || !preflight}>
+          {L.welcome.cta} &rarr;
+        </button>
+      </section>
+    {:else if currentStep === 'diagnostics'}
+      <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.diagnostics.title}</h2>
+        {#if preflight && preflight.categories.length > 0}
+          <div class="lw-cats">
+            {#each preflight.categories as cat}
+              <article class="lw-cat">
+                <header>
+                  <strong>{cat.label}</strong>
+                  <span class="lw-count">{cat.present}/{cat.total}</span>
+                </header>
+                <ul>
+                  {#each cat.items as item}
+                    <li class:found={item.found} class:missing={!item.found}>
+                      <span class="lw-dot" aria-hidden="true"></span>
+                      <span class="lw-name">{item.label}</span>
+                      {#if item.detail}
+                        <span class="lw-detail">{item.detail}</span>
+                      {/if}
+                    </li>
+                  {/each}
+                </ul>
+              </article>
+            {/each}
+          </div>
+        {:else}
+          <p class="lw-muted">{L.diagnostics.empty}</p>
+        {/if}
+      </section>
+    {:else if currentStep === 'plan'}
+      <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.plan.title}</h2>
+        {#if preflight && preflight.install_plan.length > 0}
+          <ol class="lw-plan">
+            {#each preflight.install_plan as step, idx}
+              <li>
+                <span class="lw-plan-idx">{L.plan.stepLabel} {idx + 1}</span>
+                <div class="lw-plan-body">
+                  <strong>{step.label}</strong>
+                  <code>{step.command}</code>
+                </div>
+              </li>
+            {/each}
+          </ol>
+        {:else}
+          <p class="lw-muted">{L.plan.empty}</p>
+        {/if}
+      </section>
+    {:else if currentStep === 'consent'}
+      <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.consent.title}</h2>
+        <p class="lw-lead">{L.consent.body}</p>
+        <label class="lw-check">
+          <input type="checkbox" bind:checked={accepted} />
+          <span>{L.consent.accept}</span>
+        </label>
+        <label class="lw-check">
+          <input type="checkbox" bind:checked={withShell} />
+          <span>{L.consent.withShell}</span>
+        </label>
+        {#if installCompleted}
+          <p class="lw-muted">{L.consent.again}</p>
+        {:else if installRunning}
+          <p class="lw-muted">{L.consent.running}</p>
+        {/if}
+        {#if startError}
+          <p class="lw-error">{startError}</p>
+        {/if}
+        <button
+          class="lw-cta"
+          onclick={startInstall}
+          disabled={!accepted || startInFlight || installRunning}
+        >
+          {L.consent.cta} &rarr;
+        </button>
+      </section>
+    {:else if currentStep === 'execute'}
+      <section class="lw-panel lw-panel--execute" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.execute.title}</h2>
+        <div class="lw-stage-line">
+          <span class="lw-stage-label">{L.execute.stage}</span>
+          <span class="lw-stage-value">{currentStage ?? '…'}</span>
+        </div>
+        {#if planLabels.length > 0}
+          <ol class="lw-plan-compact">
+            {#each planLabels as label}
+              <li class:active={label === currentStage}>{label}</li>
+            {/each}
+          </ol>
+        {/if}
+        <pre class="lw-output" aria-live="polite">{outputTail.length > 0 ? outputTail.join('\n') : L.execute.waiting}</pre>
+        {#if statusError}
+          <p class="lw-error">{statusError}</p>
+        {/if}
+      </section>
+    {:else if currentStep === 'ready'}
+      <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{installedOk ? L.ready.titleOk : L.ready.titleFail}</h2>
+        <div class="lw-stage-line">
+          <span class="lw-stage-label">{L.ready.exit}</span>
+          <span class="lw-stage-value">{exitCode ?? '—'}</span>
+        </div>
+        {#if status?.error}
+          <p class="lw-error">{status.error}</p>
+        {/if}
+        <pre class="lw-output lw-output--compact">{outputTail.slice(-40).join('\n')}</pre>
+        <div class="lw-ready-actions">
+          <button class="lw-cta" onclick={openGuide}>{L.ready.openGuide}</button>
+          <button class="lw-btn lw-btn--ghost" onclick={() => goTo('consent')}>{L.ready.reinstall}</button>
+        </div>
+        <div class="lw-next">
+          <span class="lw-next-label">{L.ready.nextSteps}</span>
+          <ul>
+            {#each nextCommands as cmd}
+              <li>
+                <code>{cmd.cmd}</code>
+                <span>{cmd.desc}</span>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      </section>
+    {/if}
+  </div>
+
+  <nav class="lw-nav">
+    <button class="lw-btn" onclick={prevStep} disabled={stepIndex === 0}>&larr; {L.nav.back}</button>
+    <button class="lw-btn lw-btn--ghost" onclick={refreshPreflight} disabled={preflightLoading}>
+      {L.nav.refresh}
+    </button>
+    {#if currentStep !== 'ready' && currentStep !== 'execute'}
+      <button class="lw-btn" onclick={nextStep} disabled={!preflight}>
+        {L.nav.next} &rarr;
+      </button>
+    {/if}
+  </nav>
+</div>
+
+<style>
+  .live-wizard {
+    --lw-copper: var(--copper, #b87333);
+    --lw-copper-bright: var(--copper-bright, #d4905c);
+    --lw-surface: var(--glass-panel-bg, rgba(14, 16, 20, 0.86));
+    --lw-border: var(--glass-panel-border, rgba(218, 197, 167, 0.18));
+    --lw-text: rgba(243, 241, 236, 0.94);
+    --lw-text-dim: rgba(209, 216, 224, 0.78);
+    --lw-error: rgba(255, 107, 107, 0.9);
+    --lw-mono: var(--font-mono, 'JetBrains Mono', monospace);
+    --lw-sans: var(--font-head, 'Poppins', -apple-system, sans-serif);
+
+    width: min(64rem, 100%);
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.6rem);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.9rem, 1.4vw, 1.25rem);
+    font-family: var(--lw-sans);
+    color: var(--lw-text);
+  }
+
+  .lw-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .lw-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .lw-brand-product {
+    font-family: var(--lw-mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-brand-tagline {
+    font-size: 0.85rem;
+    color: var(--lw-text-dim);
+    max-width: 32rem;
+  }
+
+  .lw-meta {
+    display: inline-flex;
+    gap: 0.75rem;
+    font-family: var(--lw-mono);
+    font-size: 0.7rem;
+    color: var(--lw-text-dim);
+  }
+
+  .lw-meta-item {
+    display: inline-flex;
+    gap: 0.3rem;
+  }
+
+  .lw-meta-label {
+    opacity: 0.7;
+  }
+
+  .lw-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .lw-track {
+    height: 2px;
+    background: rgba(218, 197, 167, 0.14);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .lw-track-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--lw-copper), var(--lw-copper-bright));
+    transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .lw-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .lw-step {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.4rem;
+    border: none;
+    background: transparent;
+    color: var(--lw-text-dim);
+    font-family: var(--lw-mono);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .lw-step-pip {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: rgba(218, 197, 167, 0.2);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .lw-step.active .lw-step-pip {
+    background: var(--lw-copper-bright);
+    transform: scale(1.15);
+  }
+
+  .lw-step.done .lw-step-pip {
+    background: var(--lw-copper);
+  }
+
+  .lw-step.active {
+    color: var(--lw-text);
+  }
+
+  .lw-stage {
+    display: flex;
+    flex-direction: column;
+    min-height: 22rem;
+  }
+
+  .lw-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: clamp(1rem, 1.8vw, 1.5rem) clamp(1rem, 1.8vw, 1.5rem);
+    border: 1px solid var(--lw-border);
+    border-radius: 1.1rem;
+    background: var(--lw-surface);
+    backdrop-filter: blur(18px) saturate(118%);
+    -webkit-backdrop-filter: blur(18px) saturate(118%);
+  }
+
+  .lw-title {
+    margin: 0;
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .lw-lead {
+    margin: 0;
+    color: var(--lw-text-dim);
+    line-height: 1.55;
+  }
+
+  .lw-welcome-stat {
+    display: flex;
+    font-family: var(--lw-mono);
+    font-size: 0.8rem;
+  }
+
+  .lw-muted {
+    color: var(--lw-text-dim);
+    font-family: var(--lw-mono);
+    font-size: 0.78rem;
+  }
+
+  .lw-error {
+    color: var(--lw-error);
+    font-family: var(--lw-mono);
+    font-size: 0.78rem;
+  }
+
+  .lw-cta {
+    align-self: flex-start;
+    padding: 0.65rem 1.1rem;
+    border: 1px solid var(--lw-copper);
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(184, 115, 51, 0.24), rgba(184, 115, 51, 0.08));
+    color: var(--lw-text);
+    font-family: var(--lw-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .lw-cta:hover:not(:disabled),
+  .lw-cta:focus-visible:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(184, 115, 51, 0.18);
+  }
+
+  .lw-cta:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .lw-cats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 0.75rem;
+  }
+
+  .lw-cat {
+    padding: 0.85rem;
+    border: 1px solid var(--lw-border);
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .lw-cat header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+    font-family: var(--lw-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .lw-cat ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+    font-family: var(--lw-mono);
+    font-size: 0.7rem;
+  }
+
+  .lw-cat li {
+    display: grid;
+    grid-template-columns: 0.6rem 1fr auto;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .lw-cat .lw-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: rgba(218, 197, 167, 0.2);
+  }
+
+  .lw-cat li.found .lw-dot {
+    background: var(--lw-copper-bright);
+  }
+
+  .lw-cat li.missing .lw-dot {
+    background: rgba(255, 107, 107, 0.7);
+  }
+
+  .lw-cat .lw-name {
+    color: var(--lw-text);
+  }
+
+  .lw-cat .lw-detail {
+    font-size: 0.62rem;
+    color: var(--lw-text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 10rem;
+  }
+
+  .lw-count {
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-plan {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .lw-plan li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.7rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--lw-border);
+    border-radius: 0.7rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .lw-plan-idx {
+    font-family: var(--lw-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-plan-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .lw-plan-body code {
+    font-family: var(--lw-mono);
+    font-size: 0.72rem;
+    color: var(--lw-text-dim);
+    word-break: break-all;
+  }
+
+  .lw-check {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .lw-check input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--lw-copper);
+  }
+
+  .lw-stage-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--lw-mono);
+    font-size: 0.78rem;
+  }
+
+  .lw-stage-label {
+    color: var(--lw-text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+  }
+
+  .lw-stage-value {
+    color: var(--lw-copper-bright);
+    font-weight: 600;
+  }
+
+  .lw-plan-compact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-family: var(--lw-mono);
+    font-size: 0.66rem;
+  }
+
+  .lw-plan-compact li {
+    padding: 0.28rem 0.55rem;
+    border: 1px solid var(--lw-border);
+    border-radius: 999px;
+    color: var(--lw-text-dim);
+  }
+
+  .lw-plan-compact li.active {
+    color: var(--lw-text);
+    background: rgba(184, 115, 51, 0.14);
+    border-color: var(--lw-copper);
+  }
+
+  .lw-output {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--lw-border);
+    border-radius: 0.7rem;
+    background: rgba(0, 0, 0, 0.42);
+    font-family: var(--lw-mono);
+    font-size: 0.74rem;
+    line-height: 1.5;
+    color: rgba(232, 236, 242, 0.86);
+    max-height: 22rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .lw-output--compact {
+    max-height: 14rem;
+  }
+
+  .lw-ready-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lw-next {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .lw-next-label {
+    font-family: var(--lw-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-next ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .lw-next li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.8rem;
+    align-items: baseline;
+    font-family: var(--lw-mono);
+    font-size: 0.74rem;
+  }
+
+  .lw-next code {
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-next li span {
+    color: var(--lw-text-dim);
+  }
+
+  .lw-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .lw-btn {
+    padding: 0.55rem 1rem;
+    border: 1px solid var(--lw-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--lw-text);
+    font-family: var(--lw-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .lw-btn:hover:not(:disabled),
+  .lw-btn:focus-visible:not(:disabled) {
+    border-color: var(--lw-copper);
+    transform: translateY(-1px);
+  }
+
+  .lw-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .lw-btn--ghost {
+    background: transparent;
+  }
+
+  @media (max-width: 720px) {
+    .lw-steps {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+    }
+
+    .lw-step {
+      flex-shrink: 0;
+    }
+  }
+</style>
