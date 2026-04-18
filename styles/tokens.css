@@ -1,0 +1,100 @@
+:root {
+  /* Search surfaces */
+  --vt-search-accent: rgba(225, 176, 116, 0.92);
+  --vt-search-accent-strong: rgba(225, 176, 116, 0.42);
+  --vt-search-accent-soft: rgba(225, 176, 116, 0.16);
+  --vt-search-accent-faint: rgba(225, 176, 116, 0.08);
+  --vt-search-border: rgba(218, 197, 167, 0.18);
+  --vt-search-border-subtle: rgba(218, 197, 167, 0.14);
+  --vt-search-border-soft: rgba(218, 197, 167, 0.1);
+  --vt-search-shell-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
+    rgba(10, 12, 15, 0.78);
+  --vt-search-panel-bg:
+    radial-gradient(
+      circle at top right,
+      rgba(184, 115, 51, 0.1),
+      transparent 28%
+    ),
+    linear-gradient(180deg, rgba(18, 20, 24, 0.94), rgba(10, 12, 15, 0.92));
+  --vt-search-docs-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
+    rgba(11, 13, 16, 0.56);
+  --vt-search-input-bg: rgba(7, 9, 12, 0.72);
+  --vt-search-input-bg-focus: rgba(9, 11, 14, 0.86);
+  --vt-search-pill-bg: rgba(255, 255, 255, 0.03);
+  --vt-search-card-bg: rgba(255, 255, 255, 0.02);
+  --vt-search-card-bg-hover: rgba(225, 176, 116, 0.08);
+  --vt-search-clear-bg: rgba(255, 255, 255, 0.04);
+  --vt-search-clear-bg-hover: rgba(225, 176, 116, 0.16);
+  --vt-search-text-strong: rgba(243, 241, 236, 0.96);
+  --vt-search-text-body: rgba(209, 216, 224, 0.78);
+  --vt-search-text-muted: rgba(209, 216, 224, 0.74);
+  --vt-search-text-soft: rgba(209, 216, 224, 0.55);
+  --vt-search-shell-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --vt-search-panel-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --vt-search-docs-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Framework playground surfaces */
+  --vt-framework-shell-bg:
+    radial-gradient(
+      circle at 20% 18%,
+      rgba(184, 115, 51, 0.1),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 82% 12%,
+      rgba(163, 184, 199, 0.08),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(18, 19, 23, 0.68) 0%,
+      rgba(10, 10, 12, 0.82) 100%
+    );
+  --vt-framework-shell-shadow: var(--shadow);
+  --vt-framework-stage-bg:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(34, 34, 31, 0.4) 0%,
+      rgba(12, 12, 13, 0.85) 100%
+    ),
+    var(--site-bg-image-url, url("/presence/background-stone.webp"));
+  --vt-framework-stage-shadow: inset 0 0 54px rgba(0, 0, 0, 0.46);
+  --vt-framework-panel-bg: rgba(8, 9, 11, 0.74);
+  --vt-framework-panel-border: var(--card-border);
+  --vt-framework-panel-shadow: var(--shadow);
+  --vt-framework-prompt-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 72%),
+    linear-gradient(180deg, rgba(7, 9, 12, 0.88), rgba(4, 5, 8, 0.76));
+  --vt-framework-prompt-border: rgba(163, 184, 199, 0.16);
+  --vt-framework-prompt-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --vt-framework-control-bg: rgba(163, 184, 199, 0.05);
+  --vt-framework-control-bg-hover: rgba(184, 115, 51, 0.15);
+  --vt-framework-control-shadow-hover: 0 0 15px rgba(184, 115, 51, 0.2);
+  --vt-framework-button-bg: rgba(184, 115, 51, 0.1);
+  --vt-framework-button-bg-hover: rgba(184, 115, 51, 0.2);
+  --vt-framework-button-border: rgba(184, 115, 51, 0.4);
+  --vt-framework-button-shadow-hover: 0 4px 20px rgba(184, 115, 51, 0.2);
+  --vt-framework-button-muted-bg: rgba(163, 184, 199, 0.08);
+  --vt-framework-button-muted-border: rgba(163, 184, 199, 0.18);
+  --vt-framework-button-muted-shadow-hover: 0 4px 20px rgba(163, 184, 199, 0.12);
+  --vt-framework-chip-bg: rgba(17, 18, 22, 0.52);
+  --vt-framework-chip-bg-mobile: rgba(17, 18, 22, 0.82);
+  --vt-framework-chip-border: rgba(163, 184, 199, 0.12);
+  --vt-framework-chip-hover-border: rgba(184, 115, 51, 0.36);
+  --vt-framework-chip-hover-bg: rgba(24, 19, 15, 0.7);
+  --vt-framework-chip-active-bg: rgba(26, 20, 15, 0.88);
+  --vt-framework-chip-active-bg-mobile: rgba(27, 20, 15, 0.92);
+  --vt-framework-chip-active-shadow: 0 0 0 1px rgba(184, 115, 51, 0.18);
+  --vt-framework-tooltip-bg: rgba(9, 10, 13, 0.88);
+  --vt-framework-tooltip-border: rgba(163, 184, 199, 0.16);
+  --vt-framework-tooltip-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --vt-framework-alert-danger: #ffb8ae;
+  --vt-framework-alert-danger-border: rgba(224, 85, 68, 0.78);
+  --vt-framework-alert-review-border: rgba(184, 115, 51, 0.68);
+}

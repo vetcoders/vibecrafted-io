@@ -1,6 +1,6 @@
 import { getTranslations, type Lang } from "../i18n";
 
-export type DocsSearchSection = "quickstart" | "faq";
+export type DocsSearchSection = "all" | "quickstart" | "faq";
 
 export interface DocsSearchItem {
   href: string;
@@ -49,86 +49,58 @@ function toKeywords(...values: string[]) {
   return [...new Set(tokens)];
 }
 
-export function getDocsSearchData(
+function getQuickstartItems(
+  dict: ReturnType<typeof getTranslations>,
   lang: Lang,
-  sectionName: DocsSearchSection,
-): DocsSearchData {
-  const dict = getTranslations(lang);
+) {
+  const hero = dict.sections.quickstartHero;
+  const resources = dict.sections.quickstartResources;
 
-  const ui =
-    lang === "pl"
-      ? {
-          emptyLabel: "Wpisz pytanie, komendę albo powierzchnię produktu.",
-          fallbackLabel: "Skoki awaryjne",
-          noResultsLabel:
-            "Brak mocnego trafienia. Skorzystaj z najbliższych wejść poniżej.",
-          placeholder:
-            sectionName === "faq"
-              ? "Szukaj po instalacji, licencji, runtime, skillach…"
-              : "Szukaj po instalacji, doctorze, init, workflow, release…",
-          resultsLabel: "Najbliższe trafienia",
-        }
-      : {
-          emptyLabel:
-            "Ask for a command, product surface, or operating question.",
-          fallbackLabel: "Fast paths",
-          noResultsLabel:
-            "No strong match yet. Use the closest entry points below.",
-          placeholder:
-            sectionName === "faq"
-              ? "Search installation, license, runtime, skills…"
-              : "Search install, doctor, init, workflow, release…",
-          resultsLabel: "Closest matches",
-        };
+  const steps = dict.sections.quickstartSteps.steps.map((step, index) => ({
+    href: `#quickstart-step-${index + 1}`,
+    title: step.title,
+    body: `${step.kicker} ${step.body} ${
+      "command" in step ? step.command : step.commands.join(" ")
+    } ${"note" in step ? step.note : ""}`,
+    keywords: toKeywords(
+      step.kicker,
+      step.title,
+      step.body,
+      "command" in step ? step.command : step.commands.join(" "),
+      "note" in step ? step.note : "",
+      "install bootstrap doctor init workflow justdo marbles release hydrate doctor setup prerequisites",
+    ),
+  }));
 
-  if (sectionName === "quickstart") {
-    const hero = dict.sections.quickstartHero;
-    const resources = dict.sections.quickstartResources;
-    const steps = dict.sections.quickstartSteps.steps.map((step, index) => ({
-      href: `#quickstart-step-${index + 1}`,
-      title: step.title,
-      body: `${step.kicker} ${step.body} ${"command" in step ? step.command : step.commands.join(" ")} ${
-        "note" in step ? step.note : ""
-      }`,
-      keywords: toKeywords(
-        step.kicker,
-        step.title,
-        step.body,
-        "command" in step ? step.command : step.commands.join(" "),
-        "note" in step ? step.note : "",
-        "install bootstrap doctor init workflow justdo marbles release hydrate doctor setup prerequisites",
-      ),
-    }));
+  const resourceCards = resources.cards.map((card, index) => ({
+    href: `#quickstart-resource-${index + 1}`,
+    title: card.title,
+    body: `${card.kicker} ${card.items.join(" ")}`,
+    keywords: toKeywords(
+      card.kicker,
+      card.title,
+      card.items.join(" "),
+      "prerequisites foundations artifacts shell helpers control plane runtime",
+    ),
+  }));
 
-    const resourceCards = resources.cards.map((card, index) => ({
-      href: `#quickstart-resource-${index + 1}`,
-      title: card.title,
-      body: `${card.kicker} ${card.items.join(" ")}`,
-      keywords: toKeywords(
-        card.kicker,
-        card.title,
-        card.items.join(" "),
-        "prerequisites foundations artifacts shell helpers control plane runtime",
-      ),
-    }));
+  return {
+    fallbackLinks: [
+      { href: hero.primaryHref, label: hero.primaryLabel },
+      { href: hero.secondaryHref, label: hero.secondaryLabel },
+      { href: "#quickstart-steps", label: lang === "pl" ? "Kroki" : "Steps" },
+      {
+        href: "#quickstart-resources",
+        label: lang === "pl" ? "Zasoby" : "Resources",
+      },
+    ],
+    items: [...steps, ...resourceCards],
+  };
+}
 
-    return {
-      ...ui,
-      fallbackLinks: [
-        { href: hero.primaryHref, label: hero.primaryLabel },
-        { href: hero.secondaryHref, label: hero.secondaryLabel },
-        { href: "#quickstart-steps", label: lang === "pl" ? "Kroki" : "Steps" },
-        {
-          href: "#quickstart-resources",
-          label: lang === "pl" ? "Zasoby" : "Resources",
-        },
-      ],
-      items: [...steps, ...resourceCards],
-    };
-  }
-
+function getFaqItems(dict: ReturnType<typeof getTranslations>, lang: Lang) {
   const hero = dict.sections.faqHero;
-  const groups = dict.sections.faqContent.groups.flatMap((group, groupIndex) =>
+  const items = dict.sections.faqContent.groups.flatMap((group, groupIndex) =>
     group.items.map((item, itemIndex) => ({
       href: `#faq-${groupIndex + 1}-${itemIndex + 1}`,
       title: stripHtml(item.questionHtml),
@@ -143,7 +115,6 @@ export function getDocsSearchData(
   );
 
   return {
-    ...ui,
     fallbackLinks: [
       { href: hero.primaryHref, label: hero.primaryLabel },
       { href: hero.secondaryHref, label: hero.secondaryLabel },
@@ -152,7 +123,135 @@ export function getDocsSearchData(
         label: lang === "pl" ? "Sekcje FAQ" : "FAQ sections",
       },
     ],
-    items: groups,
+    items,
+  };
+}
+
+function getGlobalSurfaceItems(lang: Lang): DocsSearchItem[] {
+  const installHref = lang === "pl" ? "/pl/install/" : "/en/install/";
+  const frameworkHref = lang === "pl" ? "/pl/framework/" : "/en/framework/";
+  const pipelineHref = lang === "pl" ? "/pl/#pipeline" : "/en/#pipeline";
+
+  return [
+    {
+      href: frameworkHref,
+      title: lang === "pl" ? "Framework playground" : "Framework playground",
+      body:
+        lang === "pl"
+          ? "Interaktywna plansza konwergencji dla scaffold, init, workflow, followup, marbles, DoU, decorate, hydrate i release."
+          : "Interactive convergence board for scaffold, init, workflow, follow-up, marbles, DoU, decorate, hydrate, and release.",
+      keywords: toKeywords(
+        "framework playground convergence board scaffold init workflow followup marbles dou decorate hydrate release demo",
+      ),
+    },
+    {
+      href: installHref,
+      title: lang === "pl" ? "Prowadzony instalator" : "Guided installer",
+      body:
+        lang === "pl"
+          ? "Browser-guided install flow do sprawdzenia wymagań, planu bootstrapu i pierwszego uruchomienia frameworka."
+          : "Browser-guided install flow for prerequisites, bootstrap planning, and the first framework launch.",
+      keywords: toKeywords(
+        "install installer guided setup bootstrap doctor prerequisites shell wizard browser",
+      ),
+    },
+    {
+      href: pipelineHref,
+      title: "Craft -> Converge -> Ship",
+      body:
+        lang === "pl"
+          ? "Cały pipeline produktu: Scaffold, Init, Workflow, Follow-up, Marbles, DoU, Decorate, Hydrate, Release."
+          : "The full product pipeline: Scaffold, Init, Workflow, Follow-up, Marbles, DoU, Decorate, Hydrate, Release.",
+      keywords: toKeywords(
+        "pipeline craft converge ship scaffold init workflow followup marbles dou decorate hydrate release",
+      ),
+    },
+  ];
+}
+
+function prefixItems(
+  items: DocsSearchItem[],
+  pageHref: string,
+): DocsSearchItem[] {
+  return items.map((item) => ({
+    ...item,
+    href: item.href.startsWith("#") ? `${pageHref}${item.href}` : item.href,
+  }));
+}
+
+export function getDocsSearchData(
+  lang: Lang,
+  sectionName: DocsSearchSection,
+): DocsSearchData {
+  const dict = getTranslations(lang);
+  const quickstartHref = lang === "pl" ? "/pl/quickstart/" : "/en/quickstart/";
+  const faqHref = lang === "pl" ? "/pl/faq/" : "/en/faq/";
+  const quickstart = getQuickstartItems(dict, lang);
+  const faq = getFaqItems(dict, lang);
+  const globalSurfaces = getGlobalSurfaceItems(lang);
+
+  const ui =
+    lang === "pl"
+      ? {
+          emptyLabel: "Wpisz pytanie, komendę albo powierzchnię produktu.",
+          fallbackLabel: "Skoki awaryjne",
+          noResultsLabel:
+            "Brak mocnego trafienia. Skorzystaj z najbliższych wejść poniżej.",
+          placeholder:
+            sectionName === "faq"
+              ? "Szukaj po instalacji, licencji, runtime, skillach…"
+              : sectionName === "all"
+                ? "Szukaj po frameworku, installu, doctorze, init, workflow, release…"
+                : "Szukaj po instalacji, doctorze, init, workflow, release…",
+          resultsLabel: "Najbliższe trafienia",
+        }
+      : {
+          emptyLabel:
+            "Ask for a command, product surface, or operating question.",
+          fallbackLabel: "Fast paths",
+          noResultsLabel:
+            "No strong match yet. Use the closest entry points below.",
+          placeholder:
+            sectionName === "faq"
+              ? "Search installation, license, runtime, skills…"
+              : sectionName === "all"
+                ? "Search framework, install, doctor, init, workflow, release…"
+                : "Search install, doctor, init, workflow, release…",
+          resultsLabel: "Closest matches",
+        };
+
+  if (sectionName === "all") {
+    return {
+      ...ui,
+      fallbackLinks: [
+        { href: globalSurfaces[0].href, label: globalSurfaces[0].title },
+        { href: globalSurfaces[1].href, label: globalSurfaces[1].title },
+        {
+          href: quickstart.fallbackLinks[0].href,
+          label: quickstart.fallbackLinks[0].label,
+        },
+        { href: faq.fallbackLinks[0].href, label: faq.fallbackLinks[0].label },
+      ],
+      items: [
+        ...globalSurfaces,
+        ...prefixItems(quickstart.items, quickstartHref),
+        ...prefixItems(faq.items, faqHref),
+      ],
+    };
+  }
+
+  if (sectionName === "quickstart") {
+    return {
+      ...ui,
+      fallbackLinks: quickstart.fallbackLinks,
+      items: quickstart.items,
+    };
+  }
+
+  return {
+    ...ui,
+    fallbackLinks: faq.fallbackLinks,
+    items: faq.items,
   };
 }
 

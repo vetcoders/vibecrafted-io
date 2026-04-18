@@ -13,7 +13,7 @@
     defaultSection?: DocsSearchSection;
   }
 
-  let { lang, defaultSection = 'quickstart' }: Props = $props();
+  let { lang, defaultSection = 'all' }: Props = $props();
 
   const dict = $derived(getTranslations(lang));
 
@@ -161,6 +161,16 @@
       <div class="search-shell__scopes" role="tablist" aria-label={dict.nav.search}>
         <button
           class="search-shell__scope"
+          class:search-shell__scope--active={activeSection === 'all'}
+          type="button"
+          role="tab"
+          aria-selected={activeSection === 'all'}
+          onclick={() => (activeSection = 'all')}
+        >
+          {dict.nav.searchAll}
+        </button>
+        <button
+          class="search-shell__scope"
           class:search-shell__scope--active={activeSection === 'quickstart'}
           type="button"
           role="tab"
@@ -269,16 +279,12 @@
     width: 100%;
     min-height: 3rem;
     padding: 0.45rem 0.85rem;
-    border: 1px solid rgba(218, 197, 167, 0.18);
+    border: 1px solid var(--vt-search-border);
     border-radius: 999px;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
-      rgba(10, 12, 15, 0.78);
+    background: var(--vt-search-shell-bg);
     backdrop-filter: blur(18px) saturate(120%);
     -webkit-backdrop-filter: blur(18px) saturate(120%);
-    box-shadow:
-      0 18px 38px rgba(0, 0, 0, 0.24),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: var(--vt-search-shell-shadow);
     transition:
       border-color 0.18s ease,
       box-shadow 0.18s ease,
@@ -288,10 +294,10 @@
   .search-shell__bar:hover,
   .search-shell__bar--expanded,
   .search-shell__bar:focus-within {
-    border-color: rgba(225, 176, 116, 0.42);
+    border-color: var(--vt-search-accent-strong);
     box-shadow:
       0 22px 46px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(225, 176, 116, 0.12),
+      0 0 0 1px var(--vt-search-accent-faint),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
     transform: translateY(-1px);
   }
@@ -301,7 +307,7 @@
     align-items: center;
     justify-content: center;
     width: 1.25rem;
-    color: rgba(225, 176, 116, 0.92);
+    color: var(--vt-search-accent);
     font-size: 1rem;
     line-height: 1;
     flex-shrink: 0;
@@ -313,7 +319,7 @@
     padding: 0.35rem 0;
     border: 0;
     background: transparent;
-    color: rgba(243, 241, 236, 0.96);
+    color: var(--vt-search-text-strong);
     font-family: var(--font-mono);
     font-size: 0.78rem;
     letter-spacing: 0.02em;
@@ -321,7 +327,7 @@
   }
 
   .search-shell__input::placeholder {
-    color: rgba(209, 216, 224, 0.55);
+    color: var(--vt-search-text-soft);
     font-size: 0.74rem;
     letter-spacing: 0.04em;
   }
@@ -333,9 +339,9 @@
 
   .search-shell__shortcut {
     padding: 0.22rem 0.5rem;
-    border: 1px solid rgba(225, 176, 116, 0.22);
+    border: 1px solid var(--vt-search-accent-soft);
     border-radius: 999px;
-    color: rgba(225, 176, 116, 0.82);
+    color: color-mix(in srgb, var(--vt-search-accent) 88%, transparent);
     font-family: var(--font-mono);
     font-size: 0.6rem;
     font-weight: 600;
@@ -351,9 +357,9 @@
     width: 1.6rem;
     height: 1.6rem;
     padding: 0;
-    border: 1px solid rgba(218, 197, 167, 0.18);
+    border: 1px solid var(--vt-search-border);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--vt-search-clear-bg);
     color: rgba(240, 241, 243, 0.8);
     font-family: var(--font-mono);
     font-size: 0.95rem;
@@ -368,9 +374,9 @@
 
   .search-shell__clear:hover,
   .search-shell__clear:focus-visible {
-    background: rgba(225, 176, 116, 0.16);
-    color: rgba(243, 241, 236, 0.96);
-    border-color: rgba(225, 176, 116, 0.34);
+    background: var(--vt-search-clear-bg-hover);
+    color: var(--vt-search-text-strong);
+    border-color: color-mix(in srgb, var(--vt-search-accent) 36%, transparent);
   }
 
   .search-shell__panel {
@@ -381,16 +387,12 @@
     align-content: start;
     gap: 0.65rem;
     padding: 0.85rem 0.95rem;
-    border: 1px solid rgba(218, 197, 167, 0.18);
+    border: 1px solid var(--vt-search-border);
     border-radius: 1rem;
-    background:
-      radial-gradient(circle at top right, rgba(184, 115, 51, 0.1), transparent 28%),
-      linear-gradient(180deg, rgba(18, 20, 24, 0.94), rgba(10, 12, 15, 0.92));
+    background: var(--vt-search-panel-bg);
     backdrop-filter: blur(18px) saturate(120%);
     -webkit-backdrop-filter: blur(18px) saturate(120%);
-    box-shadow:
-      0 22px 50px rgba(0, 0, 0, 0.32),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: var(--vt-search-panel-shadow);
   }
 
   .search-shell__scopes {
@@ -405,10 +407,10 @@
     align-items: center;
     min-height: 2.05rem;
     padding: 0.35rem 0.7rem;
-    border: 1px solid rgba(218, 197, 167, 0.14);
+    border: 1px solid var(--vt-search-border-subtle);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
-    color: rgba(209, 216, 224, 0.82);
+    background: var(--vt-search-pill-bg);
+    color: color-mix(in srgb, var(--vt-search-text-body) 92%, white 8%);
     cursor: pointer;
     font-family: var(--font-mono);
     font-size: 0.62rem;
@@ -424,13 +426,13 @@
   .search-shell__scope:hover,
   .search-shell__scope:focus-visible,
   .search-shell__scope--active {
-    border-color: rgba(225, 176, 116, 0.38);
-    background: rgba(225, 176, 116, 0.1);
-    color: rgba(243, 241, 236, 0.96);
+    border-color: color-mix(in srgb, var(--vt-search-accent) 42%, transparent);
+    background: var(--vt-search-accent-faint);
+    color: var(--vt-search-text-strong);
   }
 
   .search-shell__section-label {
-    color: rgba(225, 176, 116, 0.92);
+    color: var(--vt-search-accent);
     font-family: var(--font-mono);
     font-size: 0.62rem;
     font-weight: 600;
@@ -440,7 +442,7 @@
 
   .search-shell__hint {
     margin: 0;
-    color: rgba(209, 216, 224, 0.78);
+    color: var(--vt-search-text-body);
     font-family: var(--font-mono);
     font-size: 0.7rem;
     line-height: 1.5;
@@ -458,10 +460,10 @@
     display: grid;
     gap: 0.18rem;
     padding: 0.6rem 0.7rem;
-    border: 1px solid rgba(218, 197, 167, 0.1);
+    border: 1px solid var(--vt-search-border-soft);
     border-radius: 0.7rem;
-    background: rgba(255, 255, 255, 0.02);
-    color: rgba(243, 241, 236, 0.94);
+    background: var(--vt-search-card-bg);
+    color: color-mix(in srgb, var(--vt-search-text-strong) 98%, transparent);
     text-decoration: none;
     transition:
       border-color 0.15s ease,
@@ -472,12 +474,13 @@
   .search-shell__result:hover,
   .search-shell__result:focus-visible,
   .search-shell__result--active {
-    border-color: rgba(225, 176, 116, 0.34);
-    background: rgba(225, 176, 116, 0.08);
+    border-color: color-mix(in srgb, var(--vt-search-accent) 38%, transparent);
+    background: var(--vt-search-card-bg-hover);
     transform: translateY(-1px);
   }
 
   .search-shell__result-title {
+    color: var(--vt-search-text-strong);
     font-family: var(--font-mono);
     font-size: 0.74rem;
     font-weight: 600;
@@ -485,7 +488,7 @@
   }
 
   .search-shell__result-body {
-    color: rgba(209, 216, 224, 0.74);
+    color: var(--vt-search-text-muted);
     font-size: 0.7rem;
     line-height: 1.45;
     display: -webkit-box;
@@ -504,10 +507,10 @@
     display: inline-flex;
     align-items: center;
     padding: 0.4rem 0.7rem;
-    border: 1px solid rgba(218, 197, 167, 0.14);
+    border: 1px solid var(--vt-search-border-subtle);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.02);
-    color: rgba(243, 241, 236, 0.92);
+    background: var(--vt-search-card-bg);
+    color: color-mix(in srgb, var(--vt-search-text-strong) 96%, transparent);
     font-family: var(--font-mono);
     font-size: 0.66rem;
     font-weight: 500;
@@ -520,8 +523,8 @@
 
   .search-shell__fast-path:hover,
   .search-shell__fast-path:focus-visible {
-    border-color: rgba(225, 176, 116, 0.34);
-    background: rgba(225, 176, 116, 0.1);
+    border-color: color-mix(in srgb, var(--vt-search-accent) 38%, transparent);
+    background: var(--vt-search-card-bg-hover);
   }
 
   @media (max-width: 720px) {

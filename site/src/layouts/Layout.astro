@@ -104,7 +104,7 @@ const isHomePage = normalizedPath === navPaths.home;
 const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
 const isFrameworkPage = normalizedPath === navPaths.framework;
 const showInstallBanner = isHomePage;
-const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'quickstart';
+const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'all';
 
 const sectionLinks = {
   pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
