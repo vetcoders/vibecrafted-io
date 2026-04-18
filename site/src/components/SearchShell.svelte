@@ -151,8 +151,9 @@
 
 <div class="search-shell" bind:this={containerEl} aria-label={dict.nav.search}>
   {#if expanded}
-    <section
+    <div
       id="search-shell-panel"
+      role="region"
       class="search-shell__panel"
       aria-label={dict.nav.search}
       in:fly={{ duration: panelDuration, y: 8 }}
@@ -221,7 +222,7 @@
           {/each}
         </div>
       {/if}
-    </section>
+    </div>
   {/if}
 
   <div
@@ -267,9 +268,18 @@
     bottom: clamp(0.75rem, 1.8vw, 1.5rem);
     z-index: 130;
     width: min(100vw - 1.5rem, 26rem);
+    /* Hard ceiling so the panel never climbs into the nav chrome. */
+    max-height: min(70vh, 34rem);
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 0.5rem;
+    /* Only the visible chrome is interactive; the frame is layout-only. */
+    pointer-events: none;
+  }
+
+  .search-shell > * {
+    pointer-events: auto;
   }
 
   .search-shell__bar {
@@ -381,6 +391,11 @@
 
   .search-shell__panel {
     width: 100%;
+    /* Grow up from the bar but never past the shell ceiling; the
+       flex-shrink + min-height: 0 combo lets overflow kick in inside
+       the panel instead of pushing the container taller. */
+    flex-shrink: 1;
+    min-height: 0;
     max-height: min(60vh, 32rem);
     overflow: auto;
     display: grid;

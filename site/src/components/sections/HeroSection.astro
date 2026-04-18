@@ -6,8 +6,8 @@ import Reveal from '../Reveal.svelte';
 const { lang } = Astro.props as { lang: Lang };
 const hero = getTranslations(lang).sections.hero;
 ---
-<article class="founder-manifesto">
-    <Reveal client:load tag="section" class="hero-split">
+<article class="founder-manifesto surface--grid">
+    <Reveal client:load tag="section" class="hero-split hero-section">
         <header class="hero-copy">
             <h1 class="manifesto-title">
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>

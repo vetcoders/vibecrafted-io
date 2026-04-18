@@ -6,7 +6,7 @@ import Reveal from '../Reveal.svelte';
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.pipeline;
 ---
-<section class="pipeline-section" id="pipeline">
+<section class="pipeline-section surface--grid" id="pipeline">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
@@ -55,11 +55,12 @@ const section = getTranslations(lang).sections.pipeline;
     .pipeline-num {
         display: block;
         margin-bottom: var(--space-xs);
-        color: var(--copper);
+        color: var(--orange);
         font-family: var(--font-mono);
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        opacity: 0.8;
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        opacity: 0.9;
     }
 
     .pipeline-note h3 {

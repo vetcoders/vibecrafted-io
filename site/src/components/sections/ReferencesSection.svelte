@@ -39,7 +39,7 @@
 <svelte:window onkeydown={handleKeydown} />
 <svelte:body class:modal-open={Boolean(activeLink)} />
 
-<section class="references-section" id="references">
+<section class="references-section surface--grid" id="references">
   <Reveal tag="div" class="container">
     <div class="section-label">{section.label}</div>
     <h2 class="section-title">{section.title}</h2>

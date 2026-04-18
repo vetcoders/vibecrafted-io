@@ -6,7 +6,7 @@ import Reveal from '../Reveal.svelte';
 const { lang } = Astro.props as { lang: Lang };
 const section = getTranslations(lang).sections.marbles;
 ---
-<section class="diffusion-section" id="marbles">
+<section class="diffusion-section surface--grid" id="marbles">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>

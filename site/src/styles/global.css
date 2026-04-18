@@ -1,4 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&display=swap");
+/*
+ * Fonts are loaded via Layout.astro (Fraunces + JetBrains Mono + Allura).
+ * JetBrains Mono is kept for operator surfaces and the legacy Allura brand
+ * script; Fraunces carries the headline / lead type used across theme-A.
+ */
 @import "../../../styles/tokens.css";
 
 *,
@@ -10,172 +14,133 @@
 }
 
 :root {
-  /* Copper — the craft accent */
-  --copper: #b87333;
-  --copper-bright: #d4905c;
-  --patina: #5a8a7a;
-  --patina-deep: #3d6b5e;
-  --verdigris: #7fb5a3;
-
-  /* Timber — warmth */
-  --timber: #8b6e4e;
-  --timber-light: #a68b6b;
-  --timber-grain: rgba(139, 110, 78, 0.12);
-
-  /* Steel — tools, chrome */
-  --steel: #a3b8c7;
-  --steel-dark: #6b7f8e;
-  --steel-edge: #c4d4e0;
-
-  /* Stone — foundation */
-  --stone-deep: #0e0e11;
-  --stone-mid: #1a1d22;
-  --stone-light: #e5ecf5;
+  /*
+   * Palette ↦ theme-A. Concrete hex values live in tokens.css; everything
+   * declared here uses the aliased names (--copper, --stone-*, --steel-*)
+   * so the downstream components keep compiling until they migrate on
+   * their own cadence.
+   */
 
   /* Surfaces */
-  --card-bg: rgba(26, 29, 34, 0.6);
-  --card-border: rgba(163, 184, 199, 0.1);
-  --surface-glass: rgba(19, 17, 14, 0.18);
-  --surface-overlay: rgba(9, 10, 12, 0.88);
+  --card-bg: rgba(19, 22, 28, 0.6);
+  --card-border: rgba(154, 163, 173, 0.12);
+  --surface-glass: rgba(8, 12, 17, 0.32);
+  --surface-overlay: rgba(8, 12, 17, 0.88);
   --glass-panel-bg: linear-gradient(
     180deg,
-    rgba(28, 24, 19, 0.24),
-    rgba(10, 11, 14, 0.48)
+    rgba(19, 22, 28, 0.28),
+    rgba(8, 12, 17, 0.52)
   );
   --glass-panel-bg-strong: linear-gradient(
     180deg,
-    rgba(31, 27, 22, 0.34),
-    rgba(10, 11, 13, 0.64)
+    rgba(23, 28, 35, 0.42),
+    rgba(8, 12, 17, 0.68)
   );
-  --glass-panel-border: rgba(216, 206, 188, 0.16);
-  --glass-panel-highlight: rgba(255, 248, 236, 0.14);
-  --terminal: #0e0e11;
-  --terminal-soft: #14171b;
+  --glass-panel-border: rgba(154, 163, 173, 0.18);
+  --glass-panel-highlight: rgba(230, 232, 235, 0.1);
 
   /* Effects */
-  --glow: rgba(184, 115, 51, 0.35);
-  --glow-subtle: rgba(184, 115, 51, 0.16);
-  --glow-hover: rgba(184, 115, 51, 0.22);
-  --glow-muted: rgba(184, 115, 51, 0.08);
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
   --shadow-soft: rgba(0, 0, 0, 0.18);
   --shadow-md: rgba(0, 0, 0, 0.24);
   --shadow-sm: rgba(0, 0, 0, 0.16);
   --overlay-subtle: rgba(10, 11, 13, 0.16);
   --overlay-md: rgba(10, 11, 13, 0.28);
-  --steel-edge-strong: rgba(196, 212, 224, 0.8);
-  --steel-edge-muted: rgba(196, 212, 224, 0.78);
-  --steel-border-subtle: rgba(163, 184, 199, 0.16);
-  --steel-border-muted: rgba(163, 184, 199, 0.12);
-  --steel-border-soft: rgba(163, 184, 199, 0.18);
-  --steel-bg-subtle: rgba(163, 184, 199, 0.08);
-  --text-primary: rgba(229, 236, 245, 0.88);
-  --text-secondary: rgba(229, 236, 245, 0.72);
-  --surface-banner: rgba(14, 14, 17, 0.96);
-  --surface-overlay-subtle: rgba(9, 10, 12, 0.52);
-  --copper-border: rgba(184, 115, 51, 0.8);
-  --copper-shadow: rgba(184, 115, 51, 0.2);
-  --copper-glow-faint: rgba(184, 115, 51, 0.12);
+  --steel-edge-strong: rgba(230, 232, 235, 0.82);
+  --steel-edge-muted: rgba(230, 232, 235, 0.72);
+  --steel-border-subtle: rgba(154, 163, 173, 0.16);
+  --steel-border-muted: rgba(154, 163, 173, 0.12);
+  --steel-border-soft: rgba(154, 163, 173, 0.18);
+  --steel-bg-subtle: rgba(154, 163, 173, 0.08);
+  --text-primary: rgba(230, 232, 235, 0.88);
+  --text-secondary: rgba(230, 232, 235, 0.72);
+  --surface-banner: rgba(8, 12, 17, 0.96);
+  --surface-overlay-subtle: rgba(8, 12, 17, 0.52);
   --site-background-overlay: linear-gradient(
     180deg,
-    rgba(7, 8, 10, 0.48) 0%,
-    rgba(7, 8, 10, 0.8) 100%
+    rgba(8, 12, 17, 0.52) 0%,
+    rgba(6, 10, 15, 0.82) 100%
   );
+  /*
+   * Theme-A surface overlays — cool-gray structure lines replace the old
+   * paper/timber warm overlays. The .surface--grid utility (defined later)
+   * owns the 60px line grid; these remain as ambient tints.
+   */
   --site-paper-substrate: linear-gradient(
     180deg,
-    rgba(70, 55, 39, 0.36) 0%,
-    rgba(34, 28, 22, 0.18) 18%,
-    rgba(14, 14, 17, 0.08) 56%,
-    rgba(74, 58, 38, 0.3) 100%
+    rgba(19, 22, 28, 0.32) 0%,
+    rgba(13, 17, 23, 0.18) 18%,
+    rgba(8, 12, 17, 0.08) 56%,
+    rgba(19, 22, 28, 0.28) 100%
   );
   --site-paper-fiber-overlay:
     radial-gradient(
       circle at 14% 18%,
-      rgba(246, 237, 214, 0.095),
+      rgba(166, 197, 188, 0.05),
       transparent 24%
     ),
     radial-gradient(
       circle at 82% 16%,
-      rgba(184, 115, 51, 0.1),
+      rgba(217, 119, 69, 0.08),
       transparent 22%
     ),
     radial-gradient(
       circle at 48% 76%,
-      rgba(90, 138, 122, 0.06),
+      rgba(166, 197, 188, 0.04),
       transparent 30%
-    ),
-    repeating-linear-gradient(
-      118deg,
-      rgba(255, 249, 232, 0.03) 0 2px,
-      transparent 2px 10px
-    ),
-    repeating-linear-gradient(
-      32deg,
-      rgba(139, 110, 78, 0.03) 0 1px,
-      transparent 1px 8px
     );
   --site-paper-grain-overlay:
     radial-gradient(
       circle at 18% 24%,
-      rgba(255, 255, 255, 0.048),
+      rgba(255, 255, 255, 0.028),
       transparent 18%
     ),
     radial-gradient(
       circle at 76% 18%,
-      rgba(212, 182, 138, 0.05),
+      rgba(217, 119, 69, 0.04),
       transparent 20%
     ),
     radial-gradient(
       circle at 42% 84%,
-      rgba(255, 241, 214, 0.038),
+      rgba(230, 232, 235, 0.02),
       transparent 22%
-    ),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.018) 0 1px,
-      transparent 1px 3px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(139, 110, 78, 0.016) 0 1px,
-      transparent 1px 4px
     );
   --site-atmosphere-overlay:
     linear-gradient(
       180deg,
-      rgba(232, 223, 201, 0.06) 0%,
-      rgba(232, 223, 201, 0) 24%
+      rgba(166, 197, 188, 0.04) 0%,
+      rgba(166, 197, 188, 0) 24%
     ),
     radial-gradient(
       circle at 18% 18%,
-      rgba(184, 115, 51, 0.1),
+      rgba(217, 119, 69, 0.08),
       transparent 32%
     ),
     radial-gradient(
       circle at 82% 12%,
-      rgba(212, 198, 171, 0.08),
+      rgba(166, 197, 188, 0.06),
       transparent 26%
     ),
     radial-gradient(
       circle at 56% 76%,
-      rgba(90, 138, 122, 0.04),
+      rgba(166, 197, 188, 0.04),
       transparent 34%
     );
   --site-vignette-overlay: radial-gradient(
     circle at 50% 30%,
     transparent 24%,
-    rgba(9, 10, 12, 0.52) 100%
+    rgba(8, 12, 17, 0.58) 100%
   );
   --brand-mark-shadow:
-    inset 0 1px 0 rgba(229, 236, 245, 0.22), 0 6px 18px var(--glow);
+    inset 0 1px 0 rgba(230, 232, 235, 0.2), 0 6px 18px var(--glow);
   --foundation-strip-surface:
     linear-gradient(180deg, rgba(20, 22, 27, 0.48), rgba(10, 11, 14, 0.62)),
     linear-gradient(135deg, transparent 0%, var(--timber-grain) 100%);
   --mermaid-comment-color: rgba(107, 127, 142, 0.62);
-  --card-tag-bg: rgba(229, 236, 245, 0.06);
-  --card-phase-light-bg: rgba(229, 236, 245, 0.12);
-  --card-phase-muted-bg: rgba(107, 127, 142, 0.12);
-  --card-phase-copper-bg: rgba(184, 115, 51, 0.14);
+  --card-tag-bg: rgba(230, 232, 235, 0.06);
+  --card-phase-light-bg: rgba(230, 232, 235, 0.12);
+  --card-phase-muted-bg: rgba(154, 163, 173, 0.12);
+  --card-phase-copper-bg: rgba(217, 119, 69, 0.14);
   --diffusion-section-surface: linear-gradient(
     180deg,
     rgba(10, 11, 13, 0.12) 0%,
@@ -196,14 +161,14 @@
   --elevated-panel-shadow:
     0 20px 44px rgba(0, 0, 0, 0.2), inset 0 1px 0 var(--glass-panel-highlight),
     var(--shadow);
-  --framework-link-hover-border: rgba(212, 144, 92, 0.55);
+  --framework-link-hover-border: rgba(226, 138, 92, 0.55);
   --manifesto-section-surface: linear-gradient(
     180deg,
     rgba(10, 11, 13, 0.14),
     rgba(10, 11, 13, 0.24)
   );
-  --footer-copyright-color: rgba(107, 127, 142, 0.78);
-  --mobile-nav-toggle-bg: rgba(10, 11, 14, 0.76);
+  --footer-copyright-color: rgba(154, 163, 173, 0.78);
+  --mobile-nav-toggle-bg: rgba(8, 12, 17, 0.76);
   --btn-padding: 0.875rem 2rem;
   --blur: blur(16px);
   --radius-sm: 6px;
@@ -211,10 +176,8 @@
   --radius-lg: 20px;
 
   /* Type */
-  --font-head:
-    "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
-  --font-body: "Lora", Georgia, serif;
+  --font-head: "Fraunces", "Lora", Georgia, serif;
+  --font-body: "Fraunces", "Lora", Georgia, serif;
   --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
 
   /* Layout */
@@ -284,17 +247,17 @@
   --docs-install-gap: var(--space-md) 1.15rem;
   --docs-install-padding: var(--space-md) 1.15rem;
   --docs-copy-gap: 0.42rem;
-  --docs-copy-body-color: rgba(196, 212, 224, 0.84);
+  --docs-copy-body-color: rgba(209, 216, 224, 0.84);
   --docs-command-padding: var(--space-md) 4.6rem var(--space-md) 1.1rem;
   --install-command-bar-gap: 1.05rem;
   --install-command-bar-padding: 0.78rem 0.92rem 0.78rem var(--space-md);
   --install-command-bar-border: var(--copper-shadow);
-  --install-command-bar-bg: rgba(10, 11, 14, 0.74);
+  --install-command-bar-bg: rgba(8, 12, 17, 0.74);
   --install-command-bar-backdrop: blur(20px) saturate(122%);
   --install-command-bar-highlight: rgba(255, 255, 255, 0.04);
   --install-command-copy-padding: 0.7rem 0.95rem;
-  --install-command-copy-bg: rgba(20, 23, 28, 0.92);
-  --install-command-copy-hover-border: rgba(212, 144, 92, 0.48);
+  --install-command-copy-bg: rgba(19, 22, 28, 0.92);
+  --install-command-copy-hover-border: rgba(226, 138, 92, 0.48);
   --docs-inline-links-margin-top: 0.85rem;
   --docs-note-margin-top: 0.9rem;
   --docs-note-color: var(--steel-dark);
@@ -303,9 +266,9 @@
   --faq-item-list-padding: 1.1rem;
   --tooltip-offset-transform: translate(-50%, calc(-100% - 12px));
   --tooltip-padding: 0.35rem 0.6rem;
-  --tooltip-bg: rgba(26, 29, 34, 0.94);
-  --tooltip-ok-border: rgba(90, 138, 122, 0.45);
-  --tooltip-err-border: rgba(184, 115, 51, 0.5);
+  --tooltip-bg: rgba(19, 22, 28, 0.94);
+  --tooltip-ok-border: rgba(166, 197, 188, 0.45);
+  --tooltip-err-border: rgba(217, 119, 69, 0.5);
 
   /* Hero + shared controls */
   --hero-canvas-surface:
@@ -327,10 +290,10 @@
   --hero-canvas-stats-padding: 0.375rem 0.625rem;
   --hero-rule-surface: linear-gradient(
     90deg,
-    rgba(212, 182, 138, 0.06) 0%,
-    rgba(212, 182, 138, 0.52) 22%,
-    rgba(212, 182, 138, 0.52) 78%,
-    rgba(212, 182, 138, 0.06) 100%
+    rgba(217, 119, 69, 0.08) 0%,
+    rgba(217, 119, 69, 0.52) 22%,
+    rgba(217, 119, 69, 0.52) 78%,
+    rgba(217, 119, 69, 0.08) 100%
   );
   --hero-lead-max-width: 30rem;
   --hero-actions-gap: 0.875rem;
@@ -347,7 +310,7 @@
     0 18px 40px var(--shadow-soft), inset 0 1px 0 var(--glass-panel-highlight);
   --surface-badge-padding: 0.35rem 0.75rem;
   --surface-badge-margin: 0.95rem;
-  --surface-badge-border: rgba(184, 115, 51, 0.34);
+  --surface-badge-border: rgba(217, 119, 69, 0.34);
   --surface-list-margin-top: 0.95rem;
   --surface-list-padding-inline: 1.1rem;
   --surface-links-gap: 0.75rem 1rem;
@@ -364,7 +327,7 @@
     0 28px 72px rgba(0, 0, 0, 0.28), inset 0 1px 0 var(--glass-panel-highlight);
   --modal-head-gap: 1.2rem;
   --modal-head-padding: 1.2rem 1.25rem 1rem;
-  --modal-head-border: rgba(229, 236, 245, 0.08);
+  --modal-head-border: rgba(230, 232, 235, 0.08);
   --modal-head-bg: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.02),
@@ -418,19 +381,19 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 28px 60px rgba(0, 0, 0, 0.45);
   --not-found-rule-surface: linear-gradient(
     90deg,
-    rgba(184, 115, 51, 0),
-    rgba(184, 115, 51, 0.65),
-    rgba(127, 181, 163, 0)
+    rgba(217, 119, 69, 0),
+    rgba(217, 119, 69, 0.65),
+    rgba(166, 197, 188, 0)
   );
   --not-found-eyebrow-gap: 0.75rem;
   --not-found-eyebrow-margin: var(--space-md);
   --not-found-eyebrow-padding: 0.55rem 0.85rem;
   --not-found-eyebrow-border: var(--steel-border-soft);
-  --not-found-eyebrow-bg: rgba(14, 14, 17, 0.46);
-  --not-found-logo-shadow: 0 0 0 1px rgba(163, 184, 199, 0.2);
-  --not-found-title-shadow: 0 18px 48px rgba(184, 115, 51, 0.2);
+  --not-found-eyebrow-bg: rgba(8, 12, 17, 0.46);
+  --not-found-logo-shadow: 0 0 0 1px rgba(154, 163, 173, 0.2);
+  --not-found-title-shadow: 0 18px 48px rgba(217, 119, 69, 0.2);
   --not-found-lead-margin-top: 1.25rem;
-  --not-found-lead-color: rgba(229, 236, 245, 0.82);
+  --not-found-lead-color: rgba(230, 232, 235, 0.82);
   --not-found-actions-gap: 0.9rem;
   --not-found-actions-margin-top: 1.6rem;
   --not-found-panel-padding: clamp(1.35rem, 3vw, 2rem);
@@ -438,20 +401,20 @@
   --not-found-links-margin: 1.35rem 0 1.5rem;
   --not-found-link-min-height: 48px;
   --not-found-link-padding: 0.95rem 1rem;
-  --not-found-link-border: rgba(163, 184, 199, 0.14);
-  --not-found-link-bg: rgba(10, 11, 14, 0.58);
-  --not-found-link-hover-border: rgba(184, 115, 51, 0.48);
-  --not-found-link-hover-bg: rgba(22, 25, 29, 0.82);
+  --not-found-link-border: rgba(154, 163, 173, 0.14);
+  --not-found-link-bg: rgba(8, 12, 17, 0.58);
+  --not-found-link-hover-border: rgba(217, 119, 69, 0.48);
+  --not-found-link-hover-bg: rgba(19, 22, 28, 0.82);
   --not-found-note-size: 0.95rem;
   --not-found-panel-padding-mobile: 1.35rem;
   --not-found-trace-margin-top: 1.25rem;
   --not-found-trace-padding: 0.95rem 1rem;
   --not-found-trace-border: var(--steel-border-subtle);
-  --not-found-trace-bg: rgba(10, 11, 14, 0.52);
+  --not-found-trace-bg: rgba(8, 12, 17, 0.52);
   --stats-offset: 16px;
   --stats-padding: 10px 14px;
   --stats-border: rgba(255, 255, 255, 0.1);
-  --stats-bg: rgba(26, 29, 34, 0.8);
+  --stats-bg: rgba(19, 22, 28, 0.8);
   --stats-backdrop: blur(8px);
   --stats-font-size: 0.8rem;
 
@@ -471,28 +434,26 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--stone-deep);
+  background-color: var(--bg);
   background-image:
-    var(--site-background-overlay),
     radial-gradient(
-      circle at 50% -10%,
-      rgba(247, 236, 212, 0.1),
-      transparent 42%
+      circle at 75% 40%,
+      rgba(217, 119, 69, 0.08),
+      transparent 55%
     ),
-    var(--site-paper-substrate), url("/presence/background-stone.webp");
-  background-position:
-    center top,
-    center top,
-    center top,
-    center top;
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 17, 0.52) 0%,
+      rgba(6, 10, 15, 0.8) 100%
+    ),
+    linear-gradient(180deg, var(--bg), var(--bg-deep));
+  background-attachment: fixed, fixed, fixed;
   background-size:
     cover,
     100% 100%,
-    cover,
     cover;
-  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
-  background-attachment: fixed, fixed, fixed, fixed;
-  color: var(--stone-light);
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  color: var(--ink);
   line-height: 1.7;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -564,13 +525,17 @@ pre {
   outline-offset: 2px;
 }
 
+/*
+ * Ambient atmosphere tints (kept) — no paper/grain texture. The 60px
+ * line-grid is provided on-demand via the .surface--grid utility rather
+ * than fixed to <body> so floating surfaces stay clean.
+ */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: var(--site-paper-fiber-overlay), var(--site-atmosphere-overlay);
-  opacity: 0.96;
-  mix-blend-mode: soft-light;
+  background: var(--site-atmosphere-overlay);
+  opacity: 0.72;
   pointer-events: none;
   z-index: 0;
 }
@@ -579,8 +544,8 @@ body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: var(--site-paper-grain-overlay), var(--site-vignette-overlay);
-  opacity: 0.82;
+  background: var(--site-vignette-overlay);
+  opacity: 0.7;
   pointer-events: none;
   z-index: 0;
 }
@@ -600,8 +565,18 @@ h4,
 h5,
 h6 {
   font-family: var(--font-head);
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 350;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+h1 em,
+h2 em,
+h3 em,
+h4 em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--orange);
 }
 
 .shell {
@@ -640,11 +615,14 @@ h6 {
 }
 
 .manifesto-title__script {
-  font-family: "Allura", cursive;
-  font-size: clamp(3.3rem, 6.8vw, 5.8rem);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: var(--stone-light);
+  font-family: "Fraunces", "Allura", cursive, serif;
+  font-size: clamp(3.3rem, 6.8vw, 6.2rem);
+  font-weight: 350;
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 50;
+  letter-spacing: -0.03em;
+  color: var(--ink);
   text-shadow: 0 0 26px var(--copper-glow-faint);
 }
 
@@ -668,19 +646,24 @@ h6 {
 }
 
 .manifesto-lead {
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-  color: var(--steel-dark);
-  line-height: 1.65;
-  margin-bottom: 2rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.9rem, 1.4vw, 1.08rem);
+  color: var(--ink-dim);
+  line-height: 1.6;
+  margin-bottom: 1.6rem;
   max-width: var(--hero-lead-max-width);
 }
 
 .manifesto-quote {
-  font-size: 1.25rem;
-  color: var(--stone-light);
-  margin-bottom: 2.5rem;
+  font-family: var(--font-head);
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 2.25rem;
   font-style: italic;
-  opacity: 0.9;
+  font-weight: 350;
+  max-width: var(--hero-lead-max-width);
+  opacity: 0.96;
 }
 
 .manifesto-actions {
@@ -716,28 +699,34 @@ h6 {
   }
 }
 
+/*
+ * theme-A buttons — matches .a-btn--primary / .a-btn--ghost shapes.
+ * Square-ish edges (radius-sm), JetBrains Mono caps, orange fill / line-bright
+ * border. The hover on ghost pulls the border to orange and flips ink to orange.
+ */
 .btn-solid {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: var(--interactive-min-height);
-  background: var(--copper);
-  color: var(--stone-deep);
-  font-family: var(--font-head);
+  background: var(--orange);
+  color: var(--bg);
+  font-family: var(--font-mono);
   font-weight: 600;
   padding: var(--btn-padding);
   border-radius: var(--radius-sm);
   text-decoration: none;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   transition: all 0.2s;
   box-shadow: 0 10px 24px var(--copper-shadow);
-  border: 1px solid var(--glow);
+  border: 1px solid var(--orange);
 }
 
 .btn-solid:hover {
-  background: var(--copper-bright);
+  background: var(--orange-hi);
+  border-color: var(--orange-hi);
   transform: var(--button-hover-lift);
   box-shadow: 0 14px 28px var(--glow-hover);
 }
@@ -747,30 +736,36 @@ h6 {
   align-items: center;
   justify-content: center;
   min-height: var(--interactive-min-height);
-  background: var(--card-bg);
+  background: transparent;
   backdrop-filter: var(--button-outline-backdrop);
-  color: var(--stone-light);
-  font-family: var(--font-head);
-  border: 1px solid var(--steel-border-soft);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  border: 1px solid var(--line-bright);
   font-weight: 600;
   padding: var(--btn-padding);
   border-radius: var(--radius-sm);
   text-decoration: none;
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   transition: all 0.2s;
 }
 
 .btn-outline:hover {
-  border-color: var(--steel);
-  color: var(--steel-edge);
+  border-color: var(--orange);
+  color: var(--orange);
 }
 
 /* legacy .manifesto-canvas-container removed — replaced by .hero-canvas */
 
-/* SECTIONS — each section is a snap-aligned view */
-section {
+/*
+ * SECTIONS — landing sections snap to view-height; floating / compact
+ * sections (like SearchShell panels) must opt OUT so they don't inherit
+ * 100vh from a blanket rule. The old rule forced every <section> to
+ * view-inner, which stretched the SearchShell panel despite its own
+ * max-height cap. We now exclude known-floating classes explicitly.
+ */
+section:not([class*="search-shell"]):not(.docs-hero):not([class*="a-phase"]) {
   display: flex;
   align-items: center;
   min-height: var(--view-inner);
@@ -789,30 +784,88 @@ section {
   scroll-snap-align: start;
 }
 
+/*
+ * .surface--grid — the 60px × 60px line grid backdrop used across the
+ * theme-A references. Apply to any relatively-positioned surface that
+ * needs the instrumentation feel. One canonical size. No 24/120 mix.
+ */
+.surface--grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.surface--grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size: 60px 60px;
+  z-index: 0;
+}
+
+.surface--grid > * {
+  position: relative;
+  z-index: 1;
+}
+
 .container {
   width: var(--page-shell);
   margin: 0 auto;
 }
 
 .section-title {
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-family: var(--font-head);
+  font-weight: 350;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   margin-bottom: 0.6rem;
+  color: var(--ink);
+}
+
+.section-title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--orange);
 }
 
 .section-sub {
-  color: var(--steel-dark);
-  margin-bottom: 3rem;
-  max-width: none;
+  font-family: var(--font-head);
+  font-style: italic;
+  font-weight: 350;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.4;
+  color: var(--ink-dim);
+  margin-bottom: 2.75rem;
+  max-width: 38rem;
 }
 
+/*
+ * .section-label — the orange eyebrow with the 24px rule before the text,
+ * lifted from .a-sec2__eyebrow / .op-head patterns.
+ */
 .section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.66rem;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--copper);
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.3em;
+  color: var(--orange);
+  margin-bottom: 0.75rem;
   font-weight: 600;
+}
+
+.section-label::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background: var(--orange);
+  flex-shrink: 0;
 }
 
 html.subpage,
