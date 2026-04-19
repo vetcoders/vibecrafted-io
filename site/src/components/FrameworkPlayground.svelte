@@ -88,6 +88,8 @@
     defaultPressCopy: string;
     operators: string;
     choosePhase: string;
+    boardIdleHint: string;
+    boardPhaseBadge: string;
     crumb: { root: string; leaf: string };
     instructor: {
       label: string;
@@ -192,7 +194,7 @@
       hint: 'The board is a teaching surface — every phase adds constraint, not just content.',
       state: 'awaiting',
       readoutLoop: '—',
-      readoutP: '—',
+      readoutP: '0·0·0',
       activeOps: [],
       showLabels: [],
       group: 'PREP',
@@ -216,7 +218,7 @@
       hint: 'Agents write blind without this. Never skip init.',
       state: 'indexing',
       readoutLoop: '0',
-      readoutP: '—',
+      readoutP: '0·0·0',
       activeOps: ['loctree', 'aicx'],
       showLabels: ['agents'],
       group: 'CRAFT',
@@ -418,6 +420,8 @@
       defaultPressCopy: 'Define the board geometry.',
       operators: 'Operators',
       choosePhase: 'Choose Phase',
+      boardIdleHint: 'Press · SPAWN to begin',
+      boardPhaseBadge: 'Phase',
       crumb: { root: 'Framework', leaf: 'Playground' },
       instructor: {
         label: 'Instructor',
@@ -545,6 +549,8 @@
       defaultPressCopy: 'Zdefiniuj geometrię planszy.',
       operators: 'Operatorzy',
       choosePhase: 'Wybierz fazę',
+      boardIdleHint: 'Naciśnij · SPAWN by zacząć',
+      boardPhaseBadge: 'Faza',
       crumb: { root: 'Framework', leaf: 'Playground' },
       instructor: {
         label: 'Instruktor',
@@ -2026,6 +2032,7 @@
       <div
         bind:this={boardEl}
         class="board"
+        class:board--idle={currentPhase.name === 'scaffold'}
         data-board-shape={boardShape}
         id={`${componentId}-panel`}
         role="img"
@@ -2035,6 +2042,11 @@
         <span class="board__corner board__corner--tr" aria-hidden="true"></span>
         <span class="board__corner board__corner--bl" aria-hidden="true"></span>
         <span class="board__corner board__corner--br" aria-hidden="true"></span>
+
+        <div class="board__phase-badge" aria-hidden="true">
+          <span class="board__phase-badge-dot"></span>
+          <span>{text.boardPhaseBadge} {phaseNumberText} · {currentPhase.label}</span>
+        </div>
 
         {#each FRAME_LABELS as labelKey (labelKey)}
           <span
@@ -2055,7 +2067,24 @@
 
         <div class="board__guide" class:board__guide--converged={guideConverged} aria-hidden="true"></div>
 
+        {#if currentPhase.name === 'scaffold'}
+          <div class="board__ghost-slots" aria-hidden="true">
+            {#each [0, 1, 2, 3, 4, 5] as slotIndex (slotIndex)}
+              <span
+                class="board__ghost-slot"
+                style={`--slot-angle:${(slotIndex * 60) - 90}deg`}
+              ></span>
+            {/each}
+          </div>
+        {/if}
+
         <canvas bind:this={canvasEl} class="board__canvas" aria-hidden="true"></canvas>
+
+        {#if currentPhase.name === 'scaffold' && visibleMarbleCount === 0}
+          <div class="board__idle-cta" aria-hidden="true">
+            {text.boardIdleHint}
+          </div>
+        {/if}
 
         <div class="board__overlay" aria-hidden="true">
           <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
@@ -2170,6 +2199,8 @@
     --pg-mint: var(--patina);
     --pg-mint-hi: var(--verdigris);
     --pg-red: var(--red);
+    /* Internal dividers — nearly invisible etched lines, not walls */
+    --pg-divider: rgba(185, 195, 204, 0.08);
 
     position: relative;
     display: grid;
@@ -2210,10 +2241,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 22px;
-    border-bottom: 1px solid var(--pg-line);
-    background: var(--surface-overlay);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--pg-divider);
+    background: transparent;
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -2282,7 +2311,7 @@
 
   /* ───────── OPERATORS (LEFT) ───────── */
   .pg__operators {
-    border-right: 1px solid var(--pg-line);
+    border-right: 1px solid var(--pg-divider);
     padding: 16px 16px 14px;
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
@@ -2290,6 +2319,7 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+    background: transparent;
   }
 
   .op-top {
@@ -2622,7 +2652,8 @@
     justify-content: space-between;
     align-items: baseline;
     padding: 12px 20px;
-    border-bottom: 1px solid var(--pg-line);
+    border-bottom: 1px solid var(--pg-divider);
+    background: transparent;
     gap: 12px;
     flex: 0 0 auto;
     min-width: 0;
@@ -2690,9 +2721,16 @@
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(ellipse at 50% 42%, rgba(166, 197, 188, 0.055), transparent 62%),
-      radial-gradient(ellipse at 30% 18%, rgba(26, 35, 48, 0.62) 0%, rgba(10, 15, 21, 0.94) 72%);
+      radial-gradient(ellipse at 50% 45%, rgba(166, 197, 188, 0.08), transparent 55%),
+      radial-gradient(ellipse at 30% 20%, rgba(26, 35, 48, 0.6), rgba(10, 15, 21, 0.95) 70%);
     min-height: 0;
+  }
+
+  .board--idle {
+    /* Amplify center glow in SCAFFOLD phase so the engine reads as awaiting-input, not off */
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(166, 197, 188, 0.12), transparent 58%),
+      radial-gradient(ellipse at 30% 20%, rgba(26, 35, 48, 0.6), rgba(10, 15, 21, 0.95) 70%);
   }
 
   .board__canvas {
@@ -2705,37 +2743,38 @@
 
   .board__corner {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    border: 1px solid var(--pg-line-bright);
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--pg-ink-faint);
     pointer-events: none;
-    opacity: 0.9;
+    opacity: 1;
+    z-index: 2;
   }
 
   .board__corner--tl {
-    top: 18px;
-    left: 18px;
+    top: 16px;
+    left: 16px;
     border-right: none;
     border-bottom: none;
   }
 
   .board__corner--tr {
-    top: 18px;
-    right: 18px;
+    top: 16px;
+    right: 16px;
     border-left: none;
     border-bottom: none;
   }
 
   .board__corner--bl {
-    bottom: 18px;
-    left: 18px;
+    bottom: 16px;
+    left: 16px;
     border-right: none;
     border-top: none;
   }
 
   .board__corner--br {
-    bottom: 18px;
-    right: 18px;
+    bottom: 16px;
+    right: 16px;
     border-left: none;
     border-top: none;
   }
@@ -2784,25 +2823,26 @@
 
   .board__readout {
     position: absolute;
-    top: 22px;
-    right: 28px;
-    font-size: 10px;
+    top: 28px;
+    right: 34px;
+    font-size: 10.5px;
     color: var(--pg-ink-dim);
     text-align: right;
-    line-height: 1.7;
+    line-height: 1.75;
     font-family: var(--font-mono);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     z-index: 3;
     pointer-events: none;
   }
 
   .board__readout b {
     color: var(--pg-ink);
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .board__readout .g {
     color: var(--pg-mint);
+    font-weight: 600;
   }
 
   .board__guide {
@@ -2812,10 +2852,10 @@
     transform: translate(-50%, -50%);
     width: min(72%, 480px);
     aspect-ratio: 1;
-    border: 1px dashed var(--pg-line-bright);
+    border: 1.5px dashed var(--pg-mint);
     border-radius: 50%;
     pointer-events: none;
-    opacity: 0.65;
+    opacity: 0.75;
     transition:
       border-color 0.4s,
       border-style 0.4s,
@@ -2827,10 +2867,103 @@
   .board__guide--converged {
     border-color: var(--pg-mint);
     border-style: solid;
-    opacity: 0.6;
+    opacity: 0.72;
     box-shadow:
-      0 0 40px rgba(166, 197, 188, 0.18),
-      inset 0 0 40px rgba(166, 197, 188, 0.1);
+      0 0 40px rgba(166, 197, 188, 0.22),
+      inset 0 0 40px rgba(166, 197, 188, 0.12);
+  }
+
+  /* Phase breadcrumb — small mint badge top-left, mirrors readout */
+  .board__phase-badge {
+    position: absolute;
+    top: 28px;
+    left: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--pg-ink-dim);
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .board__phase-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pg-mint);
+    box-shadow: 0 0 8px var(--pg-mint);
+  }
+
+  /* Ghost slot blueprint — static outlines showing board capacity at SCAFFOLD.
+     Positioned as a full-sized frame so children can project out from center. */
+  .board__ghost-slots {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .board__ghost-slot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border: 1px dashed var(--pg-mint);
+    border-radius: 50%;
+    opacity: 0.4;
+    /* Ring of 6 evenly-spaced blueprint dots offset from center.
+       rotate orients axis, translateY pushes out by a fixed radius,
+       counter-rotate cancels orientation so the circle itself is upright. */
+    transform:
+      rotate(var(--slot-angle, 0deg))
+      translateY(-96px)
+      rotate(calc(var(--slot-angle, 0deg) * -1));
+  }
+
+  @media (max-width: 1100px) {
+    .board__ghost-slot {
+      transform:
+        rotate(var(--slot-angle, 0deg))
+        translateY(-78px)
+        rotate(calc(var(--slot-angle, 0deg) * -1));
+    }
+  }
+
+  /* Idle call-to-action — appears only at SCAFFOLD with zero marbles.
+     Positioned just below the guide-circle center, centered horizontally. */
+  .board__idle-cta {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 130px);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pg-ink-faint);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 3;
+    animation: pg-idle-breathe 3.2s ease-in-out infinite;
+  }
+
+  @media (max-width: 1100px) {
+    .board__idle-cta {
+      transform: translate(-50%, 106px);
+    }
+  }
+
+  @keyframes pg-idle-breathe {
+    50% {
+      opacity: 0.55;
+    }
   }
 
   .board__overlay {
@@ -2871,8 +3004,8 @@
     align-items: center;
     gap: 12px;
     padding: 10px 20px;
-    border-top: 1px solid var(--pg-line);
-    background: var(--pg-bg-deep);
+    border-top: 1px solid var(--pg-divider);
+    background: transparent;
     font-size: 11.5px;
     min-height: 42px;
     flex: 0 0 auto;
@@ -2924,7 +3057,7 @@
 
   /* ───────── INSTRUCTOR (RIGHT) ───────── */
   .pg__instructor {
-    border-left: 1px solid var(--pg-line);
+    border-left: 1px solid var(--pg-divider);
     padding: 18px 18px 16px;
     display: flex;
     flex-direction: column;
@@ -2932,6 +3065,7 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
+    background: transparent;
   }
 
   .inst-head {
@@ -3117,8 +3251,8 @@
   /* ───────── PHASE TIMELINE (FOOTER) ───────── */
   .phase-bar {
     display: flex;
-    border-top: 1px solid var(--pg-line);
-    background: var(--pg-bg-deep);
+    border-top: 1px solid var(--pg-divider);
+    background: transparent;
     position: relative;
     z-index: 2;
     overflow-x: auto;
@@ -3131,7 +3265,7 @@
     flex: 1 0 auto;
     min-width: 92px;
     padding: 9px 12px 11px;
-    border-right: 1px solid var(--pg-line);
+    border-right: 1px solid var(--pg-divider);
     border-top: none;
     border-bottom: none;
     border-left: none;
@@ -3276,7 +3410,7 @@
     .pg__instructor {
       border-left: none;
       border-right: none;
-      border-top: 1px solid var(--pg-line);
+      border-top: 1px solid var(--pg-divider);
       overflow: visible;
     }
 

@@ -726,3 +726,9 @@ html.framework-subpage {
     transition: none;
   }
 }
+
+/* Framework playground owns its own command deck — hide the site-wide
+   floating search shell while the operator console is mounted. */
+body.framework-page .search-shell {
+  display: none !important;
+}
