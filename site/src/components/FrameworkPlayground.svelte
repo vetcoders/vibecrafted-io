@@ -15,6 +15,15 @@
     | 'release';
   type AccentTone = 'steel' | 'copper' | 'patina' | 'alert';
   type MarblePaletteKey = 'amber' | 'ocean' | 'forest' | 'smoke' | 'rose' | 'violet' | 'honey' | 'teal';
+  type PhaseGroup = 'PREP' | 'CRAFT' | 'CONVERGE' | 'SHIP';
+  type StepState = 'done' | 'active' | 'todo';
+  type OperatorId = 'loctree' | 'aicx' | 'prview' | 'screenscribe';
+  type LabelKey = 'agents' | 'pipeline' | 'verify' | 'artifacts';
+
+  interface PhaseStep {
+    txt: string;
+    state: StepState;
+  }
 
   interface PhaseBlueprint {
     name: PhaseName;
@@ -26,6 +35,14 @@
     duration: number;
     snapshotRatio: number;
     tone: AccentTone;
+    group: PhaseGroup;
+    hint: string;
+    state: string;
+    readoutLoop: string;
+    readoutP: string;
+    activeOps: OperatorId[];
+    showLabels: LabelKey[];
+    steps?: PhaseStep[];
   }
 
   interface PhaseDescriptor extends PhaseBlueprint {}
@@ -71,6 +88,33 @@
     defaultPressCopy: string;
     operators: string;
     choosePhase: string;
+    crumb: { root: string; leaf: string };
+    instructor: {
+      label: string;
+      hintLede: string;
+      prev: string;
+      next: string;
+      shipped: string;
+    };
+    readout: {
+      state: string;
+      loop: string;
+      p: string;
+    };
+    boardHead: {
+      phase: string;
+      marbles: string;
+      converge: string;
+      issues: string;
+    };
+    cmdDeck: {
+      prompt: string;
+      main: string;
+    };
+    labels: Record<LabelKey, string>;
+    operatorRows: Record<OperatorId | 'dou' | 'review', { name: string; sub?: string }>;
+    phaseGroups: Record<PhaseGroup, string>;
+    phaseState: Record<string, string>;
     alerts: {
       dou: { title: string; detail: string };
       review: { title: string; detail: string };
@@ -110,10 +154,19 @@
       };
       shapes: Record<BoardShape, string>;
     };
-    phaseOverrides: Partial<Record<PhaseName, Partial<Omit<PhaseBlueprint, 'name' | 'duration' | 'snapshotRatio' | 'tone'>>>>;
+    phaseOverrides: Partial<
+      Record<
+        PhaseName,
+        Partial<Omit<PhaseBlueprint, 'name' | 'duration' | 'snapshotRatio' | 'tone' | 'group'>> & {
+          steps?: PhaseStep[];
+        }
+      >
+    >;
   }
 
   const SHAPES = ['circle', 'square', 'hexagon', 'spiral', 'waves', 'grid'] as const satisfies readonly BoardShape[];
+  const OPERATORS: OperatorId[] = ['loctree', 'aicx', 'prview', 'screenscribe'];
+  const FRAME_LABELS: LabelKey[] = ['agents', 'pipeline', 'verify', 'artifacts'];
   const ALERT_RED = '#e05544';
   const PAL = {
     amber: { base: '#d46b3f', light: '#f4c89a' },
@@ -126,107 +179,232 @@
     teal: { base: '#5ba3a3', light: '#a8dede' }
   } as const satisfies Record<MarblePaletteKey, { base: string; light: string }>;
   const PAL_KEYS = Object.keys(PAL) as MarblePaletteKey[];
+
   const PHASE_BLUEPRINTS: readonly PhaseBlueprint[] = [
     {
       name: 'scaffold',
       label: 'Scaffold',
       eyebrow: 'Phase 0 · Setup',
       title: 'Trace the outer frame',
-      description: 'Set the boundary first. Scaffold is only about the silhouette of the board before we decide how many grooves it can carry.',
+      description:
+        'Set the boundary first. Scaffold is only about the silhouette of the board before we decide how many grooves it can carry.',
       detail: 'Layout shell · geometry lock',
+      hint: 'The board is a teaching surface — every phase adds constraint, not just content.',
+      state: 'awaiting',
+      readoutLoop: '—',
+      readoutP: '—',
+      activeOps: [],
+      showLabels: [],
+      group: 'PREP',
       duration: 1500,
       snapshotRatio: 0.28,
-      tone: 'steel'
+      tone: 'steel',
+      steps: [
+        { txt: 'Lock the outer boundary', state: 'active' },
+        { txt: 'Assign phase lead', state: 'todo' },
+        { txt: 'Enter Init · context load', state: 'todo' }
+      ]
     },
     {
       name: 'init',
       label: 'Init',
       eyebrow: 'Phase 1 · Craft',
       title: 'Etch the first grooves',
-      description: 'Init anchors the board in reality. History and structure start cutting true grooves into the frame so later work has somewhere real to land.',
+      description:
+        'Init anchors the board in reality. History and structure start cutting true grooves into the frame so later work has somewhere real to land.',
       detail: 'Context load · first grooves',
+      hint: 'Agents write blind without this. Never skip init.',
+      state: 'indexing',
+      readoutLoop: '0',
+      readoutP: '—',
+      activeOps: ['loctree', 'aicx'],
+      showLabels: ['agents'],
+      group: 'CRAFT',
       duration: 1600,
       snapshotRatio: 0.48,
-      tone: 'steel'
+      tone: 'steel',
+      steps: [
+        { txt: 'Scaffold complete', state: 'done' },
+        { txt: 'Index aicx decisions', state: 'done' },
+        { txt: 'Read AST via loctree', state: 'active' },
+        { txt: 'Open Workflow pipeline', state: 'todo' }
+      ]
     },
     {
       name: 'workflow',
       label: 'Workflow',
       eyebrow: 'Phase 1 · Craft',
       title: 'Set groove density',
-      description: 'Now define capacity. Workflow decides how many grooves the board exposes, so later work lands into a real operating model instead of empty texture.',
+      description:
+        'Now define capacity. Workflow decides how many grooves the board exposes, so later work lands into a real operating model instead of empty texture.',
       detail: 'Groove count · density tuning',
+      hint: 'Examine → Research → Implement. Small issues are normal — this is where the real fieldwork begins.',
+      state: 'implementing',
+      readoutLoop: '1',
+      readoutP: '0·0·2',
+      activeOps: ['loctree', 'aicx', 'prview', 'screenscribe'],
+      showLabels: ['agents', 'pipeline', 'verify'],
+      group: 'CRAFT',
       duration: 2000,
       snapshotRatio: 0.74,
-      tone: 'copper'
+      tone: 'copper',
+      steps: [
+        { txt: 'Examine codebase', state: 'done' },
+        { txt: 'Research ground truth', state: 'done' },
+        { txt: 'Implement increment', state: 'active' },
+        { txt: 'Await follow-up', state: 'todo' }
+      ]
     },
     {
       name: 'followup',
       label: 'Follow-up',
       eyebrow: 'Phase 2 · Converge',
       title: 'Shake loose the false positives',
-      description: 'Loose marbles start falling away. Followup is where noisy success claims get tested against what actually holds.',
+      description:
+        'Loose marbles start falling away. Followup is where noisy success claims get tested against what actually holds.',
       detail: 'Gravity purge · excess falls off',
+      hint: 'Six issues is the scar tissue of honest implementation. Fix them in Marbles.',
+      state: 'auditing',
+      readoutLoop: '2',
+      readoutP: '1·3·2',
+      activeOps: ['loctree', 'aicx', 'prview', 'screenscribe'],
+      showLabels: ['agents', 'pipeline', 'verify', 'artifacts'],
+      group: 'CONVERGE',
       duration: 1500,
       snapshotRatio: 0.68,
-      tone: 'steel'
+      tone: 'steel',
+      steps: [
+        { txt: 'Workflow implemented', state: 'done' },
+        { txt: 'Collect severity findings', state: 'done' },
+        { txt: 'Issue GO / NO-GO verdict', state: 'active' },
+        { txt: 'Enter Marbles loop', state: 'todo' }
+      ]
     },
     {
       name: 'marbles',
       label: 'Marbles',
       eyebrow: 'Phase 2 · Converge',
-      title: 'Add force, accept variance',
-      description: 'More batches arrive and entropy climbs. This is the honest middle: throughput increases, but so does noise.',
+      title: 'Loop until P0=P1=P2=0',
+      description:
+        'Iterative convergence. Each pass reduces variance. No fixed count — run until the circle is full.',
       detail: 'Batch throws · growing entropy',
+      hint: 'Late loops compress, not correct. Keep looping until the circle is full.',
+      state: 'converging',
+      readoutLoop: '4',
+      readoutP: '0·1·1',
+      activeOps: ['loctree', 'aicx', 'prview', 'screenscribe'],
+      showLabels: ['agents', 'pipeline', 'verify', 'artifacts'],
+      group: 'CONVERGE',
       duration: 3000,
       snapshotRatio: 0.58,
-      tone: 'copper'
+      tone: 'copper',
+      steps: [
+        { txt: 'Loop 1 · structural fix', state: 'done' },
+        { txt: 'Loop 2 · runtime alignment', state: 'done' },
+        { txt: 'Loop 3 · compressing roughness', state: 'done' },
+        { txt: 'Loop 4 · final smoothing', state: 'active' }
+      ]
     },
     {
       name: 'dou',
       label: 'DoU',
       eyebrow: 'Phase 3 · Audit',
       title: 'Definition of Undone',
-      description: 'Surface the red truth. Run a systematic gap analysis across the entire product surface to expose what still blocks shipping.',
+      description:
+        'Surface the red truth. Run a systematic gap analysis across the entire product surface to expose what still blocks shipping.',
       detail: 'Plague check · readiness audit',
+      hint: 'Tests pass ≠ product works. The gap is the funnel — find it, close it.',
+      state: 'auditing',
+      readoutLoop: 'done',
+      readoutP: '0·0·3',
+      activeOps: ['prview', 'screenscribe'],
+      showLabels: ['pipeline', 'verify', 'artifacts'],
+      group: 'SHIP',
       duration: 1500,
       snapshotRatio: 0.48,
-      tone: 'alert'
+      tone: 'alert',
+      steps: [
+        { txt: 'Marbles converged', state: 'done' },
+        { txt: 'Check install path', state: 'done' },
+        { txt: 'Audit SEO funnel', state: 'active' },
+        { txt: 'Audit payment path', state: 'todo' }
+      ]
     },
     {
       name: 'decorate',
       label: 'Decorate',
       eyebrow: 'Phase 3 · Ship',
       title: 'Turn coherence into finish',
-      description: 'The settled marbles saturate and sharpen. Decorate is not random ornament; it is the final coherence pass that makes the system feel intentional.',
+      description:
+        'The settled marbles saturate and sharpen. Decorate is not random ornament; it is the final coherence pass that makes the system feel intentional.',
       detail: 'Saturation lift · finish pass',
+      hint: 'Smaczki, not decorations. Every element should feel chosen.',
+      state: 'polishing',
+      readoutLoop: 'done',
+      readoutP: '0·0·0',
+      activeOps: ['prview'],
+      showLabels: ['verify', 'artifacts'],
+      group: 'SHIP',
       duration: 2000,
       snapshotRatio: 0.72,
-      tone: 'patina'
+      tone: 'patina',
+      steps: [
+        { txt: 'DoU audit complete', state: 'done' },
+        { txt: 'Extract brand tokens', state: 'done' },
+        { txt: 'Polish interaction language', state: 'active' }
+      ]
     },
     {
       name: 'hydrate',
       label: 'Hydrate',
       eyebrow: 'Phase 3 · Ship',
       title: 'Fill the exact missing slots',
-      description: 'Now the motion changes tone. The remaining gaps are handled deterministically, one launch-critical hole at a time.',
+      description:
+        'Now the motion changes tone. The remaining gaps are handled deterministically, one launch-critical hole at a time.',
       detail: 'Precise fill · market-facing completion',
+      hint: 'Code without distribution is a zine. Hydrate turns it into a product.',
+      state: 'packaging',
+      readoutLoop: 'done',
+      readoutP: '0·0·0',
+      activeOps: ['prview'],
+      showLabels: ['artifacts'],
+      group: 'SHIP',
       duration: 2500,
       snapshotRatio: 0.68,
-      tone: 'patina'
+      tone: 'patina',
+      steps: [
+        { txt: 'Decoration complete', state: 'done' },
+        { txt: 'Write marketplace copy', state: 'done' },
+        { txt: 'Publish onboarding flow', state: 'active' }
+      ]
     },
     {
       name: 'release',
       label: 'Release',
       eyebrow: 'Final Step · Release',
-      title: 'Ship code to market',
-      description: 'The board glows, holds, and then fades for the next cycle. Shipping is not the absence of motion; it is a completed loop ready to start again.',
+      title: 'Tag · publish · ship',
+      description:
+        'The board glows, holds, and then fades for the next cycle. Shipping is not the absence of motion; it is a completed loop ready to start again.',
       detail: 'Stable board · reset for next cycle',
+      hint: 'The circle is full. What ships is not "working code" — it is a reachable product.',
+      state: 'released',
+      readoutLoop: 'done',
+      readoutP: '0·0·0',
+      activeOps: [],
+      showLabels: [],
+      group: 'SHIP',
       duration: 3000,
       snapshotRatio: 0.34,
-      tone: 'patina'
+      tone: 'patina',
+      steps: [
+        { txt: 'Hydrate complete', state: 'done' },
+        { txt: 'Publish to registries', state: 'done' },
+        { txt: 'Announce release', state: 'done' },
+        { txt: 'Circle is full · shipped', state: 'done' }
+      ]
     }
   ];
+
   const FRAMEWORK_I18N: Record<Lang, FrameworkStrings> = {
     en: {
       overlayPhase: 'Phase',
@@ -240,24 +418,67 @@
       defaultPressCopy: 'Define the board geometry.',
       operators: 'Operators',
       choosePhase: 'Choose Phase',
+      crumb: { root: 'Framework', leaf: 'Playground' },
+      instructor: {
+        label: 'Instructor',
+        hintLede: 'n.b.',
+        prev: '← prev',
+        next: 'next →',
+        shipped: 'shipped ✓'
+      },
+      readout: { state: 'state', loop: 'loop', p: 'p0·p1·p2' },
+      boardHead: { phase: 'Phase', marbles: 'Marbles', converge: 'Converge', issues: 'Issues' },
+      cmdDeck: { prompt: '$', main: 'vibecrafted' },
+      labels: {
+        agents: '→ agents',
+        pipeline: 'pipeline',
+        verify: 'verify ←',
+        artifacts: 'artifacts'
+      },
+      operatorRows: {
+        loctree: { name: 'loctree', sub: 'structure' },
+        aicx: { name: 'aicx', sub: 'memory' },
+        prview: { name: 'prview', sub: 'review' },
+        screenscribe: { name: 'ScreenScribe', sub: 'runtime' },
+        dou: { name: 'DoU' },
+        review: { name: 'Review' }
+      },
+      phaseGroups: { PREP: 'PREP', CRAFT: 'CRAFT', CONVERGE: 'CONVERGE', SHIP: 'SHIP' },
+      phaseState: {
+        awaiting: 'awaiting',
+        indexing: 'indexing',
+        implementing: 'implementing',
+        auditing: 'auditing',
+        converging: 'converging',
+        polishing: 'polishing',
+        packaging: 'packaging',
+        released: 'released'
+      },
       alerts: {
         dou: { title: 'DoU', detail: 'Blockers surfaced' },
         review: { title: 'Review', detail: 'Weak fits exposed' }
       },
       hints: {
-        scaffold: 'Choose the outer frame first. Capacity comes later, once the board shape is real.',
+        scaffold:
+          'Choose the outer frame first. Capacity comes later, once the board shape is real.',
         init: 'Bootstrap context so the first true grooves are cut from history instead of guessed from nothing.',
-        workflow: 'Tune groove density until the board exposes the right amount of working capacity.',
-        followup: 'Shake the board and see which claims of progress were never truly anchored.',
-        marbles: 'Set the marbles count and force, then let the board run the convergence sequence by itself.',
+        workflow:
+          'Tune groove density until the board exposes the right amount of working capacity.',
+        followup:
+          'Shake the board and see which claims of progress were never truly anchored.',
+        marbles:
+          'Set the marbles count and force, then let the board run the convergence sequence by itself.',
         dou: 'Flash the undone truth in red and expose what still blocks shipping.',
         decorate: 'Apply final polish pass to saturate colors and sharpen the finish.',
         hydrate: 'Fill the remaining critical gaps with deterministic precision.',
         release: 'Launch the finished surface and release the loop to the market.',
-        review: 'Run a stress pass on the first placements before the noisy convergence loops begin.',
-        research: 'Probe the lane choices before committing force. Research narrows the search space and marks the promising paths.',
+        review:
+          'Run a stress pass on the first placements before the noisy convergence loops begin.',
+        research:
+          'Probe the lane choices before committing force. Research narrows the search space and marks the promising paths.',
         agents: 'Select specialist count and spawn them into the grooves.',
-        prune: 'Remove weak or unnecessary fits so the board can converge around the stronger core.'
+        prune:
+          'Remove weak or unnecessary fits so the board can converge around the stronger core.'
       },
       controls: {
         boardShape: 'Board shape',
@@ -315,7 +536,7 @@
     pl: {
       overlayPhase: 'Faza',
       overlayConverge: 'Domknięcie',
-      overlayMarbles: 'Marbles',
+      overlayMarbles: 'Kulki',
       showcaseKicker: 'Playground frameworku',
       showcaseHeading: 'Steruj planszą konwergencji',
       showcaseLead:
@@ -324,24 +545,67 @@
       defaultPressCopy: 'Zdefiniuj geometrię planszy.',
       operators: 'Operatorzy',
       choosePhase: 'Wybierz fazę',
+      crumb: { root: 'Framework', leaf: 'Playground' },
+      instructor: {
+        label: 'Instruktor',
+        hintLede: 'n.b.',
+        prev: '← poprzednia',
+        next: 'następna →',
+        shipped: 'wydane ✓'
+      },
+      readout: { state: 'stan', loop: 'pętla', p: 'p0·p1·p2' },
+      boardHead: { phase: 'Faza', marbles: 'Kulki', converge: 'Domknięcie', issues: 'Problemy' },
+      cmdDeck: { prompt: '$', main: 'vibecrafted' },
+      labels: {
+        agents: '→ agenty',
+        pipeline: 'pipeline',
+        verify: 'weryfikacja ←',
+        artifacts: 'artefakty'
+      },
+      operatorRows: {
+        loctree: { name: 'loctree', sub: 'struktura' },
+        aicx: { name: 'aicx', sub: 'pamięć' },
+        prview: { name: 'prview', sub: 'review' },
+        screenscribe: { name: 'ScreenScribe', sub: 'runtime' },
+        dou: { name: 'DoU' },
+        review: { name: 'Review' }
+      },
+      phaseGroups: { PREP: 'PREP', CRAFT: 'TWÓRZ', CONVERGE: 'DOMYKAJ', SHIP: 'WDRÓŻ' },
+      phaseState: {
+        awaiting: 'oczekiwanie',
+        indexing: 'indeksowanie',
+        implementing: 'implementacja',
+        auditing: 'audyt',
+        converging: 'domykanie',
+        polishing: 'polerowanie',
+        packaging: 'pakowanie',
+        released: 'wydane'
+      },
       alerts: {
         dou: { title: 'DoU', detail: 'Blokery ujawnione' },
         review: { title: 'Review', detail: 'Słabe dopasowania ujawnione' }
       },
       hints: {
-        scaffold: 'Najpierw wybierz zewnętrzną ramę. Pojemność przychodzi później, gdy kształt planszy jest już prawdziwy.',
+        scaffold:
+          'Najpierw wybierz zewnętrzną ramę. Pojemność przychodzi później, gdy kształt planszy jest już prawdziwy.',
         init: 'Zainicjuj kontekst, żeby pierwsze prawdziwe rowki były wycinane z historii zamiast zgadywane od zera.',
-        workflow: 'Dostrój gęstość rowków, aż plansza pokaże właściwą pojemność roboczą.',
-        followup: 'Potrząśnij planszą i sprawdź, które deklaracje postępu nigdy nie były naprawdę osadzone.',
-        marbles: 'Ustaw liczbę kulek i siłę, a potem pozwól planszy samodzielnie uruchomić sekwencję konwergencji.',
+        workflow:
+          'Dostrój gęstość rowków, aż plansza pokaże właściwą pojemność roboczą.',
+        followup:
+          'Potrząśnij planszą i sprawdź, które deklaracje postępu nigdy nie były naprawdę osadzone.',
+        marbles:
+          'Ustaw liczbę kulek i siłę, a potem pozwól planszy samodzielnie uruchomić sekwencję konwergencji.',
         dou: 'Pokaż na czerwono prawdę o niedomknięciu i ujawnij, co nadal blokuje release.',
         decorate: 'Nałóż końcowy polish pass, żeby nasycić kolory i wyostrzyć finish.',
         hydrate: 'Wypełnij pozostałe krytyczne luki z deterministyczną precyzją.',
         release: 'Wypuść gotową powierzchnię i uwolnij pętlę na rynek.',
-        review: 'Uruchom pass stresowy dla pierwszych ułożeń, zanim zaczną się głośniejsze pętle domykania.',
-        research: 'Przetestuj możliwe tory, zanim dołożysz siłę. Research zawęża przestrzeń szukania i zaznacza obiecujące ścieżki.',
+        review:
+          'Uruchom pass stresowy dla pierwszych ułożeń, zanim zaczną się głośniejsze pętle domykania.',
+        research:
+          'Przetestuj możliwe tory, zanim dołożysz siłę. Research zawęża przestrzeń szukania i zaznacza obiecujące ścieżki.',
         agents: 'Wybierz liczbę specjalistów i wpuść ich w rowki.',
-        prune: 'Usuń słabe albo zbędne dopasowania, żeby plansza mogła domknąć się wokół mocniejszego rdzenia.'
+        prune:
+          'Usuń słabe albo zbędne dopasowania, żeby plansza mogła domknąć się wokół mocniejszego rdzenia.'
       },
       controls: {
         boardShape: 'Kształt planszy',
@@ -398,55 +662,64 @@
         scaffold: {
           eyebrow: 'Faza 0 · Setup',
           title: 'Wyznacz zewnętrzną ramę',
-          description: 'Najpierw wyznacz granicę. Scaffold dotyczy tylko sylwetki planszy, zanim zdecydujemy, ile rowków ma unieść.',
+          description:
+            'Najpierw wyznacz granicę. Scaffold dotyczy tylko sylwetki planszy, zanim zdecydujemy, ile rowków ma unieść.',
           detail: 'Szkielet układu · blokada geometrii'
         },
         init: {
           eyebrow: 'Faza 1 · Twórz',
           title: 'Wytraw pierwsze rowki',
-          description: 'Init zakotwicza planszę w rzeczywistości. Historia i struktura zaczynają wycinać prawdziwe rowki, żeby późniejsza praca miała gdzie lądować.',
+          description:
+            'Init zakotwicza planszę w rzeczywistości. Historia i struktura zaczynają wycinać prawdziwe rowki, żeby późniejsza praca miała gdzie lądować.',
           detail: 'Ładowanie kontekstu · pierwsze rowki'
         },
         workflow: {
           eyebrow: 'Faza 1 · Twórz',
           title: 'Ustaw gęstość rowków',
-          description: 'Tutaj definiujemy pojemność. Workflow decyduje, ile rowków plansza wystawi, żeby dalsza praca wpadała w prawdziwy model operacyjny zamiast pustej tekstury.',
+          description:
+            'Tutaj definiujemy pojemność. Workflow decyduje, ile rowków plansza wystawi, żeby dalsza praca wpadała w prawdziwy model operacyjny zamiast pustej tekstury.',
           detail: 'Liczba rowków · strojenie gęstości'
         },
         followup: {
           eyebrow: 'Faza 2 · Domykaj',
           title: 'Strząśnij fałszywe sukcesy',
-          description: 'Luźne kulki zaczynają odpadać. Followup to moment, w którym głośne deklaracje sukcesu zderzają się z tym, co naprawdę się trzyma.',
+          description:
+            'Luźne kulki zaczynają odpadać. Followup to moment, w którym głośne deklaracje sukcesu zderzają się z tym, co naprawdę się trzyma.',
           detail: 'Grawitacyjne czyszczenie · nadmiar odpada'
         },
         marbles: {
           eyebrow: 'Faza 2 · Domykaj',
-          title: 'Dodaj siłę i zaakceptuj wariancję',
-          description: 'Docierają kolejne batch’e i rośnie entropia. To uczciwy środek: throughput przyspiesza, ale rośnie też szum.',
+          title: 'Domknij, aż P0=P1=P2=0',
+          description:
+            'Iteracyjne domykanie. Każdy przebieg redukuje wariancję. Bez ustalonej liczby — aż krąg się zamknie.',
           detail: 'Rzuty batchowe · rosnąca entropia'
         },
         dou: {
           eyebrow: 'Faza 3 · Audyt',
           title: 'Definition of Undone',
-          description: 'Wyciągnij na czerwono prawdę. Uruchom systematyczną analizę luk na całej powierzchni produktu, żeby zobaczyć, co nadal blokuje wysyłkę.',
+          description:
+            'Wyciągnij na czerwono prawdę. Uruchom systematyczną analizę luk na całej powierzchni produktu, żeby zobaczyć, co nadal blokuje wysyłkę.',
           detail: 'Plague check · audyt gotowości'
         },
         decorate: {
           eyebrow: 'Faza 3 · Wdrażaj',
           title: 'Zamień spójność w wykończenie',
-          description: 'Osadzone kulki zyskują nasycenie i ostrość. Decorate nie jest przypadkową ornamentyką; to końcowy pass spójności, który sprawia, że system czuje się intencjonalny.',
+          description:
+            'Osadzone kulki zyskują nasycenie i ostrość. Decorate nie jest przypadkową ornamentyką; to końcowy pass spójności, który sprawia, że system czuje się intencjonalny.',
           detail: 'Podbicie nasycenia · pass wykończenia'
         },
         hydrate: {
           eyebrow: 'Faza 3 · Wdrażaj',
           title: 'Wypełnij dokładnie brakujące szczeliny',
-          description: 'Tutaj ruch zmienia ton. Pozostałe luki są domykane deterministycznie, po jednym krytycznym dla launchu otworze naraz.',
+          description:
+            'Tutaj ruch zmienia ton. Pozostałe luki są domykane deterministycznie, po jednym krytycznym dla launchu otworze naraz.',
           detail: 'Precyzyjne wypełnienie · domknięcie pod rynek'
         },
         release: {
           eyebrow: 'Krok końcowy · Release',
-          title: 'Wypuść kod na rynek',
-          description: 'Plansza rozświetla się, utrzymuje wzór, a potem blednie przed kolejnym cyklem. Shipping nie jest brakiem ruchu; to domknięta pętla gotowa, by zacząć od nowa.',
+          title: 'Tag · publish · ship',
+          description:
+            'Plansza rozświetla się, utrzymuje wzór, a potem blednie przed kolejnym cyklem. Shipping nie jest brakiem ruchu; to domknięta pętla gotowa, by zacząć od nowa.',
           detail: 'Stabilna plansza · reset na kolejny cykl'
         }
       }
@@ -457,7 +730,7 @@
   const componentId = `framework-playground-${lang === 'pl' ? 'pl' : 'en'}`;
 
   let rootEl: HTMLDivElement | undefined;
-  let stageEl: HTMLDivElement | undefined;
+  let boardEl: HTMLDivElement | undefined;
   let canvasEl: HTMLCanvasElement | undefined;
   let phaseButtons: Array<HTMLButtonElement | null> = [];
 
@@ -502,45 +775,98 @@
   let boardRadius = 0;
   let marbleRadius = 0;
   let theme = {
-    copper: '#b87333',
-    copperBright: '#d4905c',
-    patina: '#5a8a7a',
-    steel: '#a3b8c7',
-    steelDark: '#6b7f8e',
-    steelEdge: '#c4d4e0',
-    surfaceGlass: 'rgba(14, 14, 17, 0.78)',
-    surfaceOverlay: 'rgba(9, 10, 12, 0.88)',
-    steelBorder: 'rgba(163, 184, 199, 0.18)'
+    copper: '#d97745',
+    copperBright: '#e28a5c',
+    patina: '#a6c5bc',
+    steel: '#b9c3cc',
+    steelDark: '#7a8590',
+    steelEdge: '#d3dce4',
+    surfaceGlass: 'rgba(15, 22, 29, 0.22)',
+    surfaceOverlay: 'rgba(8, 12, 17, 0.88)',
+    steelBorder: 'rgba(185, 195, 204, 0.18)'
   };
 
   let locale = $derived<Lang>(lang === 'pl' ? 'pl' : 'en');
   let text = $derived(FRAMEWORK_I18N[locale]);
   let phases = $derived.by<PhaseDescriptor[]>(() =>
-    PHASE_BLUEPRINTS.map((phase) => ({
-      ...phase,
-      ...(text.phaseOverrides[phase.name] ?? {})
-    }))
+    PHASE_BLUEPRINTS.map((phase) => {
+      const override = text.phaseOverrides[phase.name] ?? {};
+      return {
+        ...phase,
+        ...override,
+        steps: override.steps ?? phase.steps
+      } as PhaseDescriptor;
+    })
   );
   let currentPhase = $derived(phases[currentPhaseIndex] ?? phases[0]);
   let visibleSlotCount = $derived.by(() => slots.filter((slot) => slot.visible).length);
   let filledSlotCount = $derived.by(() => slots.filter((slot) => slot.visible && slot.filled).length);
-  let settledOverflowCount = $derived.by(() => overflowMarbles.filter((marble) => marble.settled && marble.alpha > 0.06).length);
+  let settledOverflowCount = $derived.by(
+    () => overflowMarbles.filter((marble) => marble.settled && marble.alpha > 0.06).length
+  );
   let visibleMarbleCount = $derived.by(
-    () => marbles.filter((marble) => marble.alpha > 0.06).length + overflowMarbles.filter((marble) => marble.alpha > 0.06).length
+    () =>
+      marbles.filter((marble) => marble.alpha > 0.06).length +
+      overflowMarbles.filter((marble) => marble.alpha > 0.06).length
   );
   let convergenceProgress = $derived(
-    visibleSlotCount > 0 ? Math.round(((filledSlotCount + settledOverflowCount) / visibleSlotCount) * 100) : 0
+    visibleSlotCount > 0
+      ? Math.round(((filledSlotCount + settledOverflowCount) / visibleSlotCount) * 100)
+      : 0
   );
-  let currentHint = $derived(text.hints[currentPhase.name] ?? currentPhase.description);
+  let currentHint = $derived(text.hints[currentPhase.name] ?? currentPhase.hint ?? currentPhase.description);
   let reviewWeakFits = $derived.by(
-    () => overflowMarbles.filter((marble) => marble.alpha > 0.18).length + Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / 24))
+    () =>
+      overflowMarbles.filter((marble) => marble.alpha > 0.18).length +
+      Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / 24))
   );
-  let douBlockers = $derived.by(() => Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / Math.max(1, hydrateBatchSize))));
+  let douBlockers = $derived.by(() =>
+    Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / Math.max(1, hydrateBatchSize)))
+  );
   let densityPercent = $derived(Math.round(((grooveDensity - 0.5) / 1.5) * 100));
   let operatorPercent = $derived(Math.round(((operatorCount - 1) / 9) * 100));
   let hydratePercent = $derived(Math.round(((hydrateBatchSize - 1) / 9) * 100));
   let boardShapeLabel = $derived(text.controls.shapes[boardShape]);
   let promptCommand = $derived.by(() => currentPhaseCommand(currentPhase));
+  let phaseNumberText = $derived(String(currentPhaseIndex).padStart(2, '0'));
+  let phaseState = $derived(text.phaseState[currentPhase.state] ?? currentPhase.state);
+  let issuesCount = $derived(currentPhase.name === 'dou' ? douBlockers : reviewWeakFits);
+  let guideConverged = $derived(convergenceProgress >= 98 || currentPhase.name === 'release');
+  let operatorRows = $derived.by(() => {
+    const rows: Array<{
+      id: string;
+      name: string;
+      sub?: string;
+      val: number;
+      active: boolean;
+      warn: boolean;
+    }> = [];
+    OPERATORS.forEach((op, index) => {
+      const isActive = currentPhase.activeOps.includes(op);
+      const meta = text.operatorRows[op];
+      const val = isActive ? Math.floor(convergenceProgress * (0.6 + index * 0.15)) : 0;
+      rows.push({ id: op, name: meta.name, sub: meta.sub, val, active: isActive, warn: false });
+    });
+    const douMeta = text.operatorRows.dou;
+    const reviewMeta = text.operatorRows.review;
+    const douVal = currentPhase.group === 'SHIP' ? Math.max(1, Math.floor(convergenceProgress / 15)) : 0;
+    const reviewVal = Math.max(0, Math.floor(visibleMarbleCount / 3));
+    rows.push({
+      id: 'dou',
+      name: douMeta.name,
+      val: douVal,
+      active: douVal > 0,
+      warn: currentPhase.name === 'dou' && douBlockers > 0
+    });
+    rows.push({
+      id: 'review',
+      name: reviewMeta.name,
+      val: reviewVal,
+      active: reviewVal > 0,
+      warn: currentPhase.name === 'followup' && reviewWeakFits > 0
+    });
+    return rows;
+  });
   let boardAriaLabel = $derived.by(
     () =>
       `${currentPhase.label}. ${currentPhase.title}. ${convergenceProgress}% ${text.controls.metrics.progress.toLowerCase()}. ${filledSlotCount} ${text.controls.metrics.grooves.toLowerCase()} ${locale === 'pl' ? 'wypełnionych' : 'filled'}.`
@@ -615,7 +941,6 @@
   }
 
   function currentPhaseCommand(phase: PhaseDescriptor) {
-    // Keep the playground anchored to public command-deck examples, not demo-only prompts.
     switch (phase.name) {
       case 'scaffold':
         return 'vibecrafted scaffold claude --prompt "Plan the auth architecture"';
@@ -638,6 +963,31 @@
       default:
         return `vibecrafted ${phase.name} codex`;
     }
+  }
+
+  function splitPromptCommand(command: string): { head: string; tail: string } {
+    const parts = command.split(' ');
+    if (parts.length <= 2) return { head: command, tail: '' };
+    return { head: `${parts[0]} ${parts[1]}`, tail: parts.slice(2).join(' ') };
+  }
+
+  function escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function formatTitle(title: string): string {
+    const trimmed = title.trim();
+    if (!trimmed) return '';
+    const match = trimmed.match(
+      /^(.*?\s)([A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż][\wĄĆĘŁŃÓŚŹŻąćęłńóśźż-]+)([^A-Za-zĄĆĘŁŃÓŚŹŻąćęłńóśźż]*)$/u
+    );
+    if (!match) return escapeHtml(trimmed);
+    const [, head, word, tail] = match;
+    return `${escapeHtml(head)}<em>${escapeHtml(word)}</em>${escapeHtml(tail)}`;
   }
 
   function announce(message: string) {
@@ -673,7 +1023,9 @@
           const angle = Math.atan2(dy, dx);
           const distance = Math.sqrt(dx * dx + dy * dy);
           const spiralDistance = (angle + Math.PI * 10) * (boardRadius / 20);
-          isInside = Math.abs(distance - (spiralDistance % boardRadius)) < spacing * 0.5 && distance < boardRadius;
+          isInside =
+            Math.abs(distance - (spiralDistance % boardRadius)) < spacing * 0.5 &&
+            distance < boardRadius;
         } else if (boardShape === 'waves') {
           const wave = Math.sin(px * 0.05) * (boardRadius * 0.2);
           isInside = Math.abs(dy - wave) < spacing * 0.8 && Math.abs(dx) < boardRadius * 0.9;
@@ -742,7 +1094,14 @@
     currentPhaseIndex = index;
     phaseTime = 0;
     phasePulse = prefersReducedMotion ? 0.18 : 1;
-    boardAlpha = phase.name === 'scaffold' ? (prefersReducedMotion ? 0.88 : 0.12) : phase.name === 'init' ? 0.92 : 1;
+    boardAlpha =
+      phase.name === 'scaffold'
+        ? prefersReducedMotion
+          ? 0.88
+          : 0.12
+        : phase.name === 'init'
+          ? 0.92
+          : 1;
     shakeOffset = { x: 0, y: 0 };
 
     if (phase.name === 'scaffold') {
@@ -772,8 +1131,8 @@
   }
 
   function resizeCanvas() {
-    if (!stageEl || !canvasEl) return;
-    const rect = stageEl.getBoundingClientRect();
+    if (!boardEl || !canvasEl) return;
+    const rect = boardEl.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
 
     frameWidth = rect.width;
@@ -989,16 +1348,17 @@
     shipGlow = 1;
     motionActive = true;
     announce(text.controls.status.loopReleased);
-    resetTimer = setTimeout(() => {
-      restartLoop();
-    }, prefersReducedMotion ? 600 : 2200);
+    resetTimer = setTimeout(
+      () => {
+        restartLoop();
+      },
+      prefersReducedMotion ? 600 : 2200
+    );
   }
 
   function runPhaseAction() {
     switch (currentPhase.name) {
       case 'scaffold':
-        showPhase(currentPhaseIndex + 1);
-        break;
       case 'init':
         showPhase(currentPhaseIndex + 1);
         break;
@@ -1012,7 +1372,7 @@
         runFollowupPass();
         break;
       case 'marbles':
-        runFollowupPass();
+        runConvergence();
         break;
       case 'dou':
         runDouAudit();
@@ -1124,7 +1484,14 @@
     context.save();
     context.beginPath();
     traceBoardShape(context, 1);
-    const interior = context.createRadialGradient(centerX, centerY, boardRadius * 0.18, centerX, centerY, boardRadius * 1.02);
+    const interior = context.createRadialGradient(
+      centerX,
+      centerY,
+      boardRadius * 0.18,
+      centerX,
+      centerY,
+      boardRadius * 1.02
+    );
     interior.addColorStop(0, withAlpha(theme.surfaceOverlay, 0.54 * boardAlpha));
     interior.addColorStop(1, withAlpha(theme.surfaceGlass, 0.22 * boardAlpha));
     context.fillStyle = interior;
@@ -1203,7 +1570,15 @@
     context.save();
     context.globalAlpha = marble.alpha;
     context.beginPath();
-    context.ellipse(marble.x, marble.y + marbleRadius * 0.6, marbleRadius * 0.6, marbleRadius * 0.24, 0, 0, Math.PI * 2);
+    context.ellipse(
+      marble.x,
+      marble.y + marbleRadius * 0.6,
+      marbleRadius * 0.6,
+      marbleRadius * 0.24,
+      0,
+      0,
+      Math.PI * 2
+    );
     context.fillStyle = 'rgba(0, 0, 0, 0.24)';
     context.fill();
 
@@ -1227,7 +1602,14 @@
     context.fill();
 
     context.beginPath();
-    context.arc(marble.x - marbleRadius * 0.28, drawY - marbleRadius * 0.35, marbleRadius * 0.28, 0, Math.PI * 2);
+    context.arc(
+      marble.x - marbleRadius * 0.28,
+      drawY - marbleRadius * 0.35,
+      marbleRadius * 0.28,
+      0,
+      0,
+      Math.PI * 2
+    );
     context.fillStyle = 'rgba(255, 255, 255, 0.42)';
     context.globalAlpha = marble.alpha * 0.72;
     context.fill();
@@ -1255,11 +1637,11 @@
 
     slots.forEach((slot) => {
       if (slot.visible) {
-        drawGroove(ctx, slot);
+        drawGroove(ctx!, slot);
       }
     });
 
-    pings.forEach((ping) => drawPing(ctx, ping));
+    pings.forEach((ping) => drawPing(ctx!, ping));
 
     if (errorFlash > 0.04) {
       ctx.save();
@@ -1285,7 +1667,7 @@
     }
 
     const allMarbles = [...marbles, ...overflowMarbles].sort((a, b) => a.y - b.y);
-    allMarbles.forEach((marble) => drawMarble(ctx, marble));
+    allMarbles.forEach((marble) => drawMarble(ctx!, marble));
     ctx.restore();
   }
 
@@ -1314,10 +1696,16 @@
       }
     } else if (currentPhase.name === 'init') {
       boardAlpha = 1;
-      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(0.18, (phaseTime / phaseDuration) * 0.18));
+      grooveRevealProgress = Math.max(
+        grooveRevealProgress,
+        Math.min(0.18, (phaseTime / phaseDuration) * 0.18)
+      );
     } else if (currentPhase.name === 'workflow') {
       boardAlpha = 1;
-      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(1, phaseTime / (phaseDuration * 0.65)));
+      grooveRevealProgress = Math.max(
+        grooveRevealProgress,
+        Math.min(1, phaseTime / (phaseDuration * 0.65))
+      );
     }
 
     syncSlotVisibility();
@@ -1440,8 +1828,8 @@
     showPhase(0);
 
     resizeObserver = new ResizeObserver(scheduleResize);
-    if (stageEl) {
-      resizeObserver.observe(stageEl);
+    if (boardEl) {
+      resizeObserver.observe(boardEl);
     }
 
     return () => {
@@ -1460,805 +1848,1349 @@
 
 <div
   bind:this={rootEl}
-  class="framework-playground"
+  class="pg"
+  class:pg--converged={guideConverged}
   data-phase={currentPhase.name}
+  data-tone={currentPhase.tone}
 >
-  <div class="framework-playground__intro">
-    <p class="framework-playground__kicker">{text.showcaseKicker}</p>
-    <h1 class="framework-playground__heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h1>
-    <p class="framework-playground__lead">{text.showcaseLead}</p>
+  <!-- ===== Internal topbar / crumb ===== -->
+  <div class="pg__topbar" aria-hidden="false">
+    <div class="pg__crumb">
+      <span class="pg__crumb-root">{text.crumb.root}</span>
+      <span class="pg__crumb-sep">/</span>
+      <b class="pg__crumb-leaf">{text.crumb.leaf}</b>
+    </div>
+    <div class="pg__meta-strip" aria-hidden="true">
+      <span class="pg__meta-dot" data-dot="live"></span>
+      <span class="pg__meta-label">{text.overlayPhase} {phaseNumberText}</span>
+      <span class="pg__meta-sep">·</span>
+      <span class="pg__meta-label pg__meta-label--accent">{currentPhase.label}</span>
+    </div>
   </div>
 
-  <div class="framework-playground__body">
-    <div class="framework-playground__board-column">
-      <p class="framework-playground__pressline">
-        <span class="framework-playground__press-kicker">{currentPhase.eyebrow}</span>
-        <span class="framework-playground__press-copy">{currentPhase.title}.</span>
-      </p>
+  <!-- ===== Workspace ===== -->
+  <div class="pg__workspace">
+    <!-- LEFT: OPERATORS -->
+    <aside class="pg__operators" aria-label={text.operators}>
+      <div class="op-section">
+        <div class="op-head">{text.operators}</div>
+        <div class="op-list">
+          {#each operatorRows as row (row.id)}
+            <div class="op" class:is-active={row.active} class:is-warn={row.warn}>
+              <div class="op__dot" aria-hidden="true"></div>
+              <div class="op__name">
+                {row.name}
+                {#if row.sub}<em>· {row.sub}</em>{/if}
+              </div>
+              <div class="op__val">{row.val}</div>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+      <div class="op-note">{currentHint}</div>
+
+      <!-- Tiered controls: shape / density / operators / hydrate / alerts -->
+      <section class="op-controls" aria-label={text.controls.actionPanel}>
+        <div class="op-controls__head">{text.controls.actionPanel}</div>
+
+        <div class="op-controls__row">
+          <span class="op-controls__caption">{text.controls.boardShape}</span>
+          <div class="op-controls__shape">
+            <button
+              class="op-controls__btn"
+              type="button"
+              aria-label={locale === 'pl' ? 'Poprzedni kształt' : 'Previous shape'}
+              onclick={() => shiftBoardShape(-1)}
+            >
+              &lt;
+            </button>
+            <span class="op-controls__shape-label">{boardShapeLabel}</span>
+            <button
+              class="op-controls__btn"
+              type="button"
+              aria-label={locale === 'pl' ? 'Następny kształt' : 'Next shape'}
+              onclick={() => shiftBoardShape(1)}
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+
+        <label class="op-controls__range">
+          <span class="op-controls__caption">
+            {text.controls.density}: {grooveDensity.toFixed(1)}
+          </span>
+          <input
+            type="range"
+            min="0.5"
+            max="2"
+            step="0.1"
+            value={grooveDensity}
+            aria-label={text.controls.density}
+            style={`--range-pct:${densityPercent}%`}
+            oninput={handleDensityInput}
+          />
+        </label>
+
+        <label class="op-controls__range">
+          <span class="op-controls__caption">
+            {text.controls.operators}: {operatorCount}
+          </span>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            step="1"
+            value={operatorCount}
+            aria-label={text.controls.operators}
+            style={`--range-pct:${operatorPercent}%`}
+            oninput={handleOperatorInput}
+          />
+        </label>
+
+        <label class="op-controls__range">
+          <span class="op-controls__caption">
+            {text.controls.precisionFill}: {hydrateBatchSize}
+          </span>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            step="1"
+            value={hydrateBatchSize}
+            aria-label={text.controls.precisionFill}
+            style={`--range-pct:${hydratePercent}%`}
+            oninput={handleHydrateInput}
+          />
+        </label>
+
+        <div class="op-controls__actions">
+          <button
+            class="op-controls__action op-controls__action--muted"
+            type="button"
+            onclick={spawnOperatorBatch}
+          >
+            {text.controls.buttons.spawnOperators}
+          </button>
+          <button
+            class="op-controls__action"
+            type="button"
+            disabled={convergenceRunning}
+            onclick={runConvergence}
+          >
+            {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
+          </button>
+        </div>
+
+        <div
+          class="op-alerts"
+          aria-label={text.controls.alerts}
+        >
+          <p
+            class="op-alert"
+            data-alert="dou"
+            data-active={currentPhase.name === 'dou' || douBlockers > 0}
+          >
+            <span>{text.alerts.dou.title}</span>
+            <strong>{douBlockers}</strong>
+          </p>
+          <p
+            class="op-alert"
+            data-alert="review"
+            data-active={currentPhase.name === 'followup' || reviewWeakFits > 0}
+          >
+            <span>{text.alerts.review.title}</span>
+            <strong>{reviewWeakFits}</strong>
+          </p>
+        </div>
+      </section>
+    </aside>
+
+    <!-- CENTER: BOARD -->
+    <section class="pg__board-wrap">
+      <div class="board-head">
+        <div class="board-head__title">
+          <span>{text.boardHead.phase} <b>{phaseNumberText}</b></span>
+          <span class="board-head__dot">·</span>
+          <span>{currentPhase.label}</span>
+          <span class="board-head__desc">{currentPhase.title}.</span>
+        </div>
+        <div class="board-head__meta">
+          <span>{text.boardHead.marbles} <b>{visibleMarbleCount}</b></span>
+          <span>{text.boardHead.converge} <b class="mint">{convergenceProgress}%</b></span>
+          <span class="warn">{text.boardHead.issues} <b>{issuesCount}</b></span>
+        </div>
+      </div>
 
       <div
-        bind:this={stageEl}
-        class="framework-playground__stage"
+        bind:this={boardEl}
+        class="board"
         data-board-shape={boardShape}
         id={`${componentId}-panel`}
         role="img"
         aria-label={boardAriaLabel}
-        aria-labelledby={`${componentId}-heading`}
       >
-        <canvas bind:this={canvasEl} class="framework-playground__canvas" aria-hidden="true"></canvas>
-        <div class="framework-playground__overlay" aria-hidden="true">
+        <span class="board__corner board__corner--tl" aria-hidden="true"></span>
+        <span class="board__corner board__corner--tr" aria-hidden="true"></span>
+        <span class="board__corner board__corner--bl" aria-hidden="true"></span>
+        <span class="board__corner board__corner--br" aria-hidden="true"></span>
+
+        {#each FRAME_LABELS as labelKey (labelKey)}
+          <span
+            class="frame-label frame-label--{labelKey}"
+            class:show={currentPhase.showLabels.includes(labelKey)}
+            class:active={currentPhase.showLabels.includes(labelKey) && currentPhase.state === labelKey}
+            aria-hidden="true"
+          >
+            {text.labels[labelKey]}
+          </span>
+        {/each}
+
+        <div class="board__readout" aria-hidden="true">
+          <div>{text.readout.state} · <span class="g">{phaseState}</span></div>
+          <div>{text.readout.loop} · <b>{currentPhase.readoutLoop}</b></div>
+          <div>{text.readout.p} · <b>{currentPhase.readoutP}</b></div>
+        </div>
+
+        <div class="board__guide" class:board__guide--converged={guideConverged} aria-hidden="true"></div>
+
+        <canvas bind:this={canvasEl} class="board__canvas" aria-hidden="true"></canvas>
+
+        <div class="board__overlay" aria-hidden="true">
           <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
           <span>{text.overlayConverge} <strong>{convergenceProgress}%</strong></span>
           <span>{text.overlayMarbles} <strong>{visibleMarbleCount}</strong></span>
         </div>
-        <p class="framework-playground__prompt" aria-hidden="true">
-          <span class="framework-playground__prompt-mark">$ &gt;</span>
-          <span class="framework-playground__prompt-command">{promptCommand}</span>
-        </p>
-      </div>
-    </div>
-
-    <aside class="framework-playground__side-column">
-      <p class="framework-playground__side-kicker">{text.operators}</p>
-      <p class="framework-playground__side-copy">{currentHint}</p>
-
-      <div class="framework-playground__alert-strip" aria-label={text.controls.alerts}>
-        <p class="framework-playground__alert-line" data-alert="dou" data-active={currentPhase.name === 'dou' || douBlockers > 0}>
-          <span>{text.alerts.dou.title}</span>
-          <strong>{douBlockers}</strong>
-        </p>
-        <p class="framework-playground__alert-line" data-alert="review" data-active={currentPhase.name === 'followup' || reviewWeakFits > 0}>
-          <span>{text.alerts.review.title}</span>
-          <strong>{reviewWeakFits}</strong>
-        </p>
       </div>
 
-      <section class="framework-playground__controls" aria-label={text.controls.actionPanel}>
-        {#if currentPhase.name === 'scaffold'}
-          <div class="framework-playground__controls-inner">
-            <div class="framework-playground__control-row">
-              <span class="framework-playground__control-caption">{text.controls.boardShape}</span>
-              <div class="framework-playground__shape-nav">
-                <button
-                  class="framework-playground__control-btn"
-                  type="button"
-                  aria-label={locale === 'pl' ? 'Poprzedni kształt planszy' : 'Previous board shape'}
-                  onclick={() => shiftBoardShape(-1)}
-                >
-                  &lt;
-                </button>
-                <span class="framework-playground__shape-label">{boardShapeLabel}</span>
-                <button
-                  class="framework-playground__control-btn"
-                  type="button"
-                  aria-label={locale === 'pl' ? 'Następny kształt planszy' : 'Next board shape'}
-                  onclick={() => shiftBoardShape(1)}
-                >
-                  &gt;
-                </button>
-              </div>
-            </div>
-            <div class="framework-playground__control-note">
-              {locale === 'pl'
-                ? 'Najpierw blokujemy granicę. Gęstość rowków należy do Workflow.'
-                : 'Lock the boundary first. Groove density belongs to Workflow.'}
-            </div>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.scaffold}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'init'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.init}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'workflow'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.density}: {grooveDensity.toFixed(1)} · {text.controls.metrics.grooves}: {visibleSlotCount}
-              </span>
-              <input
-                type="range"
-                min="0.5"
-                max="2"
-                step="0.1"
-                value={grooveDensity}
-                aria-label={text.controls.density}
-                style={`--range-pct:${densityPercent}%`}
-                oninput={handleDensityInput}
-              />
-            </label>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.workflow}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'marbles'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.operators}: {operatorCount}
-              </span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={operatorCount}
-                aria-label={text.controls.operators}
-                style={`--range-pct:${operatorPercent}%`}
-                oninput={handleOperatorInput}
-              />
-            </label>
-            <button
-              class="framework-playground__action-btn framework-playground__action-btn--muted"
-              type="button"
-              aria-label={text.controls.buttons.spawnOperators}
-              onclick={spawnOperatorBatch}
-            >
-              {text.controls.buttons.spawnOperators}
-            </button>
-            <button
-              class="framework-playground__action-btn"
-              type="button"
-              aria-label={text.controls.buttons.runConvergence}
-              disabled={convergenceRunning}
-              onclick={runConvergence}
-            >
-              {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'followup'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.followup}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'dou'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.dou}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'decorate'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.decorate}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'hydrate'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.precisionFill}: {hydrateBatchSize}
-              </span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={hydrateBatchSize}
-                aria-label={text.controls.precisionFill}
-                style={`--range-pct:${hydratePercent}%`}
-                oninput={handleHydrateInput}
-              />
-            </label>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.hydrate}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'release'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.release}
-            </button>
-          </div>
-        {/if}
-      </section>
+      <div class="cmd-deck">
+        <div class="cmd-deck__prompt">{text.cmdDeck.prompt}</div>
+        <div class="cmd-deck__line">
+          <b>{splitPromptCommand(promptCommand).head}</b>
+          <em>{splitPromptCommand(promptCommand).tail}</em>
+        </div>
+        <div class="cmd-deck__status">{phaseState}</div>
+      </div>
+    </section>
 
-      <p class="framework-playground__side-kicker">{text.choosePhase}</p>
-      <div class="framework-playground__rail-shell">
-        <div class="framework-playground__rail framework-playground__rail--stack" role="tablist" aria-label={text.choosePhase}>
-          {#each phases as phase, index}
-            <button
-              bind:this={phaseButtons[index]}
-              class="framework-playground__chip"
-              class:is-active={index === currentPhaseIndex}
-              class:is-done={index < currentPhaseIndex}
-              data-tone={phase.tone}
-              data-tooltip={`${phase.title}. ${phase.description}`}
-              type="button"
-              role="tab"
-              tabindex={index === currentPhaseIndex ? 0 : -1}
-              aria-selected={index === currentPhaseIndex}
-              aria-controls={`${componentId}-panel`}
-              aria-label={`${phase.label}. ${phase.title}. ${phase.description}`}
-              onclick={() => showPhase(index)}
-              onkeydown={(event) => handlePhaseKeydown(event, index)}
-            >
-              <span class="framework-playground__chip-label">{phase.label}</span>
-            </button>
+    <!-- RIGHT: INSTRUCTOR -->
+    <aside class="pg__instructor" aria-label={text.instructor.label}>
+      <div class="inst-head">
+        <div class="inst-label">
+          {text.overlayPhase} {phaseNumberText} · {currentPhase.label}
+        </div>
+        <h2 class="inst-title">
+          {@html formatTitle(currentPhase.title)}
+        </h2>
+      </div>
+
+      <p class="inst-desc">{currentPhase.description}</p>
+
+      {#if currentPhase.steps && currentPhase.steps.length > 0}
+        <div class="inst-steps">
+          {#each currentPhase.steps as step, index (index)}
+            <div class="inst-step inst-step--{step.state}">
+              <div class="inst-step__num">{String(index + 1).padStart(2, '0')}</div>
+              <div class="inst-step__txt">{step.txt}</div>
+            </div>
           {/each}
         </div>
+      {/if}
+
+      <div class="inst-hint">
+        <b>{text.instructor.hintLede}</b>
+        {currentHint}
+      </div>
+
+      <div class="inst-cta">
+        <button
+          class="inst-btn"
+          type="button"
+          disabled={currentPhaseIndex === 0}
+          onclick={() => showPhase(currentPhaseIndex - 1)}
+        >
+          {text.instructor.prev}
+        </button>
+        <button
+          class="inst-btn inst-btn--primary"
+          type="button"
+          disabled={currentPhaseIndex === phases.length - 1}
+          onclick={runPhaseAction}
+        >
+          {currentPhaseIndex === phases.length - 1
+            ? text.instructor.shipped
+            : text.controls.buttons.phaseAction[currentPhase.name]}
+        </button>
       </div>
     </aside>
   </div>
 
-  <p class="framework-playground__sr-only" aria-live="polite">{liveMessage}</p>
+  <!-- ===== Phase timeline footer ===== -->
+  <div class="phase-bar" role="tablist" aria-label={text.choosePhase}>
+    {#each phases as phase, index (phase.name)}
+      <button
+        bind:this={phaseButtons[index]}
+        class="phase"
+        class:is-active={index === currentPhaseIndex}
+        class:is-done={index < currentPhaseIndex}
+        data-tone={phase.tone}
+        data-group={phase.group}
+        type="button"
+        role="tab"
+        tabindex={index === currentPhaseIndex ? 0 : -1}
+        aria-selected={index === currentPhaseIndex}
+        aria-controls={`${componentId}-panel`}
+        aria-label={`${phase.label}. ${phase.title}.`}
+        onclick={() => showPhase(index)}
+        onkeydown={(event) => handlePhaseKeydown(event, index)}
+      >
+        <span class="phase__num">{String(index).padStart(2, '0')}</span>
+        <span class="phase__name">{phase.label}</span>
+        <span class="phase__group">{text.phaseGroups[phase.group]}</span>
+      </button>
+    {/each}
+  </div>
+
+  <p class="pg__sr-only" aria-live="polite">{liveMessage}</p>
 </div>
 
 <style>
-  :global(body.framework-page) {
-    min-height: 100%;
-    background:
-      linear-gradient(180deg, rgba(11, 11, 13, 0.84) 0%, rgba(8, 9, 12, 0.94) 100%),
-      radial-gradient(circle at 18% 12%, rgba(184, 115, 51, 0.14), transparent 32%),
-      radial-gradient(circle at 82% 14%, rgba(212, 198, 171, 0.08), transparent 24%),
-      var(--site-paper-substrate);
-    background-attachment: scroll, scroll, scroll, scroll;
-  }
+  /* ───────── LAYOUT ───────── */
+  .pg {
+    --pg-stone-deep: var(--stone-deep);
+    --pg-bg-deep: var(--bg-deep);
+    --pg-ink: var(--stone-light);
+    --pg-ink-dim: var(--ink-dim);
+    --pg-ink-faint: var(--ink-faint);
+    --pg-line: var(--line);
+    --pg-line-bright: var(--line-bright);
+    --pg-orange: var(--copper);
+    --pg-orange-hi: var(--copper-bright);
+    --pg-mint: var(--patina);
+    --pg-mint-hi: var(--verdigris);
+    --pg-red: var(--red);
 
-  :global(.framework-page-shell) {
-    width: min(1220px, calc(100vw - 0.9rem));
-    height: auto;
-    min-height: 0;
-    margin: 0 auto;
-    padding: calc(var(--nav-height) + 0.65rem) 0.35rem clamp(4rem, 10vh, 5.75rem);
+    position: relative;
     display: grid;
-    grid-template-rows: min-content;
-    gap: 0;
-    align-content: start;
-  }
-
-  .framework-playground {
+    grid-template-rows: auto 1fr auto;
     width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    min-height: 0;
-    --framework-stage-height: clamp(16.25rem, 36svh, 24rem);
-    --framework-side-width: clamp(15.5rem, 22vw, 17.75rem);
-    height: auto;
-    border: 1px solid var(--card-border);
+    min-height: calc(100vh - var(--nav-height) - 2.5rem);
+    height: calc(100vh - var(--nav-height) - 2.5rem);
+    border: 1px solid var(--glass-panel-border);
     border-radius: var(--radius-lg);
-    padding: clamp(0.72rem, 0.95vw, 0.88rem);
     background: var(--vt-framework-shell-bg);
     box-shadow: var(--vt-framework-shell-shadow);
-    display: grid;
-    gap: clamp(0.7rem, 0.9vw, 0.92rem);
-    backdrop-filter: blur(18px) saturate(115%);
-    -webkit-backdrop-filter: blur(18px) saturate(115%);
-  }
-
-  .framework-playground__intro {
-    display: grid;
-    gap: 0.35rem;
-    max-width: min(42rem, 100%);
-    padding: 0.12rem 0.2rem 0;
-  }
-
-  .framework-playground__kicker {
-    margin: 0;
-    color: var(--patina);
+    overflow: hidden;
+    color: var(--pg-ink);
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    isolation: isolate;
   }
 
-  .framework-playground__heading {
-    margin: 0;
-    color: var(--stone-light);
-    font-size: clamp(1.7rem, 3vw, 2.4rem);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
+  .pg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(230, 232, 235, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(230, 232, 235, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
   }
 
-  .framework-playground__lead {
-    margin: 0;
-    max-width: 58ch;
-    color: var(--text-secondary);
-    font-size: 0.98rem;
-    line-height: 1.58;
-  }
-
-  .framework-playground__body {
-    min-height: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1.18fr) minmax(15.5rem, var(--framework-side-width));
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas:
-      'press side'
-      'board side';
-    gap: clamp(0.75rem, 0.95vw, 1rem);
-    align-items: start;
-    align-content: start;
-    justify-content: center;
+  .pg > * {
     position: relative;
-    padding: 0 0.15rem 0 0.2rem;
+    z-index: 1;
   }
 
-  .framework-playground__board-column {
-    display: contents;
-  }
-
-  .framework-playground__pressline {
-    grid-area: press;
-    margin: 0;
+  /* ───────── INTERNAL TOPBAR / CRUMB ───────── */
+  .pg__topbar {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
-    min-width: 0;
-    color: var(--steel-dark);
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    justify-content: space-between;
+    padding: 10px 22px;
+    border-bottom: 1px solid var(--pg-line);
+    background: var(--surface-overlay);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
   }
 
-  .framework-playground__press-kicker {
+  .pg__crumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--pg-ink-faint);
+  }
+
+  .pg__crumb-root {
+    color: var(--pg-ink-dim);
+  }
+
+  .pg__crumb-sep {
+    color: var(--pg-line-bright);
+    opacity: 0.85;
+  }
+
+  .pg__crumb-leaf {
+    color: var(--pg-mint);
+    font-weight: 500;
+  }
+
+  .pg__meta-strip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--pg-ink-faint);
+  }
+
+  .pg__meta-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pg-orange);
+    box-shadow: 0 0 10px var(--pg-orange);
+    animation: pg-pulse 2s ease-in-out infinite;
+  }
+
+  .pg__meta-sep {
+    color: var(--pg-line-bright);
+  }
+
+  .pg__meta-label--accent {
+    color: var(--pg-ink);
+  }
+
+  @keyframes pg-pulse {
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  /* ───────── WORKSPACE GRID ───────── */
+  .pg__workspace {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr) 340px;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* ───────── OPERATORS (LEFT) ───────── */
+  .pg__operators {
+    border-right: 1px solid var(--pg-line);
+    padding: 20px 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+  }
+
+  .op-head {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--pg-ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .op-head::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--pg-orange);
+  }
+
+  .op-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .op {
+    display: grid;
+    grid-template-columns: 12px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--pg-line);
+    font-size: 12px;
+    color: var(--pg-ink-dim);
+    transition: color 0.18s ease;
+  }
+
+  .op:last-child {
+    border-bottom: none;
+  }
+
+  .op__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pg-line-bright);
+    transition:
+      background 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .op.is-active {
+    color: var(--pg-ink);
+  }
+
+  .op.is-active .op__dot {
+    background: var(--pg-mint);
+    box-shadow: 0 0 8px var(--pg-mint);
+  }
+
+  .op.is-warn .op__dot {
+    background: var(--pg-orange);
+    box-shadow: 0 0 8px var(--pg-orange);
+  }
+
+  .op.is-warn {
+    color: var(--pg-orange);
+  }
+
+  .op__name {
     font-family: var(--font-mono);
+  }
+
+  .op__name em {
+    color: var(--pg-ink-faint);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    margin-left: 4px;
+  }
+
+  .op__val {
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--pg-ink);
+    font-variation-settings: 'opsz' 48;
+  }
+
+  .op.is-warn .op__val {
+    color: var(--pg-orange);
+  }
+
+  .op-note {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--pg-ink-dim);
+    font-style: italic;
+    font-family: var(--font-display);
+    padding: 12px 14px;
+    background: rgba(166, 197, 188, 0.05);
+    border-left: 2px solid var(--pg-mint);
+  }
+
+  .op-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--pg-line);
+  }
+
+  .op-controls__head {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--pg-ink-faint);
+    margin-top: 12px;
+  }
+
+  .op-controls__row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .op-controls__caption {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--pg-ink-faint);
+  }
+
+  .op-controls__shape {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .op-controls__shape-label {
+    flex: 1;
+    color: var(--pg-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .op-controls__btn {
+    display: inline-flex;
+    width: 26px;
+    height: 26px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--pg-line-bright);
+    background: transparent;
+    color: var(--pg-ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      color 0.2s;
+  }
+
+  .op-controls__btn:hover,
+  .op-controls__btn:focus-visible {
+    border-color: var(--pg-orange);
+    color: var(--pg-orange);
+    outline: none;
+  }
+
+  .op-controls__range {
+    display: grid;
+    gap: 6px;
+  }
+
+  .op-controls__range input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+      to right,
+      var(--pg-orange-hi) 0%,
+      var(--pg-orange-hi) var(--range-pct, 0%),
+      rgba(185, 195, 204, 0.14) var(--range-pct, 0%),
+      rgba(185, 195, 204, 0.14) 100%
+    );
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .op-controls__range input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--pg-ink);
+    border: 2px solid var(--pg-orange-hi);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--glow-subtle);
+  }
+
+  .op-controls__range input[type='range']::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: var(--pg-orange-hi);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .op-controls__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .op-controls__action {
+    border: 1px solid var(--pg-orange);
+    background: rgba(217, 119, 69, 0.12);
+    color: var(--pg-orange-hi);
+    font-family: var(--font-mono);
+    font-size: 10px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    font-size: 0.74rem;
-    color: var(--patina);
+    font-weight: 600;
+    padding: 8px 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
   }
 
-  .framework-playground__press-copy {
+  .op-controls__action:hover:not(:disabled),
+  .op-controls__action:focus-visible:not(:disabled) {
+    background: rgba(217, 119, 69, 0.22);
+    outline: none;
+  }
+
+  .op-controls__action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .op-controls__action--muted {
+    border-color: var(--pg-line-bright);
+    background: transparent;
+    color: var(--pg-ink-dim);
+  }
+
+  .op-controls__action--muted:hover:not(:disabled),
+  .op-controls__action--muted:focus-visible:not(:disabled) {
+    border-color: var(--pg-mint);
+    color: var(--pg-mint);
+    background: rgba(166, 197, 188, 0.08);
+  }
+
+  .op-alerts {
+    display: grid;
+    gap: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--pg-line);
+    margin-top: 4px;
+  }
+
+  .op-alert {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(185, 195, 204, 0.16);
+    color: var(--pg-ink-faint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .op-alert strong {
+    color: var(--pg-ink);
+    font-size: 12px;
+  }
+
+  .op-alert[data-alert='dou'][data-active='true'] {
+    border-left-color: var(--vt-framework-alert-danger-border);
+    color: var(--vt-framework-alert-danger);
+  }
+
+  .op-alert[data-alert='review'][data-active='true'] {
+    border-left-color: var(--vt-framework-alert-review-border);
+    color: var(--pg-orange-hi);
+  }
+
+  /* ───────── BOARD (CENTER) ───────── */
+  .pg__board-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .board-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--pg-line);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .board-head__title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--pg-ink-dim);
+    min-width: 0;
+  }
+
+  .board-head__title b {
+    color: var(--pg-orange);
+    font-weight: 500;
+  }
+
+  .board-head__dot {
+    color: var(--pg-line-bright);
+  }
+
+  .board-head__desc {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--pg-ink);
+    letter-spacing: 0;
+    text-transform: none;
+    margin-left: 8px;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
-  .framework-playground__stage {
-    grid-area: board;
+  .board-head__meta {
+    display: flex;
+    gap: 18px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--pg-ink-faint);
+    text-transform: uppercase;
+    flex-wrap: wrap;
+  }
+
+  .board-head__meta b {
+    color: var(--pg-ink);
+    font-weight: 500;
+  }
+
+  .board-head__meta b.mint {
+    color: var(--pg-mint);
+  }
+
+  .board-head__meta .warn b {
+    color: var(--pg-orange);
+  }
+
+  .board {
+    flex: 1;
     position: relative;
-    width: 100%;
-    height: var(--framework-stage-height);
-    min-height: 0;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--card-border);
-    background-image: var(--vt-framework-stage-bg);
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: multiply;
     overflow: hidden;
-    box-shadow: var(--vt-framework-stage-shadow);
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(166, 197, 188, 0.04), transparent 60%),
+      radial-gradient(ellipse at 30% 20%, rgba(26, 35, 48, 0.58) 0%, rgba(10, 15, 21, 0.92) 72%);
+    min-height: 320px;
   }
 
-  .framework-playground__canvas {
+  .board__canvas {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     display: block;
   }
 
-  .framework-playground__overlay {
+  .board__corner {
     position: absolute;
-    top: 0.95rem;
-    left: 0.95rem;
-    display: grid;
-    gap: 0.35rem;
-    min-width: 142px;
-    padding: 0.72rem 0.82rem;
-    border: 1px solid var(--vt-framework-panel-border);
-    border-radius: var(--radius-md);
-    background: var(--vt-framework-panel-bg);
-    backdrop-filter: var(--blur);
-    box-shadow: var(--vt-framework-panel-shadow);
-    z-index: 5;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--pg-line-bright);
+    pointer-events: none;
   }
 
-  .framework-playground__overlay span,
-  .framework-playground__overlay strong {
-    font-family: var(--font-mono);
-    letter-spacing: 0.08em;
+  .board__corner--tl {
+    top: 18px;
+    left: 18px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .board__corner--tr {
+    top: 18px;
+    right: 18px;
+    border-left: none;
+    border-bottom: none;
+  }
+
+  .board__corner--bl {
+    bottom: 18px;
+    left: 18px;
+    border-right: none;
+    border-top: none;
+  }
+
+  .board__corner--br {
+    bottom: 18px;
+    right: 18px;
+    border-left: none;
+    border-top: none;
+  }
+
+  .frame-label {
+    position: absolute;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--pg-ink-faint);
     text-transform: uppercase;
+    pointer-events: none;
+    transition:
+      color 0.3s,
+      opacity 0.3s;
+    opacity: 0;
+    font-family: var(--font-mono);
   }
 
-  .framework-playground__overlay span {
+  .frame-label.show {
+    opacity: 1;
+  }
+
+  .frame-label.active {
+    color: var(--pg-orange);
+  }
+
+  .frame-label--agents {
+    top: 30px;
+    left: 30%;
+  }
+
+  .frame-label--pipeline {
+    top: 30px;
+    right: 30%;
+  }
+
+  .frame-label--verify {
+    bottom: 30px;
+    right: 30%;
+  }
+
+  .frame-label--artifacts {
+    bottom: 30px;
+    left: 30%;
+  }
+
+  .board__readout {
+    position: absolute;
+    top: 22px;
+    right: 28px;
+    font-size: 10px;
+    color: var(--pg-ink-dim);
+    text-align: right;
+    line-height: 1.7;
+    font-family: var(--font-mono);
+    letter-spacing: 0.1em;
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .board__readout b {
+    color: var(--pg-ink);
+    font-weight: 500;
+  }
+
+  .board__readout .g {
+    color: var(--pg-mint);
+  }
+
+  .board__guide {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(75%, 520px);
+    aspect-ratio: 1;
+    border: 1px dashed var(--pg-line-bright);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.45;
+    transition:
+      border-color 0.4s,
+      border-style 0.4s,
+      opacity 0.4s,
+      box-shadow 0.4s;
+    z-index: 2;
+  }
+
+  .board__guide--converged {
+    border-color: var(--pg-mint);
+    border-style: solid;
+    opacity: 0.6;
+    box-shadow:
+      0 0 40px rgba(166, 197, 188, 0.18),
+      inset 0 0 40px rgba(166, 197, 188, 0.1);
+  }
+
+  .board__overlay {
+    position: absolute;
+    left: 24px;
+    bottom: 72px;
+    display: grid;
+    gap: 4px;
+    padding: 8px 12px;
+    border: 1px solid var(--vt-framework-panel-border);
+    border-radius: 6px;
+    background: var(--vt-framework-panel-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pg-ink-faint);
+    z-index: 4;
+    opacity: 0.78;
+  }
+
+  .board__overlay span {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
-    color: var(--steel);
-    font-size: 0.66rem;
+    gap: 10px;
   }
 
-  .framework-playground__overlay strong {
-    color: var(--stone-light);
-    font-size: 0.82rem;
+  .board__overlay strong {
+    color: var(--pg-ink);
+    font-weight: 500;
   }
 
-  .framework-playground__prompt {
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: flex-start;
-    gap: 0.68rem;
-    width: auto;
-    margin: 0;
-    padding: 0.72rem 0.88rem 0.78rem;
-    border: 1px solid var(--vt-framework-prompt-border);
-    border-radius: 0.82rem;
-    background: var(--vt-framework-prompt-bg);
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    backdrop-filter: blur(18px) saturate(118%);
-    -webkit-backdrop-filter: blur(18px) saturate(118%);
-    box-shadow: var(--vt-framework-prompt-shadow);
-    z-index: 6;
-  }
-
-  .framework-playground__prompt-mark {
-    display: inline-flex;
+  /* ───────── CMD DECK ───────── */
+  .cmd-deck {
+    display: flex;
     align-items: center;
-    color: var(--steel-dark);
-    flex-shrink: 0;
+    gap: 14px;
+    padding: 12px 24px;
+    border-top: 1px solid var(--pg-line);
+    background: var(--pg-bg-deep);
+    font-size: 12px;
+    min-height: 46px;
+    font-family: var(--font-mono);
   }
 
-  .framework-playground__prompt-command {
+  .cmd-deck__prompt {
+    color: var(--pg-ink-faint);
+  }
+
+  .cmd-deck__line {
+    flex: 1;
     min-width: 0;
-    color: var(--stone-light);
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    color: var(--pg-mint);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
-  .framework-playground__side-column {
-    grid-area: side;
-    position: sticky;
-    top: calc(var(--nav-height) + 0.75rem);
-    width: auto;
-    height: auto;
-    min-height: 0;
-    max-height: calc(var(--framework-stage-height) + 4.5rem);
+  .cmd-deck__line b {
+    color: var(--pg-ink);
+    font-weight: 500;
+  }
+
+  .cmd-deck__line em {
+    color: var(--pg-orange);
+    font-style: normal;
+  }
+
+  .cmd-deck__status {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--pg-ink-faint);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cmd-deck__status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pg-mint);
+    box-shadow: 0 0 8px var(--pg-mint);
+    animation: pg-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* ───────── INSTRUCTOR (RIGHT) ───────── */
+  .pg__instructor {
+    border-left: 1px solid var(--pg-line);
+    padding: 22px 20px;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: 0.65rem;
-    min-width: 0;
-    overflow: auto;
-    padding: 0.1rem 0.1rem 0.15rem 0.1rem;
-    overscroll-behavior: contain;
-    align-self: start;
-  }
-
-  .framework-playground__side-kicker {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--steel-dark);
-  }
-
-  .framework-playground__side-copy {
-    margin: 0;
-    color: var(--steel);
-    font-size: 0.76rem;
-    line-height: 1.4;
-    min-height: 2rem;
-    overflow-wrap: anywhere;
-  }
-
-  .framework-playground__alert-strip {
-    display: grid;
-    gap: 0.22rem;
-  }
-
-  .framework-playground__alert-line {
-    margin: 0;
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-left: 0.75rem;
-    border-left: 1px solid rgba(163, 184, 199, 0.16);
-    color: var(--steel-dark);
-    font-family: var(--font-mono);
-    font-size: 0.69rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .framework-playground__alert-line strong {
-    color: var(--stone-light);
-    font-size: 0.78rem;
-  }
-
-  .framework-playground__alert-line[data-alert="dou"][data-active="true"] {
-    border-left-color: var(--vt-framework-alert-danger-border);
-    color: var(--vt-framework-alert-danger);
-  }
-
-  .framework-playground__alert-line[data-alert="review"][data-active="true"] {
-    border-left-color: var(--vt-framework-alert-review-border);
-    color: var(--copper-bright);
-  }
-
-  .framework-playground__controls {
-    margin-top: 0;
+    gap: 20px;
     min-width: 0;
   }
 
-  .framework-playground__controls-inner {
+  .inst-head {
     display: grid;
-    gap: 0.72rem;
-    padding: 0.15rem 0 0.1rem;
+    gap: 8px;
   }
 
-  .framework-playground__control {
-    display: grid;
-    gap: 0.35rem;
-  }
-
-  .framework-playground__control-row {
+  .inst-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--pg-orange);
+    text-transform: uppercase;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    gap: 10px;
   }
 
-  .framework-playground__control-caption {
-    color: var(--steel-edge);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .framework-playground__control-note {
-    color: var(--steel-dark);
-    font-size: 0.8rem;
-    line-height: 1.4;
-  }
-
-  .framework-playground__shape-nav {
-    display: flex;
-    gap: 0.35rem;
-    align-items: center;
-  }
-
-  .framework-playground__shape-label {
-    min-width: 5rem;
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-align: center;
-    text-transform: uppercase;
-  }
-
-  .framework-playground__control-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    background: var(--vt-framework-control-bg);
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .framework-playground__control-btn:hover,
-  .framework-playground__control-btn:focus-visible {
-    border-color: var(--copper-bright);
-    background: var(--vt-framework-control-bg-hover);
-    color: var(--copper-bright);
-    box-shadow: var(--vt-framework-control-shadow-hover);
-    outline: none;
-  }
-
-  .framework-playground__controls-inner input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(
-      to right,
-      var(--copper-bright) 0%,
-      var(--copper-bright) var(--range-pct, 0%),
-      rgba(163, 184, 199, 0.14) var(--range-pct, 0%),
-      rgba(163, 184, 199, 0.14) 100%
-    );
-    border-radius: 999px;
-    outline: none;
-    margin: 0.6rem 0;
-    cursor: pointer;
-  }
-
-  .framework-playground__controls-inner input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
+  .inst-label::before {
+    content: '';
     width: 16px;
-    height: 16px;
-    background: var(--stone-light);
-    border: 3px solid var(--copper-bright);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(184, 115, 51, 0.6);
-    transition: transform 0.1s ease;
+    height: 1px;
+    background: var(--pg-orange);
   }
 
-  .framework-playground__controls-inner input[type="range"]:active::-webkit-slider-thumb {
-    transform: scale(1.2);
+  .inst-title {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2vw, 28px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-weight: 350;
+    margin: 0;
+    color: var(--pg-ink);
   }
 
-  .framework-playground__controls-inner input[type="range"]::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    background: var(--copper-bright);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 0 10px rgba(184, 115, 51, 0.4);
+  .inst-title :global(em) {
+    font-style: italic;
+    color: var(--pg-orange);
+    font-weight: 300;
   }
 
-  .framework-playground__action-btn {
+  .inst-desc {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--pg-ink-dim);
+    margin: 0;
+  }
+
+  .inst-steps {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0.72rem 0.95rem;
-    border: 1px solid var(--vt-framework-button-border);
-    border-radius: var(--radius-md);
-    background: var(--vt-framework-button-bg);
-    color: var(--copper-bright);
+    flex-direction: column;
+    gap: 10px;
+    font-size: 11px;
+    line-height: 1.5;
     font-family: var(--font-mono);
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 0.5rem;
   }
 
-  .framework-playground__action-btn:disabled {
-    opacity: 0.56;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-
-  .framework-playground__action-btn--muted {
-    border-color: var(--vt-framework-button-muted-border);
-    background: var(--vt-framework-button-muted-bg);
-    color: var(--steel-edge);
-  }
-
-  .framework-playground__action-btn--muted:hover,
-  .framework-playground__action-btn--muted:focus-visible {
-    border-color: rgba(163, 184, 199, 0.3);
-    background: rgba(163, 184, 199, 0.12);
-    box-shadow: var(--vt-framework-button-muted-shadow-hover);
-    outline: none;
-  }
-
-  .framework-playground__action-btn:hover,
-  .framework-playground__action-btn:focus-visible {
-    border-color: var(--copper-bright);
-    background: var(--vt-framework-button-bg-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--vt-framework-button-shadow-hover);
-    outline: none;
-  }
-
-  .framework-playground__rail-shell {
-    position: relative;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .framework-playground__rail {
-    width: 100%;
-    min-width: 0;
-    overflow: visible;
-    padding: 0.15rem 0 0.35rem;
-  }
-
-  .framework-playground__rail--stack {
+  .inst-step {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.28rem 0.35rem;
+    grid-template-columns: 22px 1fr;
+    gap: 12px;
+    color: var(--pg-ink-dim);
+    padding: 4px 0;
+    align-items: start;
   }
 
-  .framework-playground__chip {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
-    min-height: 2.05rem;
-    padding: 0.42rem 0.5rem;
-    border: 1px solid var(--vt-framework-chip-border);
-    border-radius: 999px;
-    background: var(--vt-framework-chip-bg);
-    box-shadow: none;
-    color: var(--stone-light);
+  .inst-step__num {
+    color: var(--pg-ink-faint);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    padding-top: 2px;
+  }
+
+  .inst-step__txt {
+    letter-spacing: 0.02em;
+  }
+
+  .inst-step--done {
+    color: var(--pg-mint);
+  }
+
+  .inst-step--done .inst-step__num {
+    color: var(--pg-mint);
+  }
+
+  .inst-step--active {
+    color: var(--pg-ink);
+  }
+
+  .inst-step--active .inst-step__num {
+    color: var(--pg-orange);
+  }
+
+  .inst-hint {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--pg-ink-faint);
+    padding-top: 10px;
+    border-top: 1px dashed var(--pg-line);
+    font-style: italic;
+    font-family: var(--font-display);
+  }
+
+  .inst-hint b {
+    color: var(--pg-mint);
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    margin-right: 4px;
+    text-transform: lowercase;
+  }
+
+  .inst-cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .inst-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 10px 12px;
     cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    border: 1px solid var(--pg-line-bright);
+    background: transparent;
+    color: var(--pg-ink);
+    transition: all 0.18s ease;
   }
 
-  .framework-playground__chip:hover,
-  .framework-playground__chip:focus-visible {
-    border-color: var(--vt-framework-chip-hover-border);
-    background: var(--vt-framework-chip-hover-bg);
+  .inst-btn:hover:not(:disabled),
+  .inst-btn:focus-visible:not(:disabled) {
+    border-color: var(--pg-orange);
+    color: var(--pg-orange);
     outline: none;
   }
 
-  .framework-playground__chip.is-active {
-    border-color: rgba(184, 115, 51, 0.78);
-    background: var(--vt-framework-chip-active-bg);
-    color: var(--copper-bright);
+  .inst-btn--primary {
+    background: var(--pg-orange);
+    border-color: var(--pg-orange);
+    color: var(--pg-stone-deep);
+    font-weight: 600;
   }
 
-  .framework-playground__chip.is-done {
-    border-color: rgba(90, 138, 122, 0.24);
+  .inst-btn--primary:hover:not(:disabled),
+  .inst-btn--primary:focus-visible:not(:disabled) {
+    background: var(--pg-orange-hi);
+    border-color: var(--pg-orange-hi);
+    color: var(--pg-stone-deep);
   }
 
-  .framework-playground__chip[data-tone="patina"].is-active {
-    border-color: rgba(90, 138, 122, 0.72);
-    color: var(--patina);
+  .inst-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 
-  .framework-playground__chip[data-tone="alert"].is-active {
-    border-color: var(--vt-framework-alert-danger-border);
+  /* ───────── PHASE TIMELINE (FOOTER) ───────── */
+  .phase-bar {
+    display: flex;
+    border-top: 1px solid var(--pg-line);
+    background: var(--pg-bg-deep);
+    position: relative;
+    z-index: 2;
+    overflow-x: auto;
+  }
+
+  .phase {
+    flex: 1;
+    min-width: 110px;
+    padding: 12px 14px 14px;
+    border-right: 1px solid var(--pg-line);
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    position: relative;
+    font-family: var(--font-mono);
+    transition: background 0.15s ease;
+    text-align: left;
+    background: transparent;
+    color: inherit;
+  }
+
+  .phase:last-child {
+    border-right: none;
+  }
+
+  .phase:hover {
+    background: rgba(230, 232, 235, 0.025);
+  }
+
+  .phase__num {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    color: var(--pg-ink-faint);
+  }
+
+  .phase__name {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--pg-ink-dim);
+    text-transform: uppercase;
+  }
+
+  .phase.is-done .phase__name {
+    color: var(--pg-mint);
+  }
+
+  .phase.is-done .phase__num {
+    color: var(--pg-mint);
+    opacity: 0.7;
+  }
+
+  .phase.is-active {
+    background: rgba(217, 119, 69, 0.08);
+  }
+
+  .phase.is-active .phase__name {
+    color: var(--pg-orange);
+    font-weight: 500;
+  }
+
+  .phase.is-active .phase__num {
+    color: var(--pg-orange);
+  }
+
+  .phase.is-active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--pg-orange);
+    box-shadow: 0 0 10px var(--pg-orange);
+  }
+
+  .phase[data-tone='patina'].is-active {
+    background: rgba(166, 197, 188, 0.08);
+  }
+
+  .phase[data-tone='patina'].is-active .phase__name,
+  .phase[data-tone='patina'].is-active .phase__num {
+    color: var(--pg-mint);
+  }
+
+  .phase[data-tone='patina'].is-active::before {
+    background: var(--pg-mint);
+    box-shadow: 0 0 10px var(--pg-mint);
+  }
+
+  .phase[data-tone='alert'].is-active {
+    background: rgba(224, 85, 68, 0.1);
+  }
+
+  .phase[data-tone='alert'].is-active .phase__name,
+  .phase[data-tone='alert'].is-active .phase__num {
     color: var(--vt-framework-alert-danger);
   }
 
-  .framework-playground__chip-label {
-    font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 0.64rem;
-    letter-spacing: 0.07em;
-    line-height: 1.15;
-    text-transform: uppercase;
-    white-space: normal;
-    text-align: center;
+  .phase[data-tone='alert'].is-active::before {
+    background: var(--vt-framework-alert-danger);
+    box-shadow: 0 0 10px rgba(224, 85, 68, 0.6);
   }
 
-  .framework-playground__chip::after {
-    content: attr(data-tooltip);
+  .phase__group {
     position: absolute;
-    left: 50%;
-    bottom: calc(100% + 0.55rem);
-    transform: translate(-50%, 0.35rem);
-    width: min(18rem, 26vw);
-    padding: 0.72rem 0.82rem;
-    border: 1px solid var(--vt-framework-tooltip-border);
-    border-radius: 14px;
-    background: var(--vt-framework-tooltip-bg);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: var(--vt-framework-tooltip-shadow);
-    color: var(--stone-light);
-    font-family: var(--font-head);
-    font-size: 0.82rem;
-    font-weight: 500;
-    line-height: 1.35;
-    text-transform: none;
-    letter-spacing: normal;
-    text-align: left;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 10;
-    transition: opacity 0.18s ease, transform 0.18s ease;
+    bottom: 3px;
+    right: 8px;
+    font-size: 8px;
+    letter-spacing: 0.25em;
+    color: var(--pg-ink-faint);
+    opacity: 0.55;
   }
 
-  .framework-playground__sr-only {
+  /* ───────── SR-ONLY ───────── */
+  .pg__sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -2270,203 +3202,165 @@
     border: 0;
   }
 
-  .framework-playground__chip:hover::after,
-  .framework-playground__chip:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
+  /* ───────── RESPONSIVE ───────── */
+  @media (max-width: 1200px) {
+    .pg__workspace {
+      grid-template-columns: 240px minmax(0, 1fr) 300px;
+    }
   }
 
-  @media (max-width: 960px) {
-    :global(.framework-page-shell) {
-      width: min(100vw - 0.5rem, 1220px);
+  @media (max-width: 1100px) {
+    .pg {
       height: auto;
-      min-height: 0;
-      padding: calc(var(--nav-height) + 0.55rem) 0.22rem 2rem;
+      min-height: calc(100vh - var(--nav-height));
     }
 
-    .framework-playground {
-      --framework-stage-height: clamp(17rem, 46svh, 26rem);
+    .pg__workspace {
+      grid-template-columns: minmax(0, 1fr);
     }
 
-    .framework-playground__body {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 0.95rem;
-      padding: 0;
+    .pg__operators,
+    .pg__instructor {
+      border-left: none;
+      border-right: none;
+      border-top: 1px solid var(--pg-line);
     }
 
-    .framework-playground__pressline,
-    .framework-playground__stage,
-    .framework-playground__side-column {
-      grid-column: 1;
+    .board {
+      min-height: 420px;
     }
 
-    .framework-playground__pressline {
-      grid-row: 1;
-      margin-bottom: 0;
-      white-space: normal;
-      overflow: visible;
-      text-overflow: initial;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .framework-playground__stage {
-      grid-row: 2;
-      height: var(--framework-stage-height);
-      margin-top: 0;
-    }
-
-    .framework-playground__side-column {
-      grid-row: 3;
-      position: static;
-      width: auto;
-      max-height: none;
-      overflow: visible;
-      padding: 0;
-    }
-
-    .framework-playground__rail--stack {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.55rem;
-    }
-
-    .framework-playground__chip {
-      min-height: 2.65rem;
-      padding: 0.65rem 0.75rem;
-      justify-content: center;
-      border: 1px solid var(--vt-framework-chip-border);
-      border-radius: var(--radius-md);
-      background: var(--vt-framework-chip-bg-mobile);
-    }
-
-    .framework-playground__chip:hover {
-      border-color: rgba(184, 115, 51, 0.28);
-    }
-
-    .framework-playground__chip.is-active {
-      background: var(--vt-framework-chip-active-bg-mobile);
-      box-shadow: var(--vt-framework-chip-active-shadow);
-    }
-
-    .framework-playground__chip::after {
-      left: 50%;
-      right: auto;
-      width: max-content;
-      max-width: min(26rem, 44vw);
-      transform: translate(-50%, 0.35rem);
-    }
-
-    .framework-playground__chip:hover::after,
-    .framework-playground__chip:focus-visible::after {
-      transform: translate(-50%, 0);
+    .phase {
+      flex: 0 0 auto;
+      min-width: 120px;
     }
   }
 
-  @media (max-width: 640px) {
-    :global(.framework-page-shell) {
-      width: min(100vw - 0.3rem, 1220px);
-      padding: calc(var(--nav-height) + 0.38rem) 0.06rem 1.35rem;
+  @media (max-width: 720px) {
+    .pg__topbar {
+      padding: 10px 14px;
+      font-size: 9px;
+      letter-spacing: 0.18em;
     }
 
-    .framework-playground {
-      --framework-stage-height: clamp(15rem, 41svh, 21rem);
-      padding: 0.62rem;
-      gap: 0.62rem;
+    .pg__meta-strip {
+      gap: 6px;
     }
 
-    .framework-playground__intro {
-      gap: 0.28rem;
-      padding-inline: 0.08rem;
-    }
-
-    .framework-playground__heading {
-      font-size: clamp(1.38rem, 7vw, 1.78rem);
-    }
-
-    .framework-playground__lead {
-      font-size: 0.9rem;
-      line-height: 1.52;
-    }
-
-    .framework-playground__overlay {
-      left: auto;
-      right: 0.7rem;
-      min-width: 124px;
-    }
-
-    .framework-playground__prompt {
-      left: 0.75rem;
-      right: 0.75rem;
-      width: auto;
-      bottom: 0.7rem;
-      padding: 0.64rem 0.72rem 0.68rem;
-      gap: 0.56rem;
-      font-size: 0.68rem;
-      line-height: 1.45;
-    }
-
-    .framework-playground__control-row {
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: flex-start;
-      gap: 0.55rem;
-    }
-
-    .framework-playground__shape-nav {
-      width: 100%;
-      justify-content: space-between;
-    }
-
-    .framework-playground__shape-label {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-
-    .framework-playground__rail {
-      overflow-x: auto;
-      padding: 0.1rem 0 0.45rem;
-      scroll-snap-type: x proximity;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .framework-playground__rail--stack {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 0.45rem;
-    }
-
-    .framework-playground__chip {
-      flex: 0 0 auto;
-      min-width: clamp(6.5rem, 31vw, 8rem);
-      min-height: 2.4rem;
-      padding: 0.42rem 0.5rem;
-      scroll-snap-align: start;
-    }
-
-    .framework-playground__chip-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-    }
-
-    .framework-playground__chip::after {
+    .pg__crumb-root,
+    .pg__crumb-sep {
       display: none;
     }
 
-    .framework-playground__chip:hover::after,
-    .framework-playground__chip:focus-visible::after {
-      transform: none;
+    .board-head {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px 16px;
+      gap: 6px;
+    }
+
+    .board-head__title {
+      font-size: 10px;
+      flex-wrap: wrap;
+    }
+
+    .board-head__desc {
+      margin-left: 0;
+      font-size: 13px;
+    }
+
+    .board-head__meta {
+      font-size: 9px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pg__operators {
+      padding: 18px 14px;
+    }
+
+    .op {
+      grid-template-columns: 10px 1fr auto;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .op__name em {
+      display: none;
+    }
+
+    .pg__instructor {
+      padding: 18px 14px;
+    }
+
+    .inst-title {
+      font-size: 20px;
+    }
+
+    .board__readout {
+      top: 12px;
+      right: 14px;
+      font-size: 9px;
+    }
+
+    .frame-label {
+      font-size: 8px;
+      letter-spacing: 0.22em;
+    }
+
+    .frame-label--pipeline,
+    .frame-label--artifacts {
+      display: none;
+    }
+
+    .cmd-deck {
+      padding: 10px 14px;
+      font-size: 10px;
+    }
+
+    .cmd-deck__status {
+      display: none;
+    }
+
+    .phase {
+      min-width: 104px;
+      padding: 10px 12px 12px;
+    }
+
+    .phase__name {
+      font-size: 10px;
+    }
+
+    .phase__group {
+      display: none;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .framework-playground *,
-    .framework-playground *::before,
-    .framework-playground *::after {
+    .pg *,
+    .pg *::before,
+    .pg *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ───────── SHELL CONTEXT ───────── */
+  :global(body.framework-page) {
+    min-height: 100%;
+  }
+
+  :global(.framework-page-shell) {
+    width: min(1440px, calc(100vw - 1rem));
+    margin: 0 auto;
+    padding: calc(var(--nav-height) + 0.55rem) 0.5rem 1.25rem;
+    display: block;
+  }
+
+  @media (max-width: 720px) {
+    :global(.framework-page-shell) {
+      padding: calc(var(--nav-height) + 0.4rem) 0.25rem 0.75rem;
     }
   }
 </style>
