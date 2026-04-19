@@ -1872,7 +1872,7 @@
   <div class="pg__workspace">
     <!-- LEFT: OPERATORS -->
     <aside class="pg__operators" aria-label={text.operators}>
-      <div class="op-section">
+      <div class="op-top">
         <div class="op-head">{text.operators}</div>
         <div class="op-list">
           {#each operatorRows as row (row.id)}
@@ -1886,9 +1886,9 @@
             </div>
           {/each}
         </div>
-      </div>
 
-      <div class="op-note">{currentHint}</div>
+        <div class="op-note">{currentHint}</div>
+      </div>
 
       <!-- Tiered controls: shape / density / operators / hydrate / alerts -->
       <section class="op-controls" aria-label={text.controls.actionPanel}>
@@ -2173,10 +2173,10 @@
 
     position: relative;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     width: 100%;
-    min-height: calc(100vh - var(--nav-height) - 2.5rem);
-    height: calc(100vh - var(--nav-height) - 2.5rem);
+    height: calc(100svh - var(--nav-height) - 2.25rem);
+    max-height: calc(100svh - var(--nav-height) - 2.25rem);
     border: 1px solid var(--glass-panel-border);
     border-radius: var(--radius-lg);
     background: var(--vt-framework-shell-bg);
@@ -2273,20 +2273,30 @@
   /* ───────── WORKSPACE GRID ───────── */
   .pg__workspace {
     display: grid;
-    grid-template-columns: 280px minmax(0, 1fr) 340px;
+    grid-template-columns: clamp(220px, 18%, 280px) minmax(0, 1fr) clamp(280px, 22%, 340px);
     min-height: 0;
+    min-width: 0;
+    height: 100%;
     overflow: hidden;
   }
 
   /* ───────── OPERATORS (LEFT) ───────── */
   .pg__operators {
     border-right: 1px solid var(--pg-line);
-    padding: 20px 18px;
-    overflow-y: auto;
+    padding: 16px 16px 14px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 14px;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .op-top {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    min-width: 0;
+    gap: 12px;
+    min-height: 0;
   }
 
   .op-head {
@@ -2294,7 +2304,6 @@
     letter-spacing: 0.3em;
     color: var(--pg-ink-faint);
     text-transform: uppercase;
-    margin-bottom: 10px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -2314,12 +2323,12 @@
 
   .op {
     display: grid;
-    grid-template-columns: 12px 1fr auto;
+    grid-template-columns: 10px 1fr auto;
     gap: 10px;
     align-items: center;
-    padding: 10px 0;
+    padding: 7px 0;
     border-bottom: 1px dashed var(--pg-line);
-    font-size: 12px;
+    font-size: 11px;
     color: var(--pg-ink-dim);
     transition: color 0.18s ease;
   }
@@ -2371,7 +2380,7 @@
 
   .op__val {
     font-family: var(--font-display);
-    font-size: 16px;
+    font-size: 15px;
     color: var(--pg-ink);
     font-variation-settings: 'opsz' 48;
   }
@@ -2381,22 +2390,29 @@
   }
 
   .op-note {
-    font-size: 11px;
-    line-height: 1.5;
+    font-size: 10.5px;
+    line-height: 1.45;
     color: var(--pg-ink-dim);
     font-style: italic;
     font-family: var(--font-display);
-    padding: 12px 14px;
+    padding: 9px 11px;
     background: rgba(166, 197, 188, 0.05);
     border-left: 2px solid var(--pg-mint);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .op-controls {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-top: 4px;
+    gap: 8px;
+    padding: 10px 2px 2px;
     border-top: 1px dashed var(--pg-line);
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
   }
 
   .op-controls__head {
@@ -2404,18 +2420,18 @@
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--pg-ink-faint);
-    margin-top: 12px;
+    margin: 0 0 2px;
   }
 
   .op-controls__row {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
   }
 
   .op-controls__caption {
-    font-size: 10px;
-    letter-spacing: 0.15em;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--pg-ink-faint);
   }
@@ -2430,7 +2446,7 @@
     flex: 1;
     color: var(--pg-ink);
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: 10.5px;
     letter-spacing: 0.08em;
     text-align: center;
     text-transform: uppercase;
@@ -2438,8 +2454,8 @@
 
   .op-controls__btn {
     display: inline-flex;
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -2447,7 +2463,7 @@
     background: transparent;
     color: var(--pg-ink);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     cursor: pointer;
     transition:
       border-color 0.2s,
@@ -2463,7 +2479,7 @@
 
   .op-controls__range {
     display: grid;
-    gap: 6px;
+    gap: 3px;
   }
 
   .op-controls__range input[type='range'] {
@@ -2507,7 +2523,8 @@
   .op-controls__actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 5px;
+    margin-top: 2px;
   }
 
   .op-controls__action {
@@ -2515,11 +2532,11 @@
     background: rgba(217, 119, 69, 0.12);
     color: var(--pg-orange-hi);
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     font-weight: 600;
-    padding: 8px 6px;
+    padding: 7px 4px;
     cursor: pointer;
     transition: all 0.18s ease;
   }
@@ -2550,29 +2567,34 @@
 
   .op-alerts {
     display: grid;
-    gap: 6px;
+    gap: 4px;
     padding-top: 6px;
     border-top: 1px dashed var(--pg-line);
-    margin-top: 4px;
+    margin-top: 2px;
   }
 
   .op-alert {
     margin: 0;
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding-left: 10px;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 0 2px 8px;
     border-left: 1px solid rgba(185, 195, 204, 0.16);
     color: var(--pg-ink-faint);
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: 9.5px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
   .op-alert strong {
     color: var(--pg-ink);
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  .op-alert[data-active='false'] {
+    opacity: 0.55;
   }
 
   .op-alert[data-alert='dou'][data-active='true'] {
@@ -2599,10 +2621,11 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding: 14px 24px;
+    padding: 12px 20px;
     border-bottom: 1px solid var(--pg-line);
     gap: 12px;
-    flex-wrap: wrap;
+    flex: 0 0 auto;
+    min-width: 0;
   }
 
   .board-head__title {
@@ -2663,13 +2686,13 @@
   }
 
   .board {
-    flex: 1;
+    flex: 1 1 auto;
     position: relative;
     overflow: hidden;
     background:
-      radial-gradient(ellipse at 50% 40%, rgba(166, 197, 188, 0.04), transparent 60%),
-      radial-gradient(ellipse at 30% 20%, rgba(26, 35, 48, 0.58) 0%, rgba(10, 15, 21, 0.92) 72%);
-    min-height: 320px;
+      radial-gradient(ellipse at 50% 42%, rgba(166, 197, 188, 0.055), transparent 62%),
+      radial-gradient(ellipse at 30% 18%, rgba(26, 35, 48, 0.62) 0%, rgba(10, 15, 21, 0.94) 72%);
+    min-height: 0;
   }
 
   .board__canvas {
@@ -2686,6 +2709,7 @@
     height: 20px;
     border: 1px solid var(--pg-line-bright);
     pointer-events: none;
+    opacity: 0.9;
   }
 
   .board__corner--tl {
@@ -2786,12 +2810,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: min(75%, 520px);
+    width: min(72%, 480px);
     aspect-ratio: 1;
     border: 1px dashed var(--pg-line-bright);
     border-radius: 50%;
     pointer-events: none;
-    opacity: 0.45;
+    opacity: 0.65;
     transition:
       border-color 0.4s,
       border-style 0.4s,
@@ -2845,12 +2869,13 @@
   .cmd-deck {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 24px;
+    gap: 12px;
+    padding: 10px 20px;
     border-top: 1px solid var(--pg-line);
     background: var(--pg-bg-deep);
-    font-size: 12px;
-    min-height: 46px;
+    font-size: 11.5px;
+    min-height: 42px;
+    flex: 0 0 auto;
     font-family: var(--font-mono);
   }
 
@@ -2900,17 +2925,19 @@
   /* ───────── INSTRUCTOR (RIGHT) ───────── */
   .pg__instructor {
     border-left: 1px solid var(--pg-line);
-    padding: 22px 20px;
-    overflow-y: auto;
+    padding: 18px 18px 16px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
   }
 
   .inst-head {
     display: grid;
-    gap: 8px;
+    gap: 6px;
+    flex: 0 0 auto;
   }
 
   .inst-label {
@@ -2932,12 +2959,16 @@
 
   .inst-title {
     font-family: var(--font-display);
-    font-size: clamp(22px, 2vw, 28px);
-    line-height: 1.05;
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    line-height: 1.06;
     letter-spacing: -0.02em;
     font-weight: 350;
     margin: 0;
     color: var(--pg-ink);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .inst-title :global(em) {
@@ -2949,27 +2980,37 @@
   .inst-desc {
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 13px;
+    line-height: 1.45;
     color: var(--pg-ink-dim);
     margin: 0;
+    flex: 0 0 auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .inst-steps {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     font-size: 11px;
-    line-height: 1.5;
+    line-height: 1.45;
     font-family: var(--font-mono);
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 14px), transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 14px), transparent 100%);
   }
 
   .inst-step {
     display: grid;
-    grid-template-columns: 22px 1fr;
-    gap: 12px;
+    grid-template-columns: 20px 1fr;
+    gap: 10px;
     color: var(--pg-ink-dim);
-    padding: 4px 0;
+    padding: 3px 0;
     align-items: start;
   }
 
@@ -3002,13 +3043,18 @@
   }
 
   .inst-hint {
-    font-size: 12px;
-    line-height: 1.5;
+    font-size: 11.5px;
+    line-height: 1.45;
     color: var(--pg-ink-faint);
-    padding-top: 10px;
+    padding-top: 8px;
     border-top: 1px dashed var(--pg-line);
     font-style: italic;
     font-family: var(--font-display);
+    flex: 0 0 auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .inst-hint b {
@@ -3026,6 +3072,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: auto;
+    flex: 0 0 auto;
   }
 
   .inst-btn {
@@ -3075,19 +3122,22 @@
     position: relative;
     z-index: 2;
     overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    flex: 0 0 auto;
   }
 
   .phase {
-    flex: 1;
-    min-width: 110px;
-    padding: 12px 14px 14px;
+    flex: 1 0 auto;
+    min-width: 92px;
+    padding: 9px 12px 11px;
     border-right: 1px solid var(--pg-line);
     border-top: none;
     border-bottom: none;
     border-left: none;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     cursor: pointer;
     position: relative;
     font-family: var(--font-mono);
@@ -3203,20 +3253,23 @@
   }
 
   /* ───────── RESPONSIVE ───────── */
-  @media (max-width: 1200px) {
+  @media (max-width: 1280px) {
     .pg__workspace {
-      grid-template-columns: 240px minmax(0, 1fr) 300px;
+      grid-template-columns: clamp(210px, 17%, 260px) minmax(0, 1fr) clamp(270px, 22%, 320px);
     }
   }
 
   @media (max-width: 1100px) {
     .pg {
       height: auto;
-      min-height: calc(100vh - var(--nav-height));
+      max-height: none;
+      min-height: calc(100svh - var(--nav-height));
     }
 
     .pg__workspace {
       grid-template-columns: minmax(0, 1fr);
+      height: auto;
+      overflow: visible;
     }
 
     .pg__operators,
@@ -3224,6 +3277,11 @@
       border-left: none;
       border-right: none;
       border-top: 1px solid var(--pg-line);
+      overflow: visible;
+    }
+
+    .op-controls {
+      overflow: visible;
     }
 
     .board {
@@ -3232,7 +3290,7 @@
 
     .phase {
       flex: 0 0 auto;
-      min-width: 120px;
+      min-width: 110px;
     }
   }
 
