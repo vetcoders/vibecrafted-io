@@ -1,0 +1,430 @@
+/* =====================================================================
+   𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — Instrumented Craft theme override
+   ---------------------------------------------------------------------
+   Import AFTER global.css:
+       @import url('./theme-instrumented-craft.css');
+
+   Strategy:
+   - Re-maps existing design tokens (copper/timber/steel/stone/verdigris)
+     to the new instrument vocabulary (orange/slate/mint) without
+     renaming any variables, so every existing component continues to
+     work unchanged.
+   - Swaps the body paper/stone texture for a blueprint grid appropriate
+     for a release engine.
+   - Keeps spacing / radius / layout / motion curves untouched; only
+     color, atmosphere, and a few surface treatments change.
+   ================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap");
+
+:root {
+  /* ─────────────────────────────────────────────────────────────
+       PALETTE — primitives remapped
+       ───────────────────────────────────────────────────────────── */
+
+  /* Copper slot → Orange accent (live / in-progress / attention) */
+  --copper: #d97745;
+  --copper-bright: #e28a5c;
+
+  /* Verdigris / Patina slots → Mint (done / converged / ok) */
+  --patina: #a6c5bc;
+  --patina-deep: #7fb0a3;
+  --verdigris: #c0d6cf;
+
+  /* Timber slots → warm greys (kept dim; we want the surface quiet) */
+  --timber: #5a6570;
+  --timber-light: #7a8590;
+  --timber-grain: rgba(122, 133, 144, 0.08);
+
+  /* Steel — chrome / tools, pushed cooler for the slate world */
+  --steel: #b9c3cc;
+  --steel-dark: #7a8590;
+  --steel-edge: #d3dce4;
+
+  /* Stone — foundation, now deep slate instead of paper-tinted coal */
+  --stone-deep: #0d1117;
+  --stone-mid: #161b22;
+  --stone-light: #e6e8eb;
+
+  /* ─────────────────────────────────────────────────────────────
+       SURFACES — translucent panels over slate
+       ───────────────────────────────────────────────────────────── */
+  --card-bg: rgba(22, 27, 34, 0.62);
+  --card-border: rgba(185, 195, 204, 0.1);
+  --surface-glass: rgba(15, 22, 29, 0.22);
+  --surface-overlay: rgba(8, 12, 17, 0.88);
+  --glass-panel-bg: linear-gradient(
+    180deg,
+    rgba(22, 27, 34, 0.28),
+    rgba(10, 14, 19, 0.52)
+  );
+  --glass-panel-bg-strong: linear-gradient(
+    180deg,
+    rgba(24, 30, 38, 0.38),
+    rgba(10, 14, 19, 0.68)
+  );
+  --glass-panel-border: rgba(185, 195, 204, 0.14);
+  --glass-panel-highlight: rgba(230, 232, 235, 0.08);
+  --terminal: #0a0f15;
+  --terminal-soft: #10161e;
+
+  /* ─────────────────────────────────────────────────────────────
+       EFFECTS — glow follows orange, shadows follow slate
+       ───────────────────────────────────────────────────────────── */
+  --glow: rgba(217, 119, 69, 0.34);
+  --glow-subtle: rgba(217, 119, 69, 0.16);
+  --glow-hover: rgba(217, 119, 69, 0.22);
+  --glow-muted: rgba(217, 119, 69, 0.08);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-soft: rgba(0, 0, 0, 0.22);
+  --shadow-md: rgba(0, 0, 0, 0.28);
+  --shadow-sm: rgba(0, 0, 0, 0.18);
+  --overlay-subtle: rgba(10, 14, 19, 0.18);
+  --overlay-md: rgba(10, 14, 19, 0.32);
+
+  --steel-edge-strong: rgba(211, 220, 228, 0.8);
+  --steel-edge-muted: rgba(211, 220, 228, 0.72);
+  --steel-border-subtle: rgba(185, 195, 204, 0.18);
+  --steel-border-muted: rgba(185, 195, 204, 0.12);
+  --steel-border-soft: rgba(185, 195, 204, 0.22);
+  --steel-bg-subtle: rgba(185, 195, 204, 0.08);
+
+  --text-primary: rgba(230, 232, 235, 0.9);
+  --text-secondary: rgba(230, 232, 235, 0.74);
+
+  --surface-banner: rgba(10, 14, 19, 0.96);
+  --surface-overlay-subtle: rgba(8, 12, 17, 0.52);
+
+  --copper-border: rgba(217, 119, 69, 0.8);
+  --copper-shadow: rgba(217, 119, 69, 0.22);
+  --copper-glow-faint: rgba(217, 119, 69, 0.12);
+
+  /* ─────────────────────────────────────────────────────────────
+       BODY ATMOSPHERE — paper/stone → blueprint slate
+       The old stack painted warm paper fibres; the new stack paints
+       a quiet instrument surface: slate + soft grid + cool vignette.
+       ───────────────────────────────────────────────────────────── */
+  --site-background-overlay: linear-gradient(
+    180deg,
+    rgba(7, 11, 15, 0.35) 0%,
+    rgba(7, 11, 15, 0.72) 100%
+  );
+
+  /* Substrate: slate with a subtle center glow, no paper warmth */
+  --site-paper-substrate: linear-gradient(
+    180deg,
+    rgba(20, 27, 36, 0.45) 0%,
+    rgba(13, 17, 23, 0.22) 22%,
+    rgba(10, 14, 19, 0.1) 60%,
+    rgba(18, 24, 32, 0.38) 100%
+  );
+
+  /* Fiber → fine blueprint grid (60px squares) */
+  --site-paper-fiber-overlay:
+    linear-gradient(rgba(230, 232, 235, 0.035) 1px, transparent 1px) 0 0 / 60px
+      60px,
+    linear-gradient(90deg, rgba(230, 232, 235, 0.035) 1px, transparent 1px) 0
+      0 / 60px 60px,
+    radial-gradient(
+      circle at 82% 14%,
+      rgba(217, 119, 69, 0.05),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 18% 82%,
+      rgba(166, 197, 188, 0.035),
+      transparent 30%
+    );
+
+  /* Grain → coarser grid (240px) for depth, barely visible */
+  --site-paper-grain-overlay:
+    linear-gradient(rgba(230, 232, 235, 0.05) 1px, transparent 1px) 0 0 / 240px
+      240px,
+    linear-gradient(90deg, rgba(230, 232, 235, 0.05) 1px, transparent 1px) 0 0 /
+      240px 240px;
+
+  /* Atmosphere: single warm accent (orange pool upper-left) + cool wash */
+  --site-atmosphere-overlay:
+    radial-gradient(
+      circle at 20% 16%,
+      rgba(217, 119, 69, 0.08),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 80% 22%,
+      rgba(185, 195, 204, 0.045),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 54% 78%,
+      rgba(166, 197, 188, 0.04),
+      transparent 36%
+    );
+
+  --site-vignette-overlay: radial-gradient(
+    circle at 50% 34%,
+    transparent 26%,
+    rgba(7, 11, 15, 0.58) 100%
+  );
+
+  /* ─────────────────────────────────────────────────────────────
+       BRAND MARK & STRIPS
+       ───────────────────────────────────────────────────────────── */
+  --brand-mark-shadow:
+    inset 0 1px 0 rgba(230, 232, 235, 0.2), 0 6px 18px var(--glow);
+
+  --foundation-strip-surface:
+    linear-gradient(180deg, rgba(22, 27, 34, 0.5), rgba(10, 14, 19, 0.64)),
+    linear-gradient(135deg, transparent 0%, rgba(122, 133, 144, 0.1) 100%);
+
+  --mermaid-comment-color: rgba(122, 133, 144, 0.62);
+
+  /* Card phase tags */
+  --card-tag-bg: rgba(230, 232, 235, 0.06);
+  --card-phase-light-bg: rgba(230, 232, 235, 0.12);
+  --card-phase-muted-bg: rgba(122, 133, 144, 0.14);
+  --card-phase-copper-bg: rgba(217, 119, 69, 0.14);
+
+  --diffusion-section-surface: linear-gradient(
+    180deg,
+    rgba(10, 14, 19, 0.14) 0%,
+    rgba(10, 14, 19, 0.28) 100%
+  );
+
+  --framework-portal-surface:
+    radial-gradient(circle at 18% 14%, var(--glow-muted), transparent 26%),
+    radial-gradient(
+      circle at 84% 12%,
+      rgba(185, 195, 204, 0.07),
+      transparent 24%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(22, 27, 34, 0.55) 0%,
+      rgba(10, 14, 19, 0.74) 100%
+    );
+
+  --elevated-panel-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.24), inset 0 1px 0 var(--glass-panel-highlight),
+    var(--shadow);
+
+  --framework-link-hover-border: rgba(226, 138, 92, 0.55);
+
+  --manifesto-section-surface: linear-gradient(
+    180deg,
+    rgba(10, 14, 19, 0.16),
+    rgba(10, 14, 19, 0.28)
+  );
+
+  --footer-copyright-color: rgba(122, 133, 144, 0.8);
+  --mobile-nav-toggle-bg: rgba(10, 14, 19, 0.78);
+
+  /* ─────────────────────────────────────────────────────────────
+       HERO CANVAS (marble frame) — quiet slate instrument
+       ───────────────────────────────────────────────────────────── */
+  --hero-canvas-surface:
+    radial-gradient(
+      circle at 30% 20%,
+      rgba(32, 42, 56, 0.58) 0%,
+      rgba(10, 15, 21, 0.9) 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(12, 17, 23, 0.62) 0%,
+      rgba(12, 17, 23, 0.86) 100%
+    );
+  --hero-canvas-backdrop: blur(14px) saturate(112%);
+  --hero-canvas-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55), var(--shadow);
+
+  --hero-rule-surface: linear-gradient(
+    90deg,
+    rgba(217, 119, 69, 0.06) 0%,
+    rgba(217, 119, 69, 0.52) 22%,
+    rgba(217, 119, 69, 0.52) 78%,
+    rgba(217, 119, 69, 0.06) 100%
+  );
+
+  /* ─────────────────────────────────────────────────────────────
+       NOT-FOUND
+       ───────────────────────────────────────────────────────────── */
+  --not-found-panel-surface:
+    linear-gradient(180deg, rgba(22, 27, 34, 0.84), rgba(8, 12, 17, 0.94)),
+    radial-gradient(
+      circle at top left,
+      rgba(217, 119, 69, 0.18),
+      transparent 42%
+    );
+  --not-found-panel-shadow:
+    inset 0 1px 0 rgba(230, 232, 235, 0.08), 0 28px 60px rgba(0, 0, 0, 0.48);
+  --not-found-rule-surface: linear-gradient(
+    90deg,
+    rgba(217, 119, 69, 0),
+    rgba(217, 119, 69, 0.65),
+    rgba(166, 197, 188, 0)
+  );
+  --not-found-eyebrow-bg: rgba(10, 14, 19, 0.48);
+  --not-found-logo-shadow: 0 0 0 1px rgba(185, 195, 204, 0.22);
+  --not-found-title-shadow: 0 18px 48px rgba(217, 119, 69, 0.22);
+  --not-found-link-bg: rgba(10, 14, 19, 0.58);
+  --not-found-link-hover-border: rgba(217, 119, 69, 0.48);
+  --not-found-link-hover-bg: rgba(22, 27, 34, 0.82);
+  --not-found-trace-bg: rgba(10, 14, 19, 0.52);
+
+  /* ─────────────────────────────────────────────────────────────
+       STATS badge (marble canvas readout)
+       ───────────────────────────────────────────────────────────── */
+  --stats-border: rgba(230, 232, 235, 0.12);
+  --stats-bg: rgba(22, 27, 34, 0.84);
+
+  /* ─────────────────────────────────────────────────────────────
+       DOCS (hero, command bars, etc.) — rebalanced
+       ───────────────────────────────────────────────────────────── */
+  --docs-hero-surface:
+    radial-gradient(circle at top right, var(--glow-subtle), transparent 42%),
+    linear-gradient(140deg, rgba(8, 12, 17, 0.88), rgba(16, 22, 28, 0.66));
+  --docs-hero-lead-color: rgba(210, 220, 230, 0.84);
+  --docs-hero-quote-color: rgba(240, 244, 249, 0.9);
+  --docs-copy-body-color: rgba(196, 208, 220, 0.86);
+  --docs-note-color: var(--steel-dark);
+  --install-command-bar-border: var(--copper-shadow);
+  --install-command-bar-bg: rgba(10, 14, 19, 0.76);
+  --install-command-bar-highlight: rgba(230, 232, 235, 0.05);
+  --install-command-copy-bg: rgba(22, 27, 34, 0.92);
+  --install-command-copy-hover-border: rgba(226, 138, 92, 0.48);
+
+  --tooltip-bg: rgba(22, 27, 34, 0.94);
+  --tooltip-ok-border: rgba(166, 197, 188, 0.48);
+  --tooltip-err-border: rgba(217, 119, 69, 0.52);
+
+  /* ─────────────────────────────────────────────────────────────
+       TYPOGRAPHY — add Fraunces as a display option
+       "font-head" stays the same (Poppins fallback) so any existing
+       uses keep working; editorial serif lives in --font-display.
+       ───────────────────────────────────────────────────────────── */
+  --font-display: "Fraunces", "Hoefler Text", Georgia, "Times New Roman", serif;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   WORDMARK — swap "Allura" script for Fraunces italic
+   Keeps the existing .manifesto-title__script selector, just
+   trades the font face for something that reads as serious
+   "Vibecrafted." rather than wedding-invitation cursive.
+   ───────────────────────────────────────────────────────────── */
+.manifesto-title__script {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 50;
+  letter-spacing: -0.025em;
+  text-shadow: 0 0 22px var(--glow-muted);
+}
+
+/* Restore a clean line-height for the Fraunces display face */
+.manifesto-title {
+  line-height: 0.96;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BODY BACKGROUND — replace the paper/stone raster with slate
+   The original global.css points at /presence/background-stone.webp;
+   we override background-image so the stone raster is no longer
+   composited in. Everything else (overlays, fibers, grain) is
+   already re-wired by the :root tokens above.
+   ───────────────────────────────────────────────────────────── */
+body {
+  background-color: var(--stone-deep);
+  background-image:
+    var(--site-background-overlay),
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(217, 119, 69, 0.08),
+      transparent 44%
+    ),
+    var(--site-paper-substrate);
+  background-position:
+    center top,
+    center top,
+    center top;
+  background-size:
+    cover,
+    100% 100%,
+    cover;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, fixed;
+}
+
+/* Keep the overlays that global.css paints via ::before / ::after,
+   but dial the blend down so the grid reads as structure, not noise. */
+body::before {
+  opacity: 1;
+  mix-blend-mode: normal;
+}
+
+body::after {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SCROLLBAR — slightly cooler thumb
+   ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar-thumb {
+  background: rgba(185, 195, 204, 0.14);
+  border: 1px solid var(--glass-panel-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(185, 195, 204, 0.28);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BUTTONS — recast for the instrument world
+   (Same class names; only colors and a crisper edge change.)
+   ───────────────────────────────────────────────────────────── */
+.btn-solid {
+  background: var(--copper);
+  color: var(--stone-deep);
+  border: 1px solid var(--copper-border);
+  box-shadow:
+    0 10px 22px var(--copper-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.btn-solid:hover {
+  background: var(--copper-bright);
+  box-shadow:
+    0 14px 28px var(--glow-hover),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.btn-outline {
+  background: rgba(22, 27, 34, 0.55);
+  color: var(--stone-light);
+  border: 1px solid var(--steel-border-soft);
+}
+
+.btn-outline:hover {
+  border-color: var(--copper);
+  color: var(--copper-bright);
+  background: rgba(22, 27, 34, 0.75);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SECTION LABELS — orange stays (already mapped via --copper)
+   but we give them a small leading rule to match the instrument
+   vocabulary from the mockup.
+   ───────────────────────────────────────────────────────────── */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-label::before {
+  content: "";
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.9;
+}

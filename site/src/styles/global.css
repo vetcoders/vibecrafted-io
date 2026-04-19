@@ -4,6 +4,7 @@
  * script; Fraunces carries the headline / lead type used across theme-A.
  */
 @import "../../../styles/tokens.css";
+@import url("./theme-instrumented-craft.css");
 
 *,
 *::before,
