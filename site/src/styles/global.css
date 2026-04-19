@@ -697,7 +697,8 @@ html.framework-subpage {
 }
 
 .shell--framework {
-  padding: calc(var(--nav-height) + 0.55rem) 0 clamp(4rem, 9vh, 5.4rem);
+  padding: 0;
+  min-height: 100svh;
 }
 
 /* SCROLL ANIMATIONS */
@@ -727,8 +728,13 @@ html.framework-subpage {
   }
 }
 
-/* Framework playground owns its own command deck — hide the site-wide
-   floating search shell while the operator console is mounted. */
-body.framework-page .search-shell {
+/* Framework playground owns the viewport — it's the operator console view,
+   not a scrollable article. Hide site-wide chrome while it's mounted. */
+body.framework-page .search-shell,
+body.framework-page .footer-shell {
   display: none !important;
+}
+
+body.framework-page {
+  overflow: hidden;
 }
