@@ -530,7 +530,8 @@
           finishApplied: 'Decorate pass increased polish and saturation.',
           gapsFilled: 'Hydrate pass filled the next launch-critical gaps.',
           loopReleased: 'Release pulse fired. The board is resetting for a fresh loop.',
-          phaseChanged: 'Phase changed.'
+          phaseChanged: 'Phase changed.',
+          scaffoldNudge: 'Pick board shape and capacity on the left before throwing marbles.'
         },
         shapes: {
           circle: 'Circle',
@@ -665,7 +666,8 @@
           finishApplied: 'Pass decorate podbił polish i nasycenie.',
           gapsFilled: 'Hydrate domknął kolejne krytyczne dla launchu luki.',
           loopReleased: 'Impulse release odpalony. Plansza wraca do nowej pętli.',
-          phaseChanged: 'Faza została zmieniona.'
+          phaseChanged: 'Faza została zmieniona.',
+          scaffoldNudge: 'Najpierw wybierz kształt i pojemność po lewej, potem rzucaj kulki.'
         },
         shapes: {
           circle: 'Koło',
@@ -788,6 +790,8 @@
   let overflowMarbles = $state<Marble[]>([]);
   let pings = $state<Ping[]>([]);
   let liveMessage = $state('');
+  let scaffoldNudge = $state(false);
+  let scaffoldNudgeTimer: ReturnType<typeof setTimeout> | undefined;
 
   let ctx: CanvasRenderingContext2D | null = null;
   let resizeObserver: ResizeObserver | undefined;
@@ -1323,9 +1327,22 @@
     motionActive = true;
   }
 
+  function nudgeScaffold() {
+    scaffoldNudge = true;
+    if (scaffoldNudgeTimer) clearTimeout(scaffoldNudgeTimer);
+    scaffoldNudgeTimer = setTimeout(() => {
+      scaffoldNudge = false;
+    }, 1600);
+  }
+
   function handleBoardPointerDown(event: PointerEvent) {
     if (event.button !== undefined && event.button !== 0) return;
     if (!boardEl) return;
+    if (currentPhase.name === 'scaffold') {
+      nudgeScaffold();
+      announce(text.controls.status.scaffoldNudge);
+      return;
+    }
     const rect = boardEl.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const localX = event.clientX - rect.left;
@@ -1336,6 +1353,11 @@
   function handleBoardKeydown(event: KeyboardEvent) {
     if (event.key !== 'Enter' && event.key !== ' ') return;
     event.preventDefault();
+    if (currentPhase.name === 'scaffold') {
+      nudgeScaffold();
+      announce(text.controls.status.scaffoldNudge);
+      return;
+    }
     spawnMarbleAtPoint(centerX + (Math.random() - 0.5) * boardRadius * 0.4,
                        centerY + (Math.random() - 0.5) * boardRadius * 0.4);
   }
@@ -1951,6 +1973,7 @@
   bind:this={rootEl}
   class="pg"
   class:pg--converged={guideConverged}
+  class:pg--nudge={scaffoldNudge}
   data-phase={currentPhase.name}
   data-tone={currentPhase.tone}
 >
@@ -2179,8 +2202,8 @@
         <canvas bind:this={canvasEl} class="board__canvas" aria-hidden="true"></canvas>
 
         {#if currentPhase.name === 'scaffold' && visibleMarbleCount === 0}
-          <div class="board__idle-cta" aria-hidden="true">
-            {text.boardIdleHint}
+          <div class="board__idle-cta" class:board__idle-cta--nudge={scaffoldNudge} aria-hidden="true">
+            {scaffoldNudge ? text.controls.status.scaffoldNudge : text.boardIdleHint}
           </div>
         {/if}
 
@@ -2317,6 +2340,33 @@
     color: var(--pg-ink);
     font-family: var(--font-mono);
     isolation: isolate;
+  }
+
+  .pg,
+  .pg * {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .pg ::selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  .pg ::-moz-selection {
+    background: transparent;
+    color: inherit;
+  }
+
+  .pg .cmd-deck,
+  .pg .cmd-deck * {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  .pg .cmd-deck ::selection {
+    background: var(--pg-orange);
+    color: var(--pg-stone-deep);
   }
 
   .pg::before {
@@ -3063,6 +3113,30 @@
     pointer-events: none;
     z-index: 3;
     animation: pg-idle-breathe 3.2s ease-in-out infinite;
+    transition: color 180ms ease;
+  }
+
+  .board__idle-cta--nudge {
+    color: var(--pg-orange-hi);
+    animation: pg-nudge-flash 1.4s ease-out 1;
+  }
+
+  @keyframes pg-nudge-flash {
+    0% { transform: translate(-50%, 130px) scale(1); text-shadow: 0 0 0 transparent; }
+    12% { transform: translate(-50%, 130px) scale(1.04); text-shadow: 0 0 18px var(--pg-orange-hi); }
+    28% { transform: translate(-50%, 130px) scale(1); text-shadow: 0 0 6px var(--pg-orange); }
+    100% { text-shadow: 0 0 0 transparent; }
+  }
+
+  .pg--nudge .op-controls__shape,
+  .pg--nudge .op-controls__row:first-of-type {
+    animation: pg-nudge-panel 1.4s ease-out 1;
+  }
+
+  @keyframes pg-nudge-panel {
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    30% { box-shadow: 0 0 0 2px var(--pg-orange), 0 0 22px rgba(217, 119, 69, 0.45); }
+    60% { box-shadow: 0 0 0 1px var(--pg-orange), 0 0 12px rgba(217, 119, 69, 0.3); }
   }
 
   @media (max-width: 1100px) {

@@ -131,13 +131,9 @@ const footerLinks = [
 ];
 
 const primaryLinks = [
-  { href: sectionLinks.pipeline, label: navLabels.pipeline },
-  { href: sectionLinks.skills, label: navLabels.skills },
-  { href: sectionLinks.marbles, label: navLabels.marbles },
   { href: navPaths.framework, label: navLabels.framework, current: normalizedPath === navPaths.framework },
   { href: navPaths.quickstart, label: navLabels.quickstart, current: normalizedPath === navPaths.quickstart },
   { href: navPaths.faq, label: navLabels.faq, current: normalizedPath === navPaths.faq },
-  { href: sectionLinks.dou, label: navLabels.dou },
 ];
 
 ---
@@ -235,7 +231,6 @@ const primaryLinks = [
                 toggleHreflang={toggleHreflang}
                 toggleLang={toggleHreflang}
                 githubLabel={navLabels.github}
-                searchLabel={navLabels.search}
                 menuLabel={navLabels.menu}
                 closeLabel={navLabels.closeMenu}
                 primaryNavLabel={navLabels.navPrimary}

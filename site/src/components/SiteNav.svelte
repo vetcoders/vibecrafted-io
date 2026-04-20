@@ -21,7 +21,6 @@
     toggleHreflang: string;
     toggleLang: string;
     githubLabel: string;
-    searchLabel: string;
     menuLabel: string;
     closeLabel: string;
     primaryNavLabel: string;
@@ -36,7 +35,6 @@
     toggleHreflang,
     toggleLang,
     githubLabel,
-    searchLabel,
     menuLabel,
     closeLabel,
     primaryNavLabel,
@@ -53,11 +51,6 @@
 
   function handleLinkClick() {
     window.setTimeout(closeNav, 0);
-  }
-
-  function openSearch() {
-    closeNav();
-    window.dispatchEvent(new CustomEvent('vibecrafted:search-toggle'));
   }
 
   function handleKeydown(event: KeyboardEvent) {
@@ -88,14 +81,6 @@
       </a>
     {/each}
     <div class="nav-get-zone">
-      <button
-        class="nav-link nav-link--button nav-link--search"
-        type="button"
-        aria-label={searchLabel}
-        onclick={openSearch}
-      >
-        {searchLabel}
-      </button>
       <a class="nav-link nav-link--install" href={installHref}>{installLabel}</a>
       <a
         class="nav-link nav-link--toggle"
@@ -163,20 +148,11 @@
         </a>
       {/each}
       <div class="nav-get-zone nav-get-zone--mobile">
-        <button
-          class="nav-link nav-link--button nav-link--search nav-link--mobile-item"
-          type="button"
-          aria-label={searchLabel}
-          onclick={openSearch}
-          style={`--nav-item-index: ${links.length};`}
-        >
-          {searchLabel}
-        </button>
         <a
           class="nav-link nav-link--install nav-link--mobile-item"
           href={installHref}
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 1};`}
+          style={`--nav-item-index: ${links.length};`}
         >
           {installLabel}
         </a>
@@ -187,7 +163,7 @@
           lang={toggleLang}
           aria-label={toggleLabel}
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 2};`}
+          style={`--nav-item-index: ${links.length + 1};`}
         >
           {toggleLabel}
         </a>
@@ -197,7 +173,7 @@
           href="https://github.com/VetCoders/vibecrafted"
           rel="noopener noreferrer"
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 3};`}
+          style={`--nav-item-index: ${links.length + 2};`}
         >
           <svg aria-hidden="true" class="nav-icon" viewBox="0 0 24 24">
             <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.51v-1.81c-2.94.64-3.56-1.24-3.56-1.24-.48-1.22-1.16-1.55-1.16-1.55-.95-.65.07-.63.07-.63 1.05.07 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.04.87.09-.68.37-1.14.66-1.4-2.35-.27-4.82-1.18-4.82-5.25 0-1.16.41-2.1 1.08-2.84-.11-.27-.47-1.36.1-2.83 0 0 .88-.28 2.89 1.08a10.08 10.08 0 0 1 5.26 0c2-1.36 2.88-1.08 2.88-1.08.58 1.47.22 2.56.11 2.83.67.74 1.08 1.68 1.08 2.84 0 4.08-2.48 4.97-4.85 5.23.38.33.72.97.72 1.95v2.89c0 .28.19.62.73.51A10.5 10.5 0 0 0 12 1.5Z"></path>
@@ -238,15 +214,14 @@
     display: inline-flex;
     isolation: isolate;
     align-items: center;
-    min-height: 3rem;
-    padding-block: var(--space-xs);
+    min-height: 2.5rem;
+    padding: 0.55rem 0.45rem 0.6rem;
     color: var(--steel-dark);
     font-weight: 500;
     text-decoration: none;
     transition:
       color 0.2s ease,
-      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-      text-shadow 0.18s ease;
+      text-shadow 0.2s ease;
   }
 
   .nav-link--button {
@@ -257,63 +232,64 @@
     font: inherit;
   }
 
+  /* Top copper underline — matches phase-bar active marker (Image #33) */
   .nav-link::before {
     content: '';
     position: absolute;
-    inset: 0.38rem -0.55rem;
-    z-index: -1;
-    border: 1px solid rgba(212, 144, 92, 0.08);
-    border-radius: 999px;
-    background:
-      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
-      linear-gradient(135deg, rgba(184, 115, 51, 0.12), rgba(163, 184, 199, 0.04));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 10px 24px rgba(0, 0, 0, 0.08);
+    top: 0;
+    left: 0.1rem;
+    right: 0.1rem;
+    height: 1.5px;
+    background: var(--copper);
     opacity: 0;
-    transform: scale(0.94);
+    transform: scaleX(0.3);
+    transform-origin: center;
     transition:
-      opacity 0.18s ease,
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.18s ease;
+      opacity 0.22s ease,
+      transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* Subtle shine sweep on hover */
   .nav-link::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0.38rem;
-    height: 1px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(212, 144, 92, 0), rgba(212, 144, 92, 0.92), rgba(212, 144, 92, 0));
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 40%,
+      rgba(212, 144, 92, 0.14) 50%,
+      transparent 60%
+    );
     opacity: 0;
-    transform: scaleX(0.35);
-    transform-origin: center;
-    transition:
-      opacity 0.18s ease,
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.25s ease;
   }
 
   .nav-link:hover,
   .nav-link:focus-visible {
-    color: var(--steel);
-    transform: translateY(-1px);
-    text-shadow: 0 0 14px rgba(163, 184, 199, 0.12);
+    color: var(--copper);
+    text-shadow: 0 0 10px rgba(212, 144, 92, 0.18);
   }
 
   .nav-link:hover::before,
-  .nav-link:focus-visible::before,
-  .nav-link--current::before {
-    opacity: 1;
-    transform: scale(1);
+  .nav-link:focus-visible::before {
+    opacity: 0.75;
+    transform: scaleX(1);
   }
 
   .nav-link:hover::after,
-  .nav-link:focus-visible::after,
-  .nav-link--current::after {
+  .nav-link:focus-visible::after {
     opacity: 1;
-    transform: scaleX(1);
+    animation: nav-shine 0.55s ease-out;
+  }
+
+  @keyframes nav-shine {
+    0% {
+      background-position: -120% 0;
+    }
+    100% {
+      background-position: 120% 0;
+    }
   }
 
   .nav-link--current {
@@ -321,10 +297,8 @@
   }
 
   .nav-link--current::before {
-    border-color: rgba(212, 144, 92, 0.18);
-    background:
-      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
-      linear-gradient(135deg, rgba(184, 115, 51, 0.16), rgba(163, 184, 199, 0.05));
+    opacity: 1;
+    transform: scaleX(1);
   }
 
   .nav-get-zone {
