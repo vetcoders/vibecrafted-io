@@ -6,12 +6,11 @@ SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
 SOURCE   := $(CURDIR)
 BRANCH   ?= main
 
-# Caddy deployment target (libraxis-vm as root, file server at /srv/vibecrafted/docs)
-# libraxis-vm-root is the admin-escape alias; daily libraxis-vm goes to
-# the libraxis user per Vista/LibraxisAI convention.
-DEPLOY_HOST ?= libraxis-vm-root
-DEPLOY_ROOT ?= /srv/vibecrafted/docs
-DEPLOY_OWNER ?= caddy:caddy
+# Caddy deployment target: libraxis user on libraxis-vm, file server at
+# /home/libraxis/vibecrafted-io. libraxis-vm-root stays as root-escape
+# alias only — not a deploy target anymore.
+DEPLOY_HOST ?= libraxis-vm
+DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 
 .PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-build site-deploy site-deploy-pages bundle-build bundle-sign content-truth
 
@@ -43,8 +42,8 @@ help:
 	@printf "\n"
 	@printf "  \033[36m▸\033[0m  make site-dev          \033[2mStart Astro dev server for vibecrafted.io\033[0m\n"
 	@printf "  \033[36m▸\033[0m  make site-build        \033[2mBuild static site (Astro + Svelte)\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-deploy       \033[2mBuild + rsync to libraxis-vm Caddy ($(DEPLOY_HOST):$(DEPLOY_ROOT))\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-deploy-pages \033[2mBuild + sync to local docs/ (GitHub Pages fallback)\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-deploy       \033[2mBuild + rsync to Caddy ($(DEPLOY_HOST):$(DEPLOY_ROOT))\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-deploy-pages \033[2mBuild + sync to local docs/ (GitHub Pages mirror)\033[0m\n"
 	@printf "\n"
 	@printf "  \033[32m◇\033[0m  make bundle-build  \033[2mBuild tarball bundle without heavy dirs\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle-sign   \033[2mSign bundle tarball with RSA private key\033[0m\n"
@@ -163,7 +162,7 @@ site-deploy: site-build
 		--exclude='.DS_Store' \
 		site/dist/ \
 		$(DEPLOY_HOST):$(DEPLOY_ROOT)/
-	@ssh $(DEPLOY_HOST) "chown -R $(DEPLOY_OWNER) $(DEPLOY_ROOT) && echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
+	@ssh $(DEPLOY_HOST) "echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
 	@echo ""
 	@echo "  ✓ https://vibecrafted.io now serves version $$(cat framework/VERSION)"
 
