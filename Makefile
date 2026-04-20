@@ -6,8 +6,8 @@ SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
 SOURCE   := $(CURDIR)
 BRANCH   ?= main
 
-# Caddy deployment target (libraxis-vm, file server at /srv/vibecrafted/docs)
-DEPLOY_HOST ?= libraxis-vm
+# Caddy deployment target (libraxis-vm as root, file server at /srv/vibecrafted/docs)
+DEPLOY_HOST ?= libraxis-vm-deploy
 DEPLOY_ROOT ?= /srv/vibecrafted/docs
 DEPLOY_OWNER ?= caddy:caddy
 
