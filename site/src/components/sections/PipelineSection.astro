@@ -11,7 +11,13 @@ const section = getTranslations(lang).sections.pipeline;
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <MermaidViewer client:visible highlightedCode={section.highlighted} code={section.mermaid} />
+        <MermaidViewer
+            client:visible
+            highlightedCode={section.highlighted}
+            code={section.mermaid}
+            fullCode={section.mermaidFull}
+            modalLabels={section.mermaidModal}
+        />
         <div class="pipeline-notes">
             {section.notes.map((note, index) => (
                 <article class="pipeline-note">
