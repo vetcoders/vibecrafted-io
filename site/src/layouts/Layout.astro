@@ -171,6 +171,23 @@ const primaryLinks = [
     <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
     <meta content={robotsContent} name="robots">
     <meta content="#0d1117" name="theme-color">
+    <meta
+        http-equiv="Content-Security-Policy"
+        content={[
+          "default-src 'none'",
+          "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          "style-src-attr 'unsafe-inline'",
+          "img-src 'self' data:",
+          "font-src 'self' https://fonts.gstatic.com",
+          "connect-src 'self' https://plausible.io",
+          "frame-src 'none'",
+          "worker-src 'self'",
+          "manifest-src 'self'",
+          "base-uri 'self'",
+          "form-action 'self'",
+        ].join('; ')}
+    >
     <link href={canonicalUrl} rel="canonical">
     {alternates && <>
       <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />

@@ -1230,11 +1230,21 @@
   }
 
   function spawnOperatorBatch() {
-    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
-    if (openSlots.length === 0) {
-      showPhase(phases.findIndex((phase) => phase.name === 'workflow'));
-      return;
+    if (slots.length === 0) {
+      buildSlots();
     }
+    const workflowIndex = phases.findIndex((phase) => phase.name === 'workflow');
+    if (currentPhaseIndex <= workflowIndex) {
+      grooveRevealProgress = 1;
+      syncSlotVisibility();
+      if (currentPhaseIndex < workflowIndex) {
+        applyPhaseGeometry(workflowIndex);
+        grooveRevealProgress = 1;
+        syncSlotVisibility();
+      }
+    }
+    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
+    if (openSlots.length === 0) return;
     for (let index = 0; index < Math.min(operatorCount, openSlots.length); index += 1) {
       const pick = Math.floor(Math.random() * openSlots.length);
       const target = openSlots[pick];
@@ -2718,11 +2728,14 @@
 
   .board {
     flex: 1 1 auto;
+    align-self: stretch;
     position: relative;
     overflow: hidden;
     background:
       radial-gradient(ellipse at 50% 45%, rgba(166, 197, 188, 0.08), transparent 55%),
       radial-gradient(ellipse at 30% 20%, rgba(26, 35, 48, 0.6), rgba(10, 15, 21, 0.95) 70%);
+    width: 100%;
+    min-width: 0;
     min-height: 0;
   }
 
