@@ -7,7 +7,9 @@ SOURCE   := $(CURDIR)
 BRANCH   ?= main
 
 # Caddy deployment target (libraxis-vm as root, file server at /srv/vibecrafted/docs)
-DEPLOY_HOST ?= libraxis-vm-deploy
+# libraxis-vm-root is the admin-escape alias; daily libraxis-vm goes to
+# the libraxis user per Vista/LibraxisAI convention.
+DEPLOY_HOST ?= libraxis-vm-root
 DEPLOY_ROOT ?= /srv/vibecrafted/docs
 DEPLOY_OWNER ?= caddy:caddy
 
