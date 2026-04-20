@@ -186,12 +186,12 @@
     {
       name: 'scaffold',
       label: 'Scaffold',
-      eyebrow: 'Phase 0 · Setup',
-      title: 'Trace the outer frame',
+      eyebrow: 'Phase 0 · Prep',
+      title: 'Define the system you are about to build',
       description:
-        'Set the boundary first. Scaffold is only about the silhouette of the board before we decide how many grooves it can carry.',
-      detail: 'Layout shell · geometry lock',
-      hint: 'The board is a teaching surface — every phase adds constraint, not just content.',
+        'Scope first. Pick the board shape that matches your system topology, then set capacity. The outer frame is your contract with the future: what you will build — and, just as important, what you will not.',
+      detail: 'Shape · capacity · constraints',
+      hint: 'Scaffold is a thinking step, not a coding step. Set shape and sliders on the left, then spawn or click the board.',
       state: 'awaiting',
       readoutLoop: '—',
       readoutP: '0·0·0',
@@ -202,20 +202,20 @@
       snapshotRatio: 0.28,
       tone: 'steel',
       steps: [
-        { txt: 'Lock the outer boundary', state: 'active' },
-        { txt: 'Assign phase lead', state: 'todo' },
-        { txt: 'Enter Init · context load', state: 'todo' }
+        { txt: 'Pick board shape (topology)', state: 'active' },
+        { txt: 'Set density, specialists, precision', state: 'todo' },
+        { txt: 'Spawn or click to enter Init', state: 'todo' }
       ]
     },
     {
       name: 'init',
       label: 'Init',
       eyebrow: 'Phase 1 · Craft',
-      title: 'Etch the first grooves',
+      title: 'Load perception, intentions, ground truth',
       description:
-        'Init anchors the board in reality. History and structure start cutting true grooves into the frame so later work has somewhere real to land.',
-      detail: 'Context load · first grooves',
-      hint: 'Agents write blind without this. Never skip init.',
+        'Before touching code: loctree maps the living structure, aicx retrieves prior intentions from agent sessions, git history grounds you in runtime truth. Skip this and the next agent writes blind.',
+      detail: 'loctree · aicx · git',
+      hint: 'vc-init runs three senses in parallel. Perception beats memory, intentions beat RAG, ground truth beats intuition.',
       state: 'indexing',
       readoutLoop: '0',
       readoutP: '0·0·0',
@@ -226,21 +226,21 @@
       snapshotRatio: 0.48,
       tone: 'steel',
       steps: [
-        { txt: 'Scaffold complete', state: 'done' },
-        { txt: 'Index aicx decisions', state: 'done' },
-        { txt: 'Read AST via loctree', state: 'active' },
-        { txt: 'Open Workflow pipeline', state: 'todo' }
+        { txt: 'loctree repo-view (structure)', state: 'done' },
+        { txt: 'aicx intents retrieval', state: 'done' },
+        { txt: 'git ground truth', state: 'active' },
+        { txt: 'Enter Workflow', state: 'todo' }
       ]
     },
     {
       name: 'workflow',
       label: 'Workflow',
       eyebrow: 'Phase 1 · Craft',
-      title: 'Set groove density',
+      title: 'Dispatch specialists into real slots',
       description:
-        'Now define capacity. Workflow decides how many grooves the board exposes, so later work lands into a real operating model instead of empty texture.',
-      detail: 'Groove count · density tuning',
-      hint: 'Examine → Research → Implement. Small issues are normal — this is where the real fieldwork begins.',
+        'Agents spawn and take position. Each specialist fills a specific groove — loctree for structure, aicx for memory, prview for review, ScreenScribe for runtime capture. Real work lands on the board here.',
+      detail: 'Agent dispatch · parallel fieldwork',
+      hint: 'Examine → Research → Implement. Spawn from the panel — or click anywhere on the board to throw a targeted marble.',
       state: 'implementing',
       readoutLoop: '1',
       readoutP: '0·0·2',
@@ -251,21 +251,21 @@
       snapshotRatio: 0.74,
       tone: 'copper',
       steps: [
-        { txt: 'Examine codebase', state: 'done' },
+        { txt: 'Examine what actually runs', state: 'done' },
         { txt: 'Research ground truth', state: 'done' },
-        { txt: 'Implement increment', state: 'active' },
-        { txt: 'Await follow-up', state: 'todo' }
+        { txt: 'Dispatch specialists', state: 'active' },
+        { txt: 'Harvest for follow-up', state: 'todo' }
       ]
     },
     {
       name: 'followup',
       label: 'Follow-up',
       eyebrow: 'Phase 2 · Converge',
-      title: 'Shake loose the false positives',
+      title: 'Shake out the false positives',
       description:
-        'Loose marbles start falling away. Followup is where noisy success claims get tested against what actually holds.',
-      detail: 'Gravity purge · excess falls off',
-      hint: 'Six issues is the scar tissue of honest implementation. Fix them in Marbles.',
+        'Loose claims fall away. Any specialist output that was never truly anchored gets exposed — a GO / NO-GO verdict emerges for each landed marble before the real convergence loops begin.',
+      detail: 'Verdict pass · noise purge',
+      hint: 'Scar tissue is normal. Weak fits surface here so Marbles does not waste cycles on them.',
       state: 'auditing',
       readoutLoop: '2',
       readoutP: '1·3·2',
@@ -276,7 +276,7 @@
       snapshotRatio: 0.68,
       tone: 'steel',
       steps: [
-        { txt: 'Workflow implemented', state: 'done' },
+        { txt: 'Workflow landed', state: 'done' },
         { txt: 'Collect severity findings', state: 'done' },
         { txt: 'Issue GO / NO-GO verdict', state: 'active' },
         { txt: 'Enter Marbles loop', state: 'todo' }
@@ -286,11 +286,11 @@
       name: 'marbles',
       label: 'Marbles',
       eyebrow: 'Phase 2 · Converge',
-      title: 'Loop until P0=P1=P2=0',
+      title: 'Loop until P0 = P1 = P2 = 0',
       description:
-        'Iterative convergence. Each pass reduces variance. No fixed count — run until the circle is full.',
-      detail: 'Batch throws · growing entropy',
-      hint: 'Late loops compress, not correct. Keep looping until the circle is full.',
+        'Iterative convergence. Each loop shrinks variance. No fixed count — you stop when the circle is full and every priority counter is zero. Batches run on their own; you can still click the board to throw a targeted marble at a specific gap.',
+      detail: 'Autonomous loop · decreasing entropy',
+      hint: 'Late loops compress, not correct. If you are still correcting, you are still in Follow-up.',
       state: 'converging',
       readoutLoop: '4',
       readoutP: '0·1·1',
@@ -310,12 +310,12 @@
     {
       name: 'dou',
       label: 'DoU',
-      eyebrow: 'Phase 3 · Audit',
-      title: 'Definition of Undone',
+      eyebrow: 'Phase 3 · Ship',
+      title: 'Definition of Undone — the red truth',
       description:
-        'Surface the red truth. Run a systematic gap analysis across the entire product surface to expose what still blocks shipping.',
-      detail: 'Plague check · readiness audit',
-      hint: 'Tests pass ≠ product works. The gap is the funnel — find it, close it.',
+        'Tests pass ≠ product works. Systematic gap analysis across the full product surface: install path, runtime behavior, docs, onboarding, funnel, support. Whatever still blocks shipping shows up red.',
+      detail: 'Full-surface audit · ship blockers',
+      hint: 'The gap is the funnel. Find it and close it before Decorate.',
       state: 'auditing',
       readoutLoop: 'done',
       readoutP: '0·0·3',
@@ -336,11 +336,11 @@
       name: 'decorate',
       label: 'Decorate',
       eyebrow: 'Phase 3 · Ship',
-      title: 'Turn coherence into finish',
+      title: 'Coherence first. Premium second.',
       description:
-        'The settled marbles saturate and sharpen. Decorate is not random ornament; it is the final coherence pass that makes the system feel intentional.',
-      detail: 'Saturation lift · finish pass',
-      hint: 'Smaczki, not decorations. Every element should feel chosen.',
+        'Not ornament — the final coherence pass. Identity vs drift: keep what is distinctive, reduce what merely accumulated. Every hover, spacing rule, and interaction rhythm gets deliberate.',
+      detail: 'Coherence pass · intentional finish',
+      hint: 'Premium is coherence. Smaczki, not decorations.',
       state: 'polishing',
       readoutLoop: 'done',
       readoutP: '0·0·0',
@@ -352,7 +352,7 @@
       tone: 'patina',
       steps: [
         { txt: 'DoU audit complete', state: 'done' },
-        { txt: 'Extract brand tokens', state: 'done' },
+        { txt: 'Detect identity tokens', state: 'done' },
         { txt: 'Polish interaction language', state: 'active' }
       ]
     },
@@ -360,10 +360,10 @@
       name: 'hydrate',
       label: 'Hydrate',
       eyebrow: 'Phase 3 · Ship',
-      title: 'Fill the exact missing slots',
+      title: 'Fill the market-facing gaps',
       description:
-        'Now the motion changes tone. The remaining gaps are handled deterministically, one launch-critical hole at a time.',
-      detail: 'Precise fill · market-facing completion',
+        'Installer, onboarding, docs landing, pricing surface, first-run experience. Deterministic precision on the slots that decide whether a visitor becomes a customer.',
+      detail: 'Distribution · first-run · conversion',
       hint: 'Code without distribution is a zine. Hydrate turns it into a product.',
       state: 'packaging',
       readoutLoop: 'done',
@@ -376,19 +376,19 @@
       tone: 'patina',
       steps: [
         { txt: 'Decoration complete', state: 'done' },
-        { txt: 'Write marketplace copy', state: 'done' },
+        { txt: 'Write market copy', state: 'done' },
         { txt: 'Publish onboarding flow', state: 'active' }
       ]
     },
     {
       name: 'release',
       label: 'Release',
-      eyebrow: 'Final Step · Release',
-      title: 'Tag · publish · ship',
+      eyebrow: 'Final · Ship',
+      title: 'Tag · sign · publish · announce',
       description:
-        'The board glows, holds, and then fades for the next cycle. Shipping is not the absence of motion; it is a completed loop ready to start again.',
-      detail: 'Stable board · reset for next cycle',
-      hint: 'The circle is full. What ships is not "working code" — it is a reachable product.',
+        'Build and sign the artifact, push the tag, rebuild the public surface, announce the cycle. The loop closes here — and reopens for the next scope.',
+      detail: 'Tag · sign · publish · announce',
+      hint: 'What ships is not "working code" — it is a reachable, signed, verifiable product.',
       state: 'released',
       readoutLoop: 'done',
       readoutP: '0·0·0',
@@ -420,7 +420,7 @@
       defaultPressCopy: 'Define the board geometry.',
       operators: 'Operators',
       choosePhase: 'Choose Phase',
-      boardIdleHint: 'Press · SPAWN to begin',
+      boardIdleHint: '↖ Pick shape · set capacity · or click board to throw',
       boardPhaseBadge: 'Phase',
       crumb: { root: 'Framework', leaf: 'Playground' },
       instructor: {
@@ -464,25 +464,31 @@
       },
       hints: {
         scaffold:
-          'Choose the outer frame first. Capacity comes later, once the board shape is real.',
-        init: 'Bootstrap context so the first true grooves are cut from history instead of guessed from nothing.',
+          'Scaffold is scope, not code. Shape + sliders on the left decide what the whole session is about.',
+        init:
+          'vc-init loads three senses before any edit: loctree structure, aicx intentions, git ground truth.',
         workflow:
-          'Tune groove density until the board exposes the right amount of working capacity.',
+          'Specialists take positions. Click the board to throw a targeted marble at the groove you care about.',
         followup:
-          'Shake the board and see which claims of progress were never truly anchored.',
+          'Every claim of progress gets tested. Weak fits surface so Marbles has a clean convergence target.',
         marbles:
-          'Set the marbles count and force, then let the board run the convergence sequence by itself.',
-        dou: 'Flash the undone truth in red and expose what still blocks shipping.',
-        decorate: 'Apply final polish pass to saturate colors and sharpen the finish.',
-        hydrate: 'Fill the remaining critical gaps with deterministic precision.',
-        release: 'Launch the finished surface and release the loop to the market.',
+          'Loop until P0=P1=P2=0. You can still click to throw a targeted marble — the loop just keeps running.',
+        dou:
+          'Tests pass ≠ product works. The red slots are real ship blockers: install, funnel, docs, support.',
+        decorate:
+          'Coherence pass. Identity stays, drift goes. Every hover and rhythm becomes intentional.',
+        hydrate:
+          'Installer, onboarding, first-run. Code without distribution is a zine — Hydrate turns it into a product.',
+        release:
+          'Tag. Sign. Publish. Announce. The loop closes and reopens on a new scope.',
         review:
-          'Run a stress pass on the first placements before the noisy convergence loops begin.',
+          'Stress-test the first placements before the noisy convergence loops begin.',
         research:
-          'Probe the lane choices before committing force. Research narrows the search space and marks the promising paths.',
-        agents: 'Select specialist count and spawn them into the grooves.',
+          'Probe the lane choices before committing force. Research narrows the search space.',
+        agents:
+          'Pick specialist count and send them in. Every agent fills a specific kind of groove.',
         prune:
-          'Remove weak or unnecessary fits so the board can converge around the stronger core.'
+          'Remove weak fits so the board converges around the stronger core.'
       },
       controls: {
         boardShape: 'Board shape',
@@ -549,7 +555,7 @@
       defaultPressCopy: 'Zdefiniuj geometrię planszy.',
       operators: 'Operatorzy',
       choosePhase: 'Wybierz fazę',
-      boardIdleHint: 'Naciśnij · SPAWN by zacząć',
+      boardIdleHint: '↖ Wybierz kształt · ustaw pojemność · albo kliknij planszę',
       boardPhaseBadge: 'Faza',
       crumb: { root: 'Framework', leaf: 'Playground' },
       instructor: {
@@ -593,25 +599,31 @@
       },
       hints: {
         scaffold:
-          'Najpierw wybierz zewnętrzną ramę. Pojemność przychodzi później, gdy kształt planszy jest już prawdziwy.',
-        init: 'Zainicjuj kontekst, żeby pierwsze prawdziwe rowki były wycinane z historii zamiast zgadywane od zera.',
+          'Scaffold to zakres, nie kod. Kształt i suwaki po lewej decydują o czym w ogóle jest ta sesja.',
+        init:
+          'vc-init uruchamia trzy zmysły przed dotknięciem kodu: strukturę (loctree), intencje (aicx), ground truth z git.',
         workflow:
-          'Dostrój gęstość rowków, aż plansza pokaże właściwą pojemność roboczą.',
+          'Specjaliści zajmują pozycje. Możesz kliknąć planszę żeby rzucić kulkę w konkretny rowek.',
         followup:
-          'Potrząśnij planszą i sprawdź, które deklaracje postępu nigdy nie były naprawdę osadzone.',
+          'Każda deklaracja postępu jest testowana. Słabe dopasowania wypływają, żeby Marbles miał czysty cel.',
         marbles:
-          'Ustaw liczbę kulek i siłę, a potem pozwól planszy samodzielnie uruchomić sekwencję konwergencji.',
-        dou: 'Pokaż na czerwono prawdę o niedomknięciu i ujawnij, co nadal blokuje release.',
-        decorate: 'Nałóż końcowy polish pass, żeby nasycić kolory i wyostrzyć finish.',
-        hydrate: 'Wypełnij pozostałe krytyczne luki z deterministyczną precyzją.',
-        release: 'Wypuść gotową powierzchnię i uwolnij pętlę na rynek.',
+          'Pętla aż P0=P1=P2=0. Możesz nadal klikać w planszę — pętla sama leci, kliki celują w konkretne luki.',
+        dou:
+          'Testy przechodzą ≠ produkt działa. Czerwone rowki to realne blokery wdrożenia: instalator, lejek, docs, support.',
+        decorate:
+          'Pass spójności. Tożsamość zostaje, drift znika. Każdy hover i rytm stają się zamierzone.',
+        hydrate:
+          'Instalator, onboarding, first-run. Kod bez dystrybucji to zin — Hydrate robi z niego produkt.',
+        release:
+          'Tag. Podpis. Publikacja. Ogłoszenie. Pętla się zamyka i otwiera na nowy zakres.',
         review:
-          'Uruchom pass stresowy dla pierwszych ułożeń, zanim zaczną się głośniejsze pętle domykania.',
+          'Stres-test pierwszych ułożeń, zanim zaczną się głośniejsze pętle domykania.',
         research:
-          'Przetestuj możliwe tory, zanim dołożysz siłę. Research zawęża przestrzeń szukania i zaznacza obiecujące ścieżki.',
-        agents: 'Wybierz liczbę specjalistów i wpuść ich w rowki.',
+          'Sprawdź możliwe tory, zanim dołożysz siłę. Research zawęża przestrzeń szukania.',
+        agents:
+          'Wybierz liczbę specjalistów i wpuść ich w rowki. Każdy agent wypełnia inny typ rowka.',
         prune:
-          'Usuń słabe albo zbędne dopasowania, żeby plansza mogła domknąć się wokół mocniejszego rdzenia.'
+          'Usuń słabe dopasowania, żeby plansza mogła domknąć się wokół mocniejszego rdzenia.'
       },
       controls: {
         boardShape: 'Kształt planszy',
@@ -666,67 +678,76 @@
       },
       phaseOverrides: {
         scaffold: {
-          eyebrow: 'Faza 0 · Setup',
-          title: 'Wyznacz zewnętrzną ramę',
+          eyebrow: 'Faza 0 · Prep',
+          title: 'Zdefiniuj system, który właśnie zaczynasz budować',
           description:
-            'Najpierw wyznacz granicę. Scaffold dotyczy tylko sylwetki planszy, zanim zdecydujemy, ile rowków ma unieść.',
-          detail: 'Szkielet układu · blokada geometrii'
+            'Najpierw zakres. Wybierz kształt planszy odpowiadający topologii twojego systemu, potem ustaw pojemność. Rama to kontrakt z przyszłością: co zbudujesz — i, równie ważne, czego nie zbudujesz.',
+          detail: 'Kształt · pojemność · ograniczenia',
+          hint: 'Scaffold to krok myślenia, nie kodowania. Kształt i suwaki po lewej, potem spawn albo klik w planszę.'
         },
         init: {
           eyebrow: 'Faza 1 · Twórz',
-          title: 'Wytraw pierwsze rowki',
+          title: 'Załaduj percepcję, intencje, ground truth',
           description:
-            'Init zakotwicza planszę w rzeczywistości. Historia i struktura zaczynają wycinać prawdziwe rowki, żeby późniejsza praca miała gdzie lądować.',
-          detail: 'Ładowanie kontekstu · pierwsze rowki'
+            'Zanim dotkniesz kodu: loctree mapuje żywą strukturę, aicx wyciąga intencje z poprzednich sesji agentów, git daje zakotwiczenie w rzeczywistej produkcji. Pomiń to i następny agent pisze na ślepo.',
+          detail: 'loctree · aicx · git',
+          hint: 'vc-init odpala trzy zmysły równolegle. Percepcja bije pamięć, intencje biją RAG, ground truth bije intuicję.'
         },
         workflow: {
           eyebrow: 'Faza 1 · Twórz',
-          title: 'Ustaw gęstość rowków',
+          title: 'Wypuść specjalistów na realne pozycje',
           description:
-            'Tutaj definiujemy pojemność. Workflow decyduje, ile rowków plansza wystawi, żeby dalsza praca wpadała w prawdziwy model operacyjny zamiast pustej tekstury.',
-          detail: 'Liczba rowków · strojenie gęstości'
+            'Agenci się spawnują i zajmują pozycje. Każdy specjalista wypełnia konkretny rowek — loctree strukturę, aicx pamięć, prview review, ScreenScribe runtime. Tutaj realna praca ląduje na planszy.',
+          detail: 'Wysyłka agentów · równoległa robota',
+          hint: 'Examine → Research → Implement. Wpuść operatorów panelem — albo kliknij w planszę żeby rzucić celowaną kulkę.'
         },
         followup: {
           eyebrow: 'Faza 2 · Domykaj',
           title: 'Strząśnij fałszywe sukcesy',
           description:
-            'Luźne kulki zaczynają odpadać. Followup to moment, w którym głośne deklaracje sukcesu zderzają się z tym, co naprawdę się trzyma.',
-          detail: 'Grawitacyjne czyszczenie · nadmiar odpada'
+            'Luźne deklaracje odpadają. Wszystko, co nie zostało prawdziwie osadzone, wychodzi na jaw — każdy marble dostaje werdykt GO / NO-GO, zanim zacznie się realna konwergencja.',
+          detail: 'Werdykt · czyszczenie szumu',
+          hint: 'Blizny są normalne. Słabe dopasowania wypływają tutaj, żeby Marbles nie tracił cykli.'
         },
         marbles: {
           eyebrow: 'Faza 2 · Domykaj',
-          title: 'Domknij, aż P0=P1=P2=0',
+          title: 'Pętla aż P0 = P1 = P2 = 0',
           description:
-            'Iteracyjne domykanie. Każdy przebieg redukuje wariancję. Bez ustalonej liczby — aż krąg się zamknie.',
-          detail: 'Rzuty batchowe · rosnąca entropia'
+            'Iteracyjne domykanie. Każda pętla zmniejsza wariancję. Bez ustalonej liczby — kończysz, gdy koło jest pełne, a wszystkie liczniki priorytetów są zerem. Batche lecą same; nadal możesz klikać planszę, żeby rzucić celowanie w konkretną lukę.',
+          detail: 'Autonomiczna pętla · malejąca entropia',
+          hint: 'Późne pętle kompresują, nie poprawiają. Jeśli nadal poprawiasz, jesteś jeszcze w Follow-up.'
         },
         dou: {
-          eyebrow: 'Faza 3 · Audyt',
-          title: 'Definition of Undone',
+          eyebrow: 'Faza 3 · Wdrażaj',
+          title: 'Definition of Undone — czerwona prawda',
           description:
-            'Wyciągnij na czerwono prawdę. Uruchom systematyczną analizę luk na całej powierzchni produktu, żeby zobaczyć, co nadal blokuje wysyłkę.',
-          detail: 'Plague check · audyt gotowości'
+            'Testy przechodzą ≠ produkt działa. Systematyczna analiza luk na całej powierzchni produktu: instalator, runtime, docs, onboarding, lejek, support. Cokolwiek blokuje wdrożenie — pokazuje się na czerwono.',
+          detail: 'Audyt powierzchni · blokery wdrożenia',
+          hint: 'Luka to lejek. Znajdź ją i zamknij, zanim wejdziesz w Decorate.'
         },
         decorate: {
           eyebrow: 'Faza 3 · Wdrażaj',
-          title: 'Zamień spójność w wykończenie',
+          title: 'Najpierw spójność. Premium drugim.',
           description:
-            'Osadzone kulki zyskują nasycenie i ostrość. Decorate nie jest przypadkową ornamentyką; to końcowy pass spójności, który sprawia, że system czuje się intencjonalny.',
-          detail: 'Podbicie nasycenia · pass wykończenia'
+            'Nie ornament — końcowy pass spójności. Tożsamość vs drift: zachowaj to, co wyróżniające, zredukuj to, co się tylko nagromadziło. Każdy hover, odstęp i rytm interakcji staje się zamierzony.',
+          detail: 'Pass spójności · intencjonalne wykończenie',
+          hint: 'Premium to spójność. Smaczki, nie dekoracje.'
         },
         hydrate: {
           eyebrow: 'Faza 3 · Wdrażaj',
-          title: 'Wypełnij dokładnie brakujące szczeliny',
+          title: 'Wypełnij luki skierowane na rynek',
           description:
-            'Tutaj ruch zmienia ton. Pozostałe luki są domykane deterministycznie, po jednym krytycznym dla launchu otworze naraz.',
-          detail: 'Precyzyjne wypełnienie · domknięcie pod rynek'
+            'Instalator, onboarding, landing dokumentacji, cennik, first-run. Deterministyczna precyzja na rowkach, które decydują czy z odwiedzającego zrobi się klient.',
+          detail: 'Dystrybucja · first-run · konwersja',
+          hint: 'Kod bez dystrybucji to zin. Hydrate robi z niego produkt.'
         },
         release: {
-          eyebrow: 'Krok końcowy · Release',
-          title: 'Tag · publish · ship',
+          eyebrow: 'Krok końcowy · Wdrażaj',
+          title: 'Tag · podpisz · publikuj · ogłoś',
           description:
-            'Plansza rozświetla się, utrzymuje wzór, a potem blednie przed kolejnym cyklem. Shipping nie jest brakiem ruchu; to domknięta pętla gotowa, by zacząć od nowa.',
-          detail: 'Stabilna plansza · reset na kolejny cykl'
+            'Zbuduj i podpisz artefakt, wypchnij tag, przebuduj publiczną powierzchnię, ogłoś cykl. Pętla zamyka się tutaj — i otwiera na nowy zakres.',
+          detail: 'Tag · podpis · publikacja · ogłoszenie',
+          hint: 'Nie wysyła się „działającego kodu" — wysyła się dostępny, podpisany, weryfikowalny produkt.'
         }
       }
     }
@@ -1253,6 +1274,70 @@
     }
     motionActive = true;
     announce(text.controls.status.operatorsSpawned);
+  }
+
+  function spawnMarbleAtPoint(localX: number, localY: number) {
+    if (slots.length === 0) buildSlots();
+    const workflowIndex = phases.findIndex((phase) => phase.name === 'workflow');
+    if (currentPhaseIndex < workflowIndex) {
+      applyPhaseGeometry(workflowIndex);
+    }
+    grooveRevealProgress = 1;
+    syncSlotVisibility();
+
+    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
+    if (openSlots.length === 0) return;
+
+    let nearest = openSlots[0];
+    let bestDist = Infinity;
+    for (const slot of openSlots) {
+      const d = Math.hypot(slot.x - localX, slot.y - localY);
+      if (d < bestDist) {
+        bestDist = d;
+        nearest = slot;
+      }
+    }
+
+    const dx = nearest.x - localX;
+    const dy = nearest.y - localY;
+    const distance = Math.hypot(dx, dy) || 1;
+    const speed = 5 + Math.min(8, distance * 0.02);
+    marbles.push({
+      x: localX,
+      y: localY,
+      vx: (dx / distance) * speed + (Math.random() - 0.5) * 1.4,
+      vy: (dy / distance) * speed + (Math.random() - 0.5) * 1.4,
+      target: nearest,
+      settled: false,
+      seed: Math.floor(Math.random() * 99999),
+      palette: randomPalette('ocean'),
+      alpha: 1,
+      saturation: 0.72 + polishIntensity * 0.12
+    });
+    pings.push({
+      x: localX,
+      y: localY,
+      life: 0.9,
+      color: PAL.ocean.light
+    });
+    motionActive = true;
+  }
+
+  function handleBoardPointerDown(event: PointerEvent) {
+    if (event.button !== undefined && event.button !== 0) return;
+    if (!boardEl) return;
+    const rect = boardEl.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const localX = event.clientX - rect.left;
+    const localY = event.clientY - rect.top;
+    spawnMarbleAtPoint(localX, localY);
+  }
+
+  function handleBoardKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    spawnMarbleAtPoint(centerX + (Math.random() - 0.5) * boardRadius * 0.4,
+                       centerY + (Math.random() - 0.5) * boardRadius * 0.4);
   }
 
   function spawnConvergenceWave() {
@@ -2045,8 +2130,11 @@
         class:board--idle={currentPhase.name === 'scaffold'}
         data-board-shape={boardShape}
         id={`${componentId}-panel`}
-        role="img"
+        role="application"
+        tabindex="0"
         aria-label={boardAriaLabel}
+        onpointerdown={handleBoardPointerDown}
+        onkeydown={handleBoardKeydown}
       >
         <span class="board__corner board__corner--tl" aria-hidden="true"></span>
         <span class="board__corner board__corner--tr" aria-hidden="true"></span>
@@ -2222,6 +2310,9 @@
     border-radius: var(--radius-lg);
     background: var(--vt-framework-shell-bg);
     box-shadow: var(--vt-framework-shell-shadow);
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
     overflow: hidden;
     color: var(--pg-ink);
     font-family: var(--font-mono);
@@ -2737,6 +2828,13 @@
     width: 100%;
     min-width: 0;
     min-height: 0;
+    cursor: crosshair;
+    touch-action: manipulation;
+  }
+
+  .board:focus-visible {
+    outline: 1px solid var(--pg-mint);
+    outline-offset: -3px;
   }
 
   .board--idle {
@@ -3023,6 +3121,8 @@
     min-height: 42px;
     flex: 0 0 auto;
     font-family: var(--font-mono);
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   .cmd-deck__prompt {
