@@ -2010,8 +2010,6 @@
             </div>
           {/each}
         </div>
-
-        <div class="op-note">{currentHint}</div>
       </div>
 
       <!-- Tiered controls: shape / density / operators / hydrate / alerts -->
@@ -2562,21 +2560,6 @@
 
   .op.is-warn .op__val {
     color: var(--pg-orange);
-  }
-
-  .op-note {
-    font-size: 10.5px;
-    line-height: 1.45;
-    color: var(--pg-ink-dim);
-    font-style: italic;
-    font-family: var(--font-display);
-    padding: 9px 11px;
-    background: rgba(166, 197, 188, 0.05);
-    border-left: 2px solid var(--pg-mint);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .op-controls {
