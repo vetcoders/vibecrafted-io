@@ -15,7 +15,7 @@
     | 'release';
   type AccentTone = 'steel' | 'copper' | 'patina' | 'alert';
   type MarblePaletteKey = 'amber' | 'ocean' | 'forest' | 'smoke' | 'rose' | 'violet' | 'honey' | 'teal';
-  type PhaseGroup = 'PREP' | 'CRAFT' | 'CONVERGE' | 'SHIP';
+  type PhaseGroup = 'PREP' | 'CRAFT' | 'CONVERGE' | 'DoU' | 'SHIP';
   type StepState = 'done' | 'active' | 'todo';
   type OperatorId = 'loctree' | 'aicx' | 'prview' | 'screenscribe';
   type LabelKey = 'agents' | 'pipeline' | 'verify' | 'artifacts';
@@ -210,7 +210,7 @@
     {
       name: 'init',
       label: 'Init',
-      eyebrow: 'Phase 1 · Craft',
+      eyebrow: 'Phase 0 · Prep',
       title: 'Load perception, intentions, ground truth',
       description:
         'Before touching code: loctree maps the living structure, aicx retrieves prior intentions from agent sessions, git history grounds you in runtime truth. Skip this and the next agent writes blind.',
@@ -221,7 +221,7 @@
       readoutP: '0·0·0',
       activeOps: ['loctree', 'aicx'],
       showLabels: ['agents'],
-      group: 'CRAFT',
+      group: 'PREP',
       duration: 1600,
       snapshotRatio: 0.48,
       tone: 'steel',
@@ -260,7 +260,7 @@
     {
       name: 'followup',
       label: 'Follow-up',
-      eyebrow: 'Phase 2 · Converge',
+      eyebrow: 'Phase 1 · Craft',
       title: 'Shake out the false positives',
       description:
         'Loose claims fall away. Any specialist output that was never truly anchored gets exposed — a GO / NO-GO verdict emerges for each landed marble before the real convergence loops begin.',
@@ -271,7 +271,7 @@
       readoutP: '1·3·2',
       activeOps: ['loctree', 'aicx', 'prview', 'screenscribe'],
       showLabels: ['agents', 'pipeline', 'verify', 'artifacts'],
-      group: 'CONVERGE',
+      group: 'CRAFT',
       duration: 1500,
       snapshotRatio: 0.68,
       tone: 'steel',
@@ -310,7 +310,7 @@
     {
       name: 'dou',
       label: 'DoU',
-      eyebrow: 'Phase 3 · Ship',
+      eyebrow: 'Phase 3 · DoU',
       title: 'Definition of Undone — the red truth',
       description:
         'Tests pass ≠ product works. Systematic gap analysis across the full product surface: install path, runtime behavior, docs, onboarding, funnel, support. Whatever still blocks shipping shows up red.',
@@ -321,7 +321,7 @@
       readoutP: '0·0·3',
       activeOps: ['prview', 'screenscribe'],
       showLabels: ['pipeline', 'verify', 'artifacts'],
-      group: 'SHIP',
+      group: 'DoU',
       duration: 1500,
       snapshotRatio: 0.48,
       tone: 'alert',
@@ -335,7 +335,7 @@
     {
       name: 'decorate',
       label: 'Decorate',
-      eyebrow: 'Phase 3 · Ship',
+      eyebrow: 'Phase 4 · Ship',
       title: 'Coherence first. Premium second.',
       description:
         'Not ornament — the final coherence pass. Identity vs drift: keep what is distinctive, reduce what merely accumulated. Every hover, spacing rule, and interaction rhythm gets deliberate.',
@@ -359,7 +359,7 @@
     {
       name: 'hydrate',
       label: 'Hydrate',
-      eyebrow: 'Phase 3 · Ship',
+      eyebrow: 'Phase 4 · Ship',
       title: 'Fill the market-facing gaps',
       description:
         'Installer, onboarding, docs landing, pricing surface, first-run experience. Deterministic precision on the slots that decide whether a visitor becomes a customer.',
@@ -447,7 +447,7 @@
         dou: { name: 'DoU' },
         review: { name: 'Review' }
       },
-      phaseGroups: { PREP: 'PREP', CRAFT: 'CRAFT', CONVERGE: 'CONVERGE', SHIP: 'SHIP' },
+      phaseGroups: { PREP: 'PREP', CRAFT: 'CRAFT', CONVERGE: 'CONVERGE', DoU: 'DoU', SHIP: 'SHIP' },
       phaseState: {
         awaiting: 'awaiting',
         indexing: 'indexing',
@@ -583,7 +583,7 @@
         dou: { name: 'DoU' },
         review: { name: 'Review' }
       },
-      phaseGroups: { PREP: 'PREP', CRAFT: 'TWÓRZ', CONVERGE: 'DOMYKAJ', SHIP: 'WDRÓŻ' },
+      phaseGroups: { PREP: 'PREP', CRAFT: 'TWÓRZ', CONVERGE: 'DOMYKAJ', DoU: 'DoU', SHIP: 'WDRÓŻ' },
       phaseState: {
         awaiting: 'oczekiwanie',
         indexing: 'indeksowanie',
@@ -688,7 +688,7 @@
           hint: 'Scaffold to krok myślenia, nie kodowania. Kształt i suwaki po lewej, potem spawn albo klik w planszę.'
         },
         init: {
-          eyebrow: 'Faza 1 · Twórz',
+          eyebrow: 'Faza 0 · Prep',
           title: 'Załaduj percepcję, intencje, ground truth',
           description:
             'Zanim dotkniesz kodu: loctree mapuje żywą strukturę, aicx wyciąga intencje z poprzednich sesji agentów, git daje zakotwiczenie w rzeczywistej produkcji. Pomiń to i następny agent pisze na ślepo.',
@@ -704,7 +704,7 @@
           hint: 'Examine → Research → Implement. Wpuść operatorów panelem — albo kliknij w planszę żeby rzucić celowaną kulkę.'
         },
         followup: {
-          eyebrow: 'Faza 2 · Domykaj',
+          eyebrow: 'Faza 1 · Twórz',
           title: 'Strząśnij fałszywe sukcesy',
           description:
             'Luźne deklaracje odpadają. Wszystko, co nie zostało prawdziwie osadzone, wychodzi na jaw — każdy marble dostaje werdykt GO / NO-GO, zanim zacznie się realna konwergencja.',
@@ -720,7 +720,7 @@
           hint: 'Późne pętle kompresują, nie poprawiają. Jeśli nadal poprawiasz, jesteś jeszcze w Follow-up.'
         },
         dou: {
-          eyebrow: 'Faza 3 · Wdrażaj',
+          eyebrow: 'Faza 3 · DoU',
           title: 'Definition of Undone — czerwona prawda',
           description:
             'Testy przechodzą ≠ produkt działa. Systematyczna analiza luk na całej powierzchni produktu: instalator, runtime, docs, onboarding, lejek, support. Cokolwiek blokuje wdrożenie — pokazuje się na czerwono.',
@@ -728,7 +728,7 @@
           hint: 'Luka to lejek. Znajdź ją i zamknij, zanim wejdziesz w Decorate.'
         },
         decorate: {
-          eyebrow: 'Faza 3 · Wdrażaj',
+          eyebrow: 'Faza 4 · Wdrażaj',
           title: 'Najpierw spójność. Premium drugim.',
           description:
             'Nie ornament — końcowy pass spójności. Tożsamość vs drift: zachowaj to, co wyróżniające, zredukuj to, co się tylko nagromadziło. Każdy hover, odstęp i rytm interakcji staje się zamierzony.',
@@ -736,7 +736,7 @@
           hint: 'Premium to spójność. Smaczki, nie dekoracje.'
         },
         hydrate: {
-          eyebrow: 'Faza 3 · Wdrażaj',
+          eyebrow: 'Faza 4 · Wdrażaj',
           title: 'Wypełnij luki skierowane na rynek',
           description:
             'Instalator, onboarding, landing dokumentacji, cennik, first-run. Deterministyczna precyzja na rowkach, które decydują czy z odwiedzającego zrobi się klient.',
@@ -880,7 +880,10 @@
     });
     const douMeta = text.operatorRows.dou;
     const reviewMeta = text.operatorRows.review;
-    const douVal = currentPhase.group === 'SHIP' ? Math.max(1, Math.floor(convergenceProgress / 15)) : 0;
+    const douVal =
+      currentPhase.group === 'DoU' || currentPhase.group === 'SHIP'
+        ? Math.max(1, Math.floor(convergenceProgress / 15))
+        : 0;
     const reviewVal = Math.max(0, Math.floor(visibleMarbleCount / 3));
     rows.push({
       id: 'dou',
