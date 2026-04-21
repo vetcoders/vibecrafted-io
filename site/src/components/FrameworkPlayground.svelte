@@ -1955,12 +1955,92 @@
       resizeObserver.observe(boardEl);
     }
 
+    const renderGameToText = () => ({
+      schema: 'framework-playground@0',
+      lang: locale,
+      phase: {
+        index: currentPhaseIndex,
+        name: currentPhase.name,
+        group: currentPhase.group,
+        label: currentPhase.label,
+        state: currentPhase.state,
+        tone: currentPhase.tone,
+        duration: currentPhase.duration,
+        elapsedMs: phaseTime,
+        activeOps: [...currentPhase.activeOps]
+      },
+      board: {
+        shape: boardShape,
+        grooveDensity,
+        visibleSlots: visibleSlotCount,
+        filledSlots: filledSlotCount,
+        visibleMarbles: visibleMarbleCount,
+        overflowSettled: settledOverflowCount,
+        convergenceProgress,
+        grooveReveal: grooveRevealProgress,
+        boardAlpha,
+        pingsActive: pings.length,
+        motionActive,
+        convergenceRunning,
+        convergenceWaveCount,
+        prefersReducedMotion
+      },
+      metrics: {
+        convergenceProgress,
+        reviewWeakFits,
+        douBlockers,
+        polishIntensity,
+        operatorCount,
+        hydrateBatchSize,
+        phasePulse,
+        shipGlow,
+        errorFlash,
+        blindCodingRisk: null,
+        entropyMeter: null,
+        plagueScore: null,
+        coherenceIndex: null
+      },
+      operators: {
+        loctree: currentPhase.activeOps.includes('loctree'),
+        aicx: currentPhase.activeOps.includes('aicx'),
+        prview: currentPhase.activeOps.includes('prview'),
+        screenscribe: currentPhase.activeOps.includes('screenscribe')
+      },
+      posture: {
+        mode: 'ownership',
+        partnerToggleAvailable: false
+      },
+      artifacts: []
+    });
+
+    const advanceTime = (ms: unknown) => {
+      const raw = typeof ms === 'number' ? ms : Number(ms);
+      if (!Number.isFinite(raw) || raw <= 0) return;
+      const dt = Math.min(5000, raw);
+      stepSimulation(dt);
+    };
+
+    (window as unknown as {
+      render_game_to_text?: () => unknown;
+      advanceTime?: (ms: unknown) => void;
+    }).render_game_to_text = renderGameToText;
+    (window as unknown as {
+      render_game_to_text?: () => unknown;
+      advanceTime?: (ms: unknown) => void;
+    }).advanceTime = advanceTime;
+
     return () => {
       if (resizeFrameId) {
         window.cancelAnimationFrame(resizeFrameId);
       }
       reducedMotionMedia?.removeEventListener('change', handleMotionChange);
       resizeObserver?.disconnect();
+      const w = window as unknown as {
+        render_game_to_text?: () => unknown;
+        advanceTime?: (ms: unknown) => void;
+      };
+      if (w.render_game_to_text === renderGameToText) delete w.render_game_to_text;
+      if (w.advanceTime === advanceTime) delete w.advanceTime;
     };
   });
 
