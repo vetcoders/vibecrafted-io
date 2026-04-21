@@ -2162,11 +2162,6 @@
         <span class="board__corner board__corner--bl" aria-hidden="true"></span>
         <span class="board__corner board__corner--br" aria-hidden="true"></span>
 
-        <div class="board__phase-badge" aria-hidden="true">
-          <span class="board__phase-badge-dot"></span>
-          <span>{text.boardPhaseBadge} {phaseNumberText} · {currentPhase.label}</span>
-        </div>
-
         {#each FRAME_LABELS as labelKey (labelKey)}
           <span
             class="frame-label frame-label--{labelKey}"
@@ -3009,31 +3004,6 @@
     box-shadow:
       0 0 40px rgba(166, 197, 188, 0.22),
       inset 0 0 40px rgba(166, 197, 188, 0.12);
-  }
-
-  /* Phase breadcrumb — small mint badge top-left, mirrors readout */
-  .board__phase-badge {
-    position: absolute;
-    top: 28px;
-    left: 34px;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--pg-ink-dim);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .board__phase-badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--pg-mint);
-    box-shadow: 0 0 8px var(--pg-mint);
   }
 
   /* Ghost slot blueprint — static outlines showing board capacity at SCAFFOLD.
