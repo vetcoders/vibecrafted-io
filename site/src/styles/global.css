@@ -738,3 +738,27 @@ body.framework-page .footer-shell {
 body.framework-page {
   overflow: hidden;
 }
+
+/*
+ * Chrome UI (topbar, curl-banner, footer, wizard topbar) nie jest treścią.
+ * Generyczny reset `span, h1-h6, p { user-select: text }` wygrywał specyficznością
+ * nad lokalnymi regułami i pozwalał Ctrl+A łapać nawigację razem z kontentem.
+ * Tu przywracamy poprawny kontrakt — zaznaczenie dotyczy wyłącznie treści.
+ */
+.topbar,
+.topbar *,
+.curl-banner,
+.curl-banner *,
+.footer-shell,
+.footer-shell *,
+.wizard-shell__topbar,
+.wizard-shell__topbar * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.curl-banner code,
+.curl-banner code * {
+  user-select: text;
+  -webkit-user-select: text;
+}
