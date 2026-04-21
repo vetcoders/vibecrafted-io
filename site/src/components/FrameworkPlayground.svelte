@@ -2206,12 +2206,6 @@
             {scaffoldNudge ? text.controls.status.scaffoldNudge : text.boardIdleHint}
           </div>
         {/if}
-
-        <div class="board__overlay" aria-hidden="true">
-          <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
-          <span>{text.overlayConverge} <strong>{convergenceProgress}%</strong></span>
-          <span>{text.overlayMarbles} <strong>{visibleMarbleCount}</strong></span>
-        </div>
       </div>
 
       <div class="cmd-deck">
@@ -3149,38 +3143,6 @@
     50% {
       opacity: 0.55;
     }
-  }
-
-  .board__overlay {
-    position: absolute;
-    left: 24px;
-    bottom: 72px;
-    display: grid;
-    gap: 4px;
-    padding: 8px 12px;
-    border: 1px solid var(--vt-framework-panel-border);
-    border-radius: 6px;
-    background: var(--vt-framework-panel-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    z-index: 4;
-    opacity: 0.78;
-  }
-
-  .board__overlay span {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .board__overlay strong {
-    color: var(--pg-ink);
-    font-weight: 500;
   }
 
   /* ───────── CMD DECK ───────── */
