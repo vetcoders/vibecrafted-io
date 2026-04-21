@@ -105,15 +105,22 @@ async function jsonFetch<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       payload = JSON.parse(text);
     } catch {
-      payload = { error: text };
+      // Non-JSON body — typically an HTML error page from a server that
+      // isn't the Python installer_gui.py (e.g. Astro dev on :4321 has no
+      // /api/preflight route). Drop the body so it never reaches UI state.
+      payload = null;
     }
   }
 
   if (!response.ok) {
+    const parsedError =
+      payload && typeof payload === "object" && "error" in payload
+        ? (payload as { error: unknown }).error
+        : null;
     const message =
-      (payload && typeof payload === "object" && "error" in payload
-        ? String((payload as { error: unknown }).error)
-        : response.statusText) || "Installer API request failed";
+      (typeof parsedError === "string" && parsedError) ||
+      `${response.status} ${response.statusText || "error"}`.trim() ||
+      "Installer API request failed";
     throw new InstallerApiError(message, response.status);
   }
 
