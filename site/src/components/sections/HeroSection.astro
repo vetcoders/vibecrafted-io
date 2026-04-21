@@ -50,9 +50,14 @@ const hero = getTranslations(lang).sections.hero;
     .hero-copy {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-self: start;
-        padding-top: clamp(3.25rem, 10.5vh, 6.75rem);
+        justify-content: center;
+        align-self: stretch;
+        padding-top: clamp(1.5rem, 5vh, 3rem);
+        padding-bottom: clamp(1rem, 4vh, 2.5rem);
+    }
+
+    .manifesto-title {
+        gap: clamp(0.55rem, 1.2vh, 1rem);
     }
 
     @media (max-width: 900px) {
