@@ -945,13 +945,7 @@
 
   @media (max-width: 900px) {
     .hero-canvas {
-      max-height: var(--hero-canvas-mobile-max-height);
-      aspect-ratio: auto;
-      height: var(--hero-canvas-mobile-height);
-      width: 100%;
-      justify-self: stretch;
-      transform: none;
-      transform-origin: center;
+      display: none;
     }
   }
 
