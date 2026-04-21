@@ -3,10 +3,13 @@
 // docs/runtime/CONTENT_TRUTH.md.
 export const pl = {
   nav: {
+    about: "O nas",
+    runtime: "Runtime",
     pipeline: "Pipeline",
     skills: "Skille",
     marbles: "Marbles",
     framework: "Framework",
+    board: "BOARD",
     quickstart: "Szybki start",
     faq: "FAQ",
     dou: "DoU",
@@ -15,6 +18,8 @@ export const pl = {
     searchAll: "Cała powierzchnia",
     searchClose: "Zamknij wyszukiwanie",
     install: "Instaluj",
+    vc: "VC",
+    vcLabel: "VetCoders",
     github: "GitHub",
     license: "Licencja (BSL 1.1)",
     security: "Bezpieczeństwo",

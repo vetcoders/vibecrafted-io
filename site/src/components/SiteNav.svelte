@@ -16,6 +16,9 @@
     links: NavLink[];
     installHref: string;
     installLabel: string;
+    vcHref: string;
+    vcLabel: string;
+    vcTitle?: string;
     toggleHref: string;
     toggleLabel: string;
     toggleHreflang: string;
@@ -30,6 +33,9 @@
     links,
     installHref,
     installLabel,
+    vcHref,
+    vcLabel,
+    vcTitle,
     toggleHref,
     toggleLabel,
     toggleHreflang,
@@ -82,6 +88,15 @@
     {/each}
     <div class="nav-get-zone">
       <a class="nav-link nav-link--install" href={installHref}>{installLabel}</a>
+      <a
+        class="nav-link nav-link--vc"
+        href={vcHref}
+        rel="noopener noreferrer"
+        target="_blank"
+        title={vcTitle ?? vcLabel}
+      >
+        {vcLabel}
+      </a>
       <a
         class="nav-link nav-link--toggle"
         href={toggleHref}
@@ -157,13 +172,24 @@
           {installLabel}
         </a>
         <a
+          class="nav-link nav-link--vc nav-link--mobile-item"
+          href={vcHref}
+          rel="noopener noreferrer"
+          target="_blank"
+          title={vcTitle ?? vcLabel}
+          onclick={handleLinkClick}
+          style={`--nav-item-index: ${links.length + 1};`}
+        >
+          {vcLabel}
+        </a>
+        <a
           class="nav-link nav-link--toggle nav-link--mobile-item"
           href={toggleHref}
           hreflang={toggleHreflang}
           lang={toggleLang}
           aria-label={toggleLabel}
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 1};`}
+          style={`--nav-item-index: ${links.length + 2};`}
         >
           {toggleLabel}
         </a>
@@ -173,7 +199,7 @@
           href="https://github.com/VetCoders/vibecrafted"
           rel="noopener noreferrer"
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 2};`}
+          style={`--nav-item-index: ${links.length + 3};`}
         >
           <svg aria-hidden="true" class="nav-icon" viewBox="0 0 24 24">
             <path d="M12 1.5a10.5 10.5 0 0 0-3.32 20.46c.53.1.72-.23.72-.51v-1.81c-2.94.64-3.56-1.24-3.56-1.24-.48-1.22-1.16-1.55-1.16-1.55-.95-.65.07-.63.07-.63 1.05.07 1.6 1.08 1.6 1.08.94 1.6 2.45 1.14 3.04.87.09-.68.37-1.14.66-1.4-2.35-.27-4.82-1.18-4.82-5.25 0-1.16.41-2.1 1.08-2.84-.11-.27-.47-1.36.1-2.83 0 0 .88-.28 2.89 1.08a10.08 10.08 0 0 1 5.26 0c2-1.36 2.88-1.08 2.88-1.08.58 1.47.22 2.56.11 2.83.67.74 1.08 1.68 1.08 2.84 0 4.08-2.48 4.97-4.85 5.23.38.33.72.97.72 1.95v2.89c0 .28.19.62.73.51A10.5 10.5 0 0 0 12 1.5Z"></path>

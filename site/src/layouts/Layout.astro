@@ -114,6 +114,10 @@ const sectionLinks = {
   get: '#get',
 };
 
+const aboutHref = isHomePage ? '#skills' : `${navPaths.home}#skills`;
+const runtimeHref = isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`;
+const vcHref = 'https://github.com/VetCoders';
+
 const footerLinks = [
   { href: navPaths.quickstart, label: navLabels.quickstart },
   { href: navPaths.faq, label: navLabels.faq },
@@ -131,9 +135,11 @@ const footerLinks = [
 ];
 
 const primaryLinks = [
-  { href: navPaths.framework, label: navLabels.framework, current: normalizedPath === navPaths.framework },
-  { href: navPaths.quickstart, label: navLabels.quickstart, current: normalizedPath === navPaths.quickstart },
-  { href: navPaths.faq, label: navLabels.faq, current: normalizedPath === navPaths.faq },
+  { href: aboutHref, label: navLabels.about },
+  { href: runtimeHref, label: navLabels.runtime },
+  { href: sectionLinks.marbles, label: navLabels.marbles },
+  { href: sectionLinks.dou, label: navLabels.dou },
+  { href: navPaths.framework, label: navLabels.board, current: normalizedPath === navPaths.framework },
 ];
 
 ---
@@ -208,7 +214,6 @@ const primaryLinks = [
         <header class="nav-shell vt-site-topbar">
             <a class="brand" href={navPaths.home}>
                 <span class="brand-mark vt-site-brand" transition:persist>
-                    <span class="brand-wordmark">vibecrafted</span>
                     <Image
                         src={logo32}
                         alt=""
@@ -219,6 +224,7 @@ const primaryLinks = [
                         densities={[1, 2]}
                         format="webp"
                     />
+                    <span class="brand-wordmark">vibecrafted</span>
                 </span>
             </a>
             <SiteNav
@@ -226,6 +232,9 @@ const primaryLinks = [
                 links={primaryLinks}
                 installHref={navPaths.install}
                 installLabel={navLabels.install}
+                vcHref={vcHref}
+                vcLabel={navLabels.vc}
+                vcTitle={navLabels.vcLabel}
                 toggleHref={toggleHref}
                 toggleLabel={navLabels.toggleShort}
                 toggleHreflang={toggleHreflang}
@@ -409,20 +418,16 @@ const primaryLinks = [
     display: inline-flex;
     align-items: center;
     gap: inherit;
-    border-radius: 999px;
-    padding: 0.18rem 0.35rem;
-    box-shadow: var(--brand-mark-shadow);
-    transition:
-      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.22s ease;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .brand:hover .brand-mark,
   .brand:focus-visible .brand-mark {
     transform: translateY(-1px);
-    box-shadow:
-      inset 0 1px 0 rgba(229, 236, 245, 0.24),
-      0 12px 28px rgba(0, 0, 0, 0.2);
   }
 
   .brand-wordmark {

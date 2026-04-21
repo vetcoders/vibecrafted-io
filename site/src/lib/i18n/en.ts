@@ -2,10 +2,13 @@
 // and summarized for humans in docs/runtime/CONTENT_TRUTH.md.
 export const en = {
   nav: {
+    about: "About",
+    runtime: "Runtime",
     pipeline: "Pipeline",
     skills: "Skills",
     marbles: "Marbles",
     framework: "Framework",
+    board: "BOARD",
     quickstart: "Quick Start",
     faq: "FAQ",
     dou: "DoU",
@@ -14,6 +17,8 @@ export const en = {
     searchAll: "All surfaces",
     searchClose: "Close search",
     install: "Install",
+    vc: "VC",
+    vcLabel: "VetCoders",
     github: "GitHub",
     license: "License (BSL 1.1)",
     security: "Security",
