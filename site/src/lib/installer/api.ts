@@ -157,14 +157,15 @@ export const installerApi = {
 /**
  * Runtime detection — `true` only when the wizard is served by the
  * local installer_gui.py HTTP server on the user's machine.
+ *
+ * Hostname alone is insufficient: Astro dev/preview on localhost:4321 (and
+ * any other dev server on a .local host) would match and trigger Live mode
+ * without a backend. Python installer_gui.py injects the flag below into
+ * the served index.html; only that promise commits us to Live.
  */
 export function isLiveInstallerHost(): boolean {
   if (typeof window === "undefined") return false;
-  const { hostname } = window.location;
   return (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
-    hostname === "::1" ||
-    hostname.endsWith(".local")
+    (window as { __VIBECRAFTED_LIVE__?: boolean }).__VIBECRAFTED_LIVE__ === true
   );
 }

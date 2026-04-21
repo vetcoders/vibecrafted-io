@@ -354,7 +354,7 @@
     --lw-text-dim: rgba(209, 216, 224, 0.78);
     --lw-error: rgba(255, 107, 107, 0.9);
     --lw-mono: var(--font-mono, 'JetBrains Mono', monospace);
-    --lw-sans: var(--font-head, 'Poppins', -apple-system, sans-serif);
+    --lw-sans: var(--font-head);
 
     width: min(64rem, 100%);
     margin: 0 auto;

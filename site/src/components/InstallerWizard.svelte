@@ -243,38 +243,43 @@
 
       <!-- Step 3: Install command + terminal sim -->
       {:else if currentStep === 3}
-        <h2 class="wz-title">{pages[3].title}</h2>
-        {#each pages[3].body as p}
-          <p class="wz-body">{p}</p>
-        {/each}
-        <div class="wz-terminal-shell wz-terminal-shell--primary">
-          <div class="wz-terminal-meta">
-            <span class="wz-terminal-kicker">{wizardCopy.terminalKicker}</span>
-            <p class="wz-terminal-copy">{wizardCopy.terminalBody}</p>
-          </div>
-          <div class="wz-terminal">
-            {#each terminalPreviewLines as line}
-              <div class="wz-term-line">{line}</div>
+        <div class="wz-welcome-split">
+          <div class="wz-welcome-main">
+            <h2 class="wz-title">{pages[3].title}</h2>
+            {#each pages[3].body as p}
+              <p class="wz-body">{p}</p>
             {/each}
-            {#if termLines.length < terminalLines.length}
-              <span class="wz-cursor">_</span>
-            {/if}
+            <div class="wz-cmd-block wz-cmd-block--primary">
+              <div class="wz-cmd-bar">
+                <span class="wz-cmd-prompt">$</span>
+                <code class="wz-cmd-text">{installCommand}</code>
+                <CopyButton
+                  class="wz-cmd-copy"
+                  textToCopy={installCommand}
+                  defaultLabel={copyLabels.default}
+                  copiedLabel={copyLabels.copied}
+                  errorLabel={copyLabels.error}
+                  defaultAriaLabel={copyLabels.defaultAria}
+                  copiedAriaLabel={copyLabels.copiedAria}
+                  errorAriaLabel={copyLabels.errorAria}
+                />
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="wz-cmd-block">
-          <div class="wz-cmd-bar">
-            <span class="wz-cmd-prompt">$</span>
-            <code class="wz-cmd-text">{installCommand}</code>
-            <CopyButton
-              class="wz-cmd-copy"
-              textToCopy={installCommand}
-              defaultLabel={copyLabels.default}
-              copiedLabel={copyLabels.copied}
-              errorLabel={copyLabels.error}
-              defaultAriaLabel={copyLabels.defaultAria}
-              copiedAriaLabel={copyLabels.copiedAria}
-              errorAriaLabel={copyLabels.errorAria}
-            />
+
+          <div class="wz-terminal-shell wz-terminal-shell--hero">
+            <div class="wz-terminal-meta">
+              <span class="wz-terminal-kicker">{wizardCopy.terminalKicker}</span>
+              <p class="wz-terminal-copy">{wizardCopy.terminalBody}</p>
+            </div>
+            <div class="wz-terminal">
+              {#each terminalPreviewLines as line}
+                <div class="wz-term-line">{line}</div>
+              {/each}
+              {#if termLines.length < terminalLines.length}
+                <span class="wz-cursor">_</span>
+              {/if}
+            </div>
           </div>
         </div>
 
@@ -344,7 +349,7 @@
     --c-glow: rgba(184, 115, 51, 0.22);
     --c-glow-soft: rgba(184, 115, 51, 0.1);
     --f-mono: var(--font-mono, 'JetBrains Mono', 'SF Mono', monospace);
-    --f-sans: var(--font-head, 'Poppins', -apple-system, sans-serif);
+    --f-sans: var(--font-head);
     --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 
     width: 100%;
@@ -711,6 +716,73 @@
   /* ---- Command block (step 3) ---- */
   .wz-cmd-block {
     margin-top: 0.9rem;
+  }
+  /* Primary variant — the curl command is the step's centre of gravity.
+     Upscaled type, copper ring, and a filled Copy button that reads as
+     a real action rather than an outline hint. */
+  .wz-cmd-block--primary {
+    margin-top: auto;
+    position: relative;
+  }
+  .wz-cmd-block--primary::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(212, 144, 92, 0.55), rgba(184, 115, 51, 0.08) 55%, rgba(163, 184, 199, 0.08));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .wz-cmd-block--primary .wz-cmd-bar {
+    padding: 1.05rem 1.2rem;
+    border-color: rgba(212, 144, 92, 0.62);
+    background: linear-gradient(180deg, rgba(22, 24, 28, 0.92), rgba(9, 10, 13, 0.98));
+    box-shadow:
+      0 0 0 1px rgba(184, 115, 51, 0.22),
+      0 24px 56px rgba(0, 0, 0, 0.4),
+      0 0 48px rgba(184, 115, 51, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  }
+  .wz-cmd-block--primary .wz-cmd-prompt {
+    font-size: 1.05rem;
+  }
+  .wz-cmd-block--primary .wz-cmd-text {
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+  }
+  .wz-cmd-block--primary :global(.wz-cmd-copy) {
+    min-height: 2.9rem;
+    padding: 0.72rem 1.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--c-stone);
+    background: linear-gradient(180deg, var(--c-copper-bright), var(--c-copper));
+    border-color: var(--c-copper-bright);
+    box-shadow:
+      0 8px 22px rgba(184, 115, 51, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+  }
+  .wz-cmd-block--primary :global(.wz-cmd-copy:hover) {
+    color: var(--c-stone);
+    background: linear-gradient(180deg, #e7a272, var(--c-copper-bright));
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 28px rgba(184, 115, 51, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.28);
+  }
+  .wz-cmd-block--primary :global(.wz-cmd-copy.is-copied) {
+    color: var(--c-stone);
+    background: linear-gradient(180deg, #8fc0aa, #5a8a7a);
+    border-color: #8fc0aa;
   }
   .wz-cmd-bar {
     display: grid;
