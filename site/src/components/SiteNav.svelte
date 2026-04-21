@@ -309,17 +309,9 @@
 
   .nav-link--toggle {
     position: relative;
-  }
-
-  .nav-link--toggle::before {
-    content: '';
-    position: absolute;
-    left: -0.625rem;
-    top: 50%;
-    width: 1px;
-    height: 14px;
-    background-color: var(--glass-panel-border);
-    transform: translateY(-50%);
+    border-left: 1px solid var(--glass-panel-border);
+    margin-left: 0.625rem;
+    padding-left: 0.625rem;
   }
 
   .nav-icon-link {
@@ -335,19 +327,13 @@
     color: var(--steel-dark);
     transition:
       border-color 0.2s ease,
-      background 0.2s ease,
-      color 0.2s ease,
-      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.18s ease;
+      color 0.2s ease;
   }
 
   .nav-icon-link:hover,
   .nav-icon-link:focus-visible {
-    color: var(--steel);
-    border-color: var(--steel-border-subtle);
-    background: var(--steel-bg-subtle);
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+    color: var(--copper);
+    border-color: color-mix(in srgb, var(--copper) 32%, transparent);
   }
 
   .nav-icon {
@@ -506,13 +492,15 @@
       border-top: 1px solid rgba(216, 206, 188, 0.12);
     }
 
-    .nav-links--mobile .nav-link--toggle::before {
-      display: none;
-    }
-
     .nav-links--mobile .nav-link--install,
     .nav-links--mobile .nav-link--toggle {
       justify-content: center;
+    }
+
+    .nav-links--mobile .nav-link--toggle {
+      border-left: 0;
+      margin-left: 0;
+      padding-left: 0;
     }
 
     .nav-links--mobile .nav-icon-link {
