@@ -4,7 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import shutil
+import signal
 import subprocess
 import sys
 import threading
@@ -43,6 +45,8 @@ except ModuleNotFoundError:  # pragma: no cover - depends on entrypoint
 
 
 OUTPUT_TAIL_LIMIT = 120
+DEFAULT_AGENT_CHOICES = ("codex", "claude", "gemini")
+DEFAULT_RUNTIME_CHOICES = ("agents", "claude", "codex")
 
 
 def default_source_dir() -> str:
@@ -55,6 +59,25 @@ def installer_script_path(source_dir: str) -> Path:
 
 def foundations_script_path(source_dir: str) -> Path:
     return Path(source_dir).resolve() / "scripts" / "install-foundations.sh"
+
+
+def bundled_bin_dir(source_dir: str) -> Path:
+    system = platform.system().lower() or sys.platform.lower()
+    machine = platform.machine().lower() or "unknown"
+    return Path(source_dir).resolve() / "bundled-bin" / f"{system}-{machine}"
+
+
+def discover_workflows(source_dir: str) -> list[str]:
+    skills_dir = Path(source_dir).resolve() / "skills"
+    if not skills_dir.is_dir():
+        return []
+
+    workflows = {
+        child.name.removeprefix("vc-")
+        for child in skills_dir.iterdir()
+        if child.is_dir() and child.name.startswith("vc-")
+    }
+    return sorted(workflows)
 
 
 def build_install_command(source_dir: str, *, with_shell: bool) -> list[str]:
@@ -157,6 +180,7 @@ def _open_target(target: str) -> bool:
 
 @dataclass
 class InstallRun:
+    run_id: int = 0
     command: list[str] = field(default_factory=list)
     plan: list[list[str]] = field(default_factory=list)
     plan_labels: list[str] = field(default_factory=list)
@@ -176,11 +200,13 @@ class InstallController:
         self.source_dir = str(Path(source_dir).resolve())
         self.version = read_framework_version(self.source_dir)
         self.diagnostics = run_diagnostics()
-        self.found_items, self.missing_items, self.needs_install = (
+        self.found_items, self.missing_items, self.needs_install_details = (
             summarize_diagnostics(self.diagnostics)
         )
         self._lock = threading.Lock()
         self._run = InstallRun()
+        self._run_sequence = 0
+        self._active_process: subprocess.Popen[str] | None = None
 
     def _category_cards(self) -> list[dict[str, Any]]:
         cards: list[dict[str, Any]] = []
@@ -217,6 +243,7 @@ class InstallController:
             )
         except FileNotFoundError:
             install_plan = []
+        bundled_dir = bundled_bin_dir(self.source_dir)
 
         return {
             "brand": {
@@ -231,14 +258,44 @@ class InstallController:
             "guide_path_display": _trim_home(str(start_here_path())),
             "helper_path": str(helper_layer_path()),
             "helper_path_display": _trim_home(str(helper_layer_path())),
+            "bundled_bin_dir": str(bundled_dir),
+            "bundled_bin_display": _trim_home(str(bundled_dir)),
+            "bundled_bin_present": bundled_dir.is_dir(),
             "found_count": len(self.found_items),
             "missing_count": len(self.missing_items),
             "found_items": self.found_items,
             "missing_items": self.missing_items,
-            "needs_install": self.needs_install,
+            "needs_install": bool(self.missing_items),
+            "needs_install_details": self.needs_install_details,
             "categories": self._category_cards(),
             "install_plan": install_plan,
+            "control_plane": self.control_plane_payload(),
+            "launcher_defaults": self.launcher_defaults_payload(),
             "status": self.status_payload(),
+        }
+
+    def control_plane_payload(self) -> dict[str, Any]:
+        home = vibecrafted_home()
+        return {
+            "home": str(home),
+            "home_display": _trim_home(str(home)),
+            "current_bundle": self.source_dir,
+            "current_bundle_display": _trim_home(self.source_dir),
+            "skills_store": str(home / "skills"),
+            "skills_store_display": _trim_home(str(home / "skills")),
+            "install_log": str(home / "install.log"),
+            "install_log_display": _trim_home(str(home / "install.log")),
+            "helper_layer": str(helper_layer_path()),
+            "helper_layer_display": _trim_home(str(helper_layer_path())),
+            "start_here": str(start_here_path()),
+            "start_here_display": _trim_home(str(start_here_path())),
+        }
+
+    def launcher_defaults_payload(self) -> dict[str, list[str]]:
+        return {
+            "workflows": discover_workflows(self.source_dir),
+            "agents": list(DEFAULT_AGENT_CHOICES),
+            "runtimes": list(DEFAULT_RUNTIME_CHOICES),
         }
 
     def status_payload(self) -> dict[str, Any]:
@@ -262,12 +319,24 @@ class InstallController:
                 "finished_at": self._run.finished_at,
             }
 
+    def logs_payload(self) -> dict[str, Any]:
+        with self._lock:
+            full_output = list(self._run.output)
+        return {
+            "lines": full_output,
+            "line_count": len(full_output),
+            "tail": full_output[-OUTPUT_TAIL_LIMIT:],
+            "tail_limit": OUTPUT_TAIL_LIMIT,
+        }
+
     def start(self, *, with_shell: bool) -> tuple[bool, str]:
         try:
             steps = build_install_steps(self.source_dir, with_shell=with_shell)
         except FileNotFoundError as exc:
             with self._lock:
+                self._run_sequence += 1
                 self._run = InstallRun(
+                    run_id=self._run_sequence,
                     command=[],
                     plan=[],
                     with_shell=with_shell,
@@ -283,7 +352,10 @@ class InstallController:
         with self._lock:
             if self._run.running:
                 return False, "Installation is already running."
+            self._run_sequence += 1
+            run_id = self._run_sequence
             self._run = InstallRun(
+                run_id=run_id,
                 command=steps[-1].command,
                 plan=[step.command for step in steps],
                 plan_labels=[step.label for step in steps],
@@ -299,27 +371,65 @@ class InstallController:
 
         worker = threading.Thread(
             target=self._worker,
-            args=(steps,),
+            args=(run_id, steps),
             daemon=True,
             name="installer-gui-worker",
         )
         worker.start()
         return True, "Installer started."
 
-    def _append_output(self, line: str) -> None:
+    def _append_output(self, line: str, run_id: int) -> None:
         with self._lock:
+            if self._run.run_id != run_id:
+                return
             self._run.output.append(line)
 
-    def _worker(self, steps: list[InstallStep]) -> None:
+    def _terminate_process(self, process: subprocess.Popen[str]) -> None:
+        if process.poll() is not None:
+            return
+
+        try:
+            if os.name != "nt":
+                os.killpg(process.pid, signal.SIGTERM)
+            else:
+                process.terminate()
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            if os.name != "nt":
+                os.killpg(process.pid, signal.SIGKILL)
+            else:
+                process.kill()
+            process.wait(timeout=5)
+        except ProcessLookupError:
+            return
+
+    def teardown_session(self) -> tuple[bool, str]:
+        process: subprocess.Popen[str] | None
+        running = False
+        with self._lock:
+            process = self._active_process
+            running = bool(process and process.poll() is None)
+            self._run_sequence += 1
+            self._run = InstallRun(run_id=self._run_sequence)
+            self._active_process = None
+
+        if process and running:
+            self._terminate_process(process)
+            return True, "Installer session terminated."
+        return True, "Installer session cleared."
+
+    def _worker(self, run_id: int, steps: list[InstallStep]) -> None:
         exit_code = 0
         error: str | None = None
         env = install_runtime_env()
         try:
             for step in steps:
                 with self._lock:
+                    if self._run.run_id != run_id:
+                        return
                     self._run.current_stage = step.label
-                self._append_output(f"[stage] {step.label}")
-                self._append_output(f"$ {' '.join(step.command)}")
+                self._append_output(f"[stage] {step.label}", run_id)
+                self._append_output(f"$ {' '.join(step.command)}", run_id)
                 process = subprocess.Popen(
                     step.command,
                     stdout=subprocess.PIPE,
@@ -327,19 +437,40 @@ class InstallController:
                     text=True,
                     bufsize=1,
                     env=env,
+                    start_new_session=os.name != "nt",
                 )
+                with self._lock:
+                    if self._run.run_id != run_id:
+                        self._terminate_process(process)
+                        return
+                    self._active_process = process
                 assert process.stdout is not None
                 for raw_line in process.stdout:
-                    self._append_output(raw_line.rstrip("\n"))
+                    with self._lock:
+                        if self._run.run_id != run_id:
+                            break
+                    self._append_output(raw_line.rstrip("\n"), run_id)
+                else:
+                    exit_code = process.wait()
+                    with self._lock:
+                        if self._run.run_id == run_id:
+                            self._active_process = None
+                    if exit_code != 0:
+                        break
+                    env = install_runtime_env(env)
+                    continue
+
+                self._terminate_process(process)
                 exit_code = process.wait()
-                if exit_code != 0:
-                    break
-                env = install_runtime_env(env)
+                return
         except Exception as exc:  # pragma: no cover - defensive path
             error = str(exc)
             exit_code = -1
 
         with self._lock:
+            if self._run.run_id != run_id:
+                return
+            self._active_process = None
             self._run.running = False
             self._run.completed = True
             self._run.exit_code = exit_code
@@ -371,39 +502,67 @@ class InstallerHTTPServer(ThreadingHTTPServer):
 class InstallerRequestHandler(BaseHTTPRequestHandler):
     server: InstallerHTTPServer
 
+    @staticmethod
+    def _matches(path: str, *candidates: str) -> bool:
+        return path in candidates
+
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/":
             self._send_html(build_html(self.server.controller.preflight_payload()))
             return
-        if parsed.path == "/api/preflight":
+        if self._matches(parsed.path, "/api/preflight", "/preflight"):
             self._send_json(self.server.controller.preflight_payload())
             return
-        if parsed.path == "/api/install/status":
+        if self._matches(parsed.path, "/api/install/status", "/status"):
             self._send_json(self.server.controller.status_payload())
+            return
+        if self._matches(parsed.path, "/api/logs", "/logs"):
+            self._send_json(self.server.controller.logs_payload())
+            return
+        if self._matches(parsed.path, "/api/control-plane", "/control-plane"):
+            self._send_json(self.server.controller.control_plane_payload())
             return
         self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        if parsed.path == "/api/install":
+        if self._matches(parsed.path, "/api/install", "/install"):
             payload = self._read_json()
             accepted, message = self.server.controller.start(
                 with_shell=bool(payload.get("with_shell", True))
             )
             status_payload = self.server.controller.status_payload()
+            status_payload["ok"] = accepted
             status_payload["accepted"] = accepted
             status_payload["message"] = message
+            if not accepted and not status_payload.get("error"):
+                status_payload["error"] = message
             status = HTTPStatus.ACCEPTED if accepted else HTTPStatus.CONFLICT
             if status_payload.get("error") and not status_payload.get("running"):
                 status = HTTPStatus.BAD_REQUEST
             self._send_json(status_payload, status=status)
             return
-        if parsed.path == "/api/open-start-here":
+        if self._matches(parsed.path, "/api/open-start-here", "/open-start-here"):
             ok, message = self.server.controller.open_start_here()
             self._send_json(
                 {"ok": ok, "message": message},
                 status=HTTPStatus.OK if ok else HTTPStatus.BAD_REQUEST,
+            )
+            return
+        self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        if self._matches(parsed.path, "/api/session", "/session"):
+            ok, message = self.server.controller.teardown_session()
+            self._send_json(
+                {
+                    "ok": ok,
+                    "message": message,
+                    "status": self.server.controller.status_payload(),
+                },
+                status=HTTPStatus.OK,
             )
             return
         self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
