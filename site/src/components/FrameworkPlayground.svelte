@@ -2093,8 +2093,6 @@
             </div>
           {/each}
         </div>
-
-        <div class="op-note">{currentHint}</div>
       </div>
 
       <!-- Tiered controls: shape / density / operators / hydrate / alerts -->
@@ -2247,11 +2245,6 @@
         <span class="board__corner board__corner--bl" aria-hidden="true"></span>
         <span class="board__corner board__corner--br" aria-hidden="true"></span>
 
-        <div class="board__phase-badge" aria-hidden="true">
-          <span class="board__phase-badge-dot"></span>
-          <span>{text.boardPhaseBadge} {phaseNumberText} · {currentPhase.label}</span>
-        </div>
-
         {#each FRAME_LABELS as labelKey (labelKey)}
           <span
             class="frame-label frame-label--{labelKey}"
@@ -2289,12 +2282,6 @@
             {scaffoldNudge ? text.controls.status.scaffoldNudge : text.boardIdleHint}
           </div>
         {/if}
-
-        <div class="board__overlay" aria-hidden="true">
-          <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
-          <span>{text.overlayConverge} <strong>{convergenceProgress}%</strong></span>
-          <span>{text.overlayMarbles} <strong>{visibleMarbleCount}</strong></span>
-        </div>
       </div>
 
       <div class="cmd-deck">
@@ -2651,21 +2638,6 @@
 
   .op.is-warn .op__val {
     color: var(--pg-orange);
-  }
-
-  .op-note {
-    font-size: 10.5px;
-    line-height: 1.45;
-    color: var(--pg-ink-dim);
-    font-style: italic;
-    font-family: var(--font-display);
-    padding: 9px 11px;
-    background: rgba(166, 197, 188, 0.05);
-    border-left: 2px solid var(--pg-mint);
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
   }
 
   .op-controls {
@@ -3117,31 +3089,6 @@
       inset 0 0 40px rgba(166, 197, 188, 0.12);
   }
 
-  /* Phase breadcrumb — small mint badge top-left, mirrors readout */
-  .board__phase-badge {
-    position: absolute;
-    top: 28px;
-    left: 34px;
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--pg-ink-dim);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .board__phase-badge-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--pg-mint);
-    box-shadow: 0 0 8px var(--pg-mint);
-  }
-
   /* Ghost slot blueprint — static outlines showing board capacity at SCAFFOLD.
      Positioned as a full-sized frame so children can project out from center. */
   .board__ghost-slots {
@@ -3232,38 +3179,6 @@
     50% {
       opacity: 0.55;
     }
-  }
-
-  .board__overlay {
-    position: absolute;
-    left: 24px;
-    bottom: 72px;
-    display: grid;
-    gap: 4px;
-    padding: 8px 12px;
-    border: 1px solid var(--vt-framework-panel-border);
-    border-radius: 6px;
-    background: var(--vt-framework-panel-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--pg-ink-faint);
-    z-index: 4;
-    opacity: 0.78;
-  }
-
-  .board__overlay span {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .board__overlay strong {
-    color: var(--pg-ink);
-    font-weight: 500;
   }
 
   /* ───────── CMD DECK ───────── */
