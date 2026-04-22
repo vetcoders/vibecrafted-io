@@ -32,9 +32,11 @@ export const en = {
   },
   footer: {
     ariaLabel: "Site footer",
-    brand: "VIBECRAFTED",
+    brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
+    byline: "with AI Agents by VetCoders",
     tagline: "From AI-generated repo to launch-ready product.",
-    copyright: "© 2026 VetCoders",
+    copyright: "(c)2024-2026 LibraxisAI",
+    license: "BSL 1.1",
   },
   copyButton: {
     default: "Copy",
@@ -1074,13 +1076,16 @@ flowchart TB
           ready: "Ready",
         },
         welcome: {
-          title: "Vibecrafted. is installing on your machine",
-          leads: [
-            "The installer is running locally. Every step is explicit — no silent changes.",
-            "This browser tab is the control surface. Your terminal is the engine.",
-          ],
+          title: "Review installer preflight",
+          leads: [],
           cta: "Begin",
-          componentsDetected: "components detected",
+          componentsFound: "found",
+          componentsTotal: "total",
+          missingList: "Missing components",
+          planPreview: "What happens next",
+          timeEstimate: "≈ 2 minutes on a warm machine",
+          sourceDir: "installer lives in",
+          reRun: "Re-run diagnostics",
         },
         diagnostics: {
           title: "What we found",

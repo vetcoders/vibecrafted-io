@@ -129,15 +129,10 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
                             densities={[1, 2]}
                             format="webp"
                         />
-                        <span class="footer-title">{footer.brand}</span>
+                        <span class="footer-title footer-wordmark">{footer.brand}</span>
                     </div>
-                    <p class="footer-tagline">{footer.tagline}</p>
-                    <nav class="footer-links" aria-label={navLabels.navFooter}>
-                        <a href={quickstartHref}>{navLabels.quickstart}</a>
-                        <a href={faqHref}>{navLabels.faq}</a>
-                        <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer">{navLabels.github}</a>
-                    </nav>
-                    <p class="footer-copyright">{footer.copyright}</p>
+                    <p class="footer-tagline">{footer.byline}</p>
+                    <p class="footer-copyright">{footer.copyright} • {footer.license}</p>
                 </div>
             </footer>
         </div>
@@ -465,6 +460,8 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
   .footer-container--wizard {
     width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
     gap: 0.25rem;
     padding-block: 0.52rem;
   }
@@ -484,8 +481,6 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     gap: 0.7rem;
     color: var(--steel-edge);
     font-family: var(--font-mono);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
   }
 
   .footer-logo {
@@ -498,8 +493,11 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+  }
+
+  .footer-wordmark {
+    text-transform: none;
+    letter-spacing: normal;
   }
 
   .footer-tagline {
@@ -512,7 +510,6 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     line-height: 1.35;
     text-align: center;
     text-transform: none;
-    display: none;
   }
 
   .footer-links {

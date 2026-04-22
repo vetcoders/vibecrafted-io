@@ -187,24 +187,63 @@
     {#if currentStep === 'welcome'}
       <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
         <h2 class="lw-title">{L.welcome.title}</h2>
-        {#each L.welcome.leads as lead}
-          <p class="lw-lead">{lead}</p>
-        {/each}
-        <div class="lw-welcome-stat">
-          {#if preflightLoading}
-            <span class="lw-muted">{L.status.loadingPreflight}</span>
-          {:else if preflightError}
-            <span class="lw-error">{L.status.loadFailed}: {preflightError}</span>
-          {:else if preflight}
-            <span>
-              <strong>{preflight.found_count}</strong> / {preflight.found_count + preflight.missing_count}
-              &nbsp;{L.welcome.componentsDetected}
-            </span>
-          {/if}
+        {#if preflightLoading}
+          <p class="lw-muted">{L.status.loadingPreflight}</p>
+        {:else if preflightError}
+          <p class="lw-error">{L.status.loadFailed}: {preflightError}</p>
+        {:else if preflight}
+          <div class="lw-install-hero">
+            <div class="lw-install-hero-meta">
+              <span class="lw-install-hero-step">
+                {preflight.found_count} / {preflight.found_count + preflight.missing_count} {L.welcome.componentsFound}
+              </span>
+              <span class="lw-install-hero-hint">
+                {L.welcome.sourceDir} <code>{preflight.source_dir_display}</code>
+              </span>
+            </div>
+
+            {#if preflight.missing_count > 0}
+              <div class="lw-cmd-block lw-cmd-block--primary">
+                <div class="lw-missing-components">
+                  <span class="lw-missing-label">{L.welcome.missingList}:</span>
+                  <ul class="lw-missing-list">
+                    {#each preflight.categories as cat}
+                      {#each cat.items.filter(i => !i.found) as item}
+                        <li><code>{item.label}</code></li>
+                      {/each}
+                    {/each}
+                  </ul>
+                </div>
+              </div>
+            {/if}
+
+            {#if preflight.install_plan.length > 0}
+              <div class="lw-install-run">
+                <span class="lw-install-run-kicker">{L.welcome.planPreview}</span>
+                <ol class="lw-plan-preview-list">
+                  {#each preflight.install_plan.slice(0, 3) as step}
+                    <li><code>{step.command}</code></li>
+                  {/each}
+                  {#if preflight.install_plan.length > 3}
+                    <li><span class="lw-muted">...</span></li>
+                  {/if}
+                </ol>
+              </div>
+            {/if}
+          </div>
+        {/if}
+
+        <div class="lw-welcome-actions">
+          <div class="lw-action-row">
+            <button class="lw-cta" onclick={nextStep} disabled={preflightLoading || !preflight || !!preflightError}>
+              {L.welcome.cta} &rarr;
+            </button>
+            <button class="lw-btn lw-btn--ghost" onclick={refreshPreflight} disabled={preflightLoading}>
+              {L.welcome.reRun}
+            </button>
+          </div>
+          <span class="lw-welcome-time">{L.welcome.timeEstimate}</span>
         </div>
-        <button class="lw-cta" onclick={nextStep} disabled={preflightLoading || !preflight}>
-          {L.welcome.cta} &rarr;
-        </button>
       </section>
     {:else if currentStep === 'diagnostics'}
       <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
@@ -459,20 +498,29 @@
   }
 
   .lw-step-pip {
-    width: 0.55rem;
-    height: 0.55rem;
+    width: 0.95rem;
+    height: 0.95rem;
     border-radius: 999px;
-    background: rgba(218, 197, 167, 0.2);
-    transition: background 0.2s ease, transform 0.2s ease;
+    background: var(--lw-surface);
+    border: 1px solid rgba(218, 197, 167, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--lw-surface);
+    transition: all 0.25s ease;
+    box-shadow: inset 0 0 0 2px var(--lw-surface);
   }
 
   .lw-step.active .lw-step-pip {
+    border-color: var(--lw-copper-bright);
     background: var(--lw-copper-bright);
     transform: scale(1.15);
   }
 
   .lw-step.done .lw-step-pip {
+    border-color: var(--lw-copper);
     background: var(--lw-copper);
+    color: #fff;
   }
 
   .lw-step.active {
@@ -510,10 +558,144 @@
     line-height: 1.55;
   }
 
-  .lw-welcome-stat {
+  .lw-install-hero {
+    flex-shrink: 0;
     display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem 0.95rem;
+    border-radius: 0.85rem;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(212, 144, 92, 0.1), transparent 55%),
+      linear-gradient(180deg, rgba(18, 20, 24, 0.62), rgba(9, 10, 13, 0.78));
+    border: 1px solid rgba(212, 144, 92, 0.22);
+    box-shadow:
+      0 22px 42px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .lw-install-hero-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 0.1rem;
+  }
+
+  .lw-install-hero-step {
     font-family: var(--lw-mono);
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lw-copper-bright);
+  }
+
+  .lw-install-hero-hint {
+    font-family: var(--lw-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--lw-text-dim);
+    text-align: right;
+  }
+  
+  .lw-install-hero-hint code {
+    color: var(--lw-text);
+  }
+
+  .lw-cmd-block {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 0.95rem;
+    border-radius: 0.65rem;
+    font-family: var(--lw-mono);
+    font-size: 0.75rem;
+    background: rgba(12, 14, 18, 0.6);
+    border: 1px solid rgba(163, 184, 199, 0.18);
+  }
+
+  .lw-missing-components {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .lw-missing-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 107, 107, 0.9);
+  }
+
+  .lw-missing-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .lw-missing-list li code {
+    color: var(--lw-text-dim);
+    font-size: 0.7rem;
+  }
+
+  .lw-install-run {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.2rem 0.1rem 0;
+    border-top: 1px dashed rgba(163, 184, 199, 0.14);
+    padding-top: 0.65rem;
+  }
+
+  .lw-install-run-kicker {
+    font-family: var(--lw-mono);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lw-copper-bright);
+    flex-shrink: 0;
+  }
+
+  .lw-plan-preview-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  
+  .lw-plan-preview-list code {
+    font-family: var(--lw-mono);
+    font-size: 0.75rem;
+    color: var(--lw-text-dim);
+  }
+
+  .lw-welcome-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 0.4rem;
+  }
+
+  .lw-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .lw-welcome-time {
+    font-family: var(--lw-mono);
+    font-size: 0.7rem;
+    color: var(--lw-text-dim);
   }
 
   .lw-muted {
@@ -837,3 +1019,4 @@
     }
   }
 </style>
+style>
