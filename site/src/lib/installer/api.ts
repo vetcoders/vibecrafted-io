@@ -53,6 +53,15 @@ export interface PreflightPayload {
   guide_path_display: string;
   helper_path: string;
   helper_path_display: string;
+  /**
+   * Per-arch drop-in directory scanned for notarized foundation binaries
+   * (aicx, loctree, prview, …). When `bundled_bin_present` is true, the
+   * installer copies these binaries into place before falling back to
+   * GitHub releases / cargo / npm.
+   */
+  bundled_bin_dir: string;
+  bundled_bin_display: string;
+  bundled_bin_present: boolean;
   found_count: number;
   missing_count: number;
   found_items: string[];
