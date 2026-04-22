@@ -44,6 +44,8 @@
     }
     return checks;
   })();
+  const requiredCount = dynamicChecks.filter((c) => c.required).length;
+  const optionalCount = dynamicChecks.length - requiredCount;
 
   const phaseIcons = ['\u25C8', '\u21CB', '\u2318', '\u21B3'];
   const dynamicPhases = (manifest.phases || []).map((p: { label: string; reason: string }, idx: number) => ({
@@ -227,6 +229,19 @@
         {#each pages[2].body as p}
           <p class="wz-body">{p}</p>
         {/each}
+        <div class="wz-stan-summary" role="status" aria-label={wizardCopy.checkSummaryAria}>
+          <span class="wz-stan-chip wz-stan-chip--req">
+            <span class="wz-stan-chip-dot" aria-hidden="true">{'●'}</span>
+            <span class="wz-stan-chip-count">{requiredCount}</span>
+            <span class="wz-stan-chip-label">{uiLabels.required}</span>
+          </span>
+          <span class="wz-stan-chip-sep" aria-hidden="true">·</span>
+          <span class="wz-stan-chip wz-stan-chip--opt">
+            <span class="wz-stan-chip-dot" aria-hidden="true">{'○'}</span>
+            <span class="wz-stan-chip-count">{optionalCount}</span>
+            <span class="wz-stan-chip-label">{uiLabels.optional}</span>
+          </span>
+        </div>
         <div class="wz-checks">
           {#each dynamicChecks as check, idx}
             <div class="wz-check" style="animation-delay: {idx * 40}ms">
@@ -241,14 +256,21 @@
           {/each}
         </div>
 
-      <!-- Step 3: Install command + terminal sim -->
+      <!-- Step 3: Install command (PRIMARY) + terminal sim (SECONDARY) -->
       {:else if currentStep === 3}
-        <div class="wz-welcome-split">
-          <div class="wz-welcome-main">
+        <div class="wz-install">
+          <div class="wz-install-lead">
             <h2 class="wz-title">{pages[3].title}</h2>
             {#each pages[3].body as p}
               <p class="wz-body">{p}</p>
             {/each}
+          </div>
+
+          <div class="wz-install-hero">
+            <div class="wz-install-hero-meta">
+              <span class="wz-install-hero-step">{wizardCopy.installPasteKicker}</span>
+              <span class="wz-install-hero-hint">{wizardCopy.installPasteHint}</span>
+            </div>
             <div class="wz-cmd-block wz-cmd-block--primary">
               <div class="wz-cmd-bar">
                 <span class="wz-cmd-prompt">$</span>
@@ -265,14 +287,18 @@
                 />
               </div>
             </div>
+            <div class="wz-install-run">
+              <span class="wz-install-run-kicker">{wizardCopy.installRunKicker}</span>
+              <p class="wz-install-run-body">{wizardCopy.installRunHint}</p>
+            </div>
           </div>
 
-          <div class="wz-terminal-shell wz-terminal-shell--hero">
-            <div class="wz-terminal-meta">
-              <span class="wz-terminal-kicker">{wizardCopy.terminalKicker}</span>
-              <p class="wz-terminal-copy">{wizardCopy.terminalBody}</p>
+          <div class="wz-install-preview">
+            <div class="wz-install-preview-meta">
+              <span class="wz-install-preview-kicker">{wizardCopy.installPreviewKicker}</span>
+              <span class="wz-install-preview-body">{wizardCopy.installPreviewBody}</span>
             </div>
-            <div class="wz-terminal">
+            <div class="wz-terminal wz-terminal--demo">
               {#each terminalPreviewLines as line}
                 <div class="wz-term-line">{line}</div>
               {/each}
@@ -285,17 +311,24 @@
 
       <!-- Step 4: Next steps -->
       {:else if currentStep === 4}
-        <h2 class="wz-title">{pages[4].title}</h2>
-        {#each pages[4].body as p}
-          <p class="wz-body">{p}</p>
-        {/each}
-        <div class="wz-next-cmds">
-          {#each wizardCopy.nextCommands as cmd, idx}
-            <div class="wz-next-cmd" style="animation-delay: {idx * 80}ms">
-              <code class="wz-next-cmd-code">{cmd.cmd}</code>
-              <span class="wz-next-cmd-desc">{cmd.desc}</span>
-            </div>
+        <div class="wz-done">
+          <div class="wz-done-stamp" role="status">
+            <span class="wz-done-stamp-mark" aria-hidden="true">{'◆'}</span>
+            <span class="wz-done-stamp-text">{wizardCopy.doneStamp}</span>
+          </div>
+          <h2 class="wz-title wz-title--done">{pages[4].title}</h2>
+          {#each pages[4].body as p}
+            <p class="wz-body">{p}</p>
           {/each}
+          <div class="wz-next-cmds">
+            {#each wizardCopy.nextCommands as cmd, idx}
+              <div class="wz-next-cmd" style="animation-delay: {idx * 80}ms">
+                <span class="wz-next-cmd-index" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
+                <code class="wz-next-cmd-code">{cmd.cmd}</code>
+                <span class="wz-next-cmd-desc">{cmd.desc}</span>
+              </div>
+            {/each}
+          </div>
         </div>
       {/if}
     </div>
@@ -315,7 +348,15 @@
       &larr;
     </button>
     <span class="wz-counter">{Math.round(counterTween.current)}<span class="wz-counter-sep">/</span>{STEPS}</span>
-    {#if currentStep < STEPS - 1}
+    {#if currentStep === STEPS - 2}
+      <button
+        class="wz-btn wz-btn-next wz-btn-finish"
+        onclick={next}
+        aria-label={uiLabels.toFinish}
+      >
+        {uiLabels.toFinish} &rarr;
+      </button>
+    {:else if currentStep < STEPS - 1}
       <button class="wz-btn wz-btn-next" onclick={next} aria-label={uiLabels.next}>
         &rarr;
       </button>
@@ -624,19 +665,15 @@
   .wz-card {
     display: flex;
     gap: 0.7rem;
-    padding: 0.85rem 0.95rem;
+    padding: 0.85rem 0.95rem 0.85rem 0.85rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
+    border-left: 2px solid rgba(184, 115, 51, 0.55);
     border-radius: calc(var(--radius-md, 12px) + 1px);
     align-items: flex-start;
     animation: cardIn 0.35s var(--ease) both;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-  .wz-card:hover {
-    border-color: rgba(184, 115, 51, 0.25);
-    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    transform: translateY(-1px);
+    cursor: default;
   }
   @keyframes cardIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -666,6 +703,58 @@
   }
 
   /* ---- Checklist (step 2) ---- */
+  .wz-stan-summary {
+    margin-top: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.38rem 0.8rem;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgba(184, 115, 51, 0.08),
+      rgba(163, 184, 199, 0.04)
+    );
+    border: 1px solid var(--c-border);
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    align-self: flex-start;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .wz-stan-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.38rem;
+  }
+  .wz-stan-chip-dot {
+    font-size: 0.5rem;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+  .wz-stan-chip--req .wz-stan-chip-dot,
+  .wz-stan-chip--req .wz-stan-chip-count {
+    color: var(--c-copper-bright);
+  }
+  .wz-stan-chip--opt .wz-stan-chip-dot,
+  .wz-stan-chip--opt .wz-stan-chip-count {
+    color: var(--c-text-dim);
+  }
+  .wz-stan-chip-count {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+  .wz-stan-chip-label {
+    color: var(--c-text-dim);
+  }
+  .wz-stan-chip-sep {
+    color: var(--c-border);
+    font-size: 0.72rem;
+    line-height: 1;
+  }
   .wz-checks {
     margin-top: 0.5rem;
     display: flex;
@@ -719,9 +808,10 @@
   }
   /* Primary variant — the curl command is the step's centre of gravity.
      Upscaled type, copper ring, and a filled Copy button that reads as
-     a real action rather than an outline hint. */
+     a real action rather than an outline hint. Sits inside wz-install-hero
+     in step 3, so it does not need margin-top auto anymore. */
   .wz-cmd-block--primary {
-    margin-top: auto;
+    margin-top: 0;
     position: relative;
   }
   .wz-cmd-block--primary::before {
@@ -850,6 +940,123 @@
     background: rgba(20, 23, 28, 0.92);
   }
 
+  /* ---- Install hero (step 3) ----
+     Stacked composition: compact lead → big curl hero → muted preview.
+     The curl bar is the centre of gravity, not the terminal animation. */
+  .wz-install {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.85rem, 1.6vw, 1.15rem);
+    min-height: 100%;
+  }
+  .wz-install-lead {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  .wz-install-lead .wz-title {
+    margin-bottom: 0.1rem;
+  }
+  .wz-install-lead .wz-body {
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+  .wz-install-hero {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.75rem 0.9rem 0.85rem;
+    border-radius: calc(var(--radius-md, 12px) + 2px);
+    background:
+      radial-gradient(circle at 18% 0%, rgba(212, 144, 92, 0.1), transparent 55%),
+      linear-gradient(180deg, rgba(18, 20, 24, 0.62), rgba(9, 10, 13, 0.78));
+    border: 1px solid rgba(212, 144, 92, 0.22);
+    box-shadow:
+      0 22px 42px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .wz-install-hero-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0 0.1rem;
+  }
+  .wz-install-hero-step {
+    font-family: var(--f-mono);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-copper-bright);
+  }
+  .wz-install-hero-hint {
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-text-dim);
+    text-align: right;
+  }
+  .wz-install-run {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 0.7rem;
+    padding: 0.2rem 0.1rem 0;
+    border-top: 1px dashed rgba(163, 184, 199, 0.14);
+    padding-top: 0.55rem;
+  }
+  .wz-install-run-kicker {
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-copper-bright);
+    flex-shrink: 0;
+  }
+  .wz-install-run-body {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--c-text-dim);
+    flex: 1;
+    min-width: 0;
+  }
+  .wz-install-preview {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    opacity: 0.88;
+  }
+  .wz-install-preview-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.7rem;
+    padding: 0 0.25rem;
+  }
+  .wz-install-preview-kicker {
+    font-family: var(--f-mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-steel);
+  }
+  .wz-install-preview-body {
+    font-family: var(--f-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--c-text-dim);
+    text-align: right;
+  }
+
   /* ---- Terminal sim ---- */
   .wz-terminal {
     padding: 1.25rem 1.5rem;
@@ -906,6 +1113,24 @@
     min-height: 13rem;
     max-height: 19rem;
   }
+  /* Demoted variant for step 3 — terminal animation is illustration,
+     not action. Slightly smaller type, muted frame, fills remaining space
+     without competing with the curl hero above it. */
+  .wz-terminal--demo {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
+    padding: 0.9rem 1.05rem;
+    font-size: 0.74rem;
+    line-height: 1.55;
+    color: rgba(230, 237, 243, 0.82);
+    border-color: rgba(163, 184, 199, 0.18);
+    background: linear-gradient(180deg, rgba(13, 15, 20, 0.94), rgba(9, 10, 13, 0.96));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .wz-terminal--demo .wz-cursor {
+    background: rgba(212, 144, 92, 0.65);
+  }
   .wz-terminal-meta {
     display: flex;
     align-items: center;
@@ -929,23 +1154,87 @@
     color: var(--c-text);
   }
 
+  /* ---- Done payoff (step 4) ---- */
+  .wz-done {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .wz-done-stamp {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.32rem 0.78rem;
+    border-radius: 999px;
+    font-family: var(--f-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-copper-bright);
+    background: linear-gradient(
+      90deg,
+      rgba(184, 115, 51, 0.18),
+      rgba(184, 115, 51, 0.06)
+    );
+    border: 1px solid rgba(184, 115, 51, 0.35);
+    box-shadow: 0 0 0 1px rgba(184, 115, 51, 0.12),
+                0 10px 24px rgba(184, 115, 51, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    animation: stampIn 0.6s var(--ease) both;
+  }
+  .wz-done-stamp-mark {
+    font-size: 0.6rem;
+    color: var(--c-copper-bright);
+    filter: drop-shadow(0 0 6px rgba(212, 144, 92, 0.55));
+  }
+  .wz-done-stamp-text {
+    line-height: 1;
+  }
+  .wz-title--done {
+    margin-top: 0.05rem;
+  }
+  @keyframes stampIn {
+    0% {
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+      filter: blur(2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
   /* ---- Next commands (step 4) ---- */
   .wz-next-cmds {
     display: flex;
     flex-direction: column;
     gap: 0.55rem;
-    margin-top: 0.75rem;
+    margin-top: 0.4rem;
   }
   .wz-next-cmd {
     display: flex;
     align-items: baseline;
     gap: 0.75rem;
-    padding: 0.72rem 0.85rem;
+    padding: 0.72rem 0.85rem 0.72rem 0.95rem;
     background: var(--c-surface);
     border: 1px solid var(--c-border);
+    border-left: 2px solid var(--c-copper);
     border-radius: calc(var(--radius-md, 12px) + 1px);
     animation: cardIn 0.35s var(--ease) both;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .wz-next-cmd-index {
+    font-family: var(--f-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    color: var(--c-copper-bright);
+    opacity: 0.7;
+    width: 1.1rem;
+    flex-shrink: 0;
+    transform: translateY(-1px);
   }
   .wz-next-cmd-code {
     font-family: var(--f-mono);
@@ -1032,6 +1321,33 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
+  /* Finish variant — used on the step before the last one, signalling
+     "this is the final action before you're done" so the operator never
+     has to decode an anonymous chevron on the most important step. */
+  .wz-btn-finish {
+    border-radius: 999px;
+    width: auto;
+    padding: 0 1.1rem;
+    font-size: 0.7rem;
+    gap: 0.4rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, var(--c-copper-bright), var(--c-copper));
+    border: 1px solid var(--c-copper-bright);
+    color: var(--c-stone);
+    box-shadow:
+      0 14px 30px rgba(184, 115, 51, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+  .wz-btn-finish:hover {
+    background: linear-gradient(180deg, #e7a272, var(--c-copper-bright));
+    border-color: var(--c-copper-bright);
+    color: var(--c-stone);
+    transform: translateY(-1px);
+    box-shadow:
+      0 18px 34px rgba(184, 115, 51, 0.34),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
   .wz-counter {
     font-family: var(--f-mono);
     font-size: 0.78rem;
@@ -1083,6 +1399,27 @@
     .wz-terminal-copy {
       max-width: none;
       text-align: left;
+    }
+
+    .wz-install-hero {
+      padding: 0.7rem 0.72rem 0.8rem;
+    }
+
+    .wz-install-hero-meta,
+    .wz-install-preview-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+
+    .wz-install-hero-hint,
+    .wz-install-preview-body {
+      text-align: left;
+    }
+
+    .wz-install-run {
+      flex-direction: column;
+      gap: 0.3rem;
     }
 
     .wz-next-cmd {

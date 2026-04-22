@@ -963,6 +963,16 @@ flowchart TB
         terminalBody:
           "The script prepares the environment, and the installation continues in the browser.",
         welcomeCta: "See how it works",
+        installPasteKicker: "Step 1 · Copy",
+        installPasteHint: "Paste into your terminal (macOS or Linux)",
+        installRunKicker: "Step 2 · Run",
+        installRunHint:
+          "The installer comes up locally and hands control back to this tab — the rest happens here.",
+        installPreviewKicker: "Preview",
+        installPreviewBody:
+          "This is what a clean install looks like in practice.",
+        checkSummaryAria: "Diagnostics summary",
+        doneStamp: "Status · Ready",
         steps: {
           labels: {
             steps: "Steps",
@@ -971,6 +981,7 @@ flowchart TB
             previous: "Previous step",
             next: "Next step",
             quickStart: "Start",
+            toFinish: "To finish",
             stepAria: "step",
             ofAria: "of",
           },

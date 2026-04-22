@@ -962,6 +962,15 @@ flowchart TB
         terminalBody:
           "Skrypt przygotowuje środowisko, a instalacja jest kontynuowana w przeglądarce.",
         welcomeCta: "Pokaż jak to działa",
+        installPasteKicker: "Krok 1 · Skopiuj",
+        installPasteHint: "Wklej do terminala (macOS lub Linux)",
+        installRunKicker: "Krok 2 · Uruchom",
+        installRunHint:
+          "Instalator wstaje lokalnie i wraca sterowanie do tej karty — reszta dzieje się tu.",
+        installPreviewKicker: "Podgląd",
+        installPreviewBody: "Tak wygląda poprawny przebieg instalacji.",
+        checkSummaryAria: "Podsumowanie diagnostyki",
+        doneStamp: "Status · Gotowy",
         steps: {
           labels: {
             steps: "Kroki",
@@ -970,6 +979,7 @@ flowchart TB
             previous: "Poprzedni krok",
             next: "Następny krok",
             quickStart: "Start",
+            toFinish: "Do finału",
             stepAria: "krok",
             ofAria: "z",
           },
