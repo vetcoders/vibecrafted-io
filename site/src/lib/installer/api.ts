@@ -88,6 +88,16 @@ export interface StartHereResponse {
   message: string;
 }
 
+export interface InstallerHealthResponse {
+  ok: boolean;
+  session_active?: boolean;
+}
+
+export interface InstallerSessionResponse {
+  ok: boolean;
+  message: string;
+}
+
 export class InstallerApiError extends Error {
   status?: number;
   constructor(message: string, status?: number) {
@@ -149,6 +159,10 @@ export const installerApi = {
     return jsonFetch<Record<string, unknown>>("/api/control-plane");
   },
 
+  health(): Promise<InstallerHealthResponse> {
+    return jsonFetch<InstallerHealthResponse>("/api/health");
+  },
+
   startInstall(withShell: boolean): Promise<InstallStartResponse> {
     return jsonFetch<InstallStartResponse>("/api/install", {
       method: "POST",
@@ -159,6 +173,12 @@ export const installerApi = {
   openStartHere(): Promise<StartHereResponse> {
     return jsonFetch<StartHereResponse>("/api/open-start-here", {
       method: "POST",
+    });
+  },
+
+  closeSession(): Promise<InstallerSessionResponse> {
+    return jsonFetch<InstallerSessionResponse>("/api/session", {
+      method: "DELETE",
     });
   },
 };

@@ -1,0 +1,56 @@
+:global(.wizard),
+:global(.live-wizard),
+:global(.installer-shell__bridge) {
+  --installer-copper: var(--copper, #b87333);
+  --installer-copper-bright: var(--copper-bright, #d4905c);
+  --installer-steel: var(--steel, #a3b8c7);
+  --installer-steel-edge: var(--steel-edge, rgba(229, 236, 245, 0.88));
+  --installer-stone: var(--stone-deep, #0e0e11);
+  --installer-surface: var(
+    --glass-panel-bg,
+    linear-gradient(180deg, rgba(18, 20, 24, 0.68), rgba(8, 9, 12, 0.82))
+  );
+  --installer-surface-strong: var(
+    --glass-panel-bg-strong,
+    linear-gradient(180deg, rgba(18, 20, 24, 0.8), rgba(8, 9, 12, 0.9))
+  );
+  --installer-border: var(--glass-panel-border, rgba(196, 212, 224, 0.18));
+  --installer-text: var(--text-primary, rgba(229, 236, 245, 0.88));
+  --installer-text-dim: rgba(212, 223, 232, 0.72);
+  --installer-error: rgba(255, 107, 107, 0.9);
+  --installer-glow: rgba(184, 115, 51, 0.22);
+  --installer-glow-soft: rgba(184, 115, 51, 0.1);
+  --installer-font-head: var(--font-head, "Fraunces", serif);
+  --installer-font-body: var(--font-body, "Lora", serif);
+  --installer-font-mono: var(--font-mono, "JetBrains Mono", monospace);
+  --installer-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:global(.wizard) {
+  --c-copper: var(--installer-copper);
+  --c-copper-bright: var(--installer-copper-bright);
+  --c-steel: var(--installer-steel);
+  --c-stone: var(--installer-stone);
+  --c-surface: var(--installer-surface);
+  --c-surface-strong: var(--installer-surface-strong);
+  --c-border: var(--installer-border);
+  --c-text: var(--installer-text);
+  --c-text-dim: var(--installer-text-dim);
+  --c-glow: var(--installer-glow);
+  --c-glow-soft: var(--installer-glow-soft);
+  --f-mono: var(--installer-font-mono);
+  --f-sans: var(--installer-font-head);
+  --ease: var(--installer-ease);
+}
+
+:global(.live-wizard) {
+  --lw-copper: var(--installer-copper);
+  --lw-copper-bright: var(--installer-copper-bright);
+  --lw-surface: rgba(14, 16, 20, 0.86);
+  --lw-border: var(--installer-border);
+  --lw-text: rgba(243, 241, 236, 0.94);
+  --lw-text-dim: rgba(209, 216, 224, 0.78);
+  --lw-error: var(--installer-error);
+  --lw-mono: var(--installer-font-mono);
+  --lw-sans: var(--installer-font-head);
+}

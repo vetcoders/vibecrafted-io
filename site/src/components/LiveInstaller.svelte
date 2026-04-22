@@ -8,6 +8,7 @@
     type PreflightStatus,
   } from '../lib/installer/api';
   import { getTranslations, type Lang } from '../lib/i18n';
+  import '../styles/installer.css';
 
   interface Props {
     lang?: Lang;
@@ -25,7 +26,10 @@
 
   let status = $state<PreflightStatus | null>(null);
   let statusError = $state<string | null>(null);
-  let pollHandle: ReturnType<typeof setInterval> | null = null;
+  let connectionLost = $state(false);
+  let pollHandle: ReturnType<typeof setTimeout> | null = null;
+  let pollCycle = 0;
+  let statusFailureCount = 0;
 
   let accepted = $state(false);
   let withShell = $state(true);
@@ -37,42 +41,86 @@
     duration: prefersReducedMotion.current ? 0 : 240,
   });
 
+  const CLOSE_EVENT = 'vibecrafted-installer:closing';
   const L = $derived(getTranslations(lang).sections.installer.live);
 
   onMount(() => {
+    const handleClose = () => {
+      stopPolling();
+    };
+
+    window.addEventListener(CLOSE_EVENT, handleClose);
     void refreshPreflight();
-    return () => stopPolling();
+
+    return () => {
+      window.removeEventListener(CLOSE_EVENT, handleClose);
+      stopPolling();
+    };
   });
 
   async function refreshPreflight() {
     preflightLoading = true;
     preflightError = null;
+    connectionLost = false;
+    statusFailureCount = 0;
     try {
       preflight = await installerApi.preflight();
       status = preflight.status;
+      statusError = null;
     } catch (err) {
       preflightError = err instanceof Error ? err.message : String(err);
+      connectionLost = true;
     } finally {
       preflightLoading = false;
     }
   }
 
-  function startPolling() {
-    if (pollHandle) return;
-    pollHandle = setInterval(async () => {
+  function queuePoll(cycle: number, delay = 900) {
+    if (pollHandle || cycle !== pollCycle || connectionLost) return;
+    pollHandle = setTimeout(async () => {
+      pollHandle = null;
+      if (cycle !== pollCycle) return;
+
       try {
         status = await installerApi.status();
         statusError = null;
-        if (status.completed) stopPolling();
+        statusFailureCount = 0;
+        connectionLost = false;
+        if (status.completed) {
+          stopPolling();
+          return;
+        }
       } catch (err) {
         statusError = err instanceof Error ? err.message : String(err);
+        statusFailureCount += 1;
+        if (statusFailureCount >= 3) {
+          connectionLost = true;
+          stopPolling();
+          return;
+        }
       }
-    }, 900);
+
+      if (
+        cycle === pollCycle &&
+        !connectionLost &&
+        !status?.completed &&
+        (currentStep === 'execute' || currentStep === 'ready')
+      ) {
+        queuePoll(cycle);
+      }
+    }, delay);
+  }
+
+  function startPolling() {
+    if (pollHandle || connectionLost || status?.completed) return;
+    pollCycle += 1;
+    queuePoll(pollCycle, 0);
   }
 
   function stopPolling() {
+    pollCycle += 1;
     if (pollHandle) {
-      clearInterval(pollHandle);
+      clearTimeout(pollHandle);
       pollHandle = null;
     }
   }
@@ -86,6 +134,8 @@
         startError = response.message;
         return;
       }
+      statusFailureCount = 0;
+      connectionLost = false;
       currentStep = 'execute';
       startPolling();
     } catch (err) {
@@ -105,9 +155,6 @@
 
   function goTo(step: StepId) {
     currentStep = step;
-    if (step === 'ready' && status && !status.completed) {
-      startPolling();
-    }
   }
 
   function nextStep() {
@@ -127,9 +174,18 @@
   });
 
   $effect(() => {
-    if (currentStep === 'execute' && status && !status.completed && !pollHandle) {
+    if (
+      (currentStep === 'execute' || currentStep === 'ready') &&
+      status &&
+      !status.completed &&
+      !connectionLost &&
+      !pollHandle
+    ) {
       startPolling();
+      return;
     }
+
+    stopPolling();
   });
 
   const nextCommands = $derived(L.nextCommands);
@@ -141,6 +197,14 @@
   const installedOk = $derived(exitCode === 0);
   const installRunning = $derived(Boolean(status?.running));
   const installCompleted = $derived(Boolean(status?.completed));
+
+  async function retryConnection() {
+    stopPolling();
+    await refreshPreflight();
+    if (status && !status.completed && (currentStep === 'execute' || currentStep === 'ready')) {
+      startPolling();
+    }
+  }
 </script>
 
 <div class="live-wizard" role="region" aria-label={L.regionLabel}>
@@ -184,7 +248,18 @@
   </nav>
 
   <div class="lw-stage">
-    {#if currentStep === 'welcome'}
+    {#if connectionLost}
+      <section class="lw-panel lw-panel--lost" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
+        <h2 class="lw-title">{L.status.loadFailed}</h2>
+        <p class="lw-error">{L.status.notConnected}</p>
+        {#if statusError}
+          <pre class="lw-output lw-output--compact">{statusError}</pre>
+        {/if}
+        <button class="lw-cta" onclick={retryConnection}>
+          {L.nav.refresh}
+        </button>
+      </section>
+    {:else if currentStep === 'welcome'}
       <section class="lw-panel" in:fly={{ y: 8, duration: 200 }} out:fade={{ duration: 140 }}>
         <h2 class="lw-title">{L.welcome.title}</h2>
         {#if preflightLoading}
@@ -385,16 +460,6 @@
 
 <style>
   .live-wizard {
-    --lw-copper: var(--copper, #b87333);
-    --lw-copper-bright: var(--copper-bright, #d4905c);
-    --lw-surface: var(--glass-panel-bg, rgba(14, 16, 20, 0.86));
-    --lw-border: var(--glass-panel-border, rgba(218, 197, 167, 0.18));
-    --lw-text: rgba(243, 241, 236, 0.94);
-    --lw-text-dim: rgba(209, 216, 224, 0.78);
-    --lw-error: rgba(255, 107, 107, 0.9);
-    --lw-mono: var(--font-mono, 'JetBrains Mono', monospace);
-    --lw-sans: var(--font-head);
-
     width: min(64rem, 100%);
     margin: 0 auto;
     padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.6rem);
@@ -543,6 +608,11 @@
     background: var(--lw-surface);
     backdrop-filter: blur(18px) saturate(118%);
     -webkit-backdrop-filter: blur(18px) saturate(118%);
+  }
+
+  .lw-panel--lost {
+    justify-content: center;
+    min-height: 22rem;
   }
 
   .lw-title {
@@ -1019,4 +1089,3 @@
     }
   }
 </style>
-style>

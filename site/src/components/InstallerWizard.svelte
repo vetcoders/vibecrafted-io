@@ -3,6 +3,7 @@
   import CopyButton from './CopyButton.svelte';
   import importedManifest from '../lib/generated/install-manifest.json';
   import { getTranslations, type Lang } from '../lib/i18n';
+  import '../styles/installer.css';
 
   interface Props {
     lang?: Lang;
@@ -378,21 +379,6 @@
    *  Design tokens inherit from global.css.
    * =================================================================== */
   .wizard {
-    --c-copper: var(--copper, #b87333);
-    --c-copper-bright: var(--copper-bright, #d4905c);
-    --c-steel: var(--steel, #a3b8c7);
-    --c-stone: var(--stone-deep, #0e0e11);
-    --c-surface: var(--glass-panel-bg, linear-gradient(180deg, rgba(18, 20, 24, 0.68), rgba(8, 9, 12, 0.82)));
-    --c-surface-strong: var(--glass-panel-bg-strong, linear-gradient(180deg, rgba(18, 20, 24, 0.8), rgba(8, 9, 12, 0.9)));
-    --c-border: var(--glass-panel-border, rgba(196, 212, 224, 0.18));
-    --c-text: var(--text-primary, rgba(229, 236, 245, 0.88));
-    --c-text-dim: rgba(212, 223, 232, 0.72);
-    --c-glow: rgba(184, 115, 51, 0.22);
-    --c-glow-soft: rgba(184, 115, 51, 0.1);
-    --f-mono: var(--font-mono, 'JetBrains Mono', 'SF Mono', monospace);
-    --f-sans: var(--font-head);
-    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-
     width: 100%;
     max-width: 66rem;
     margin: 0 auto;

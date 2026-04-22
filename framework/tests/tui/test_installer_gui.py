@@ -272,6 +272,77 @@ def test_http_handler_exposes_alias_routes(monkeypatch, tmp_path: Path) -> None:
         thread.join(timeout=5)
 
 
+def test_resolve_bundle_asset_maps_root_and_nested_paths(tmp_path: Path) -> None:
+    install_dir = tmp_path / "en" / "install"
+    install_dir.mkdir(parents=True)
+    index_file = install_dir / "index.html"
+    index_file.write_text("<html></html>", encoding="utf-8")
+    asset_file = tmp_path / "_astro" / "bundle.js"
+    asset_file.parent.mkdir(parents=True)
+    asset_file.write_text("console.log('ok');", encoding="utf-8")
+
+    assert installer_gui.resolve_bundle_asset(str(tmp_path), "/") == index_file
+    assert (
+        installer_gui.resolve_bundle_asset(str(tmp_path), "/en/install/") == index_file
+    )
+    assert (
+        installer_gui.resolve_bundle_asset(str(tmp_path), "/_astro/bundle.js")
+        == asset_file
+    )
+    assert (
+        installer_gui.resolve_bundle_asset(str(tmp_path), "/../../etc/passwd") is None
+    )
+
+
+def test_inject_live_bootstrap_marks_html_once() -> None:
+    html = "<html><head><title>x</title></head><body></body></html>"
+    injected = installer_gui.inject_live_bootstrap(html)
+
+    assert injected.count("__VIBECRAFTED_LIVE__") == 1
+    assert (
+        installer_gui.inject_live_bootstrap(injected).count("__VIBECRAFTED_LIVE__") == 1
+    )
+
+
+def test_http_handler_serves_bundle_html_and_health(
+    monkeypatch, tmp_path: Path
+) -> None:
+    install_dir = tmp_path / "en" / "install"
+    install_dir.mkdir(parents=True)
+    (install_dir / "index.html").write_text(
+        "<html><head><title>Installer</title></head><body>shell</body></html>",
+        encoding="utf-8",
+    )
+
+    controller = installer_gui.InstallController(str(tmp_path))
+    monkeypatch.setattr(
+        controller,
+        "health_payload",
+        lambda: {"ok": True, "session_active": False},
+    )
+
+    server = installer_gui.InstallerHTTPServer(("127.0.0.1", 0), controller)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+
+    base_url = f"http://127.0.0.1:{server.server_address[1]}"
+
+    try:
+        with urllib.request.urlopen(f"{base_url}/health", timeout=5) as response:
+            assert response.status == 200
+            assert json.load(response) == {"ok": True, "session_active": False}
+
+        with urllib.request.urlopen(f"{base_url}/", timeout=5) as response:
+            assert response.status == 200
+            html = response.read().decode("utf-8")
+            assert "__VIBECRAFTED_LIVE__" in html
+            assert "Installer" in html
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
 def test_build_html_renders_wizard_shell() -> None:
     html = installer_gui.build_html(
         {

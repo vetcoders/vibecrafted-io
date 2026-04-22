@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import mimetypes
 import os
 import platform
 import shutil
@@ -18,7 +19,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from textwrap import dedent
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 try:
     from installer_brand import PRODUCT_LINE, TAGLINE, VAPOR_HEADER
@@ -47,6 +48,7 @@ except ModuleNotFoundError:  # pragma: no cover - depends on entrypoint
 OUTPUT_TAIL_LIMIT = 120
 DEFAULT_AGENT_CHOICES = ("codex", "claude", "gemini")
 DEFAULT_RUNTIME_CHOICES = ("agents", "claude", "codex")
+LIVE_BOOT_SNIPPET = "<script>window.__VIBECRAFTED_LIVE__=true;</script>"
 
 
 def default_source_dir() -> str:
@@ -59,6 +61,42 @@ def installer_script_path(source_dir: str) -> Path:
 
 def foundations_script_path(source_dir: str) -> Path:
     return Path(source_dir).resolve() / "scripts" / "install-foundations.sh"
+
+
+def bundle_site_root(source_dir: str) -> Path:
+    return Path(source_dir).resolve()
+
+
+def resolve_bundle_asset(source_dir: str, request_path: str) -> Path | None:
+    site_root = bundle_site_root(source_dir)
+    relative = unquote(request_path.lstrip("/"))
+    candidate = site_root / relative
+
+    if request_path in {"", "/"}:
+        candidate = site_root / "en" / "install" / "index.html"
+    elif request_path.endswith("/"):
+        candidate = candidate / "index.html"
+    elif candidate.is_dir():
+        candidate = candidate / "index.html"
+
+    try:
+        resolved = candidate.resolve(strict=True)
+    except FileNotFoundError:
+        return None
+
+    if resolved != site_root and site_root not in resolved.parents:
+        return None
+    if not resolved.is_file():
+        return None
+    return resolved
+
+
+def inject_live_bootstrap(html: str) -> str:
+    if "__VIBECRAFTED_LIVE__" in html:
+        return html
+    if "</head>" in html:
+        return html.replace("</head>", f"{LIVE_BOOT_SNIPPET}</head>", 1)
+    return f"{LIVE_BOOT_SNIPPET}{html}"
 
 
 def bundled_bin_dir(source_dir: str) -> Path:
@@ -298,6 +336,13 @@ class InstallController:
             "runtimes": list(DEFAULT_RUNTIME_CHOICES),
         }
 
+    def health_payload(self) -> dict[str, Any]:
+        with self._lock:
+            session_active = bool(
+                self._active_process and self._active_process.poll() is None
+            )
+        return {"ok": True, "session_active": session_active}
+
     def status_payload(self) -> dict[str, Any]:
         with self._lock:
             output_tail = self._run.output[-OUTPUT_TAIL_LIMIT:]
@@ -508,11 +553,11 @@ class InstallerRequestHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        if parsed.path == "/":
-            self._send_html(build_html(self.server.controller.preflight_payload()))
-            return
         if self._matches(parsed.path, "/api/preflight", "/preflight"):
             self._send_json(self.server.controller.preflight_payload())
+            return
+        if self._matches(parsed.path, "/api/health", "/health"):
+            self._send_json(self.server.controller.health_payload())
             return
         if self._matches(parsed.path, "/api/install/status", "/status"):
             self._send_json(self.server.controller.status_payload())
@@ -522,6 +567,10 @@ class InstallerRequestHandler(BaseHTTPRequestHandler):
             return
         if self._matches(parsed.path, "/api/control-plane", "/control-plane"):
             self._send_json(self.server.controller.control_plane_payload())
+            return
+        asset = resolve_bundle_asset(self.server.controller.source_dir, parsed.path)
+        if asset is not None:
+            self._send_file(asset)
             return
         self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
 
@@ -583,6 +632,28 @@ class InstallerRequestHandler(BaseHTTPRequestHandler):
         body = payload.encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _send_file(self, path: Path, *, status: HTTPStatus = HTTPStatus.OK) -> None:
+        suffix = path.suffix.lower()
+        if suffix in {".html", ".htm"}:
+            body = inject_live_bootstrap(path.read_text(encoding="utf-8")).encode(
+                "utf-8"
+            )
+            content_type = "text/html; charset=utf-8"
+        else:
+            body = path.read_bytes()
+            content_type, _ = mimetypes.guess_type(path.name)
+            content_type = content_type or "application/octet-stream"
+
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header(
+            "Cache-Control",
+            "no-store" if suffix in {".html", ".json"} else "public, max-age=300",
+        )
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)

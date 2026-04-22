@@ -35,7 +35,7 @@ export const en = {
     brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
     byline: "with AI Agents by VetCoders",
     tagline: "From AI-generated repo to launch-ready product.",
-    copyright: "(c)2024-2026 LibraxisAI",
+    copyright: "(c)2024-2026 VetCoders",
     license: "BSL 1.1",
   },
   copyButton: {

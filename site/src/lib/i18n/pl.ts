@@ -37,7 +37,7 @@ export const pl = {
     byline: "with AI Agents by VetCoders",
     tagline:
       "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
-    copyright: "(c)2024-2026 LibraxisAI",
+    copyright: "(c)2024-2026 VetCoders",
     license: "BSL 1.1",
   },
   copyButton: {
