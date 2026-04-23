@@ -3,17 +3,26 @@
   import { fade, fly } from 'svelte/transition';
   import { getTranslations, type Lang } from '../lib/i18n';
   import {
-    getDocsSearchData,
     searchDocs,
+    type DocsSearchData,
     type DocsSearchSection,
-  } from '../lib/search/docs';
+  } from '../lib/search/docs-search';
 
   interface Props {
     lang: Lang;
     defaultSection?: DocsSearchSection;
+    searchDataAll: DocsSearchData;
+    searchDataQuickstart: DocsSearchData;
+    searchDataFaq: DocsSearchData;
   }
 
-  let { lang, defaultSection = 'all' }: Props = $props();
+  let {
+    lang,
+    defaultSection = 'all',
+    searchDataAll,
+    searchDataQuickstart,
+    searchDataFaq,
+  }: Props = $props();
 
   const dict = $derived(getTranslations(lang));
 
@@ -28,7 +37,14 @@
   let containerEl: HTMLElement | null = $state(null);
   let previousRouteKey = `${lang}:${defaultSection}`;
 
-  const searchData = $derived(getDocsSearchData(lang, activeSection));
+  const searchData = $derived(
+    activeSection === 'quickstart'
+      ? searchDataQuickstart
+      : activeSection === 'faq'
+        ? searchDataFaq
+        : searchDataAll,
+  );
+
   const trimmed = $derived(query.trim());
   const hasQuery = $derived(trimmed.length >= 2);
   const results = $derived(searchDocs(searchData.items, lang, query));

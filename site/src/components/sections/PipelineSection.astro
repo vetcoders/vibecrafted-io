@@ -1,10 +1,35 @@
 ---
+import { getEntry } from 'astro:content';
 import MermaidViewer from '../../components/MermaidViewer.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import {
+    mermaidEn,
+    mermaidFullEn,
+    mermaidFullPl,
+    mermaidPl,
+} from '../../lib/diagrams/pipeline';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type PipelineNote = { title: string; body: string };
+type PipelineMermaidModal = { open: string; close: string; title: string };
+type PipelineData = {
+    label: string;
+    title: string;
+    sub: string;
+    mermaidModal: PipelineMermaidModal;
+    notes: PipelineNote[];
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.pipeline;
+
+const entry = await getEntry('i18n', `${lang}/pipeline`);
+if (!entry) {
+    throw new Error(`Pipeline content not found for lang=${lang}`);
+}
+const section = entry.data as PipelineData;
+
+const mermaidCode = lang === 'pl' ? mermaidPl : mermaidEn;
+const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
 ---
 <section class="pipeline-section surface--grid" id="pipeline">
     <Reveal client:load tag="div" class="container">
@@ -13,9 +38,9 @@ const section = getTranslations(lang).sections.pipeline;
         <p class="section-sub">{section.sub}</p>
         <MermaidViewer
             client:visible
-            highlightedCode={section.highlighted}
-            code={section.mermaid}
-            fullCode={section.mermaidFull}
+            highlightedCode=""
+            code={mermaidCode}
+            fullCode={mermaidFull}
             modalLabels={section.mermaidModal}
         />
         <div class="pipeline-notes">

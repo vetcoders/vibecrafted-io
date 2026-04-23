@@ -1,10 +1,44 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
+type FoundationLearnPath = {
+    label: string;
+    lead: string;
+    quickstart: string;
+    faq: string;
+    framework: string;
+};
+
+type FoundationCard = {
+    number: string;
+    href: string;
+    name: string;
+    iconClass: string;
+    role: string;
+    body: string;
+    linkLabel: string;
+};
+
+type FoundationSectionData = {
+    label: string;
+    title: string;
+    sub: string;
+    reveal: string;
+    learnPath: FoundationLearnPath;
+    bullets: Record<string, readonly string[]>;
+    cards: FoundationCard[];
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.foundation;
+
+const entry = await getEntry('i18n', `${lang}/foundation`);
+if (!entry) {
+    throw new Error(`Foundation content not found for lang=${lang}`);
+}
+const section = entry.data as FoundationSectionData;
 const basePath = `/${lang}`;
 const ui = section.learnPath;
 

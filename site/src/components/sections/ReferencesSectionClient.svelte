@@ -2,20 +2,44 @@
   import { prefersReducedMotion } from 'svelte/motion';
   import { fade, scale } from 'svelte/transition';
   import Reveal from '../Reveal.svelte';
-  import { getTranslations, type Lang } from '../../lib/i18n';
+  import type { Lang } from '../../lib/i18n';
 
   // Satisfy Vite's SSR-side import analysis; the template consumes these transitions.
   const templateTransitions = { fade, scale };
   void templateTransitions;
 
-  let { lang }: { lang: Lang } = $props();
+  // Shape mirrors site/src/content/i18n/<lang>/references.md frontmatter.
+  // Wrapped & loaded by ReferencesSection.astro (server-side getEntry).
+  type ReferenceLink = { href: string; label: string };
+  type ReferenceItem = {
+    citationHtml: string;
+    note: string;
+    links?: ReferenceLink[];
+  };
+  type ReferencesData = {
+    label: string;
+    title: string;
+    sub: string;
+    modal: {
+      eyebrow: string;
+      title: string;
+      sourceLabel: string;
+      backLabel: string;
+      openLabel: string;
+      backHover: string;
+      openHover: string;
+    };
+    items: ReferenceItem[];
+  };
 
-  const section = $derived(getTranslations(lang).sections.references);
+  let { lang, data }: { lang: Lang; data: ReferencesData } = $props();
+
+  const section = $derived(data);
   const dialogId = `reference-modal-${lang}`;
-  let activeLink = $state<{ href: string; label: string } | null>(null);
+  let activeLink = $state<ReferenceLink | null>(null);
   const modalDuration = $derived(prefersReducedMotion.current ? 0 : 180);
 
-  function openLink(link: { href: string; label: string }) {
+  function openLink(link: ReferenceLink) {
     activeLink = link;
   }
 

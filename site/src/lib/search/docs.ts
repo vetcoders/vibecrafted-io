@@ -1,22 +1,85 @@
-import { getTranslations, type Lang } from "../i18n";
+// Server-only data loader for the docs search index. Pulls from the
+// `i18n` content collection (Astro server context). Pure search primitives
+// and types live in ./docs-search.ts so client (Svelte) modules can import
+// them without dragging astro:content into the client bundle.
 
-export type DocsSearchSection = "all" | "quickstart" | "faq";
+import { getEntry } from "astro:content";
+import type { Lang } from "../i18n";
+import type {
+  DocsSearchData,
+  DocsSearchItem,
+  DocsSearchSection,
+} from "./docs-search";
 
-export interface DocsSearchItem {
-  href: string;
-  title: string;
-  body: string;
-  keywords: string[];
+export type {
+  DocsSearchData,
+  DocsSearchItem,
+  DocsSearchResult,
+  DocsSearchSection,
+} from "./docs-search";
+export { searchDocs } from "./docs-search";
+
+// Inline shapes mirroring the i18n collection documents. The collection uses
+// .passthrough() so frontmatter is typed as unknown Record; these inline
+// interfaces describe exactly what docs.ts consumes. Keep aligned with
+// site/src/content/i18n/{en,pl}/{quickstartHero,quickstartSteps,quickstartResources,faqHero,faqContent}.md
+interface QuickstartHeroData {
+  primaryHref: string;
+  primaryLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
 }
 
-export interface DocsSearchData {
-  emptyLabel: string;
-  fallbackLabel: string;
-  fallbackLinks: { href: string; label: string }[];
-  items: DocsSearchItem[];
-  noResultsLabel: string;
-  placeholder: string;
-  resultsLabel: string;
+type QuickstartStep =
+  | {
+      kicker: string;
+      title: string;
+      body: string;
+      command: string;
+      note?: string;
+    }
+  | {
+      kicker: string;
+      title: string;
+      body: string;
+      commands: string[];
+      note?: string;
+    };
+
+interface QuickstartStepsData {
+  steps: QuickstartStep[];
+}
+
+interface QuickstartResourceCard {
+  kicker: string;
+  title: string;
+  items: string[];
+}
+
+interface QuickstartResourcesData {
+  cards: QuickstartResourceCard[];
+}
+
+interface FaqHeroData {
+  primaryHref: string;
+  primaryLabel: string;
+  secondaryHref: string;
+  secondaryLabel: string;
+}
+
+interface FaqItem {
+  questionHtml: string;
+  answerHtml: string;
+  open?: boolean;
+}
+
+interface FaqGroup {
+  title: string;
+  items: FaqItem[];
+}
+
+interface FaqContentData {
+  groups: FaqGroup[];
 }
 
 const HTML_ENTITY_MAP: Record<string, string> = {
@@ -50,24 +113,23 @@ function toKeywords(...values: string[]) {
 }
 
 function getQuickstartItems(
-  dict: ReturnType<typeof getTranslations>,
+  hero: QuickstartHeroData,
+  steps: QuickstartStepsData,
+  resources: QuickstartResourcesData,
   lang: Lang,
 ) {
-  const hero = dict.sections.quickstartHero;
-  const resources = dict.sections.quickstartResources;
-
-  const steps = dict.sections.quickstartSteps.steps.map((step, index) => ({
+  const stepItems = steps.steps.map((step, index) => ({
     href: `#quickstart-step-${index + 1}`,
     title: step.title,
     body: `${step.kicker} ${step.body} ${
       "command" in step ? step.command : step.commands.join(" ")
-    } ${"note" in step ? step.note : ""}`,
+    } ${"note" in step ? (step.note ?? "") : ""}`,
     keywords: toKeywords(
       step.kicker,
       step.title,
       step.body,
       "command" in step ? step.command : step.commands.join(" "),
-      "note" in step ? step.note : "",
+      "note" in step ? (step.note ?? "") : "",
       "install bootstrap doctor init workflow justdo marbles release hydrate doctor setup prerequisites",
     ),
   }));
@@ -94,13 +156,16 @@ function getQuickstartItems(
         label: lang === "pl" ? "Zasoby" : "Resources",
       },
     ],
-    items: [...steps, ...resourceCards],
+    items: [...stepItems, ...resourceCards],
   };
 }
 
-function getFaqItems(dict: ReturnType<typeof getTranslations>, lang: Lang) {
-  const hero = dict.sections.faqHero;
-  const items = dict.sections.faqContent.groups.flatMap((group, groupIndex) =>
+function getFaqItems(
+  hero: FaqHeroData,
+  content: FaqContentData,
+  lang: Lang,
+) {
+  const items = content.groups.flatMap((group, groupIndex) =>
     group.items.map((item, itemIndex) => ({
       href: `#faq-${groupIndex + 1}-${itemIndex + 1}`,
       title: stripHtml(item.questionHtml),
@@ -179,15 +244,47 @@ function prefixItems(
   }));
 }
 
-export function getDocsSearchData(
+async function loadSection<T>(
+  lang: Lang,
+  name:
+    | "quickstartHero"
+    | "quickstartSteps"
+    | "quickstartResources"
+    | "faqHero"
+    | "faqContent",
+): Promise<T> {
+  // Astro glob loader lowercases entry IDs; file `quickstartHero.md` has id
+  // `quickstarthero`. Match the lookup to the store.
+  const id = `${lang}/${name.toLowerCase()}`;
+  const entry = await getEntry("i18n", id);
+  if (!entry) {
+    throw new Error(`i18n entry not found: ${id}`);
+  }
+  return entry.data as unknown as T;
+}
+
+export async function getDocsSearchData(
   lang: Lang,
   sectionName: DocsSearchSection,
-): DocsSearchData {
-  const dict = getTranslations(lang);
+): Promise<DocsSearchData> {
+  const [quickstartHero, quickstartSteps, quickstartResources, faqHero, faqContent] =
+    await Promise.all([
+      loadSection<QuickstartHeroData>(lang, "quickstartHero"),
+      loadSection<QuickstartStepsData>(lang, "quickstartSteps"),
+      loadSection<QuickstartResourcesData>(lang, "quickstartResources"),
+      loadSection<FaqHeroData>(lang, "faqHero"),
+      loadSection<FaqContentData>(lang, "faqContent"),
+    ]);
+
   const quickstartHref = lang === "pl" ? "/pl/quickstart/" : "/en/quickstart/";
   const faqHref = lang === "pl" ? "/pl/faq/" : "/en/faq/";
-  const quickstart = getQuickstartItems(dict, lang);
-  const faq = getFaqItems(dict, lang);
+  const quickstart = getQuickstartItems(
+    quickstartHero,
+    quickstartSteps,
+    quickstartResources,
+    lang,
+  );
+  const faq = getFaqItems(faqHero, faqContent, lang);
   const globalSurfaces = getGlobalSurfaceItems(lang);
 
   const ui =
@@ -255,92 +352,3 @@ export function getDocsSearchData(
   };
 }
 
-export interface DocsSearchResult extends DocsSearchItem {
-  score: number;
-}
-
-const ALIAS_MAP = {
-  en: {
-    install: ["bootstrap", "setup", "doctor", "shell"],
-    doctor: ["health", "check", "diagnostics", "doctor"],
-    init: ["bootstrap", "context", "map", "repo"],
-    workflow: ["implement", "research", "pipeline", "agents"],
-    release: ["ship", "launch", "hydrate", "decorate", "dou"],
-    license: ["bsl", "business", "source"],
-    runtime: ["control", "plane", "artifacts"],
-  },
-  pl: {
-    instalacja: ["bootstrap", "doctor", "setup", "shell"],
-    doctor: ["diagnoza", "sprawdzenie", "health"],
-    init: ["kontekst", "mapowanie", "repo"],
-    workflow: ["implementacja", "research", "pipeline", "agenci"],
-    release: ["ship", "launch", "hydrate", "decorate", "dou"],
-    licencja: ["bsl", "business", "source"],
-    runtime: ["control", "plane", "artefakty"],
-  },
-} as const;
-
-function tokenizeQuery(value: string): string[] {
-  return value
-    .toLowerCase()
-    .split(/[^a-z0-9ąćęłńóśźż-]+/i)
-    .filter((token) => token.length >= 2);
-}
-
-export function searchDocs(
-  items: DocsSearchItem[],
-  lang: Lang,
-  query: string,
-  limit = 6,
-): DocsSearchResult[] {
-  const trimmed = query.trim();
-  if (trimmed.length < 2) return [];
-
-  const tokens = tokenizeQuery(trimmed);
-  const aliases = ALIAS_MAP[lang];
-  const expanded = new Set<string>(tokens);
-
-  for (const token of tokens) {
-    for (const [stem, related] of Object.entries(aliases)) {
-      if (token.startsWith(stem) || stem.startsWith(token)) {
-        expanded.add(stem);
-        for (const variant of related) expanded.add(variant);
-      }
-    }
-  }
-
-  const terms = [...expanded];
-
-  return items
-    .map((item) => {
-      const titleTokens = tokenizeQuery(item.title);
-      const bodyTokens = tokenizeQuery(item.body);
-      let score = 0;
-
-      for (const term of terms) {
-        if (
-          titleTokens.some(
-            (token) => token.startsWith(term) || term.startsWith(token),
-          )
-        )
-          score += 4;
-        if (
-          item.keywords.some(
-            (keyword) => keyword.startsWith(term) || term.startsWith(keyword),
-          )
-        )
-          score += 3;
-        if (
-          bodyTokens.some(
-            (token) => token.startsWith(term) || term.startsWith(token),
-          )
-        )
-          score += 1;
-      }
-
-      return { ...item, score };
-    })
-    .filter((item) => item.score > 0)
-    .sort((left, right) => right.score - left.score)
-    .slice(0, limit);
-}

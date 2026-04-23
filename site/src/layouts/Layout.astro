@@ -6,6 +6,7 @@ import SearchShell from '../components/SearchShell.svelte';
 import SiteNav from '../components/SiteNav.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations, type Lang } from '../lib/i18n';
+import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/global.css';
 
 interface Props {
@@ -105,6 +106,15 @@ const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === 
 const isFrameworkPage = normalizedPath === navPaths.framework;
 const showInstallBanner = isHomePage;
 const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'all';
+
+// Preload all three search bundles server-side so the SearchShell client
+// component never imports astro:content (server-only). The bundles are
+// passed as props.
+const [searchDataAll, searchDataQuickstart, searchDataFaq] = await Promise.all([
+  getDocsSearchData(lang, 'all'),
+  getDocsSearchData(lang, 'quickstart'),
+  getDocsSearchData(lang, 'faq'),
+]);
 
 const sectionLinks = {
   pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
@@ -300,6 +310,9 @@ const primaryLinks = [
         transition:persist="search-shell"
         lang={lang}
         defaultSection={searchDefaultSection}
+        searchDataAll={searchDataAll}
+        searchDataQuickstart={searchDataQuickstart}
+        searchDataFaq={searchDataFaq}
     />
 </body>
 </html>

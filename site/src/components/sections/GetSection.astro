@@ -1,12 +1,41 @@
 ---
+import { getEntry } from 'astro:content';
 import CopyButton from '../../components/CopyButton.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type GetCard = {
+    step: string;
+    title: string;
+    body: string;
+    command: string;
+};
+
+type GetLink = {
+    href: string;
+    label: string;
+};
+
+type GetSectionData = {
+    label: string;
+    title: string;
+    sub: string;
+    cards: GetCard[];
+    installWizardHref: string;
+    installWizardLabel: string;
+    links: GetLink[];
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const dict = getTranslations(lang);
-const section = dict.sections.get;
-const copyButton = dict.copyButton;
+
+const entry = await getEntry('i18n', `${lang}/get`);
+if (!entry) {
+    throw new Error(`Get content not found for lang=${lang}`);
+}
+const section = entry.data as GetSectionData;
+
+// copyButton labels stay in the dict — UI strings, not redaction copy.
+const copyButton = getTranslations(lang).copyButton;
 ---
 <section id="get" class="get-section get-section--operations surface--grid">
     <Reveal client:load tag="div" class="container">
