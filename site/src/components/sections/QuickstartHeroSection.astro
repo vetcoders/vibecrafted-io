@@ -1,9 +1,26 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.quickstartHero;
+
+interface QuickstartHeroData {
+    label: string;
+    title: string;
+    lead: string;
+    quote: string;
+    primaryHref: string;
+    primaryLabel: string;
+    secondaryHref: string;
+    secondaryLabel: string;
+}
+
+const entry = await getEntry('i18n', `${lang}/quickstarthero`);
+if (!entry) {
+    throw new Error(`Quickstart hero content not found for lang=${lang}`);
+}
+const section = entry.data as unknown as QuickstartHeroData;
 ---
 <Reveal client:load tag="section" class="docs-hero quickstart-hero-section quickstart-hero-section--operations">
     <div class="section-label">{section.label}</div>

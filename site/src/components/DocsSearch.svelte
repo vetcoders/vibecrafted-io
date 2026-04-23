@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getDocsSearchData, type DocsSearchSection } from '../lib/search/docs';
+  import type { DocsSearchData, DocsSearchSection } from '../lib/search/docs-search';
   import type { Lang } from '../lib/i18n';
 
   type SearchResult = {
@@ -30,12 +30,21 @@
     },
   } as const;
 
-  let { lang, section, autofocus = false }: { lang: Lang; section: DocsSearchSection; autofocus?: boolean } = $props();
+  let {
+    lang,
+    section,
+    searchData,
+    autofocus = false,
+  }: {
+    lang: Lang;
+    section: DocsSearchSection;
+    searchData: DocsSearchData;
+    autofocus?: boolean;
+  } = $props();
 
   let query = $state('');
   let activeIndex = $state(-1);
   let searchInput: HTMLInputElement | null = null;
-  const searchData = $derived(getDocsSearchData(lang, section));
 
   function tokenize(value: string) {
     return value

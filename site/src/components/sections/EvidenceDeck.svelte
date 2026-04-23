@@ -1,17 +1,30 @@
 <script lang="ts">
   import KnowledgeDialog from '../KnowledgeDialog.svelte';
-  import { getTranslations, type Lang, type TranslationDict } from '../../lib/i18n';
 
-  type EvidenceItem = TranslationDict['sections']['evidence']['items'][number];
+  type EvidenceAccent = 'steel' | 'copper' | 'patina';
 
-  let { lang }: { lang: Lang } = $props();
+  type EvidenceItem = {
+    number: string;
+    accent?: EvidenceAccent;
+    title: string;
+    body: string;
+    details: string[];
+  };
 
-  const section = $derived(getTranslations(lang).sections.evidence);
+  type EvidenceDeckData = {
+    items: EvidenceItem[];
+    detailsLabel: string;
+    revealLabel: string;
+    closeLabel: string;
+  };
+
+  let { data }: { data: EvidenceDeckData } = $props();
+
   let activeItem = $state<EvidenceItem | null>(null);
 </script>
 
 <div class="evidence-grid">
-  {#each section.items as item}
+  {#each data.items as item}
     <button
       type="button"
       class={`evidence-item evidence-item--${item.accent ?? 'steel'}`}
@@ -27,13 +40,13 @@
 
         <div class="evidence-item__face evidence-item__face--back" aria-hidden="true">
           <span class="evidence-num">{item.number}</span>
-          <div class="evidence-item__kicker">{section.detailsLabel}</div>
+          <div class="evidence-item__kicker">{data.detailsLabel}</div>
           <ul>
             {#each item.details.slice(0, 2) as detail}
               <li>{detail}</li>
             {/each}
           </ul>
-          <span class="evidence-item__reveal">{section.revealLabel}</span>
+          <span class="evidence-item__reveal">{data.revealLabel}</span>
         </div>
       </div>
     </button>
@@ -43,12 +56,12 @@
 <KnowledgeDialog
   open={Boolean(activeItem)}
   accent={activeItem?.accent ?? 'steel'}
-  eyebrow={activeItem ? `${activeItem.number} · ${section.detailsLabel}` : ''}
+  eyebrow={activeItem ? `${activeItem.number} · ${data.detailsLabel}` : ''}
   title={activeItem?.title ?? ''}
   summary={activeItem?.body ?? ''}
   bullets={activeItem?.details ?? []}
-  detailsLabel={section.detailsLabel}
-  closeLabel={section.closeLabel}
+  detailsLabel={data.detailsLabel}
+  closeLabel={data.closeLabel}
   onclose={() => (activeItem = null)}
 />
 

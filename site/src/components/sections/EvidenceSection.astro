@@ -1,10 +1,40 @@
 ---
+import { getEntry } from 'astro:content';
 import Reveal from '../Reveal.svelte';
 import EvidenceDeck from './EvidenceDeck.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
+
+type EvidenceItem = {
+    number: string;
+    accent?: 'steel' | 'copper' | 'patina';
+    title: string;
+    body: string;
+    details: string[];
+};
+
+type EvidenceSectionData = {
+    titleHtml: string;
+    lead: string;
+    revealLabel: string;
+    closeLabel: string;
+    detailsLabel: string;
+    items: EvidenceItem[];
+};
 
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.evidence;
+
+const entry = await getEntry('i18n', `${lang}/evidence`);
+if (!entry) {
+    throw new Error(`Evidence content not found for lang=${lang}`);
+}
+const section = entry.data as EvidenceSectionData;
+
+const deckData = {
+    items: section.items,
+    detailsLabel: section.detailsLabel,
+    revealLabel: section.revealLabel,
+    closeLabel: section.closeLabel,
+};
 ---
 <section class="science-view view surface--grid" id="evidence">
     <div class="container">
@@ -12,7 +42,7 @@ const section = getTranslations(lang).sections.evidence;
             <h2><Fragment set:html={section.titleHtml} /></h2>
             <p>{section.lead}</p>
         </Reveal>
-        <EvidenceDeck client:load lang={lang} />
+        <EvidenceDeck client:load data={deckData} />
     </div>
 </section>
 

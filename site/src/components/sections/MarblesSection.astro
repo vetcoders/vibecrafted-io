@@ -1,10 +1,37 @@
 ---
+import { getEntry } from 'astro:content';
 import DiffusionCanvas from '../../components/DiffusionCanvas.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type MarblesFormula = { label: string; code: string };
+type MarblesPortal = {
+    kicker: string;
+    title: string;
+    body: string;
+    cta: string;
+    note: string;
+};
+type MarblesData = {
+    label: string;
+    title: string;
+    sub: string;
+    heading: string;
+    formulas: MarblesFormula[];
+    stepsAria: string;
+    steps: string[];
+    note: string;
+    frameworkHref: string;
+    portal: MarblesPortal;
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.marbles;
+
+const entry = await getEntry('i18n', `${lang}/marbles`);
+if (!entry) {
+    throw new Error(`Marbles content not found for lang=${lang}`);
+}
+const section = entry.data as MarblesData;
 ---
 <section class="diffusion-section surface--grid" id="marbles">
     <Reveal client:load tag="div" class="container">

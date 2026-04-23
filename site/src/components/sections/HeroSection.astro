@@ -1,10 +1,26 @@
 ---
+import { getEntry } from 'astro:content';
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
+import type { Lang } from '../../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
-const hero = getTranslations(lang).sections.hero;
+
+const entry = await getEntry('i18n', `${lang}/hero`);
+if (!entry) {
+    throw new Error(`Hero content not found for lang=${lang}`);
+}
+const hero = entry.data;
+
+function renderAccents(input: string | undefined): string {
+    if (!input) return '';
+    return input.replace(
+        /<Accent>([\s\S]*?)<\/Accent>/g,
+        '<span class="manifesto-title__framework-accent">$1</span>',
+    );
+}
+
+const frameworkTitleHtml = renderAccents(hero.frameworkTitle);
 ---
 <article class="founder-manifesto surface--grid">
     <Reveal client:load tag="section" class="hero-split hero-section">
@@ -13,13 +29,11 @@ const hero = getTranslations(lang).sections.hero;
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
                 <span class="manifesto-title__rule" aria-hidden="true"></span>
                 <span class="manifesto-title__framework">
-                    <Fragment set:html={hero.frameworkTitleHtml} />
+                    <Fragment set:html={frameworkTitleHtml} />
                 </span>
             </h1>
             <p class="manifesto-lead">{hero.lead}</p>
-            <p class="manifesto-quote">
-                <Fragment set:html={hero.quoteHtml} />
-            </p>
+            <p class="manifesto-quote">{hero.quote}</p>
             <div class="manifesto-actions">
                 <a href="#evidence" class="btn-solid">{hero.evidence}</a>
                 <a href={hero.quickstartHref} class="btn-outline">{hero.quickstart}</a>
