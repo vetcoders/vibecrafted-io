@@ -82,7 +82,6 @@
     alpha: number;
     settled: boolean;
     slot: Slot | null;
-    trail: Array<{ x: number; y: number; a: number }>;
     seed: number;
   }
 
@@ -511,7 +510,6 @@
       alpha: 1,
       settled,
       slot,
-      trail: [],
       seed: Math.floor(Math.random() * 99999)
     };
   }
@@ -662,7 +660,6 @@
       alpha: 1,
       settled: false,
       slot,
-      trail: [],
       seed: Math.floor(Math.random() * 99999)
     });
     statusLine = copy.status.thrown;
@@ -689,25 +686,16 @@
     marble.vx *= damping;
     marble.vy *= damping;
 
-    const speed = Math.hypot(marble.vx, marble.vy);
-    if (speed > 0.4) {
-      marble.trail.push({ x: marble.x, y: marble.y, a: Math.min(0.42, 0.16 + speed * 0.035) });
-      if (marble.trail.length > 16) marble.trail.shift();
-    }
-    marble.trail = marble.trail
-      .map((point) => ({ ...point, a: point.a * 0.88 }))
-      .filter((point) => point.a > 0.03);
-
     marble.x += marble.vx * dt;
     marble.y += marble.vy * dt;
 
+    const speed = Math.hypot(marble.vx, marble.vy);
     if (distance < 2.6 && speed < 0.85) {
       marble.settled = true;
       marble.x = marble.tx;
       marble.y = marble.ty;
       if (marble.slot) marble.slot.filled = true;
       pings.push({ x: marble.x, y: marble.y, alpha: 1 });
-      marble.trail = [];
     }
   }
 
@@ -825,13 +813,6 @@
   function drawMarble(ctx: CanvasRenderingContext2D, marble: Marble) {
     const palette = MARBLE_COLORS[marble.tone];
     const radius = Math.max(8, Math.min(width, height) * 0.032);
-
-    marble.trail.forEach((point) => {
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, radius * 0.78, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(111, 201, 147, ${point.a})`;
-      ctx.fill();
-    });
 
     const gradient = ctx.createRadialGradient(
       marble.x - radius * 0.35,
