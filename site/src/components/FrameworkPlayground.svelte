@@ -448,10 +448,14 @@
   }
 
   function boardRadii() {
-    return {
-      rx: width * (shape === 'oval' ? 0.35 : shape === 'grid' ? 0.3 : 0.32),
-      ry: height * (shape === 'oval' ? 0.25 : shape === 'grid' ? 0.26 : 0.31)
-    };
+    if (shape === 'ring') {
+      const r = Math.min(width, height) * 0.42;
+      return { rx: r, ry: r };
+    }
+    if (shape === 'oval') {
+      return { rx: width * 0.4, ry: height * 0.28 };
+    }
+    return { rx: width * 0.4, ry: height * 0.32 };
   }
 
   function mapSlot(slot: { x: number; y: number }) {
@@ -480,15 +484,29 @@
 
   function createMarble(slot: Slot, tone: MarbleTone, settled = false, chaos = 1): Marble {
     const target = mapSlot(slot);
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
+    const innerScale = 0.55 + chaos * 0.3;
     const angle = Math.random() * Math.PI * 2;
-    const distance = Math.max(width, height) * (0.18 + chaos * 0.22);
+    const startX = settled
+      ? target.x
+      : cx + Math.cos(angle) * rx * innerScale;
+    const startY = settled
+      ? target.y
+      : cy + Math.sin(angle) * ry * innerScale;
+    const dx = target.x - startX;
+    const dy = target.y - startY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = settled ? 0 : Math.min(5, dist * 0.05);
+    const noise = settled ? 0 : 0.5;
     return {
-      x: settled ? target.x : width / 2 + Math.cos(angle) * distance,
-      y: settled ? target.y : height / 2 + Math.sin(angle) * distance - height * 0.12,
+      x: startX,
+      y: startY,
       tx: target.x,
       ty: target.y,
-      vx: (Math.random() - 0.5) * 16,
-      vy: (Math.random() - 0.5) * 16,
+      vx: (dx / dist) * speed + (Math.random() - 0.5) * noise,
+      vy: (dy / dist) * speed + (Math.random() - 0.5) * noise,
       tone,
       alpha: 1,
       settled,
@@ -610,17 +628,36 @@
     startLoop();
   }
 
+  function pickNearestOpenSlot(localX: number, localY: number) {
+    let best: Slot | null = null;
+    let bestDist = Infinity;
+    for (const slot of slots) {
+      if (slot.filled || slot.blocked) continue;
+      const point = mapSlot(slot);
+      const d = Math.hypot(point.x - localX, point.y - localY);
+      if (d < bestDist) {
+        bestDist = d;
+        best = slot;
+      }
+    }
+    return best;
+  }
+
   function throwAt(localX: number, localY: number) {
-    const slot = pickOpenSlot();
+    const slot = pickNearestOpenSlot(localX, localY);
     if (!slot) return;
     const target = mapSlot(slot);
+    const dx = target.x - localX;
+    const dy = target.y - localY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = Math.min(14, dist * 0.18);
     marbles.push({
       x: localX,
       y: localY,
       tx: target.x,
       ty: target.y,
-      vx: (target.x - localX) * 0.02,
-      vy: (target.y - localY) * 0.02,
+      vx: (dx / dist) * speed,
+      vy: (dy / dist) * speed,
       tone: activePhase.tone,
       alpha: 1,
       settled: false,
@@ -643,23 +680,34 @@
     const dx = marble.tx - marble.x;
     const dy = marble.ty - marble.y;
     const distance = Math.hypot(dx, dy);
-    const pull = distance > 24 ? 0.012 : 0.04;
+
+    const pull = distance > 40 ? 0.015 : 0.04;
     marble.vx += dx * pull * dt;
     marble.vy += dy * pull * dt;
-    marble.vx *= 0.84;
-    marble.vy *= 0.84;
-    marble.trail.push({ x: marble.x, y: marble.y, a: 0.28 });
-    if (marble.trail.length > 16) marble.trail.shift();
-    marble.trail = marble.trail.map((point) => ({ ...point, a: point.a * 0.9 })).filter((point) => point.a > 0.025);
+
+    const damping = Math.pow(0.88, dt);
+    marble.vx *= damping;
+    marble.vy *= damping;
+
+    const speed = Math.hypot(marble.vx, marble.vy);
+    if (speed > 0.4) {
+      marble.trail.push({ x: marble.x, y: marble.y, a: Math.min(0.42, 0.16 + speed * 0.035) });
+      if (marble.trail.length > 16) marble.trail.shift();
+    }
+    marble.trail = marble.trail
+      .map((point) => ({ ...point, a: point.a * 0.88 }))
+      .filter((point) => point.a > 0.03);
+
     marble.x += marble.vx * dt;
     marble.y += marble.vy * dt;
 
-    if (distance < 2.2 && Math.abs(marble.vx) < 0.85 && Math.abs(marble.vy) < 0.85) {
+    if (distance < 2.6 && speed < 0.85) {
       marble.settled = true;
       marble.x = marble.tx;
       marble.y = marble.ty;
       if (marble.slot) marble.slot.filled = true;
       pings.push({ x: marble.x, y: marble.y, alpha: 1 });
+      marble.trail = [];
     }
   }
 
