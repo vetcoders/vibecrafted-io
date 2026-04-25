@@ -68,7 +68,7 @@ vibecrafted partner gemini --file /path/to/debug-findings.md
 <summary>Foundation Dependencies (Loaded with framework)</summary>
 
 - [vc-loctree](../foundations/vc-loctree/SKILL.md) — primary map and structural awareness.
-- [vc-aicx](../foundations/vc-aicx/SKILL.md) — primary memory and steerability index.
+- [vc-aicx](../foundations/vc-aicx/SKILL.md) — primary intentions and steerability index.
 </details>
 
 One skill, one stance: shared executive brain.
@@ -79,6 +79,10 @@ One skill, one stance: shared executive brain.
 
 If the user wants the agent to take the wheel and drive end-to-end, that is no
 longer Partner mode. Escalate to `vc-ownership`.
+
+Partner mode can produce plans and implementation choices, but it does not
+silently mean delegation. Delegation starts only when the operator explicitly
+invokes a delegation path or approves a concrete delegated cut.
 
 ---
 
