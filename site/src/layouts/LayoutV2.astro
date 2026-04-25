@@ -114,7 +114,7 @@ const jsonLd = JSON.stringify({
     http-equiv="Content-Security-Policy"
     content={[
       "default-src 'none'",
-      "script-src 'self' 'unsafe-inline' https://plausible.io",
+      "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "style-src-attr 'unsafe-inline'",
       "img-src 'self' data:",
@@ -140,6 +140,7 @@ const jsonLd = JSON.stringify({
 
   <script is:inline type="application/ld+json" set:html={jsonLd} />
   <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
+  <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
 </head>
 <body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
   <SiteNavV2 client:load lang={lang} currentPath={currentPath} toggleHref={toggleHref} />

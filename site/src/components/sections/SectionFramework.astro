@@ -1,67 +1,15 @@
 ---
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import PhaseBand from '../PhaseBand.svelte';
+import PipelineHero from '../PipelineHero.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
-type BoardAccent = 'default' | 'teal';
-
-interface Phase {
-  num: string;
-  state: number;
-  stateLabel: string;
-  accent: BoardAccent;
-  name: string;
-  tagline: string;
-  desc: string;
+interface Props {
+  lang?: Lang;
 }
 
-const phases: Phase[] = [
-  {
-    num: '00',
-    state: 0.0,
-    stateLabel: '0000',
-    accent: 'default',
-    name: 'Scaffold',
-    tagline: 'Define the system before you build it.',
-    desc: 'Placeholder — swap this. Scope first: pick the board shape that matches your system topology, then set capacity (density, specialists, precision). The outer frame is your contract with the future.',
-  },
-  {
-    num: '01',
-    state: 0.35,
-    stateLabel: '0035',
-    accent: 'default',
-    name: 'Craft',
-    tagline: 'Agents throw. You watch the board fill.',
-    desc: 'Placeholder — swap this. Throws start landing. Each agent brings a specialist skill; each throw adds a marble. The board tracks position, owner, and intent — not prose.',
-  },
-  {
-    num: '02',
-    state: 0.65,
-    stateLabel: '0065',
-    accent: 'default',
-    name: 'Convergence',
-    tagline: 'Marbles find their grooves.',
-    desc: 'Placeholder — swap this. The board pulls scattered work into its grooves. Duplicates collapse. Gaps become visible. What looked like chaos now has a shape.',
-  },
-  {
-    num: '03',
-    state: 0.85,
-    stateLabel: '0085',
-    accent: 'teal',
-    name: 'DoU',
-    tagline: 'Definition of Undone — what still blocks release.',
-    desc: 'Placeholder — swap this. Every unconverged marble is a question. DoU makes those questions explicit: what is missing, what is blocked, what can ship without it.',
-  },
-  {
-    num: '04',
-    state: 1.0,
-    stateLabel: '1000',
-    accent: 'teal',
-    name: 'Release',
-    tagline: 'Ship. The board becomes the changelog.',
-    desc: 'Placeholder — swap this. When the board converges, release is a formality. The artifacts are already in place, the contract was declared upfront, the trail is auditable end-to-end.',
-  },
-];
+const { lang = 'en' } = Astro.props;
+const pipeline = getTranslations(lang).sections.pipeline;
 
 const operators = [
   { num: '00', name: 'loctree', kind: 'STRUCTURE' },
@@ -91,19 +39,14 @@ const operators = [
       The framework is a contract, not a tutorial. Each phase declares what must be true before the next throw. What ends in convergence begins in scope.
     </p>
 
-    <div class="framework__bands">
-      {phases.map((phase) => (
-        <PhaseBand
-          client:visible
-          num={phase.num}
-          convergeState={phase.state}
-          stateLabel={phase.stateLabel}
-          accent={phase.accent}
-          name={phase.name}
-          tagline={phase.tagline}
-          desc={phase.desc}
-        />
-      ))}
+    <div class="framework__pipeline">
+      <PipelineHero
+        client:visible
+        stages={pipeline.hero.stages}
+        source={pipeline.mermaidFull}
+        modalLabels={pipeline.mermaidModal}
+        controls={pipeline.controls}
+      />
     </div>
 
     <h3 class="framework__operators-heading">
@@ -149,11 +92,79 @@ const operators = [
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
     max-width: 60ch;
-    margin: 0 0 88px;
+    margin: 0 0 56px;
   }
 
-  .framework__bands {
+  /*
+   * Pipeline hero shell — V2 re-skin via inheritable custom properties.
+   * PipelineHero.svelte reads each var() with a legacy fallback chain, so
+   * defining them on this ancestor element propagates the V2 palette
+   * (rust accent, Instrument Serif, hairline rules, 2px radius) to every
+   * sub-element including the Expand modal.
+   */
+  .framework__pipeline {
+    margin: 0 0 96px;
+    padding-top: 18px;
     border-top: 1px solid var(--rule-dark-soft);
+
+    --ph-stage-bg: transparent;
+    --ph-stage-bg-overlay: linear-gradient(180deg, rgba(245, 244, 239, 0.025) 0%, transparent 70%);
+    --ph-stage-border: var(--rule-dark);
+    --ph-stage-radius: 2px;
+
+    --ph-name-color: var(--fg-on-dark);
+    --ph-name-font: var(--font-display);
+    --ph-name-weight: 400;
+    --ph-subtitle-color: var(--fg-on-dark-dim);
+    --ph-subtitle-font: var(--font-mono);
+    --ph-index-color: var(--fg-on-dark-mute);
+    --ph-index-font: var(--font-mono);
+
+    --ph-connector-line: var(--rule-dark);
+    --ph-connector-arrow: var(--fg-on-dark-mute);
+
+    --ph-core-accent: var(--accent);
+    --ph-core-accent-bright: var(--accent);
+    --ph-core-border: rgba(217, 119, 87, 0.55);
+    --ph-core-inset: rgba(217, 119, 87, 0.32);
+    --ph-core-glow: rgba(217, 119, 87, 0.18);
+    --ph-core-bg-radial: rgba(217, 119, 87, 0.16);
+    --ph-core-name-color: var(--accent);
+    --ph-core-subtitle-color: rgba(217, 119, 87, 0.88);
+    --ph-core-shadow: rgba(0, 0, 0, 0.5);
+
+    --ph-btn-bg: transparent;
+    --ph-btn-border: var(--rule-dark);
+    --ph-btn-color: var(--fg-on-dark-dim);
+    --ph-btn-hover-color: var(--fg-on-dark);
+    --ph-btn-hover-border: var(--fg-on-dark-mute);
+    --ph-btn-accent-color: var(--accent);
+    --ph-btn-accent-bright: var(--accent);
+    --ph-btn-accent-bg: rgba(217, 119, 87, 0.08);
+    --ph-btn-accent-bg-hover: rgba(217, 119, 87, 0.14);
+    --ph-btn-accent-border: rgba(217, 119, 87, 0.4);
+    --ph-btn-radius: 2px;
+
+    --ph-source-bg: rgba(245, 244, 239, 0.03);
+    --ph-source-border: var(--rule-dark);
+    --ph-source-color: var(--fg-on-dark);
+    --ph-source-font: var(--font-mono);
+    --ph-source-radius: 2px;
+
+    --ph-tech-bg: rgba(245, 244, 239, 0.03);
+    --ph-tech-border: var(--rule-dark);
+    --ph-tech-color: var(--fg-on-dark);
+
+    --ph-modal-backdrop: rgba(14, 14, 12, 0.85);
+    --ph-modal-panel-bg: var(--ink);
+    --ph-modal-panel-border: var(--rule-dark);
+    --ph-modal-panel-radius: 2px;
+    --ph-modal-title-color: var(--fg-on-dark);
+    --ph-modal-close-bg: transparent;
+    --ph-modal-close-color: var(--fg-on-dark-dim);
+    --ph-modal-close-hover-bg: rgba(217, 119, 87, 0.12);
+
+    --ph-mmd-error-color: var(--accent);
   }
 
   .framework__operators-heading {
@@ -161,7 +172,7 @@ const operators = [
     font-weight: 400;
     font-size: clamp(26px, 2.8vw, 40px);
     color: var(--fg-on-dark);
-    margin: 100px 0 12px;
+    margin: 0 0 12px;
   }
 
   .framework__operators-heading em {
