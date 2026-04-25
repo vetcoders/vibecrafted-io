@@ -28,6 +28,10 @@ interface Props {
    * spacing — no top padding is applied to <main>. Subpages should leave this
    * false so the fixed nav doesn't overlap their content. */
   hasHero?: boolean;
+  /** Full-screen interactive surfaces can opt out of the floating global search pill. */
+  hideSearch?: boolean;
+  /** Full-screen tools can own the ending of the page instead of rendering global footer chrome. */
+  hideFooter?: boolean;
 }
 
 const {
@@ -37,6 +41,8 @@ const {
   ogImage = '/presence/og-image.png',
   ogType = 'website',
   hasHero = false,
+  hideSearch = false,
+  hideFooter = false,
 } = Astro.props as Props;
 
 const currentPath = Astro.url.pathname;
@@ -128,7 +134,7 @@ const jsonLd = JSON.stringify({
   <link href="https://fonts.googleapis.com" rel="preconnect" />
   <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
 
@@ -140,8 +146,8 @@ const jsonLd = JSON.stringify({
   <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
     <slot />
   </main>
-  <SiteFooterV2 client:load lang={lang} />
-  <SearchShellV2 client:load lang={lang} />
+  {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
+  {!hideSearch && <SearchShellV2 client:load lang={lang} />}
 </body>
 </html>
 

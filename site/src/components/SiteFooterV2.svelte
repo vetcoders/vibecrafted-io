@@ -19,7 +19,7 @@
         height="24"
         class="v2footer__logo"
       />
-      <span class="v2footer__wordmark">VIBECRAFTED</span>
+      <span class="v2footer__wordmark">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="v2footer__wordmark-dot" aria-hidden="true">.</span></span>
     </div>
 
     <p class="v2footer__byline">with AI Agents by VetCoders</p>
@@ -41,17 +41,17 @@
   .v2footer {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0 48px 48px;
+    padding: 0 48px 28px;
   }
 
   .v2footer__inner {
     border: 1px solid var(--rule-dark);
     border-radius: 2px;
-    padding: 40px 32px 32px;
+    padding: 22px 28px 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 10px;
     text-align: center;
     background: rgba(14, 14, 12, 0.4);
     backdrop-filter: blur(8px);
@@ -61,22 +61,28 @@
   .v2footer__brand {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .v2footer__logo {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border-radius: 4px;
   }
 
   .v2footer__wordmark {
     font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
     color: var(--fg-on-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .v2footer__wordmark-dot {
+    color: var(--accent);
+    margin-left: 1px;
   }
 
   .v2footer__byline {
@@ -85,15 +91,15 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin: -10px 0 0;
+    margin: -4px 0 0;
   }
 
   .v2footer__tagline {
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 400;
-    font-size: 16px;
-    line-height: 1.45;
+    font-size: 14px;
+    line-height: 1.4;
     color: var(--fg-on-dark-dim);
     margin: 0;
     max-width: 48ch;
@@ -103,8 +109,8 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px 26px;
-    margin-top: 4px;
+    gap: 8px 22px;
+    margin-top: 2px;
   }
 
   .v2footer__links a {
@@ -133,19 +139,19 @@
 
   @media (max-width: 720px) {
     .v2footer {
-      padding: 0 24px 32px;
+      padding: 0 20px 22px;
     }
 
     .v2footer__inner {
-      padding: 28px 20px 24px;
+      padding: 18px 18px 16px;
     }
 
     .v2footer__tagline {
-      font-size: 15px;
+      font-size: 13px;
     }
 
     .v2footer__links {
-      gap: 8px 18px;
+      gap: 6px 16px;
     }
   }
 </style>

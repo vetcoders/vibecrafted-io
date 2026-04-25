@@ -117,7 +117,7 @@
 
 <nav class="v2nav" aria-label="Primary">
   <a class="v2nav__brand" href={homeHref}>
-    <span class="v2nav__brand-word">Vibecrafted</span><span class="v2nav__brand-dot" aria-hidden="true">.</span>
+    <span class="v2nav__brand-word">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍</span><span class="v2nav__brand-dot" aria-hidden="true">.</span>
   </a>
 
   <div class="v2nav__anchors">
@@ -217,18 +217,26 @@
 
   .v2nav__brand {
     justify-self: start;
-    font-family: var(--font-display);
-    font-size: 22px;
+    font-family: var(--font-mono);
+    font-size: 18px;
     font-weight: 400;
     line-height: 1;
     color: var(--fg-on-dark);
-    letter-spacing: -0.005em;
+    letter-spacing: 0.02em;
     padding: 4px 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .v2nav__brand-word {
+    /* Unicode mathematical monospace wordmark — display-as-is, no transform. */
+    text-transform: none;
   }
 
   .v2nav__brand-dot {
     color: var(--accent);
     margin-left: 1px;
+    font-family: var(--font-mono);
   }
 
   /* ── Center anchors ──────────────────────────────────────── */

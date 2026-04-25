@@ -46,6 +46,12 @@
   --v2-font-body: "Inter", system-ui, -apple-system, sans-serif;
   --v2-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
+  /* Legacy font stack — available globally for branding/typography variants
+     that need them. V2 layout still uses Instrument Serif + Inter + JBM. */
+  --v2-font-serif: "Lora", Georgia, serif;
+  --v2-font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  --v2-font-script: "Allura", "Brush Script MT", cursive;
+
   /* ─── Radius ─────────────────────────────────────────────── */
   /* Never pill-rounded. 2px everywhere. */
   --v2-radius: 2px;
@@ -83,6 +89,9 @@
   --font-display: var(--v2-font-display);
   --font-body: var(--v2-font-body);
   --font-mono: var(--v2-font-mono);
+  --font-serif: var(--v2-font-serif);
+  --font-sans: var(--v2-font-sans);
+  --font-script: var(--v2-font-script);
 }
 
 /* Narrow-viewport tuning — shared by all V2 sections. Individual sections
