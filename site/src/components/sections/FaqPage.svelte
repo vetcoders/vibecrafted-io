@@ -1,11 +1,15 @@
 <script lang="ts">
+  import { getTranslations, type Lang } from '../../lib/i18n';
+
   interface Props {
-    lang?: 'en' | 'pl';
+    lang?: Lang;
   }
 
   interface FaqItem {
+    idx: number;
     q: string;
     a: string;
+    open?: boolean;
   }
 
   interface FaqGroup {
@@ -15,122 +19,50 @@
     items: FaqItem[];
   }
 
+  const GROUP_META = [
+    { id: 'installation', color: '#d97757' },
+    { id: 'skills', color: '#3d7a72' },
+    { id: 'workflow', color: '#c99a3b' },
+    { id: 'commercial', color: '#f5f4ef' },
+  ] as const;
+
   let { lang = 'en' } = $props<Props>();
 
   let openMap = $state<Record<number, boolean>>({});
 
-  const GROUPS: FaqGroup[] = [
-    {
-      id: 'installation',
-      title: 'Installation',
-      color: '#d97757',
-      items: [
-        {
-          q: 'Why does Vibecrafted install into <code>$VIBECRAFTED_ROOT/.vibecrafted/</code> instead of <code>$HOME/.agents/</code>?',
-          a: '<code>$VIBECRAFTED_ROOT/.vibecrafted/</code> is the central store and control plane. Agent-specific directories are only views or symlink targets. The real source of truth, artifacts, and helper state live in one place.',
-        },
-        {
-          q: 'Can I install Vibecrafted without editing my shell config?',
-          a: 'Yes. During the interactive path you can opt out of shell-helper installation. If you still want helpers in the current session, source <code>${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh</code> manually.',
-        },
-        {
-          q: 'What does <code>make doctor</code> actually check?',
-          a: 'The doctor verifies the central store, helper availability, symlink health, optional foundations such as loctree, aicx, prview, and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling.',
-        },
-        {
-          q: 'Which install path should I use in CI or automation?',
-          a: 'Use <code>make install</code> for the direct non-interactive path, or call <code>python3 scripts/vetcoders_install.py install --source "$PWD" --non-interactive</code> when you want full CLI control.',
-        },
-      ],
-    },
-    {
-      id: 'skills',
-      title: 'Skills, Agents, Foundations',
-      color: '#3d7a72',
-      items: [
-        {
-          q: 'What is the difference between a skill and an agent?',
-          a: 'An agent is the runtime, such as Codex, Claude, or Gemini. A skill is the instruction set and workflow protocol that tells that runtime how to behave for a specific engineering phase.',
-        },
-        {
-          q: 'Why not just use ChatGPT, Copilot, or a single giant prompt?',
-          a: 'Because Vibecrafted is trying to solve system-shaping, not just chat convenience. It combines structural awareness, decision retrieval, convergence loops, and shipping audits so the model sees the repo and the product surface instead of improvising blind.',
-        },
-        {
-          q: 'Can I use Vibecrafted without loctree or aicx?',
-          a: 'Technically yes, but you lose structural perception and session continuity. The framework still runs, but the agent is operating with much weaker context.',
-        },
-        {
-          q: 'How do I get <code>screenscribe review</code> past early model validation?',
-          a: 'Treat it as runtime truth, not folklore. Keep the CLI reachable on <code>PATH</code>, keep <code>~/.config/screenscribe/config.env</code> aligned with the Libraxis defaults, and remember that the current CLI still overrides stored flags during <code>review</code>. See the ScreenScribe Review Gate doc for specifics.',
-        },
-        {
-          q: 'What is the Marbles loop?',
-          a: 'Marbles is the convergence engine. AI output is noisy, so the framework loops through implementation, followup, measurement, and fixes until the important classes of findings reach zero.',
-        },
-      ],
-    },
-    {
-      id: 'workflow',
-      title: 'Workflow and Operations',
-      color: '#c99a3b',
-      items: [
-        {
-          q: 'When should I use <code>vc-justdo</code> instead of manual phases?',
-          a: 'Use <code>vc-justdo</code> when the task is clear and you want the agent to take ownership end-to-end. Use the phase skills separately when you want to supervise the architectural decisions more closely.',
-        },
-        {
-          q: 'Can I run Vibecrafted in CI/CD?',
-          a: 'Yes. The direct install path is non-interactive, and skills like review, followup, and release are explicitly shaped to work as repeatable quality or packaging gates.',
-        },
-        {
-          q: 'What lives in <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code>?',
-          a: 'Plans, reports, transcripts, and metadata from major runs. The artifact store exists so agent work leaves durable evidence instead of disappearing into terminal scrollback.',
-        },
-        {
-          q: 'What is Definition of Undone?',
-          a: 'DoU is the audit that checks whether people can discover, understand, install, trust, and adopt the thing. It measures product-surface truth, not only repo health.',
-        },
-      ],
-    },
-    {
-      id: 'commercial',
-      title: 'Commercial posture',
-      color: '#f5f4ef',
-      items: [
-        {
-          q: 'Is Vibecrafted open source?',
-          a: 'The framework is distributed under Business Source License 1.1. The repo is visible and usable, but it is not pure permissive open source.',
-        },
-        {
-          q: 'Can small teams use it in production?',
-          a: 'Yes. The Additional Use Grant allows individual developers and teams smaller than five people to use the framework in production as long as they are not offering a competitive hosted or embedded product.',
-        },
-        {
-          q: 'What if I need a broader commercial arrangement?',
-          a: 'The license points to VetCoders for alternative licensing arrangements. Read the repo license for the exact terms and contact route before you commit to a broader rollout.',
-        },
-      ],
-    },
-  ] as const;
+  const dict = $derived(getTranslations(lang));
+  const hero = $derived(dict.sections.faqHero);
+  const content = $derived(dict.sections.faqContent);
 
-  const indexedGroups = GROUPS.map((group, groupIndex) => {
-    const offset = GROUPS.slice(0, groupIndex).reduce((sum, previous) => sum + previous.items.length, 0);
+  const indexedGroups: FaqGroup[] = $derived(content.groups.map((group, groupIndex) => {
+    const meta = GROUP_META[groupIndex] ?? {
+      id: `group-${groupIndex}`,
+      color: '#f5f4ef',
+    };
+    const offset = content.groups.slice(0, groupIndex).reduce((sum, previous) => sum + previous.items.length, 0);
     return {
-      ...group,
+      id: meta.id,
+      color: meta.color,
+      title: group.title,
       items: group.items.map((item, itemIndex) => ({
-        ...item,
+        q: item.questionHtml,
+        a: item.answerHtml,
+        open: item.open,
         idx: offset + itemIndex,
       })),
     };
-  });
+  }));
 
   function padded(num: number): string {
     return String(num + 1).padStart(2, '0');
   }
 
-  function toggle(idx: number): void {
-    openMap[idx] = !openMap[idx];
+  function isOpen(item: FaqItem): boolean {
+    return openMap[item.idx] ?? item.open ?? false;
+  }
+
+  function toggle(item: FaqItem): void {
+    openMap[item.idx] = !isOpen(item);
   }
 
   function openFromToc(idx: number): void {
@@ -146,9 +78,6 @@
       behavior: reduce ? 'auto' : 'smooth',
     });
   }
-
-  const quickstartHref = $derived(`/${lang}/quickstart/`);
-  const overviewHref = $derived(`/${lang}/`);
 </script>
 
 <div class="faq-page">
@@ -157,16 +86,16 @@
       <span>§ 06 · FAQ</span>
       <span>FIG. 06 · DWG VC-006</span>
     </div>
-    <h1>The questions strangers ask&nbsp;first.</h1>
+    <h1>{hero.title}</h1>
     <p class="hero-lead">
-      This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits.
+      {hero.lead}
     </p>
     <p class="hero-quote">
-      "The installer, docs, and command deck should all promise the same thing."
+      "{hero.quote}"
     </p>
     <div class="hero-actions">
-      <a href={quickstartHref} class="btn-primary">Read Quick Start</a>
-      <a href={overviewHref} class="btn-ghost">Back to Overview</a>
+      <a href={hero.primaryHref} class="btn-primary">{hero.primaryLabel}</a>
+      <a href={hero.secondaryHref} class="btn-ghost">{hero.secondaryLabel}</a>
     </div>
   </header>
 
@@ -203,16 +132,16 @@
               <button
                 class="faq-q"
                 type="button"
-                aria-expanded={openMap[item.idx] || false}
+                aria-expanded={isOpen(item)}
                 aria-controls={`faq-answer-${item.idx}`}
-                onclick={() => toggle(item.idx)}
+                onclick={() => toggle(item)}
               >
                 <span class="num">{padded(item.idx)}</span>
                 <span>{@html item.q}</span>
                 <span class="arrow" aria-hidden="true">+</span>
               </button>
               <div
-                class={`faq-a${openMap[item.idx] ? ' is-open' : ''}`}
+                class={`faq-a${isOpen(item) ? ' is-open' : ''}`}
                 id={`faq-answer-${item.idx}`}
               >
                 <div class="faq-a-inner">{@html item.a}</div>
@@ -226,11 +155,10 @@
 
   <footer class="faq-footer">
     <div class="faq-footer-inner">
-      <a href={quickstartHref}>Quick Start</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md">Long-form Markdown FAQ</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md">ScreenScribe Review Gate</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md">Content Truth Matrix</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE">License (BSL 1.1)</a>
+      <span class="faq-footer-label">{content.sourceLabel}</span>
+      {#each content.links as link}
+        <a href={link.href}>{link.label}</a>
+      {/each}
     </div>
   </footer>
 </div>
@@ -517,6 +445,10 @@
     font-size: 11px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+  }
+
+  .faq-footer-label {
+    color: var(--fg-on-dark);
   }
 
   .faq-footer-inner a {
