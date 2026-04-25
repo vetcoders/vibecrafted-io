@@ -329,9 +329,9 @@
 
   const OPERATORS: OperatorId[] = ['loctree', 'aicx', 'prview', 'screenscribe', 'agents', 'marbles'];
   const MARBLE_COLORS: Record<MarbleTone, { base: string; light: string }> = {
-    teal: { base: '#4f9f9a', light: '#9de3d6' },
-    steel: { base: '#c8c8c2', light: '#ffffff' },
-    copper: { base: '#d67a3f', light: '#ffc28d' },
+    teal: { base: '#3d7a72', light: '#a6c5bc' },
+    steel: { base: '#c8c2b4', light: '#ece7dc' },
+    copper: { base: '#cf6f4e', light: '#e5b18e' },
     mint: { base: '#6fc993', light: '#b8f3c8' },
     danger: { base: '#d85a4f', light: '#ffb0a8' }
   };
@@ -704,7 +704,7 @@
     lastFrame = now;
 
     marbles.forEach((marble) => updateMarble(marble, dt));
-    pings = pings.map((ping) => ({ ...ping, alpha: ping.alpha - 0.018 * dt })).filter((ping) => ping.alpha > 0);
+    pings = pings.map((ping) => ({ ...ping, alpha: ping.alpha - 0.05 * dt })).filter((ping) => ping.alpha > 0);
 
     if (running) {
       waveDelay -= 16.67 * dt;
@@ -756,92 +756,83 @@
     const { rx, ry } = boardRadii();
     ctx.save();
     ctx.translate(cx, cy);
-    ctx.strokeStyle = 'rgba(245, 244, 239, 0.18)';
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.10)';
     ctx.lineWidth = 1;
     ctx.setLineDash([]);
-
     if (shape === 'grid') {
       ctx.strokeRect(-rx, -ry, rx * 2, ry * 2);
-      ctx.setLineDash([4, 10]);
-      ctx.strokeStyle = 'rgba(245, 244, 239, 0.08)';
-      for (let i = -3; i <= 3; i += 1) {
-        ctx.beginPath();
-        ctx.moveTo((rx * i) / 3, -ry);
-        ctx.lineTo((rx * i) / 3, ry);
-        ctx.moveTo(-rx, (ry * i) / 3);
-        ctx.lineTo(rx, (ry * i) / 3);
-        ctx.stroke();
-      }
     } else {
       ctx.beginPath();
       ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
       ctx.stroke();
-      ctx.setLineDash([3, 8]);
-      ctx.strokeStyle = 'rgba(245, 244, 239, 0.08)';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, rx * 0.72, ry * 0.72, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(-rx, 0);
-      ctx.lineTo(rx, 0);
-      ctx.moveTo(0, -ry);
-      ctx.lineTo(0, ry);
-      ctx.stroke();
     }
-
     ctx.restore();
   }
 
   function drawSlot(ctx: CanvasRenderingContext2D, slot: Slot) {
+    if (!slot.blocked) return;
     const point = mapSlot(slot);
+    const radius = Math.max(5, Math.min(width, height) * 0.018);
     ctx.beginPath();
-    ctx.arc(point.x, point.y, Math.max(5, Math.min(width, height) * 0.018), 0, Math.PI * 2);
-    ctx.strokeStyle = slot.blocked ? 'rgba(216, 90, 79, 0.65)' : slot.filled ? 'rgba(111, 201, 147, 0.2)' : 'rgba(245, 244, 239, 0.15)';
-    ctx.lineWidth = slot.blocked ? 1.6 : 1;
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(216, 90, 79, 0.55)';
+    ctx.lineWidth = 1.4;
     ctx.stroke();
-    if (slot.blocked) {
-      ctx.beginPath();
-      ctx.moveTo(point.x - 5, point.y - 5);
-      ctx.lineTo(point.x + 5, point.y + 5);
-      ctx.moveTo(point.x + 5, point.y - 5);
-      ctx.lineTo(point.x - 5, point.y + 5);
-      ctx.strokeStyle = 'rgba(255, 176, 168, 0.8)';
-      ctx.stroke();
-    }
+    ctx.beginPath();
+    ctx.moveTo(point.x - 5, point.y - 5);
+    ctx.lineTo(point.x + 5, point.y + 5);
+    ctx.moveTo(point.x + 5, point.y - 5);
+    ctx.lineTo(point.x - 5, point.y + 5);
+    ctx.strokeStyle = 'rgba(255, 176, 168, 0.7)';
+    ctx.stroke();
   }
 
   function drawMarble(ctx: CanvasRenderingContext2D, marble: Marble) {
     const palette = MARBLE_COLORS[marble.tone];
     const radius = Math.max(8, Math.min(width, height) * 0.032);
 
-    const gradient = ctx.createRadialGradient(
-      marble.x - radius * 0.35,
-      marble.y - radius * 0.45,
-      radius * 0.1,
-      marble.x,
-      marble.y,
-      radius
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(marble.x + radius * 0.05, marble.y + radius * 0.85, radius * 0.62, radius * 0.18, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+    ctx.fill();
+    ctx.restore();
+
+    const sphere = ctx.createRadialGradient(
+      marble.x - radius * 0.32,
+      marble.y - radius * 0.4,
+      radius * 0.08,
+      marble.x + radius * 0.05,
+      marble.y + radius * 0.1,
+      radius * 1.05
     );
-    gradient.addColorStop(0, palette.light);
-    gradient.addColorStop(0.46, palette.base);
-    gradient.addColorStop(1, 'rgba(4, 5, 5, 0.88)');
+    sphere.addColorStop(0, palette.light);
+    sphere.addColorStop(0.32, palette.base);
+    sphere.addColorStop(0.78, palette.base);
+    sphere.addColorStop(1, 'rgba(4, 5, 5, 0.85)');
 
     ctx.beginPath();
     ctx.arc(marble.x, marble.y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = gradient;
-    ctx.shadowColor = palette.base;
-    ctx.shadowBlur = marble.settled ? 8 : 18;
+    ctx.fillStyle = sphere;
     ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = 'rgba(245, 244, 239, 0.2)';
+
+    ctx.beginPath();
+    ctx.arc(marble.x - radius * 0.36, marble.y - radius * 0.42, radius * 0.22, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(marble.x, marble.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.16)';
+    ctx.lineWidth = 1;
     ctx.stroke();
   }
 
   function drawPings(ctx: CanvasRenderingContext2D) {
     pings.forEach((ping) => {
       ctx.beginPath();
-      ctx.arc(ping.x, ping.y, (1 - ping.alpha) * 42 + 6, 0, Math.PI * 2);
-      ctx.strokeStyle = ping.danger ? `rgba(216, 90, 79, ${ping.alpha * 0.7})` : `rgba(111, 201, 147, ${ping.alpha * 0.45})`;
+      ctx.arc(ping.x, ping.y, (1 - ping.alpha) * 22 + 4, 0, Math.PI * 2);
+      ctx.strokeStyle = ping.danger ? `rgba(216, 90, 79, ${ping.alpha * 0.5})` : `rgba(111, 201, 147, ${ping.alpha * 0.28})`;
       ctx.lineWidth = 1;
       ctx.stroke();
     });
@@ -851,13 +842,6 @@
     if (!context || !width || !height) return;
     const ctx = context;
     ctx.clearRect(0, 0, width, height);
-
-    const vignette = ctx.createRadialGradient(width / 2, height / 2, 20, width / 2, height / 2, Math.max(width, height) * 0.58);
-    vignette.addColorStop(0, 'rgba(18, 25, 25, 0.44)');
-    vignette.addColorStop(1, 'rgba(3, 4, 5, 0.2)');
-    ctx.fillStyle = vignette;
-    ctx.fillRect(0, 0, width, height);
-
     drawBoardFrame(ctx);
     slots.forEach((slot) => drawSlot(ctx, slot));
     drawPings(ctx);
@@ -1028,13 +1012,13 @@
 
 <style>
   .game {
-    --ink: var(--v2-ink, #0e0e0c);
+    --ink: var(--v2-ink, #080807);
     --paper: var(--v2-fg-on-dark, #f5f4ef);
     --muted: var(--v2-fg-muted, rgba(245, 244, 239, 0.62));
     --dim: rgba(245, 244, 239, 0.36);
     --rule: rgba(245, 244, 239, 0.13);
     --rule-strong: rgba(245, 244, 239, 0.2);
-    --copper: var(--v2-copper, #d67845);
+    --copper: var(--v2-copper, #cf6f4e);
     --teal: var(--v2-teal, #4f9f9a);
     --mint: #79d996;
     min-height: calc(100vh - 72px);
