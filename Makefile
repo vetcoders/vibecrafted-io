@@ -18,6 +18,13 @@ DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 UPSTREAM_ROOT ?= $(HOME)/Libraxis/vc-runtime/vibecrafted
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
 BUNDLE_ROOT   := $(CURDIR)/framework
+FRAMEWORK_RUNTIME_TESTS := \
+	framework/tests/tui/test_bundle.py \
+	framework/tests/tui/test_docs_links.py \
+	framework/tests/tui/test_install_bootstrap.py \
+	framework/tests/tui/test_installer_gui.py \
+	framework/tests/tui/test_makefile_installer_contract.py \
+	framework/tests/tui/test_release_contract.py
 
 .PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-preview site-build site-deploy site-deploy-pages site-release bundle-preview bundle-build bundle-sign content-truth
 
@@ -109,9 +116,9 @@ semgrep:
 
 test:
 	@if command -v uv >/dev/null 2>&1; then \
-		PYTHONPATH="$(SOURCE)" uv run --with pytest pytest tests/tui -q; \
+		PYTHONPATH="$(SOURCE)/framework" uv run --with pytest pytest $(FRAMEWORK_RUNTIME_TESTS) -q; \
 	else \
-		PYTHONPATH="$(SOURCE)" $(PYTHON) -m pytest tests/tui -q; \
+		PYTHONPATH="$(SOURCE)/framework" $(PYTHON) -m pytest $(FRAMEWORK_RUNTIME_TESTS) -q; \
 	fi
 
 update:

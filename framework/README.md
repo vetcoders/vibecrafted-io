@@ -102,8 +102,10 @@ Prefer the guided browser path when you are onboarding a founder, PM, or less te
 curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
 ```
 
+Both entrypoints use the same trust-first bootstrap: it explains what it will do and asks before proceeding on an attended terminal. Pass `--yes` when you
+want to pre-approve that bootstrap prompt.
+
 The guided path stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
-Attended runs pause before download, staging, or installer launch; add `--yes` only when you have already approved the bootstrap path and want one-shot execution.
 
 Use the direct compact path when you are scripting the install or you already know you want the terminal-only flow:
 
@@ -111,11 +113,8 @@ Use the direct compact path when you are scripting the install or you already kn
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
 
-Skip the attended bootstrap consent prompt explicitly only when that is intentional:
-
-```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --yes
-```
+The bootstrap prints the snapshot source, staging location, and next installer
+step before it stages or installs anything on your machine.
 
 Inside a local checkout, `make vibecrafted` opens the terminal-native installer wizard — the built-in `vetcoders-installer` runner driven from `install.toml`, with reason + consent per phase and cargo-style sticky progress. `make install` routes through the same runner with auto-approve, so automation and humans share one engine.
 
@@ -134,7 +133,7 @@ make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 ```bash
 cd $VIBECRAFTED_ROOT/your-project
 vibecrafted init claude
-vibecrafted justdo codex --prompt "Add JWT authentication"
+vibecrafted implement codex --prompt "Add JWT authentication"  # or: vibecrafted justdo (legacy alias)
 ```
 
 Type `vibecrafted help` for the command deck, or `vc-` and hit tab once the shell helpers are installed.
