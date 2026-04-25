@@ -227,7 +227,20 @@ BUNDLE_JUNK_EXCLUDES := \
 	--exclude=.DS_Store \
 	--exclude=__pycache__ \
 	--exclude=node_modules \
-	--exclude='*.pyc'
+	--exclude='*.pyc' \
+	--exclude=.ai-agents \
+	--exclude=.ai-context \
+	--exclude=.claude \
+	--exclude=.vibecrafted \
+	--exclude=.playwright-mcp \
+	--exclude=artifacts \
+	--exclude=dist \
+	--exclude=tmp \
+	--exclude='*.log' \
+	--exclude='*.audit*.md' \
+	--exclude='*.backup' \
+	--exclude='*.out' \
+	--exclude=aicx-dashboard.html
 
 BUNDLE_RELEASE_EXCLUDES := \
 	--exclude='vibecrafted-v*.tar.gz' \
@@ -253,6 +266,11 @@ bundle-preview:
 	      -x '.git' -x '.venv' -x '.pytest_cache' -x '.ruff_cache' \
 	      -x '.mypy_cache' -x '.idea' -x '.DS_Store' -x '__pycache__' \
 	      -x 'node_modules' -x '*.pyc' \
+	      -x '.ai-agents' -x '.ai-context' -x '.claude' \
+	      -x '.vibecrafted' -x '.playwright-mcp' \
+	      -x 'artifacts' -x 'dist' -x 'tmp' \
+	      -x '*.log' -x '*.audit*.md' -x '*.backup' -x '*.out' \
+	      -x 'aicx-dashboard.html' \
 	      -x 'vibecrafted-v*.tar.gz' -x 'vibecrafted-v*.tar.gz.sig' \
 	      -x 'install.sh.sig' -x 'SHA256SUMS' \
 	      -x 'vibecrafted-signing.pub' -x 'channel' \
