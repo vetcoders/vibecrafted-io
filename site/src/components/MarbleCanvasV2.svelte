@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import type { Lang } from '../lib/i18n';
 
   // ── Props ──────────────────────────────────────────────────────────
