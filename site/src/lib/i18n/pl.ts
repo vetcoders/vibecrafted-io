@@ -33,7 +33,7 @@ export const pl = {
   },
   footer: {
     ariaLabel: "Stopka strony",
-    brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
+    brand: "Vibecrafted.",
     byline: "with AI Agents by VetCoders",
     tagline:
       "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",

@@ -55,14 +55,28 @@
 
   $effect(() => {
     const nextRouteKey = `${lang}:${defaultSection}`;
-    if (nextRouteKey === previousRouteKey) return;
+    if (nextRouteKey !== previousRouteKey) {
+      previousRouteKey = nextRouteKey;
+      activeSection = defaultSection;
+      query = '';
+      activeIndex = -1;
+      focused = false;
+      inputEl?.blur();
+    }
+  });
 
-    previousRouteKey = nextRouteKey;
-    activeSection = defaultSection;
-    query = '';
-    activeIndex = -1;
-    focused = false;
-    inputEl?.blur();
+  $effect(() => {
+    const handlePageLoad = () => {
+      query = '';
+      activeIndex = -1;
+      focused = false;
+      inputEl?.blur();
+      activeSection = defaultSection;
+    };
+    document.addEventListener('astro:page-load', handlePageLoad);
+    return () => {
+      document.removeEventListener('astro:page-load', handlePageLoad);
+    };
   });
 
   $effect(() => {
