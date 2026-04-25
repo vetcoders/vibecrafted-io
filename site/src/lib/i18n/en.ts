@@ -62,55 +62,31 @@ export const en = {
       label: "The Method",
       title: "Craft → Converge → Ship",
       sub: "A founder-grade operating model for shaping, denoising, and finally releasing software with AI agents.",
-      mermaid: `%%{init: {
-  "theme": "base",
-  "themeVariables": {
-    "background": "#07111f",
-    "primaryColor": "#0b1526",
-    "primaryTextColor": "#f3efe7",
-    "primaryBorderColor": "#24324a",
-    "lineColor": "#d8894b",
-    "secondaryColor": "#101b2d",
-    "tertiaryColor": "#0d1728",
-    "clusterBkg": "#08111f",
-    "clusterBorder": "#2a3a55",
-    "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
-    "fontSize": "16px"
-  },
-  "flowchart": {
-    "curve": "basis",
-    "htmlLabels": true,
-    "nodeSpacing": 34,
-    "rankSpacing": 42
-  }
-} }%%
-flowchart LR
-    subgraph CRAFT["CRAFT"]
-        A["Scaffold"]
-        B["Init"]
-        C["Workflow"]
-        D["Follow-up"]
-        A --> B --> C --> D
-    end
-
-    D --> M{{"Marbles Loop"}}
-    M -->|reduce entropy| G["Resolve P0 / P1 / P2"]
-    G --> S1
-
-    subgraph SHIP["SHIP"]
-        S1["DoU"]
-        S2["Decorate"]
-        S3["Hydrate"]
-        S4["Release"]
-        S1 --> S2 --> S3 --> S4
-    end
-
-    classDef core fill:#0d1728,stroke:#d8894b,color:#f3efe7,stroke-width:1.5px;
-    classDef stage fill:#0a1322,stroke:#2b3a55,color:#f3efe7,stroke-width:1.2px;
-    classDef loop fill:#1a1110,stroke:#d8894b,color:#ffd9bd,stroke-width:2px;
-    class A,B,C,D,S1,S2,S3,S4 stage;
-    class M,G core;
-    class M loop;`,
+      hero: {
+        stages: [
+          { name: "Scaffold", subtitle: "prepare the surface" },
+          { name: "Craft", subtitle: "shape with agents" },
+          { name: "Convergence", subtitle: "collapse unresolveds", kind: "core" as const },
+          { name: "DoU", subtitle: "find what is still undone" },
+          { name: "Release", subtitle: "ship for strangers" },
+        ],
+      },
+      controls: {
+        expand: "Expand",
+        expandLabel: "Expand full pipeline",
+        source: "Source",
+        preview: "Preview",
+        split: "Split",
+        copy: "Copy",
+        copied: "Copied",
+        copyError: "Failed",
+        ariaSource: "Toggle Mermaid source",
+        ariaPreview: "Return to hero diagram",
+        ariaSplit: "Show source and technical preview side by side",
+        ariaCopy: "Copy Mermaid source to clipboard",
+        ariaCopiedFeedback: "Source copied to clipboard",
+        ariaCopyErrorFeedback: "Copy failed",
+      },
       mermaidFull: `%%{init: {
   "theme": "base",
   "themeVariables": {
@@ -121,91 +97,36 @@ flowchart LR
     "lineColor": "#d8894b",
     "secondaryColor": "#101b2d",
     "tertiaryColor": "#0d1728",
-    "clusterBkg": "#08111f",
-    "clusterBorder": "#344562",
     "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
-    "fontSize": "17px"
+    "fontSize": "16px"
   },
   "flowchart": {
     "curve": "basis",
     "htmlLabels": true,
-    "nodeSpacing": 42,
-    "rankSpacing": 56,
-    "padding": 20
+    "nodeSpacing": 32,
+    "rankSpacing": 46,
+    "padding": 14
   }
 } }%%
-flowchart TB
-    TITLE["Craft → Converge → Ship"]
-    SUB["A founder-grade operating model for shaping, denoising, and releasing AI-built software"]
+flowchart LR
+    A["Scaffold"] --> B["Init"]
+    B --> C["Workflow"]
+    C --> D["Follow-up"]
+    D --> E{{"Marbles Loop"}}
+    E --> F["DoU"]
+    F --> G["Decorate"]
+    G --> H["Hydrate"]
+    H --> I["Release"]
 
-    TITLE --> SUB
-    SUB --> ROW
-
-    ROW --> CRAFT
-    ROW --> CORE
-    ROW --> SHIP
-
-    subgraph CRAFT["CRAFT"]
-        direction TB
-        A1["Scaffold"]
-        A2["Init"]
-        A3["Workflow"]
-        A4["Follow-up"]
-        A1 --> A2 --> A3 --> A4
-    end
-
-    subgraph CORE["CONVERGE"]
-        direction TB
-        M{{"Marbles Loop"}}
-        C1["Collapse unresolveds"]
-        C2["Reduce entropy"]
-        C3["Increase runtime truth"]
-        M --> C1
-        C1 --> C2
-        C1 --> C3
-    end
-
-    subgraph SHIP["SHIP"]
-        direction TB
-        S1["DoU"]
-        S2["Decorate"]
-        S3["Hydrate"]
-        S4["Release"]
-        S1 --> S2 --> S3 --> S4
-    end
-
-    A4 --> M
-    C3 --> S1
-
-    T1["shape the surface"] --> A1
-    T2["load context"] --> A2
-    T3["execute with constraints"] --> A3
-    T4["tighten the edge"] --> A4
-
-    U1["discoverable"] --> S1
-    U2["installable"] --> S2
-    U3["trustable"] --> S3
-    U4["shippable"] --> S4
-
-    classDef title fill:#07111f,stroke:#07111f,color:#f3efe7,stroke-width:0px,font-size:34px,font-weight:bold;
-    classDef subtitle fill:#07111f,stroke:#07111f,color:#aeb8c8,stroke-width:0px,font-size:16px;
     classDef stage fill:#0d1728,stroke:#31415d,color:#f3efe7,stroke-width:1.3px;
     classDef core fill:#1a1110,stroke:#d8894b,color:#ffd9bd,stroke-width:2.2px;
-    classDef signal fill:#0b1526,stroke:#506483,color:#cfd8e8,stroke-width:1.05px;
-    classDef gain fill:#102017,stroke:#7ea786,color:#edf7ef,stroke-width:1.2px;
-
-    class TITLE title;
-    class SUB subtitle;
-    class A1,A2,A3,A4,S1,S2,S3,S4,C1,C2,C3 stage;
-    class M core;
-    class T1,T2,T3,T4 signal;
-    class U1,U2,U3,U4 gain;`,
+    class A,B,C,D,F,G,H,I stage;
+    class E core;`,
       mermaidModal: {
         open: "Expand full pipeline",
         close: "Close pipeline diagram",
-        title: "Full pipeline — Craft → Converge → Ship",
+        title: "Full pipeline — Scaffold → Marbles → Release",
       },
-      highlighted: "",
       notes: [
         {
           title: "Craft",
