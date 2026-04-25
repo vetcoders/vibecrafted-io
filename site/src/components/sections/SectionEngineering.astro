@@ -1,0 +1,141 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import EngineeringCard from '../EngineeringCard.svelte';
+
+interface Axiom {
+  num: string;
+  title: string;
+  body: string;
+  bullets: string[];
+  accent: 'default' | 'rust' | 'teal';
+}
+
+const detailsLabel = 'OPERATIONAL CONSEQUENCE';
+
+const axioms: Axiom[] = [
+  {
+    num: '01',
+    accent: 'default',
+    title: 'AST-Augmented Context',
+    body: 'LLMs hallucinate when they code blind. By externalizing architectural memory into AST-augmented mappings, Vibecrafted keeps frontier models oriented precisely inside your codebase.',
+    bullets: [
+      'Loctree and adjacent structural maps turn the repo into navigable terrain before edits start.',
+      'The agent works against named files, blast radius, and symbol topology instead of drifting through grep haze.',
+      'That lowers false confidence: if the structure disagrees with the prompt, structure wins.',
+    ],
+  },
+  {
+    num: '02',
+    accent: 'rust',
+    title: 'Stochastic Convergence',
+    body: 'Code generation is stochastic. The Marbles loop uses priority-weighted denoising loops to relentlessly reduce variance, forcing the system into a shippable state.',
+    bullets: [
+      'One run is not evidence. The loop keeps cutting the highest-risk lie until the runtime surface agrees with the promise.',
+      'Early loops remove structural falsehoods; later loops compress roughness into a calmer, more repeatable product shape.',
+      'The target is not "nice output" but a state where P0/P1/P2 issues converge toward zero.',
+    ],
+  },
+  {
+    num: '03',
+    accent: 'teal',
+    title: 'Vibecraftsmanship',
+    body: 'Structured Human-AI Collaborative Engineering. We wrap deterministic human checkpoints around stochastic generation. The result is a system you control, trust, and understand.',
+    bullets: [
+      'Humans do not compete with the model on typing speed; they own scope, truth checks, and irreversible decisions.',
+      'Agents get room for deep fieldwork, but gates, review artifacts, and runtime proof keep the final shape accountable.',
+      'That is why the product can feel vivid without becoming mystical: the craft stays inspectable.',
+    ],
+  },
+];
+---
+
+<SectionShell
+  number="02"
+  title="ENGINEERING"
+  centerLabel="AXIOMS · METHOD"
+  figure="02 · DWG VC-002"
+  surface="ink"
+  seam="to-ink"
+  id="engineering"
+>
+  <div class="eng">
+    <h2 class="eng__heading">
+      This is not magic.<br />
+      It's <em class="accent">rigorous engineering.</em>
+    </h2>
+    <p class="eng__subtitle">
+      The vocabulary is vivid because it was forged under midnight pressure. Beneath the vibe sits a rigorous operating model for context, variance reduction, and release truth.
+    </p>
+
+    <div class="eng__grid">
+      {axioms.map((axiom) => (
+        <EngineeringCard
+          client:visible
+          num={axiom.num}
+          title={axiom.title}
+          body={axiom.body}
+          bullets={axiom.bullets}
+          detailsLabel={detailsLabel}
+          accent={axiom.accent}
+        />
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="03" nextTitle="THE SHIFT" surface="ink" />
+</SectionShell>
+
+<style>
+  .eng__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.8vw, 72px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 24px;
+    text-align: center;
+  }
+
+  .eng__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .eng__subtitle {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 64ch;
+    margin: 0 auto 72px;
+    text-align: center;
+  }
+
+  .eng__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .eng__grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .eng__heading {
+      text-align: left;
+    }
+
+    .eng__subtitle {
+      text-align: left;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+</style>

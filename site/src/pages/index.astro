@@ -1,14 +1,29 @@
 ---
-import { getEntry, render } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-
-const entry = await getEntry('pages', 'en');
-if (!entry) {
-  throw new Error("Content entry not found: en");
-}
-const { Content } = await render(entry);
+import LayoutV2 from '../layouts/LayoutV2.astro';
+import HeroSectionV2 from '../components/sections/HeroSectionV2.svelte';
+import SectionProblem from '../components/sections/SectionProblem.astro';
+import SectionShift from '../components/sections/SectionShift.astro';
+import SectionFramework from '../components/sections/SectionFramework.astro';
+import SectionOperator from '../components/sections/SectionOperator.astro';
+import SectionQuickstart from '../components/sections/SectionQuickstart.astro';
+import SectionReferences from '../components/sections/SectionReferences.astro';
+import SectionEvidence from '../components/sections/SectionEvidence.astro';
+import SectionEngineering from '../components/sections/SectionEngineering.astro';
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} lang="en">
-    <Content />
-</Layout>
+<LayoutV2
+  title="Vibecrafted — Ship software with AI agents that actually converge."
+  description="Release engine for AI-built software. Ship AI-built software without the vibe hangover."
+  lang="en"
+  hasHero={true}
+>
+  <HeroSectionV2 client:load lang="en" />
+  <SectionProblem />
+  <SectionEngineering />
+  <SectionShift />
+  <SectionFramework />
+  <SectionOperator />
+  <SectionQuickstart />
+  <SectionReferences />
+  <SectionEvidence />
+</LayoutV2>

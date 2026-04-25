@@ -1,0 +1,309 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import BoardPreview from '../BoardPreview.svelte';
+
+const installSteps = [
+  {
+    step: 'STEP 01',
+    command: '$ curl -fsSL vibecrafted.io/install.sh | bash',
+    note: 'One-shot bootstrap. No shell config required.',
+  },
+  {
+    step: 'STEP 02',
+    command: '$ vibecrafted init my-project',
+    note: 'Scaffolds the board. Picks shape based on repo signals.',
+  },
+  {
+    step: 'STEP 03',
+    command: '$ vibecrafted throw --phase scaffold',
+    note: 'Starts phase 00. The first contract gets written.',
+  },
+];
+
+const bullets = [
+  {
+    title: 'Persistent state.',
+    body: "Artifacts live under $VIBECRAFTED_ROOT/. Not your shell history. Not your IDE's memory.",
+  },
+  {
+    title: 'Replayable throws.',
+    body: 'Every marble carries how, when, and under which contract. Rewind any phase.',
+  },
+  {
+    title: 'Auditable convergence.',
+    body: 'DoU is a first-class object. The board knows what is unconverged before you ask.',
+  },
+];
+
+const practices = [
+  'ONE BOARD PER THROW',
+  'CONTRACTS OVER PROMPTS',
+  'STATE IS AN ARTIFACT',
+  'CONVERGENCE IS MEASURABLE',
+];
+---
+
+<SectionShell
+  number="05"
+  title="THE OPERATOR"
+  centerLabel="INSTALL · RUN · OBSERVE"
+  figure="05 · DWG VC-005"
+  surface="paper"
+  seam="to-paper"
+  id="operator"
+>
+  <div class="op">
+    <h2 class="op__heading">
+      Install <em>once.</em> Throw <em class="accent-2">forever.</em>
+    </h2>
+
+    <div class="op__install">
+      {installSteps.map((item) => (
+        <div class="op__install-col">
+          <span class="op__install-step">{item.step}</span>
+          <code class="op__install-cmd">{item.command}</code>
+          <span class="op__install-note">{item.note}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="op__shot">
+      <div class="op__shot-left">
+        <h3 class="op__shot-heading">
+          Your agent now has a <em class="accent-2">board.</em>
+        </h3>
+        <p class="op__shot-body">
+          Every throw leaves a trace. Every trace carries context. The same board opens for every agent, every session — until convergence.
+        </p>
+
+        <ul class="op__bullets">
+          {bullets.map((bullet) => (
+            <li>
+              <strong class="op__bullet-title">{bullet.title}</strong>
+              <span class="op__bullet-body">{bullet.body}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="op__shot-right">
+        <BoardPreview client:visible />
+      </div>
+    </div>
+
+    <div class="op__practices">
+      <span class="op__practices-label">OPERATOR PRACTICES</span>
+      {practices.map((practice) => (
+        <span class="op__practice">{practice}</span>
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="06" nextTitle="QUICKSTART" surface="paper" />
+</SectionShell>
+
+<style>
+  .op__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 80px);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-paper);
+    margin: 0 0 72px;
+  }
+
+  .op__heading em {
+    font-style: italic;
+  }
+
+  .op__heading em.accent-2 {
+    color: var(--accent-2);
+  }
+
+  .op__install {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    margin-bottom: 96px;
+  }
+
+  .op__install-col {
+    padding: 20px 22px;
+    border-right: 1px solid var(--rule-paper);
+  }
+
+  .op__install-col:last-child {
+    border-right: none;
+  }
+
+  .op__install-step {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 10px;
+  }
+
+  .op__install-cmd {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-paper);
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 2px 0;
+  }
+
+  .op__install-note {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--fg-on-paper-dim);
+    margin-top: 10px;
+  }
+
+  .op__shot {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 64px;
+    align-items: start;
+    margin-bottom: 96px;
+  }
+
+  .op__shot-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 56px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--fg-on-paper);
+    margin: 0 0 20px;
+  }
+
+  .op__shot-heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .op__shot-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 44ch;
+    margin: 0 0 28px;
+  }
+
+  .op__bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .op__bullets li {
+    position: relative;
+    padding-left: 18px;
+    padding-top: 6px;
+  }
+
+  .op__bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .op__bullet-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--fg-on-paper);
+    margin-right: 6px;
+  }
+
+  .op__bullet-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+  }
+
+  .op__practices {
+    display: grid;
+    grid-template-columns: auto repeat(4, 1fr);
+    gap: 16px;
+    align-items: center;
+    border-top: 1px solid var(--rule-paper-soft);
+    padding-top: 28px;
+  }
+
+  .op__practices-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+  }
+
+  .op__practice {
+    padding: 8px 12px;
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-dim);
+    text-align: center;
+  }
+
+  @media (max-width: 980px) {
+    .op__install {
+      grid-template-columns: 1fr;
+    }
+
+    .op__install-col {
+      border-right: none;
+      border-bottom: 1px solid var(--rule-paper);
+    }
+
+    .op__install-col:last-child {
+      border-bottom: none;
+    }
+
+    .op__shot {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .op__practices {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .op__practices-label {
+      grid-column: 1 / -1;
+      margin-bottom: 4px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .op__practices {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

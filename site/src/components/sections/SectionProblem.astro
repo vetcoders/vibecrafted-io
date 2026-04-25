@@ -1,0 +1,102 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+---
+
+<SectionShell
+  number="01"
+  title="THE PROBLEM"
+  centerLabel="OBSERVED 2024–2026"
+  figure="01"
+  surface="paper"
+  seam="to-paper"
+  id="about"
+>
+  <div class="problem">
+    <div class="problem__col problem__col--heading">
+      <h2 class="problem__heading">
+        When you throw <em class="accent">enough agents</em> at a codebase,<br />
+        most marbles miss<br />
+        the holes.
+      </h2>
+      <p class="problem__body">
+        The ones that land do so by accident. The ones that don't become tomorrow's technical debt — files nobody owns, branches nobody remembers, tests nobody runs.
+      </p>
+    </div>
+
+    <div class="problem__col">
+      <span class="problem__symptom-label">Symptom A</span>
+      <p class="problem__symptom-body">
+        Agent sessions diverge. Three attempts, three architectures, zero shared vocabulary. The "merge" is a human, and that human is you.
+      </p>
+    </div>
+
+    <div class="problem__col">
+      <span class="problem__symptom-label">Symptom B</span>
+      <p class="problem__symptom-body">
+        No sense of "done". Features keep getting re-implemented because no agent knows which slots are already filled. Coverage is a vibe, not a number.
+      </p>
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="02" nextTitle="ENGINEERING" surface="paper" />
+</SectionShell>
+
+<style>
+  .problem {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .problem__heading {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4.2vw, 62px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-paper);
+    margin: 0 0 24px;
+  }
+
+  .problem__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .problem__body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 34ch;
+    margin: 0;
+  }
+
+  .problem__symptom-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 14px;
+  }
+
+  .problem__symptom-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .problem {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

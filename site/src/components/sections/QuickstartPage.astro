@@ -1,0 +1,692 @@
+---
+import { getTranslations, type Lang } from '../../lib/i18n';
+import CopyButton from '../CopyButton.svelte';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const t = getTranslations(lang);
+const hero = t.sections.quickstartHero;
+const stepsData = t.sections.quickstartSteps.steps;
+const resources = t.sections.quickstartResources;
+
+const langPrefix = lang === 'pl' ? '/pl' : '/en';
+
+interface StepItem {
+  kicker: string;
+  title: string;
+  body: string;
+  command?: string;
+  commands?: string[];
+  note: string;
+}
+const steps = stepsData as readonly StepItem[];
+
+// Title rendered with V2 brand grammar (Instrument Serif italic + accent colors).
+// Legacy i18n uses unicode wordmark — V2 uses plain "Vibecrafted." for proper Instrument Serif rendering.
+const titleByLang: Record<Lang, { pre: string; emFirst: string; mid: string; brand: string; emLast: string; tail: string }> = {
+  en: { pre: 'From zero to your ', emFirst: 'first', mid: ' Vibecrafted ', brand: '', emLast: 'loop.', tail: '' },
+  pl: { pre: 'Od zera do twojej ', emFirst: 'pierwszej', mid: ' Vibecrafted ', brand: '', emLast: 'pętli.', tail: '' },
+};
+const heroTitle = titleByLang[lang];
+
+const ctas = {
+  back: hero.primaryLabel,
+  framework: hero.secondaryLabel,
+};
+---
+
+<section class="qspage" id="quickstart">
+  <div class="qspage__inner">
+
+    {/* ── Hero block ───────────────────────────────────────── */}
+    <header class="qspage__hero">
+      <div class="qspage__eyebrow-row">
+        <span class="qspage__eyebrow">QUICK START</span>
+        <span class="qspage__fig">FIG. 09 · DWG VC-009</span>
+      </div>
+      <div class="qspage__rule" aria-hidden="true"></div>
+
+      <h1 class="qspage__title">
+        {heroTitle.pre}<em class="accent">{heroTitle.emFirst}</em>{heroTitle.mid}<em class="accent-2">{heroTitle.emLast}</em>
+      </h1>
+
+      <p class="qspage__lead">{hero.lead}</p>
+
+      <p class="qspage__quote">
+        <em>{hero.quote}</em>
+      </p>
+
+      <div class="qspage__cta-row">
+        <a class="qspage__cta qspage__cta--ghost" href={hero.primaryHref}>
+          <span aria-hidden="true">←</span> {ctas.back}
+        </a>
+        <a class="qspage__cta qspage__cta--accent" href={hero.secondaryHref}>
+          {ctas.framework} <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </header>
+
+    {/* ── Steps block ──────────────────────────────────────── */}
+    <section class="qspage__steps-block" aria-label="Steps">
+      <div class="qspage__section-eyebrow-row">
+        <span class="qspage__section-eyebrow">STEPS · 06 STAGES</span>
+        <span class="qspage__section-fig">INSTALL → SHIP</span>
+      </div>
+      <div class="qspage__rule" aria-hidden="true"></div>
+
+      <ol class="qspage__steps">
+        {steps.map((step, i) => {
+          const stepNum = String(i + 1).padStart(2, '0');
+          const accentClass =
+            i <= 1 ? 'qspage__step--copper'
+            : i <= 3 ? 'qspage__step--steel'
+            : 'qspage__step--teal';
+          const cmds = step.commands ?? (step.command ? [step.command] : []);
+          return (
+            <li class={`qspage__step ${accentClass}`}>
+              <div class="qspage__step-head">
+                <span class="qspage__step-num">§ {stepNum}</span>
+                <span class="qspage__step-kicker">{step.kicker}</span>
+              </div>
+
+              <h2 class="qspage__step-title">{step.title}</h2>
+
+              <p class="qspage__step-body" set:html={step.body}></p>
+
+              {cmds.length > 0 && (
+                <div class="qspage__cmd-stack">
+                  {cmds.map((cmd) => (
+                    <div class="qspage__cmd-box">
+                      <code class="qspage__cmd">$ {cmd}</code>
+                      <CopyButton
+                        client:load
+                        textToCopy={cmd}
+                        class="qspage__copy"
+                        defaultLabel="COPY"
+                        copiedLabel="✓ COPIED"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <p class="qspage__step-note" set:html={step.note}></p>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+
+    {/* ── Resources block ──────────────────────────────────── */}
+    <section class="qspage__resources" aria-label="Resources">
+      <div class="qspage__section-eyebrow-row">
+        <span class="qspage__section-eyebrow">FOUNDATIONS · CANONICAL SOURCES</span>
+        <span class="qspage__section-fig">PREREQ → SURFACE</span>
+      </div>
+      <div class="qspage__rule" aria-hidden="true"></div>
+
+      <div class="qspage__res-grid">
+        {resources.cards.map((card) => (
+          <article class="qspage__res-card">
+            <span class="qspage__res-kicker">{card.kicker}</span>
+            <h3 class="qspage__res-title">{card.title}</h3>
+            <ul class="qspage__res-list">
+              {card.items.map((item) => (
+                <li class="qspage__res-item" set:html={item}></li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+
+      <div class="qspage__links-block">
+        <span class="qspage__links-label">{resources.sourceLabel}</span>
+        <div class="qspage__links-row">
+          {resources.links.map((link) => (
+            <a class="qspage__link" href={link.href} rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined} target={link.href.startsWith('http') ? '_blank' : undefined}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="qspage__next">
+        <div class="qspage__next-head">
+          <span class="qspage__next-label">{resources.nextStep.label}</span>
+          <span class="qspage__next-arrow" aria-hidden="true">→</span>
+        </div>
+        <p class="qspage__next-lead">{resources.nextStep.lead}</p>
+        <div class="qspage__next-links">
+          <a class="qspage__next-link" href={`${langPrefix}/faq/`}>
+            {resources.nextStep.faq} <span aria-hidden="true">→</span>
+          </a>
+          <a class="qspage__next-link" href={`${langPrefix}/#about`}>
+            {resources.nextStep.foundation} <span aria-hidden="true">→</span>
+          </a>
+          <a class="qspage__next-link" href={`${langPrefix}/`}>
+            {resources.nextStep.overview} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</section>
+
+<style>
+  .qspage {
+    width: 100%;
+    background: var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .qspage__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ── Eyebrow rows + rules (shared with sections) ──────── */
+
+  .qspage__eyebrow-row,
+  .qspage__section-eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .qspage__eyebrow,
+  .qspage__section-eyebrow {
+    color: var(--fg-on-dark-mute);
+  }
+
+  .qspage__fig,
+  .qspage__section-fig {
+    justify-self: end;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .qspage__rule {
+    height: 1px;
+    background: var(--rule-dark);
+    margin-bottom: 40px;
+  }
+
+  /* ── Hero block ───────────────────────────────────────── */
+
+  .qspage__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(44px, 6vw, 96px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 32px;
+    max-width: 24ch;
+  }
+
+  .qspage__title em {
+    font-style: italic;
+  }
+
+  .qspage__title em.accent {
+    color: var(--accent);
+  }
+
+  .qspage__title em.accent-2 {
+    color: var(--accent-2);
+  }
+
+  .qspage__lead {
+    font-family: var(--font-body);
+    font-size: clamp(15px, 1.15vw, 18px);
+    line-height: 1.6;
+    color: var(--fg-on-dark-dim);
+    margin: 0 0 18px;
+    max-width: 64ch;
+  }
+
+  .qspage__quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--fg-on-dark);
+    margin: 0 0 36px;
+    padding-left: 16px;
+    border-left: 2px solid var(--accent);
+    max-width: 56ch;
+  }
+
+  .qspage__quote em {
+    font-style: italic;
+  }
+
+  .qspage__cta-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin: 0 0 96px;
+  }
+
+  .qspage__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .qspage__cta:hover,
+  .qspage__cta:focus-visible {
+    transform: translateY(-1px);
+  }
+
+  .qspage__cta--ghost {
+    background: transparent;
+    color: var(--fg-on-dark);
+    border: 1px solid rgba(245, 244, 239, 0.28);
+  }
+
+  .qspage__cta--ghost:hover,
+  .qspage__cta--ghost:focus-visible {
+    border-color: var(--fg-on-dark);
+  }
+
+  .qspage__cta--accent {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(217, 119, 87, 0.55);
+  }
+
+  .qspage__cta--accent:hover,
+  .qspage__cta--accent:focus-visible {
+    background: rgba(217, 119, 87, 0.06);
+    border-color: var(--accent);
+  }
+
+  /* ── Steps block ──────────────────────────────────────── */
+
+  .qspage__steps-block {
+    margin: 0 0 96px;
+  }
+
+  .qspage__steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .qspage__step {
+    position: relative;
+    padding-left: 0;
+    border-top: 1px solid var(--rule-dark-soft);
+    padding-top: 32px;
+  }
+
+  .qspage__step:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .qspage__step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin-bottom: 10px;
+  }
+
+  .qspage__step-num {
+    color: var(--fg-on-dark);
+    letter-spacing: 0.14em;
+  }
+
+  .qspage__step--copper .qspage__step-num {
+    color: var(--accent);
+  }
+  .qspage__step--teal .qspage__step-num {
+    color: var(--accent-2);
+  }
+
+  .qspage__step-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--fg-on-dark);
+    margin: 0 0 16px;
+  }
+
+  .qspage__step-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--fg-on-dark-dim);
+    max-width: 64ch;
+    margin: 0 0 22px;
+  }
+
+  .qspage__step-body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-dark);
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid var(--rule-dark-soft);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+
+  .qspage__cmd-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 22px;
+    max-width: 100%;
+  }
+
+  .qspage__cmd-box {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--rule-dark);
+    background: rgba(0, 0, 0, 0.36);
+    border-radius: 2px;
+  }
+
+  .qspage__cmd {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-dark);
+    overflow-x: auto;
+    white-space: pre;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .qspage__cmd::-webkit-scrollbar {
+    display: none;
+  }
+
+  .qspage__step-note {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    margin: 0;
+    max-width: 60ch;
+    opacity: 0.85;
+  }
+
+  .qspage__step-note :global(code) {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--fg-on-dark);
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid var(--rule-dark-soft);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  /* CopyButton override — V2 voice (small mono pill, rust border) */
+  :global(.qspage__copy) {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(217, 119, 87, 0.55);
+    color: var(--accent);
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  :global(.qspage__copy:hover),
+  :global(.qspage__copy:focus-visible) {
+    background: rgba(217, 119, 87, 0.08);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ── Resources block ──────────────────────────────────── */
+
+  .qspage__resources {
+    margin-top: 96px;
+  }
+
+  .qspage__res-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 0 0 56px;
+  }
+
+  .qspage__res-card {
+    border: 1px solid var(--rule-dark);
+    background: rgba(14, 14, 12, 0.5);
+    padding: 28px 28px 24px;
+    border-radius: 2px;
+  }
+
+  .qspage__res-kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin-bottom: 8px;
+  }
+
+  .qspage__res-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--fg-on-dark);
+    margin: 0 0 18px;
+  }
+
+  .qspage__res-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .qspage__res-item {
+    position: relative;
+    padding-left: 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+  }
+
+  .qspage__res-item::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .qspage__res-item :global(code) {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--fg-on-dark);
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid var(--rule-dark-soft);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  /* ── Links block ──────────────────────────────────────── */
+
+  .qspage__links-block {
+    margin: 0 0 56px;
+    padding: 28px 0;
+    border-top: 1px solid var(--rule-dark-soft);
+    border-bottom: 1px solid var(--rule-dark-soft);
+  }
+
+  .qspage__links-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin-bottom: 16px;
+  }
+
+  .qspage__links-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .qspage__link {
+    padding: 8px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-dim);
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .qspage__link:hover,
+  .qspage__link:focus-visible {
+    color: var(--accent);
+    border-color: rgba(217, 119, 87, 0.5);
+    background: rgba(217, 119, 87, 0.04);
+  }
+
+  /* ── Next-step nudge ──────────────────────────────────── */
+
+  .qspage__next {
+    padding-top: 8px;
+  }
+
+  .qspage__next-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .qspage__next-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .qspage__next-arrow {
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  .qspage__next-lead {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    margin: 0 0 18px;
+    max-width: 60ch;
+  }
+
+  .qspage__next-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .qspage__next-link {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--fg-on-dark);
+    transition: color 0.15s ease;
+  }
+
+  .qspage__next-link:hover,
+  .qspage__next-link:focus-visible {
+    color: var(--accent);
+  }
+
+  /* ── Responsive ──────────────────────────────────────── */
+
+  @media (max-width: 900px) {
+    .qspage {
+      padding: 64px 0 88px;
+    }
+    .qspage__inner {
+      padding: 0 24px;
+    }
+    .qspage__title {
+      max-width: none;
+    }
+    .qspage__cta-row {
+      margin-bottom: 64px;
+    }
+    .qspage__steps {
+      gap: 40px;
+    }
+    .qspage__steps-block,
+    .qspage__resources {
+      margin: 0 0 64px;
+    }
+    .qspage__res-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .qspage__cmd-box {
+      grid-template-columns: 1fr;
+    }
+    :global(.qspage__copy) {
+      justify-self: start;
+    }
+  }
+</style>

@@ -13,6 +13,9 @@
  */
 import { ClientRouter } from 'astro:transitions';
 import type { Lang } from '../lib/i18n';
+import SiteNavV2 from '../components/SiteNavV2.svelte';
+import SiteFooterV2 from '../components/SiteFooterV2.svelte';
+import SearchShellV2 from '../components/SearchShellV2.svelte';
 import '../styles/tokens-v2.css';
 
 interface Props {
@@ -21,6 +24,10 @@ interface Props {
   lang?: Lang;
   ogImage?: string;
   ogType?: string;
+  /** When true, the page opens with a full-viewport hero that owns its own top
+   * spacing — no top padding is applied to <main>. Subpages should leave this
+   * false so the fixed nav doesn't overlap their content. */
+  hasHero?: boolean;
 }
 
 const {
@@ -29,7 +36,20 @@ const {
   lang = 'en',
   ogImage = '/presence/og-image.png',
   ogType = 'website',
+  hasHero = false,
 } = Astro.props as Props;
+
+const currentPath = Astro.url.pathname;
+
+function computeToggleHref(path: string, currentLang: Lang): string {
+  if (currentLang === 'pl') {
+    return path.replace(/^\/pl\//, '/en/').replace(/^\/pl$/, '/en/');
+  }
+  if (path === '/' || path === '') return '/pl/';
+  return path.replace(/^\/en\//, '/pl/').replace(/^\/en$/, '/pl/');
+}
+
+const toggleHref = computeToggleHref(currentPath, lang);
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
 const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
@@ -115,13 +135,26 @@ const jsonLd = JSON.stringify({
   <script is:inline type="application/ld+json" set:html={jsonLd} />
   <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
 </head>
-<body class="v2-scope" data-lang={lang}>
-  <slot />
+<body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
+  <SiteNavV2 client:load lang={lang} currentPath={currentPath} toggleHref={toggleHref} />
+  <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
+    <slot />
+  </main>
+  <SiteFooterV2 client:load lang={lang} />
+  <SearchShellV2 client:load lang={lang} />
 </body>
 </html>
 
 <style is:global>
-  /* ── V2 body baseline ───────────────────────────────────── */
+  /* ── V2 root + body baseline ────────────────────────────── */
+  /* Apply ink background as early as possible — html paints before body so
+   * we avoid the brief white flash that otherwise leaks through the fixed
+   * nav's semi-transparent background, and avoids any "white strip" between
+   * nav and first section during view-transitions. */
+  html:has(body.v2-scope) {
+    background: #0e0e0c;
+  }
+
   body.v2-scope {
     margin: 0;
     padding: 0;
@@ -165,5 +198,17 @@ const jsonLd = JSON.stringify({
   body.v2-scope button {
     font-family: inherit;
     cursor: pointer;
+  }
+
+  /* V2 main shell — landing has full-viewport hero (no top padding), subpages
+   * need clearance for the fixed SiteNavV2 (~72px tall). Explicit ink bg so
+   * the area beneath the fixed nav is never empty/white during scroll or
+   * view-transitions. */
+  body.v2-scope .v2-main {
+    display: block;
+    background: var(--v2-ink);
+  }
+  body.v2-scope .v2-main--subpage {
+    padding-top: 72px;
   }
 </style>

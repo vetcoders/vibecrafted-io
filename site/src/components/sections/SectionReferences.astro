@@ -1,0 +1,233 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+
+interface Props {
+  lang?: 'en' | 'pl';
+}
+
+const { lang = 'en' } = Astro.props;
+
+interface Reference {
+  num: string;
+  author: string;
+  title: string;
+  venue: string;
+  note: string;
+}
+
+const references_en: Reference[] = [
+  {
+    num: '01',
+    author: 'Brooks.',
+    title: 'The Mythical Man-Month.',
+    venue: 'Addison-Wesley, 1975',
+    note: "The original observation that adding throw-power without coordination makes things worse, not faster. Convergence is the answer to that math.",
+  },
+  {
+    num: '02',
+    author: 'Ousterhout.',
+    title: 'A Philosophy of Software Design.',
+    venue: 'Yaknyam Press, 2018',
+    note: 'Deep modules over shallow APIs — the principle behind why each operator owns one sharp protocol, not a thousand prompts.',
+  },
+  {
+    num: '03',
+    author: 'Mitchell et al.',
+    title: 'Model Cards for Model Reporting.',
+    venue: 'FAccT 2019',
+    note: 'Documenting what a system can and cannot do before it ships. DoU is this idea, applied to a build instead of a model.',
+  },
+  {
+    num: '04',
+    author: 'Gebru.',
+    title: 'Datasheets for Datasets.',
+    venue: 'Communications of the ACM, 2021',
+    note: 'Every input declares its scope upfront. The board makes the same demand of every throw — declare contract before code.',
+  },
+  {
+    num: '05',
+    author: 'Bender et al.',
+    title: 'On the Dangers of Stochastic Parrots.',
+    venue: 'FAccT 2021',
+    note: "Why scaling alone doesn't yield understanding — surface fluency without grounded truth doesn't ship.",
+  },
+  {
+    num: '06',
+    author: 'Hooker.',
+    title: 'The Hardware Lottery.',
+    venue: 'Communications of the ACM, 2021',
+    note: 'Runtime substrate decides which ideas survive. Convergence systems need predictable execution, not just smart prompts.',
+  },
+];
+
+const references_pl: Reference[] = [
+  {
+    num: '01',
+    author: 'Brooks.',
+    title: 'The Mythical Man-Month.',
+    venue: 'Addison-Wesley, 1975',
+    note: 'Pierwotna obserwacja była prosta: dorzucenie większej siły bez koordynacji nie przyspiesza pracy, tylko ją pogarsza. W vibecrafted. odpowiedzią na ten problem jest konwergencja, czyli systemowe domykanie wariancji zamiast dokładania kolejnego chaosu.',
+  },
+  {
+    num: '02',
+    author: 'Ousterhout.',
+    title: 'A Philosophy of Software Design.',
+    venue: 'Yaknyam Press, 2018',
+    note: 'Głębokie moduły są lepsze niż płytkie API, bo niosą większą sprawczość przy mniejszym narzucie. W vibecrafted. ta zasada wraca w operatorach: każdy ma jeden ostry protokół, a nie tysiąc luźnych promptów.',
+  },
+  {
+    num: '03',
+    author: 'Mitchell et al.',
+    title: 'Model Cards for Model Reporting.',
+    venue: 'FAccT 2019',
+    note: 'Zanim system trafi do ludzi, trzeba jasno opisać, co potrafi, a czego nie. DoU robi podobną robotę dla buildu: nie ocenia tylko tego, czy działa, ale też czy da się go znaleźć, zrozumieć i sensownie wypuścić.',
+  },
+  {
+    num: '04',
+    author: 'Gebru.',
+    title: 'Datasheets for Datasets.',
+    venue: 'Communications of the ACM, 2021',
+    note: 'Każdy zbiór danych powinien mieć zdefiniowane pochodzenie, zakres możliwości i ograniczenia — jeszcze zanim ktokolwiek zacznie go używać. Board w vibecrafted. wymaga tego samego od każdego rzutu: kontrakt deklarujesz przed kodem, nie po nim.',
+  },
+  {
+    num: '05',
+    author: 'Bender et al.',
+    title: 'On the Dangers of Stochastic Parrots.',
+    venue: 'FAccT 2021',
+    note: 'Sama skala nie produkuje rozumienia — płynność powierzchniowa bez ugruntowania w rzeczywistości to nie jest produkt, który się wypuszcza. Konwergencja istnieje właśnie po to, żeby odróżnić jedno od drugiego.',
+  },
+  {
+    num: '06',
+    author: 'Hooker.',
+    title: 'The Hardware Lottery.',
+    venue: 'Communications of the ACM, 2021',
+    note: 'To, jaki masz runtime i środowisko wykonania, decyduje o tym, które pomysły mają szansę przetrwać. System konwergencji potrzebuje przewidywalnego podłoża, nie tylko sprytnych promptów.',
+  },
+];
+
+const references: Reference[] = lang === 'pl' ? references_pl : references_en;
+---
+
+<SectionShell
+  number="07"
+  title="REFERENCES"
+  centerLabel="RESEARCH · FIELD NOTES"
+  figure="07 · DWG VC-007"
+  surface="ink"
+  seam="soft"
+  id="references"
+>
+  <div class="refs">
+    <h2 class="refs__heading">
+      What we <em>read</em> before we built.
+    </h2>
+    <p class="refs__subtitle">
+      The convergence framework is the synthesis of research on agent handoffs, release gates, and runtime contracts. Sources below — consult before adopting.
+    </p>
+
+    <div class="refs__grid">
+      {references.map((reference) => (
+        <article class="refs__item">
+          <span class="refs__num">REF · {reference.num}</span>
+          <span class="refs__author">{reference.author}</span>
+          <span class="refs__title">{reference.title}</span>
+          <span class="refs__venue">{reference.venue}</span>
+          <span class="refs__note">{reference.note}</span>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="08" nextTitle="EVIDENCE" surface="ink" />
+</SectionShell>
+
+<style>
+  .refs__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.8vw, 72px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 32px;
+  }
+
+  .refs__heading em {
+    font-style: italic;
+  }
+
+  .refs__subtitle {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 60ch;
+    margin: 0 0 72px;
+  }
+
+  .refs__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    border-top: 1px solid var(--rule-dark-soft);
+  }
+
+  .refs__item {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule-dark-soft);
+  }
+
+  .refs__num {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .refs__author {
+    display: block;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--fg-on-dark);
+    margin-top: 4px;
+  }
+
+  .refs__title {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.3;
+    color: var(--fg-on-dark);
+    margin: 2px 0 8px;
+  }
+
+  .refs__venue {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--fg-on-dark-dim);
+  }
+
+  .refs__note {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 40ch;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .refs__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+</style>

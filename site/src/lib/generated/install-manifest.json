@@ -18,7 +18,10 @@
       "key": "installation",
       "label": "Installation",
       "reason": "We will install:\n  - Missing dependencies\n  - Workflows (9 basic, 7 advanced)\n  - Helpers and binaries (executables and functions)\n",
-      "cmd": ["bash", "scripts/install-foundations.sh"]
+      "cmd": [
+        "bash",
+        "scripts/install-foundations.sh"
+      ]
     },
     {
       "key": "post-install",
@@ -34,7 +37,11 @@
       "key": "verification",
       "label": "Verification and quick tour",
       "reason": "We will run `vibecrafted doctor` and surface the quick tour of\nthe framework's most useful commands.\n",
-      "cmd": ["python3", "scripts/vetcoders_install.py", "doctor"],
+      "cmd": [
+        "python3",
+        "scripts/vetcoders_install.py",
+        "doctor"
+      ],
       "optional": true
     }
   ],
@@ -54,15 +61,37 @@
       "additional_tools": "Additional tools"
     },
     "commands": {
-      "foundations": ["loctree-mcp", "aicx-mcp", "prview", "screenscribe"],
-      "toolchains": ["python3", "node", "git", "rsync"],
-      "agents": ["claude", "codex", "gemini"],
-      "additional_tools": ["mise", "starship", "atuin", "zoxide"]
+      "foundations": [
+        "loctree-mcp",
+        "aicx-mcp",
+        "prview",
+        "screenscribe"
+      ],
+      "toolchains": [
+        "python3",
+        "node",
+        "git",
+        "rsync"
+      ],
+      "agents": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "additional_tools": [
+        "mise",
+        "starship",
+        "atuin",
+        "zoxide"
+      ]
     },
     "paths": {
       "store_dir": "$VIBECRAFTED_ROOT/.vibecrafted/skills",
       "helpers": "$XDG_CONFIG_HOME/vetcoders/vc-skills.sh",
-      "binaries": ["vibecraft", "vibecrafted"],
+      "binaries": [
+        "vibecraft",
+        "vibecrafted"
+      ],
       "symlinks": [
         "$HOME/.agents",
         "$HOME/.claude",

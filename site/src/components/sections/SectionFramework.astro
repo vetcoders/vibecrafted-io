@@ -1,0 +1,227 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import PhaseBand from '../PhaseBand.svelte';
+
+type BoardAccent = 'default' | 'teal';
+
+interface Phase {
+  num: string;
+  state: number;
+  stateLabel: string;
+  accent: BoardAccent;
+  name: string;
+  tagline: string;
+  desc: string;
+}
+
+const phases: Phase[] = [
+  {
+    num: '00',
+    state: 0.0,
+    stateLabel: '0000',
+    accent: 'default',
+    name: 'Scaffold',
+    tagline: 'Define the system before you build it.',
+    desc: 'Placeholder — swap this. Scope first: pick the board shape that matches your system topology, then set capacity (density, specialists, precision). The outer frame is your contract with the future.',
+  },
+  {
+    num: '01',
+    state: 0.35,
+    stateLabel: '0035',
+    accent: 'default',
+    name: 'Craft',
+    tagline: 'Agents throw. You watch the board fill.',
+    desc: 'Placeholder — swap this. Throws start landing. Each agent brings a specialist skill; each throw adds a marble. The board tracks position, owner, and intent — not prose.',
+  },
+  {
+    num: '02',
+    state: 0.65,
+    stateLabel: '0065',
+    accent: 'default',
+    name: 'Convergence',
+    tagline: 'Marbles find their grooves.',
+    desc: 'Placeholder — swap this. The board pulls scattered work into its grooves. Duplicates collapse. Gaps become visible. What looked like chaos now has a shape.',
+  },
+  {
+    num: '03',
+    state: 0.85,
+    stateLabel: '0085',
+    accent: 'teal',
+    name: 'DoU',
+    tagline: 'Definition of Undone — what still blocks release.',
+    desc: 'Placeholder — swap this. Every unconverged marble is a question. DoU makes those questions explicit: what is missing, what is blocked, what can ship without it.',
+  },
+  {
+    num: '04',
+    state: 1.0,
+    stateLabel: '1000',
+    accent: 'teal',
+    name: 'Release',
+    tagline: 'Ship. The board becomes the changelog.',
+    desc: 'Placeholder — swap this. When the board converges, release is a formality. The artifacts are already in place, the contract was declared upfront, the trail is auditable end-to-end.',
+  },
+];
+
+const operators = [
+  { num: '00', name: 'loctree', kind: 'STRUCTURE' },
+  { num: '01', name: 'aicx', kind: 'MEMORY' },
+  { num: '02', name: 'prview', kind: 'REVIEW' },
+  { num: '03', name: 'ScreenScribe', kind: 'RUNTIME' },
+  { num: '04', name: 'DoU', kind: 'GATE' },
+  { num: '05', name: 'Review', kind: 'CLOSING' },
+];
+---
+
+<SectionShell
+  number="04"
+  title="THE FRAMEWORK"
+  centerLabel="SCAFFOLD → RELEASE"
+  figure="04 · DWG VC-004"
+  surface="ink"
+  seam="soft"
+  id="framework"
+>
+  <div class="framework">
+    <h2 class="framework__intro-heading">
+      Five phases. Six operators. One board.<br />
+      <em class="accent-2">Deterministic convergence.</em>
+    </h2>
+    <p class="framework__subtitle">
+      The framework is a contract, not a tutorial. Each phase declares what must be true before the next throw. What ends in convergence begins in scope.
+    </p>
+
+    <div class="framework__bands">
+      {phases.map((phase) => (
+        <PhaseBand
+          client:visible
+          num={phase.num}
+          convergeState={phase.state}
+          stateLabel={phase.stateLabel}
+          accent={phase.accent}
+          name={phase.name}
+          tagline={phase.tagline}
+          desc={phase.desc}
+        />
+      ))}
+    </div>
+
+    <h3 class="framework__operators-heading">
+      The <em>six operators.</em>
+    </h3>
+    <p class="framework__operators-sub">
+      Small, sharp skills that carry the board through a phase. Each is a protocol, not a prompt.
+    </p>
+
+    <div class="framework__operators-grid">
+      {operators.map((operator) => (
+        <div class="framework__op-card">
+          <span class="framework__op-num">OP · {operator.num}</span>
+          <span class="framework__op-name">{operator.name}</span>
+          <span class="framework__op-kind">· {operator.kind}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="05" nextTitle="THE OPERATOR" surface="ink" />
+</SectionShell>
+
+<style>
+  .framework__intro-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.8vw, 72px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 18px;
+  }
+
+  .framework__intro-heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .framework__subtitle {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 60ch;
+    margin: 0 0 88px;
+  }
+
+  .framework__bands {
+    border-top: 1px solid var(--rule-dark-soft);
+  }
+
+  .framework__operators-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(26px, 2.8vw, 40px);
+    color: var(--fg-on-dark);
+    margin: 100px 0 12px;
+  }
+
+  .framework__operators-heading em {
+    font-style: italic;
+  }
+
+  .framework__operators-sub {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--fg-on-dark-dim);
+    max-width: 52ch;
+    margin: 0 0 40px;
+  }
+
+  .framework__operators-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+  }
+
+  .framework__op-card {
+    border: 1px solid var(--rule-dark-soft);
+    padding: 18px 16px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .framework__op-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .framework__op-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-dark);
+  }
+
+  .framework__op-kind {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  @media (max-width: 900px) {
+    .framework__operators-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .framework__operators-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

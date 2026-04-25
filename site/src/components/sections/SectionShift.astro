@@ -1,0 +1,297 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+
+const todayItems = [
+  {
+    number: '01',
+    title: 'No shared contract.',
+    body: 'Each session starts from zero. The agent has to re-learn your repo, your conventions, your taste — every time.',
+  },
+  {
+    number: '02',
+    title: 'Hope as strategy.',
+    body: 'Retry until it compiles. Retry until the tests pass. Retry until you get tired. That is not a method.',
+  },
+  {
+    number: '03',
+    title: 'Marbles scattered.',
+    body: 'No protocol for what "done" looks like. Artifacts land wherever the agent happens to drop them.',
+  },
+];
+
+const vibecraftedItems = [
+  {
+    number: '01',
+    title: 'Contract-driven throws.',
+    body: 'The board defines the rules before anyone writes code. Shape, density, specialists, precision — all declared upfront.',
+  },
+  {
+    number: '02',
+    title: 'State persists.',
+    body: 'Artifacts, not sessions. Every marble that lands stays on the board. The next agent picks up where the last one left off.',
+  },
+  {
+    number: '03',
+    title: 'Convergence as protocol.',
+    body: 'Five deterministic phases. Scaffold → Craft → Convergence → DoU → Release. The same contract every throw.',
+  },
+];
+
+const proofItems = [
+  { count: '05', label: 'PHASES' },
+  { count: '06', label: 'OPERATORS' },
+  { count: '01', label: 'SHARED BOARD' },
+  { count: '00', label: 'WASTED THROWS' },
+];
+---
+
+<SectionShell
+  number="03"
+  title="THE SHIFT"
+  centerLabel="VIBES → VECTORS"
+  figure="03 · DWG VC-003"
+  surface="ink"
+  seam="soft"
+  id="shift"
+>
+  <h2 class="shift__heading">
+    Most AI coding tools ship <em class="accent">vibes.</em><br />
+    Vibecrafted ships <em class="accent-2">vectors.</em>
+  </h2>
+
+  <div class="shift__compare">
+    <div class="shift__col">
+      <p class="shift__col-label">
+        <span class="shift__col-dot shift__col-dot--rust" aria-hidden="true"></span>
+        Today
+      </p>
+
+      <div class="shift__items">
+        {todayItems.map((item) => (
+          <article class="shift__item">
+            <span class="shift__item-num">{item.number}</span>
+            <div class="shift__item-copy">
+              <h3 class="shift__item-title">{item.title}</h3>
+              <p class="shift__item-body">{item.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+
+    <div class="shift__rule" aria-hidden="true">
+      <span class="shift__arrow">→</span>
+    </div>
+
+    <div class="shift__col">
+      <p class="shift__col-label">
+        <span class="shift__col-dot shift__col-dot--teal" aria-hidden="true"></span>
+        With Vibecrafted
+      </p>
+
+      <div class="shift__items">
+        {vibecraftedItems.map((item) => (
+          <article class="shift__item">
+            <span class="shift__item-num">{item.number}</span>
+            <div class="shift__item-copy">
+              <h3 class="shift__item-title">{item.title}</h3>
+              <p class="shift__item-body">{item.body}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="shift__proof">
+    {proofItems.map((item) => (
+      <p class="shift__proof-item">
+        <span class="shift__proof-bullet" aria-hidden="true">•</span>
+        <span class="shift__proof-count">{item.count}</span>
+        <span>{item.label}</span>
+      </p>
+    ))}
+  </div>
+
+  <SectionFooter nextNumber="04" nextTitle="THE FRAMEWORK" surface="ink" />
+</SectionShell>
+
+<style>
+  .shift__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(44px, 5.6vw, 92px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 72px;
+  }
+
+  .shift__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .shift__heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .shift__compare {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 56px;
+    align-items: start;
+    position: relative;
+  }
+
+  .shift__rule {
+    background: var(--rule-dark);
+    width: 1px;
+    align-self: stretch;
+    position: relative;
+  }
+
+  .shift__arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1;
+    background: var(--ink);
+  }
+
+  .shift__col-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 0 0 28px;
+  }
+
+  .shift__col-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .shift__col-dot--rust {
+    background: var(--accent);
+  }
+
+  .shift__col-dot--teal {
+    background: var(--accent-2);
+  }
+
+  .shift__items {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .shift__item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+
+  .shift__item-num {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin-top: 8px;
+  }
+
+  .shift__item-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.25;
+    color: var(--fg-on-dark);
+    margin: 0 0 8px;
+  }
+
+  .shift__item-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    margin: 0;
+  }
+
+  .shift__proof {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule-dark-soft);
+  }
+
+  .shift__proof-item {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 0;
+  }
+
+  .shift__proof-bullet {
+    color: var(--accent);
+    margin-right: 8px;
+  }
+
+  .shift__proof-count {
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--fg-on-dark);
+    margin-right: 8px;
+  }
+
+  @media (max-width: 900px) {
+    .shift__compare {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .shift__rule {
+      display: none;
+    }
+
+    .shift__proof {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .shift__item {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .shift__item-num {
+      margin-top: 0;
+    }
+  }
+</style>
