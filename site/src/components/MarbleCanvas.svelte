@@ -898,9 +898,10 @@
     position: relative;
     align-self: center;
     justify-self: end;
-    width: min(100%, 34rem);
+    width: var(--hero-canvas-max);
+    height: var(--hero-canvas-max);
+    max-width: 100%;
     aspect-ratio: 1;
-    max-height: var(--hero-canvas-max);
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--hero-canvas-surface);
@@ -908,8 +909,6 @@
     backdrop-filter: var(--hero-canvas-backdrop);
     -webkit-backdrop-filter: var(--hero-canvas-backdrop);
     box-shadow: var(--hero-canvas-shadow);
-    transform-origin: left center;
-    transform: perspective(1120px) rotateY(-14deg) scaleX(1.04);
   }
 
   .hero-canvas canvas {
@@ -949,10 +948,4 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero-canvas {
-      transform: none;
-      transform-origin: center;
-    }
-  }
 </style>

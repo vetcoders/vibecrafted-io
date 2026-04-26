@@ -2056,7 +2056,6 @@
   bind:this={rootEl}
   class="pg"
   class:pg--converged={guideConverged}
-  class:pg--hero={currentPhase.name === 'scaffold'}
   class:pg--nudge={scaffoldNudge}
   data-phase={currentPhase.name}
   data-tone={currentPhase.tone}
@@ -2529,10 +2528,6 @@
     min-width: 0;
     height: 100%;
     overflow: hidden;
-  }
-
-  .pg--hero .pg__workspace {
-    grid-template-columns: clamp(220px, 16%, 260px) minmax(0, 1fr) minmax(0, 1fr);
   }
 
   /* ───────── OPERATORS (LEFT) ───────── */
@@ -3258,39 +3253,6 @@
     background: transparent;
   }
 
-  .pg--hero .pg__instructor {
-    justify-content: center;
-    padding-inline: clamp(1.35rem, 2.4vw, 2.4rem);
-  }
-
-  .pg--hero .inst-head,
-  .pg--hero .inst-desc,
-  .pg--hero .inst-steps,
-  .pg--hero .inst-hint,
-  .pg--hero .inst-cta {
-    width: min(100%, 34rem);
-  }
-
-  .pg--hero .inst-title {
-    font-size: clamp(1.9rem, 3.4vw, 3.2rem);
-    line-height: 0.98;
-    -webkit-line-clamp: 4;
-  }
-
-  .pg--hero .inst-desc {
-    font-size: clamp(0.95rem, 1.18vw, 1.12rem);
-    line-height: 1.5;
-    -webkit-line-clamp: 5;
-  }
-
-  .pg--hero .inst-steps {
-    gap: 8px;
-  }
-
-  .pg--hero .inst-step {
-    padding-block: 5px;
-  }
-
   .inst-head {
     display: grid;
     gap: 6px;
@@ -3615,9 +3577,6 @@
       grid-template-columns: clamp(210px, 17%, 260px) minmax(0, 1fr) clamp(270px, 22%, 320px);
     }
 
-    .pg--hero .pg__workspace {
-      grid-template-columns: clamp(210px, 16%, 250px) minmax(0, 1fr) minmax(0, 1fr);
-    }
   }
 
   @media (max-width: 1100px) {
@@ -3633,25 +3592,12 @@
       overflow: visible;
     }
 
-    .pg--hero .pg__workspace {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
     .pg__operators,
     .pg__instructor {
       border-left: none;
       border-right: none;
       border-top: 1px solid var(--pg-divider);
       overflow: visible;
-    }
-
-    .pg--hero .pg__instructor {
-      justify-content: flex-start;
-      padding-inline: 18px;
-    }
-
-    .pg--hero .inst-title {
-      font-size: clamp(1.45rem, 6vw, 2.2rem);
     }
 
     .op-controls {
