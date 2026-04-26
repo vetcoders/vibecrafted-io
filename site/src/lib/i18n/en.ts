@@ -38,6 +38,167 @@ export const en = {
     copyright: "(c)2024-2026 VetCoders",
     license: "BSL 1.1",
   },
+  v2Chrome: {
+    footer: {
+      ariaLabel: "Site footer",
+      byline: "with AI Agents by VetCoders",
+      tagline: "From AI-generated repo to launch-ready product.",
+      quickstart: "Quick Start",
+      faq: "FAQ",
+      github: "GitHub",
+      license: "License (BSL 1.1)",
+      security: "Security",
+    },
+    search: {
+      ariaLabel: "Search",
+      openAria: "Open search",
+      queryAria: "Search query",
+      placeholder: "Search framework, marble, doctor…",
+      tabs: {
+        all: "ALL SURFACES",
+        quickstart: "QUICK START",
+        faq: "FAQ",
+      },
+      prompt: "Ask for a command, product surface, or operating question.",
+      fastPathsLabel: "FAST PATHS",
+      fastPaths: {
+        framework: "Framework playground",
+        install: "Guided installer",
+        quickstart: "Read Quick Start",
+        overview: "Back to Overview",
+      },
+      resultsLabel: "RESULTS",
+      empty:
+        "Full-text search ships in the next iteration. For now, try Fast Paths above or the nav.",
+    },
+  },
+  v2Pages: {
+    landing: {
+      title:
+        "Vibecrafted — Ship software with AI agents that actually converge.",
+      description:
+        "Release engine for AI-built software. Ship AI-built software without the vibe hangover.",
+    },
+    faq: {
+      title: "Vibecrafted · FAQ",
+      description:
+        "The questions strangers ask first about the Vibecrafted release engine.",
+    },
+    dou: {
+      title: "Vibecrafted · DoU — The Definition of Undone",
+      description:
+        "The brutal space between a working system and a product that strangers can discover, install, trust, and buy.",
+    },
+  },
+  landingV2: {
+    hero: {
+      ariaLabel: "Hero",
+      eyebrow: "THE FOUNDERS' FRAMEWORK",
+      heading: {
+        pre: "Ship software",
+        prefix: "with",
+        emFirst: "AI agents",
+        mid: "that actually",
+        emLast: "converge.",
+      },
+      body: "A marble-gameboard inspired convergence system. Chaos in, structure out — one throw, one release, one board at a time.",
+      ctaPrimary: "INSTALL",
+      ctaSecondary: "READ THE DOCS",
+      telemetry: {
+        marbles: "MARBLES",
+        converge: "CONVERGE",
+        live: "LIVE",
+      },
+      scroll: "SCROLL",
+    },
+    problem: {
+      title: "THE PROBLEM",
+      centerLabel: "OBSERVED 2024–2026",
+    },
+    engineering: {
+      title: "ENGINEERING",
+      centerLabel: "AXIOMS · METHOD",
+    },
+    shift: {
+      title: "THE SHIFT",
+      centerLabel: "VIBES → VECTORS",
+    },
+    framework: {
+      title: "THE FRAMEWORK",
+      centerLabel: "SCAFFOLD → RELEASE",
+    },
+    operator: {
+      title: "THE OPERATOR",
+      centerLabel: "INSTALL · RUN · OBSERVE",
+    },
+    quickstart: {
+      title: "QUICKSTART",
+      centerLabel: "INIT → SHIP · SIX THROWS",
+    },
+    references: {
+      title: "REFERENCES",
+      centerLabel: "RESEARCH · FIELD NOTES",
+    },
+    evidence: {
+      title: "EVIDENCE",
+      centerLabel: "FROM THE WILD · PATTERNS OBSERVED",
+    },
+    footer: {
+      continues: "CONTINUES § {number} · {title}",
+    },
+  },
+  v2Sections: {
+    shift: {
+      heading: {
+        first: "Most AI coding tools ship",
+        firstAccent: "vibes.",
+        second: "Vibecrafted ships",
+        secondAccent: "vectors.",
+      },
+      todayLabel: "Today",
+      vibecraftedLabel: "With Vibecrafted",
+      todayItems: [
+        {
+          number: "01",
+          title: "No shared contract.",
+          body: "Each session starts from zero. The agent has to re-learn your repo, your conventions, your taste — every time.",
+        },
+        {
+          number: "02",
+          title: "Hope as strategy.",
+          body: "Retry until it compiles. Retry until the tests pass. Retry until you get tired. That is not a method.",
+        },
+        {
+          number: "03",
+          title: "Marbles scattered.",
+          body: 'No protocol for what "done" looks like. Artifacts land wherever the agent happens to drop them.',
+        },
+      ],
+      vibecraftedItems: [
+        {
+          number: "01",
+          title: "Contract-driven throws.",
+          body: "The board defines the rules before anyone writes code. Shape, density, specialists, precision — all declared upfront.",
+        },
+        {
+          number: "02",
+          title: "State persists.",
+          body: "Artifacts, not sessions. Every marble that lands stays on the board. The next agent picks up where the last one left off.",
+        },
+        {
+          number: "03",
+          title: "Convergence as protocol.",
+          body: "Five deterministic phases. Scaffold → Craft → Convergence → DoU → Release. The same contract every throw.",
+        },
+      ],
+      proofItems: [
+        { count: "05", label: "PHASES" },
+        { count: "06", label: "OPERATORS" },
+        { count: "01", label: "SHARED BOARD" },
+        { count: "00", label: "WASTED THROWS" },
+      ],
+    },
+  },
   copyButton: {
     default: "Copy",
     upperDefault: "COPY",

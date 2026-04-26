@@ -1,18 +1,24 @@
 ---
+import { getTranslations, type Lang } from '../lib/i18n';
+
 interface Props {
   nextNumber: string;
   nextTitle: string;
   surface?: 'ink' | 'paper';
   class?: string;
+  lang?: Lang;
 }
 
-const { nextNumber, nextTitle, surface = 'ink', class: className } = Astro.props;
+const { nextNumber, nextTitle, surface = 'ink', class: className, lang = 'en' } = Astro.props as Props;
+const label = getTranslations(lang).landingV2.footer.continues
+  .replace('{number}', nextNumber)
+  .replace('{title}', nextTitle);
 ---
 
 <div class:list={['v2-section__footer', `v2-section__footer--${surface}`, className]}>
   <div class="v2-section__footer-rule" aria-hidden="true"></div>
   <div class="v2-section__footer-row">
-    <span class="v2-section__footer-label">CONTINUES § {nextNumber} · {nextTitle}</span>
+    <span class="v2-section__footer-label">{label}</span>
     <span class="v2-section__footer-arrow" aria-hidden="true">↓</span>
   </div>
 </div>

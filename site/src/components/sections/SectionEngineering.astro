@@ -2,6 +2,14 @@
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import EngineeringCard from '../EngineeringCard.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const chrome = getTranslations(lang).landingV2;
 
 interface Axiom {
   num: string;
@@ -52,8 +60,8 @@ const axioms: Axiom[] = [
 
 <SectionShell
   number="02"
-  title="ENGINEERING"
-  centerLabel="AXIOMS · METHOD"
+  title={chrome.engineering.title}
+  centerLabel={chrome.engineering.centerLabel}
   figure="02 · DWG VC-002"
   surface="ink"
   seam="to-ink"
@@ -83,7 +91,7 @@ const axioms: Axiom[] = [
     </div>
   </div>
 
-  <SectionFooter nextNumber="03" nextTitle="THE SHIFT" surface="ink" />
+  <SectionFooter nextNumber="03" nextTitle={chrome.shift.title} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

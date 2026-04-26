@@ -1,70 +1,40 @@
 ---
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
-const todayItems = [
-  {
-    number: '01',
-    title: 'No shared contract.',
-    body: 'Each session starts from zero. The agent has to re-learn your repo, your conventions, your taste — every time.',
-  },
-  {
-    number: '02',
-    title: 'Hope as strategy.',
-    body: 'Retry until it compiles. Retry until the tests pass. Retry until you get tired. That is not a method.',
-  },
-  {
-    number: '03',
-    title: 'Marbles scattered.',
-    body: 'No protocol for what "done" looks like. Artifacts land wherever the agent happens to drop them.',
-  },
-];
+interface Props {
+  lang?: Lang;
+}
 
-const vibecraftedItems = [
-  {
-    number: '01',
-    title: 'Contract-driven throws.',
-    body: 'The board defines the rules before anyone writes code. Shape, density, specialists, precision — all declared upfront.',
-  },
-  {
-    number: '02',
-    title: 'State persists.',
-    body: 'Artifacts, not sessions. Every marble that lands stays on the board. The next agent picks up where the last one left off.',
-  },
-  {
-    number: '03',
-    title: 'Convergence as protocol.',
-    body: 'Five deterministic phases. Scaffold → Craft → Convergence → DoU → Release. The same contract every throw.',
-  },
-];
-
-const proofItems = [
-  { count: '05', label: 'PHASES' },
-  { count: '06', label: 'OPERATORS' },
-  { count: '01', label: 'SHARED BOARD' },
-  { count: '00', label: 'WASTED THROWS' },
-];
+const { lang = 'en' } = Astro.props as Props;
+const dict = getTranslations(lang);
+const chrome = dict.landingV2;
+const shift = dict.v2Sections.shift;
+const todayItems = shift.todayItems;
+const vibecraftedItems = shift.vibecraftedItems;
+const proofItems = shift.proofItems;
 ---
 
 <SectionShell
   number="03"
-  title="THE SHIFT"
-  centerLabel="VIBES → VECTORS"
+  title={chrome.shift.title}
+  centerLabel={chrome.shift.centerLabel}
   figure="03 · DWG VC-003"
   surface="ink"
   seam="soft"
   id="shift"
 >
   <h2 class="shift__heading">
-    Most AI coding tools ship <em class="accent">vibes.</em><br />
-    Vibecrafted ships <em class="accent-2">vectors.</em>
+    {shift.heading.first} <em class="accent">{shift.heading.firstAccent}</em><br />
+    {shift.heading.second} <em class="accent-2">{shift.heading.secondAccent}</em>
   </h2>
 
   <div class="shift__compare">
     <div class="shift__col">
       <p class="shift__col-label">
         <span class="shift__col-dot shift__col-dot--rust" aria-hidden="true"></span>
-        Today
+        {shift.todayLabel}
       </p>
 
       <div class="shift__items">
@@ -87,7 +57,7 @@ const proofItems = [
     <div class="shift__col">
       <p class="shift__col-label">
         <span class="shift__col-dot shift__col-dot--teal" aria-hidden="true"></span>
-        With Vibecrafted
+        {shift.vibecraftedLabel}
       </p>
 
       <div class="shift__items">
@@ -114,7 +84,7 @@ const proofItems = [
     ))}
   </div>
 
-  <SectionFooter nextNumber="04" nextTitle="THE FRAMEWORK" surface="ink" />
+  <SectionFooter nextNumber="04" nextTitle={chrome.framework.title} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

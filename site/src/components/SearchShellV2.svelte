@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Lang } from '../lib/i18n';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
     lang?: Lang;
@@ -9,19 +9,20 @@
 
   type Tab = 'all' | 'quickstart' | 'faq';
 
+  const labels = $derived(getTranslations(lang).v2Chrome.search);
   const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');
 
-  const tabs: Array<{ key: Tab; label: string }> = [
-    { key: 'all', label: 'ALL SURFACES' },
-    { key: 'quickstart', label: 'QUICK START' },
-    { key: 'faq', label: 'FAQ' },
-  ];
+  const tabs: Array<{ key: Tab; label: string }> = $derived([
+    { key: 'all', label: labels.tabs.all },
+    { key: 'quickstart', label: labels.tabs.quickstart },
+    { key: 'faq', label: labels.tabs.faq },
+  ]);
 
   const fastPaths = $derived([
-    { label: 'Framework playground', href: `${langPrefix}/framework/` },
-    { label: 'Guided installer', href: `${langPrefix}/install/` },
-    { label: 'Read Quick Start', href: `${langPrefix}/quickstart/` },
-    { label: 'Back to Overview', href: langPrefix === '/pl' ? '/pl/' : '/' },
+    { label: labels.fastPaths.framework, href: `${langPrefix}/framework/` },
+    { label: labels.fastPaths.install, href: `${langPrefix}/install/` },
+    { label: labels.fastPaths.quickstart, href: `${langPrefix}/quickstart/` },
+    { label: labels.fastPaths.overview, href: langPrefix === '/pl' ? '/pl/' : '/' },
   ]);
 
   let open = $state(false);
@@ -89,7 +90,7 @@
       class="v2search__panel"
       bind:this={panelEl}
       role="dialog"
-      aria-label="Search"
+      aria-label={labels.ariaLabel}
       aria-modal="false"
     >
       <div class="v2search__tabs" role="tablist">
@@ -106,10 +107,10 @@
         {/each}
       </div>
 
-      <p class="v2search__prompt">Ask for a command, product surface, or operating question.</p>
+      <p class="v2search__prompt">{labels.prompt}</p>
 
       <div class="v2search__section">
-        <span class="v2search__section-label">FAST PATHS</span>
+        <span class="v2search__section-label">{labels.fastPathsLabel}</span>
         <div class="v2search__fast-grid">
           {#each fastPaths as fp}
             <a href={fp.href} class="v2search__fast">{fp.label}</a>
@@ -119,9 +120,9 @@
 
       {#if query.trim().length >= 2}
         <div class="v2search__results">
-          <span class="v2search__results-label">RESULTS</span>
+          <span class="v2search__results-label">{labels.resultsLabel}</span>
           <p class="v2search__results-empty">
-            Full-text search ships in the next iteration. For now, try Fast Paths above or the nav.
+            {labels.empty}
           </p>
         </div>
       {/if}
@@ -136,7 +137,7 @@
     onclick={togglePanel}
     aria-expanded={open}
     aria-haspopup="dialog"
-    aria-label="Open search"
+    aria-label={labels.openAria}
   >
     <span class="v2search__trigger-icon" aria-hidden="true">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -147,12 +148,12 @@
     <input
       type="text"
       class="v2search__input"
-      placeholder="Search framework, install, doctor…"
+      placeholder={labels.placeholder}
       bind:value={query}
       bind:this={inputEl}
       onfocus={openPanel}
       onclick={(e) => { e.stopPropagation(); openPanel(); }}
-      aria-label="Search query"
+      aria-label={labels.queryAria}
     />
     <span class="v2search__kbd" aria-hidden="true">{shortcutLabel}</span>
   </button>

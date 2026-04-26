@@ -40,6 +40,165 @@ export const pl = {
     copyright: "(c)2024-2026 VetCoders",
     license: "BSL 1.1",
   },
+  v2Chrome: {
+    footer: {
+      ariaLabel: "Stopka strony",
+      byline: "z agentami AI od VetCoders",
+      tagline: "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
+      quickstart: "SZYBKI START",
+      faq: "FAQ",
+      github: "GITHUB",
+      license: "LICENCJA (BSL 1.1)",
+      security: "BEZPIECZEŃSTWO",
+    },
+    search: {
+      ariaLabel: "Wyszukiwanie",
+      openAria: "Otwórz wyszukiwarkę",
+      queryAria: "Wpisz szukaną frazę",
+      placeholder: "Szukaj: framework, marble, doctor…",
+      tabs: {
+        all: "WSZYSTKIE SEKCJE",
+        quickstart: "SZYBKI START",
+        faq: "FAQ",
+      },
+      prompt: "Zadaj dowolne pytanie",
+      fastPathsLabel: "SZYBKIE ŚCIEŻKI",
+      fastPaths: {
+        framework: "Playground frameworka",
+        install: "Zainstaluj krok po kroku",
+        quickstart: "Zobacz szybki start",
+        overview: "Wróć do przeglądu",
+      },
+      resultsLabel: "WYNIKI",
+      empty:
+        "Pełne wyszukiwanie - już wkrótce. Skorzystaj z szybkiej wyszukiwarki powyżej.",
+    },
+  },
+  v2Pages: {
+    landing: {
+      title: "vibecrafted. — Buduj i wdrażaj oprogramowanie z Agentami AI.",
+      description:
+        "Pomaga przejść od pomysłu do release’u. Zamienia projekt w produkt.",
+    },
+    faq: {
+      title: "vibecrafted. · FAQ",
+      description: "Najczęstsze pytania dotyczące Vibecrafted.",
+    },
+    dou: {
+      title: "Vibecrafted. · DoU — The Definition of Undone",
+      description:
+        "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+    },
+  },
+  landingV2: {
+    hero: {
+      ariaLabel: "Sekcja główna",
+      eyebrow: "FRAMEWORK FOUNDERÓW",
+      heading: {
+        pre: "Twórz software",
+        prefix: "",
+        emFirst: "z agentami AI,",
+        mid: "którzy naprawdę",
+        emLast: "dochodzą do jednego, spójnego wyniku.",
+      },
+      body: "Vibecrafted porządkuje chaos pracy agentów i zamienia go w gotowe decyzje: jedna plansza, jedna decyzja, jeden release.",
+      ctaPrimary: "INSTALUJ",
+      ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
+      telemetry: {
+        marbles: "MARBLES",
+        converge: "KONWERGENCJA",
+        live: "LIVE",
+      },
+      scroll: "PRZEWIŃ",
+    },
+    problem: {
+      title: "PROBLEM",
+      centerLabel: "OBSERWACJE 2024–2026",
+    },
+    engineering: {
+      title: "INŻYNIERIA",
+      centerLabel: "AKSJOMATY · METODA",
+    },
+    shift: {
+      title: "ZMIANA",
+      centerLabel: "VIBE → PRODUKT",
+    },
+    framework: {
+      title: "FRAMEWORK",
+      centerLabel: "SCAFFOLD → RELEASE",
+    },
+    operator: {
+      title: "OPERATOR",
+      centerLabel: "INSTALUJ · URUCHOM · OBSERWUJ",
+    },
+    quickstart: {
+      title: "SZYBKI START",
+      centerLabel: "INIT → SHIP · 6 RZUTÓW",
+    },
+    references: {
+      title: "ŹRÓDŁA",
+      centerLabel: "BADANIA · NOTATKI",
+    },
+    evidence: {
+      title: "DOWODY",
+      centerLabel: "Z TERENU · ZAOBSERWOWANE WZORCE",
+    },
+    footer: {
+      continues: "DALEJ § {number} · {title}",
+    },
+  },
+  v2Sections: {
+    shift: {
+      heading: {
+        first: "Większość narzędzi AI do kodowania dowozi",
+        firstAccent: "vibe.",
+        second: "Vibecrafted dowozi",
+        secondAccent: "produkt.",
+      },
+      todayLabel: "DZISIAJ",
+      vibecraftedLabel: "Z VIBECRAFTED",
+      todayItems: [
+        {
+          number: "01",
+          title: "Bez kontraktu.",
+          body: "Każda sesja zaczyna od zera. Agent za każdym razem musi od nowa uczyć się repo, konwencji i Twojego stylu.",
+        },
+        {
+          number: "02",
+          title: "Nadzieja.",
+          body: "Retry, aż się skompiluje. Retry, aż testy przejdą. Retry, aż zabraknie cierpliwości i siły. To nie jest metoda.",
+        },
+        {
+          number: "03",
+          title: "Chaos.",
+          body: "Nie ma protokołu określającego, jak wygląda „done”. Artefakty lądują tam, gdzie akurat upuści je agent.",
+        },
+      ],
+      vibecraftedItems: [
+        {
+          number: "01",
+          title: "Kontrakt.",
+          body: 'Vibecrafted zamienia prompt w jasny kontrakt pracy: zakres zadania, granice zmian, role operatorów i kryteria „done”. Agent nie improwizuje, tylko wykonuje zadanie w ustalonym zakresie, nie produkując kolejnej wersji "prawie działa".',
+        },
+        {
+          number: "02",
+          title: "Stan.",
+          body: "Vibecrafted zapisuje nie tylko wynik, ale też kontekst: co zostało zmienione, dlaczego, co przeszło, co wymaga decyzji. Dzięki temu kolejny agent kontynuuje pracę, zamiast odtwarzać ją od zera.",
+        },
+        {
+          number: "03",
+          title: "Konwergencja.",
+          body: "Pięć deterministycznych faz. Scaffold → Craft → Convergence → DoU → Release. Ten sam kontrakt przy każdym rzucie.",
+        },
+      ],
+      proofItems: [
+        { count: "05", label: "FAZY" },
+        { count: "06", label: "OPERATORZY" },
+        { count: "01", label: "PLANSZE" },
+        { count: "00", label: "RZUTY" },
+      ],
+    },
+  },
   copyButton: {
     default: "Kopiuj",
     upperDefault: "KOPIUJ",

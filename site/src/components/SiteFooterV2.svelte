@@ -1,14 +1,16 @@
 <script lang="ts">
-  import type { Lang } from '../lib/i18n';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
     lang?: Lang;
   }
 
   let { lang = 'en' }: Props = $props();
+
+  const footer = $derived(getTranslations(lang).v2Chrome.footer);
 </script>
 
-<footer class="v2footer" aria-label="Site footer">
+<footer class="v2footer" aria-label={footer.ariaLabel}>
   <div class="v2footer__inner">
     <div class="v2footer__brand">
       <img
@@ -22,15 +24,15 @@
       <span class="v2footer__wordmark">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="v2footer__wordmark-dot" aria-hidden="true">.</span></span>
     </div>
 
-    <p class="v2footer__byline">with AI Agents by VetCoders</p>
-    <p class="v2footer__tagline">From AI-generated repo to launch-ready product.</p>
+    <p class="v2footer__byline">{footer.byline}</p>
+    <p class="v2footer__tagline">{footer.tagline}</p>
 
     <nav class="v2footer__links" aria-label="Footer navigation">
-      <a href={`/${lang}/quickstart/`}>Quick Start</a>
-      <a href={`/${lang}/faq/`}>FAQ</a>
-      <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer" target="_blank">GitHub</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">License (BSL 1.1)</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">Security</a>
+      <a href={`/${lang}/quickstart/`}>{footer.quickstart}</a>
+      <a href={`/${lang}/faq/`}>{footer.faq}</a>
+      <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer" target="_blank">{footer.github}</a>
+      <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">{footer.license}</a>
+      <a href="https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">{footer.security}</a>
     </nav>
 
     <p class="v2footer__copyright">(c)2024–2026 VetCoders</p>

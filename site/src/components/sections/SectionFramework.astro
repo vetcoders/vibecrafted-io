@@ -9,7 +9,9 @@ interface Props {
 }
 
 const { lang = 'en' } = Astro.props;
-const pipeline = getTranslations(lang).sections.pipeline;
+const dict = getTranslations(lang);
+const pipeline = dict.sections.pipeline;
+const chrome = dict.landingV2;
 
 const operators = [
   { num: '00', name: 'loctree', kind: 'STRUCTURE' },
@@ -23,8 +25,8 @@ const operators = [
 
 <SectionShell
   number="04"
-  title="THE FRAMEWORK"
-  centerLabel="SCAFFOLD → RELEASE"
+  title={chrome.framework.title}
+  centerLabel={chrome.framework.centerLabel}
   figure="04 · DWG VC-004"
   surface="ink"
   seam="soft"
@@ -67,7 +69,7 @@ const operators = [
     </div>
   </div>
 
-  <SectionFooter nextNumber="05" nextTitle="THE OPERATOR" surface="ink" />
+  <SectionFooter nextNumber="05" nextTitle={chrome.operator.title} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

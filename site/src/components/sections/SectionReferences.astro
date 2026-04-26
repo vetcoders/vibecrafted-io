@@ -1,12 +1,14 @@
 ---
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import { getTranslations, type Lang } from '../../lib/i18n';
 
 interface Props {
-  lang?: 'en' | 'pl';
+  lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props;
+const chrome = getTranslations(lang).landingV2;
 
 interface Reference {
   num: string;
@@ -133,8 +135,8 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
 
 <SectionShell
   number="07"
-  title="REFERENCES"
-  centerLabel="RESEARCH · FIELD NOTES"
+  title={chrome.references.title}
+  centerLabel={chrome.references.centerLabel}
   figure="07 · DWG VC-007"
   surface="ink"
   seam="soft"
@@ -166,7 +168,7 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
     </div>
   </div>
 
-  <SectionFooter nextNumber="08" nextTitle="EVIDENCE" surface="ink" />
+  <SectionFooter nextNumber="08" nextTitle={chrome.evidence.title} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

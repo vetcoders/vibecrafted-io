@@ -2,12 +2,20 @@
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import QuickstartCarousel from '../QuickstartCarousel.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const chrome = getTranslations(lang).landingV2;
 ---
 
 <SectionShell
   number="06"
-  title="QUICKSTART"
-  centerLabel="INIT → SHIP · SIX THROWS"
+  title={chrome.quickstart.title}
+  centerLabel={chrome.quickstart.centerLabel}
   figure="06 · DWG VC-006"
   surface="ink"
   seam="to-ink"
@@ -21,7 +29,7 @@ import QuickstartCarousel from '../QuickstartCarousel.svelte';
     <QuickstartCarousel client:load />
   </div>
 
-  <SectionFooter nextNumber="07" nextTitle="REFERENCES" surface="ink" />
+  <SectionFooter nextNumber="07" nextTitle={chrome.references.title} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

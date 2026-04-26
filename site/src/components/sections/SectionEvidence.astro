@@ -1,6 +1,14 @@
 ---
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const chrome = getTranslations(lang).landingV2;
 
 interface Pattern {
   num: string;
@@ -53,8 +61,8 @@ const patterns: Pattern[] = [
 
 <SectionShell
   number="08"
-  title="EVIDENCE"
-  centerLabel="FROM THE WILD · PATTERNS OBSERVED"
+  title={chrome.evidence.title}
+  centerLabel={chrome.evidence.centerLabel}
   figure="08 · DWG VC-008"
   surface="paper"
   seam="to-paper"
@@ -85,7 +93,7 @@ const patterns: Pattern[] = [
     </div>
   </div>
 
-  <SectionFooter nextNumber="09" nextTitle="FAQ" surface="paper" />
+  <SectionFooter nextNumber="09" nextTitle="FAQ" surface="paper" lang={lang} />
 </SectionShell>
 
 <style>

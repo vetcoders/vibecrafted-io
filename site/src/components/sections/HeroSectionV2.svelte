@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Lang } from '../../lib/i18n';
+  import { getTranslations, type Lang } from '../../lib/i18n';
   import MarbleCanvasV2 from '../MarbleCanvasV2.svelte';
 
   interface Props {
@@ -18,12 +18,13 @@
 
   const pctLabel = $derived(String(convergePct).padStart(3, '0'));
   const countLabel = $derived(String(marbleCount).padStart(3, '0'));
+  const hero = $derived(getTranslations(lang).landingV2.hero);
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
   const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
 </script>
 
-<section class="hero" id="hero" aria-label="Hero">
+<section class="hero" id="hero" aria-label={hero.ariaLabel}>
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__canvas" aria-hidden="true">
@@ -40,45 +41,45 @@
   </div>
 
   <div class="hero__overlay">
-    <span class="hero__eyebrow">THE FOUNDERS' FRAMEWORK</span>
+    <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      Ship software<br />
-      with <em>AI agents</em> that<br />
-      actually <em class="accent">converge.</em>
+      {hero.heading.pre}<br />
+      {#if hero.heading.prefix}{hero.heading.prefix} {/if}<em>{hero.heading.emFirst}</em> {hero.heading.mid}<br />
+      <em class="accent">{hero.heading.emLast}</em>
     </h1>
     <p class="hero__body">
-      A marble-gameboard inspired convergence system. Chaos in, structure out — one throw, one release, one board at a time.
+      {hero.body}
     </p>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
-        INSTALL<span class="hero__cta-arrow" aria-hidden="true">→</span>
+        {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
       </a>
       <a class="hero__cta hero__cta--ghost" href={docsHref}>
-        READ THE DOCS
+        {hero.ctaSecondary}
       </a>
     </div>
   </div>
 
   <div class="hero__telemetry" aria-hidden="true">
     <span class="hero__tele-row">
-      <span class="hero__tele-label">MARBLES</span>
+      <span class="hero__tele-label">{hero.telemetry.marbles}</span>
       <span class="hero__tele-dot">·</span>
       <span class="hero__tele-value">{countLabel}</span>
     </span>
     <span class="hero__tele-row">
-      <span class="hero__tele-label">CONVERGE</span>
+      <span class="hero__tele-label">{hero.telemetry.converge}</span>
       <span class="hero__tele-dot">·</span>
       <span class="hero__tele-value">{pctLabel}%</span>
     </span>
     <span class="hero__tele-row hero__tele-row--live">
-      <span class="hero__tele-label">LIVE</span>
+      <span class="hero__tele-label">{hero.telemetry.live}</span>
       <span class="hero__tele-dot">·</span>
       <span class="hero__tele-value">DWG VC-001</span>
     </span>
   </div>
 
   <div class="hero__scroll" aria-hidden="true">
-    SCROLL <span class="hero__scroll-arrow">↓</span>
+    {hero.scroll} <span class="hero__scroll-arrow">↓</span>
   </div>
 </section>
 

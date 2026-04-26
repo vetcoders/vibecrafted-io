@@ -9,21 +9,24 @@ import SectionQuickstart from '../components/sections/SectionQuickstart.astro';
 import SectionReferences from '../components/sections/SectionReferences.astro';
 import SectionEvidence from '../components/sections/SectionEvidence.astro';
 import SectionEngineering from '../components/sections/SectionEngineering.astro';
+import { getTranslations } from '../lib/i18n';
+
+const page = getTranslations('en').v2Pages.landing;
 ---
 
 <LayoutV2
-  title="Vibecrafted — Ship software with AI agents that actually converge."
-  description="Release engine for AI-built software. Ship AI-built software without the vibe hangover."
+  title={page.title}
+  description={page.description}
   lang="en"
   hasHero={true}
 >
   <HeroSectionV2 client:load lang="en" />
-  <SectionProblem />
-  <SectionEngineering />
-  <SectionShift />
+  <SectionProblem lang="en" />
+  <SectionEngineering lang="en" />
+  <SectionShift lang="en" />
   <SectionFramework lang="en" />
-  <SectionOperator />
-  <SectionQuickstart />
-  <SectionReferences />
-  <SectionEvidence />
+  <SectionOperator lang="en" />
+  <SectionQuickstart lang="en" />
+  <SectionReferences lang="en" />
+  <SectionEvidence lang="en" />
 </LayoutV2>

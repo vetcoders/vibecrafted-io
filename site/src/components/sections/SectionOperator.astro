@@ -2,6 +2,14 @@
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import BoardPreview from '../BoardPreview.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const chrome = getTranslations(lang).landingV2;
 
 const installSteps = [
   {
@@ -46,8 +54,8 @@ const practices = [
 
 <SectionShell
   number="05"
-  title="THE OPERATOR"
-  centerLabel="INSTALL · RUN · OBSERVE"
+  title={chrome.operator.title}
+  centerLabel={chrome.operator.centerLabel}
   figure="05 · DWG VC-005"
   surface="paper"
   seam="to-paper"
@@ -100,7 +108,7 @@ const practices = [
     </div>
   </div>
 
-  <SectionFooter nextNumber="06" nextTitle="QUICKSTART" surface="paper" />
+  <SectionFooter nextNumber="06" nextTitle={chrome.quickstart.title} surface="paper" lang={lang} />
 </SectionShell>
 
 <style>

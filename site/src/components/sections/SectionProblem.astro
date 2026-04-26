@@ -1,12 +1,20 @@
 ---
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const chrome = getTranslations(lang).landingV2;
 ---
 
 <SectionShell
   number="01"
-  title="THE PROBLEM"
-  centerLabel="OBSERVED 2024–2026"
+  title={chrome.problem.title}
+  centerLabel={chrome.problem.centerLabel}
   figure="01"
   surface="paper"
   seam="to-paper"
@@ -39,7 +47,7 @@ import SectionFooter from '../SectionFooter.astro';
     </div>
   </div>
 
-  <SectionFooter nextNumber="02" nextTitle="ENGINEERING" surface="paper" />
+  <SectionFooter nextNumber="02" nextTitle={chrome.engineering.title} surface="paper" lang={lang} />
 </SectionShell>
 
 <style>
