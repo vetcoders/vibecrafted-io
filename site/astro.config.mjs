@@ -12,4 +12,11 @@ import mdx from '@astrojs/mdx';
 export default defineConfig({
   site: 'https://vibecrafted.io',
   integrations: [svelte({ preprocess: vitePreprocess() }), mdx()],
+  redirects: {
+    '/dou': '/en/dou/',
+    '/faq': '/en/faq/',
+    '/framework': '/en/framework/',
+    '/install': '/en/install/',
+    '/quickstart': '/en/quickstart/',
+  },
 });

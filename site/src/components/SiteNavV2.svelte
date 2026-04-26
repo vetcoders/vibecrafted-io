@@ -135,8 +135,8 @@
       class="v2nav__install-wrap"
       bind:this={installWrapperEl}
     >
-      <button
-        type="button"
+      <a
+        href="/install"
         class="v2nav__install"
         aria-haspopup="true"
         aria-expanded={dropdownOpen}
@@ -145,7 +145,7 @@
         onfocus={openImmediately}
       >
         INSTALL<span class="v2nav__install-arrow" aria-hidden="true">▾</span>
-      </button>
+      </a>
 
       <div
         class={['v2nav__dropdown', dropdownOpen && 'v2nav__dropdown--open']}
