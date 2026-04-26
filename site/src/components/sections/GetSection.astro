@@ -1,14 +1,43 @@
 ---
+import { getEntry } from 'astro:content';
 import CopyButton from '../../components/CopyButton.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type GetCard = {
+    step: string;
+    title: string;
+    body: string;
+    command: string;
+};
+
+type GetLink = {
+    href: string;
+    label: string;
+};
+
+type GetSectionData = {
+    label: string;
+    title: string;
+    sub: string;
+    cards: GetCard[];
+    installWizardHref: string;
+    installWizardLabel: string;
+    links: GetLink[];
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const dict = getTranslations(lang);
-const section = dict.sections.get;
-const copyButton = dict.copyButton;
+
+const entry = await getEntry('i18n', `${lang}/get`);
+if (!entry) {
+    throw new Error(`Get content not found for lang=${lang}`);
+}
+const section = entry.data as GetSectionData;
+
+// copyButton labels stay in the dict — UI strings, not redaction copy.
+const copyButton = getTranslations(lang).copyButton;
 ---
-<section id="get" class="get-section get-section--operations">
+<section id="get" class="get-section get-section--operations surface--grid">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
@@ -152,24 +181,25 @@ const copyButton = dict.copyButton;
     align-items: center;
     gap: 0.5rem;
     padding: 0.875rem 2rem;
-    border: 1px solid var(--copper);
+    border: 1px solid var(--orange);
     border-radius: var(--radius-sm);
-    background: var(--copper);
-    box-shadow: 0 0 16px rgba(184, 115, 51, 0.2);
-    color: var(--stone-deep);
+    background: var(--orange);
+    box-shadow: 0 0 16px rgba(217, 119, 69, 0.22);
+    color: var(--bg);
     font-family: var(--font-mono);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     text-decoration: none;
     transition: all 0.2s ease;
   }
 
   .get-wizard-btn:hover,
   .get-wizard-btn:focus-visible {
-    background: var(--copper-bright);
-    border-color: var(--copper-bright);
-    box-shadow: 0 0 24px rgba(184, 115, 51, 0.35);
+    background: var(--orange-hi);
+    border-color: var(--orange-hi);
+    box-shadow: 0 0 24px rgba(217, 119, 69, 0.35);
   }
 
   #get .docs-inline-links {

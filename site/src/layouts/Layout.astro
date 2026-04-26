@@ -6,6 +6,7 @@ import SearchShell from '../components/SearchShell.svelte';
 import SiteNav from '../components/SiteNav.svelte';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations, type Lang } from '../lib/i18n';
+import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/global.css';
 
 interface Props {
@@ -104,7 +105,16 @@ const isHomePage = normalizedPath === navPaths.home;
 const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
 const isFrameworkPage = normalizedPath === navPaths.framework;
 const showInstallBanner = isHomePage;
-const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'quickstart';
+const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'all';
+
+// Preload all three search bundles server-side so the SearchShell client
+// component never imports astro:content (server-only). The bundles are
+// passed as props.
+const [searchDataAll, searchDataQuickstart, searchDataFaq] = await Promise.all([
+  getDocsSearchData(lang, 'all'),
+  getDocsSearchData(lang, 'quickstart'),
+  getDocsSearchData(lang, 'faq'),
+]);
 
 const sectionLinks = {
   pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
@@ -113,6 +123,10 @@ const sectionLinks = {
   dou: isHomePage ? '#dou' : `${navPaths.home}#dou`,
   get: '#get',
 };
+
+const aboutHref = isHomePage ? '#skills' : `${navPaths.home}#skills`;
+const runtimeHref = isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`;
+const vcHref = 'https://github.com/VetCoders';
 
 const footerLinks = [
   { href: navPaths.quickstart, label: navLabels.quickstart },
@@ -131,36 +145,13 @@ const footerLinks = [
 ];
 
 const primaryLinks = [
-  { href: sectionLinks.pipeline, label: navLabels.pipeline },
-  { href: sectionLinks.skills, label: navLabels.skills },
+  { href: aboutHref, label: navLabels.about },
+  { href: runtimeHref, label: navLabels.runtime },
   { href: sectionLinks.marbles, label: navLabels.marbles },
-  { href: navPaths.framework, label: navLabels.framework, current: normalizedPath === navPaths.framework },
-  { href: navPaths.quickstart, label: navLabels.quickstart, current: normalizedPath === navPaths.quickstart },
-  { href: navPaths.faq, label: navLabels.faq, current: normalizedPath === navPaths.faq },
   { href: sectionLinks.dou, label: navLabels.dou },
+  { href: navPaths.framework, label: navLabels.board, current: normalizedPath === navPaths.framework },
 ];
 
-const inlineScriptHashes = [
-  "'sha256-Q2BPg90ZMplYY+FSdApNErhpWafg2hcRRbndmvxuL/Q='",
-  "'sha256-QJZDUlo/qa5AJCrG6vHyWcatjwCeWidEHQfJc601lzw='",
-  "'sha256-eIXWvAmxkr251LJZkjniEK5LcPF3NkapbJepohwYRIc='",
-  "'sha256-CGXPR4h8KhiD2d5ZEMGdIVoEsY5O4BhcHcTENCtCt40='",
-  "'sha256-QzWFZi+FLIx23tnm9SBU4aEgx4x8DsuASP07mfqol/c='",
-].join(' ');
-
-const contentSecurityPolicy = [
-  "default-src 'none'",
-  `script-src 'self' https://cdn.jsdelivr.net https://plausible.io ${inlineScriptHashes}`,
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data:",
-  "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://plausible.io",
-  "frame-src 'none'",
-  "worker-src 'self'",
-  "manifest-src 'self'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join('; ');
 ---
 
 <!DOCTYPE html>
@@ -190,9 +181,25 @@ const contentSecurityPolicy = [
     <meta content={description ?? title} name="twitter:image:alt">
     <meta content="@VetCoders" name="twitter:site">
     <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
-    <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy}>
     <meta content={robotsContent} name="robots">
-    <meta content="#0e0e11" name="theme-color">
+    <meta content="#0d1117" name="theme-color">
+    <meta
+        http-equiv="Content-Security-Policy"
+        content={[
+          "default-src 'none'",
+          "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
+          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+          "style-src-attr 'unsafe-inline'",
+          "img-src 'self' data:",
+          "font-src 'self' https://fonts.gstatic.com",
+          "connect-src 'self' https://plausible.io",
+          "frame-src 'none'",
+          "worker-src 'self'",
+          "manifest-src 'self'",
+          "base-uri 'self'",
+          "form-action 'self'",
+        ].join('; ')}
+    >
     <link href={canonicalUrl} rel="canonical">
     {alternates && <>
       <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
@@ -204,7 +211,7 @@ const contentSecurityPolicy = [
     <link href="/presence/logo-128.png" rel="apple-touch-icon">
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Allura&family=Poppins:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
     <script is:inline type="application/ld+json" set:html={jsonLd} />
     <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
@@ -217,7 +224,6 @@ const contentSecurityPolicy = [
         <header class="nav-shell vt-site-topbar">
             <a class="brand" href={navPaths.home}>
                 <span class="brand-mark vt-site-brand" transition:persist>
-                    <span class="brand-wordmark">vibecrafted</span>
                     <Image
                         src={logo32}
                         alt=""
@@ -228,6 +234,7 @@ const contentSecurityPolicy = [
                         densities={[1, 2]}
                         format="webp"
                     />
+                    <span class="brand-wordmark">Vibecrafted.</span>
                 </span>
             </a>
             <SiteNav
@@ -235,14 +242,17 @@ const contentSecurityPolicy = [
                 links={primaryLinks}
                 installHref={navPaths.install}
                 installLabel={navLabels.install}
+                vcHref={vcHref}
+                vcLabel={navLabels.vc}
+                vcTitle={navLabels.vcLabel}
                 toggleHref={toggleHref}
                 toggleLabel={navLabels.toggleShort}
                 toggleHreflang={toggleHreflang}
                 toggleLang={toggleHreflang}
                 githubLabel={navLabels.github}
-                searchLabel={navLabels.search}
                 menuLabel={navLabels.menu}
                 closeLabel={navLabels.closeMenu}
+                primaryNavLabel={navLabels.navPrimary}
             />
         </header>
     </div>
@@ -295,7 +305,15 @@ const contentSecurityPolicy = [
         </div>
     </footer>
 
-    <SearchShell client:load lang={lang} defaultSection={searchDefaultSection} />
+    <SearchShell
+        client:load
+        transition:persist="search-shell"
+        lang={lang}
+        defaultSection={searchDefaultSection}
+        searchDataAll={searchDataAll}
+        searchDataQuickstart={searchDataQuickstart}
+        searchDataFaq={searchDataFaq}
+    />
 </body>
 </html>
 
@@ -413,27 +431,24 @@ const contentSecurityPolicy = [
     display: inline-flex;
     align-items: center;
     gap: inherit;
-    border-radius: 999px;
-    padding: 0.18rem 0.35rem;
-    box-shadow: var(--brand-mark-shadow);
-    transition:
-      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.22s ease;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .brand:hover .brand-mark,
   .brand:focus-visible .brand-mark {
     transform: translateY(-1px);
-    box-shadow:
-      inset 0 1px 0 rgba(229, 236, 245, 0.24),
-      0 12px 28px rgba(0, 0, 0, 0.2);
   }
 
   .brand-wordmark {
     color: var(--steel-edge);
     font-size: 0.98rem;
     font-weight: 700;
-    letter-spacing: 0.2em;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .brand-logo {
@@ -698,7 +713,7 @@ const contentSecurityPolicy = [
 
     .subpage .brand-wordmark {
       font-size: 0.84rem;
-      letter-spacing: 0.16em;
+      letter-spacing: 0;
     }
 
     .footer-tagline {

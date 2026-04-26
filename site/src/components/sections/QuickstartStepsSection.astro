@@ -1,18 +1,35 @@
 ---
+import { getEntry } from 'astro:content';
 import CopyButton from '../../components/CopyButton.svelte';
 import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
-const dict = getTranslations(lang);
-const section = dict.sections.quickstartSteps;
-const copyButton = dict.copyButton;
+
+const entry = await getEntry('i18n', `${lang}/quickstartsteps`);
+if (!entry) {
+    throw new Error(`Quickstart steps content not found for lang=${lang}`);
+}
+
+interface QuickstartStep {
+    kicker: string;
+    title: string;
+    body: string;
+    command?: string;
+    commands?: string[];
+    note?: string;
+}
+
+const steps = (entry.data.steps ?? []) as QuickstartStep[];
+
+// CopyButton labels remain in the i18n dict (UI labels, not redaction-friendly copy).
+const copyButton = getTranslations(lang).copyButton;
 ---
 <Reveal client:load tag="section" id="quickstart-steps" class="quickstart-steps-section quickstart-steps-section--operations">
     <div class="docs-grid docs-grid--operations docs-grid--operation-rows">
-        {section.steps.map((step, index) => {
-            const commands = 'commands' in step ? step.commands : [step.command];
-            const note = 'note' in step ? step.note : undefined;
+        {steps.map((step, index) => {
+            const commands = step.commands ?? (step.command ? [step.command] : []);
+            const note = step.note;
 
             return (
                 <article

@@ -1,5 +1,5 @@
 <script lang="ts">
-  type Lang = 'en' | 'pl';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Slot {
     x: number;
@@ -27,6 +27,8 @@
   }
 
   let { lang = 'en' } = $props<{ lang?: Lang }>();
+
+  const canvasCopy = $derived(getTranslations(lang).sections.diffusionCanvas);
 
   let canvasEl: HTMLCanvasElement | undefined;
 
@@ -439,12 +441,11 @@
     }
 
     function boardLabel() {
-      return lang === 'pl' ? 'Plansza' : 'Board';
+      return canvasCopy.boardLabel;
     }
 
     function loopLabel(loop: number) {
-      if (lang === 'pl') return `Pętla ${loop}`;
-      return `Loop ${loop}`;
+      return `${canvasCopy.loopPrefix} ${loop}`;
     }
 
     function proximity(x: number, y: number) {

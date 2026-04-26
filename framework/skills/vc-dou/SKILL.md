@@ -23,7 +23,7 @@ Operator enters the framework session through:
 vibecrafted start
 # or
 vc-start
-# same default board as: vc-start vibecrafted
+# same default board as: vc-start operator
 ```
 
 Then launch this workflow through the command deck, not raw `skills/.../*.sh` paths:
@@ -67,7 +67,7 @@ This is the completion engine described in the DoU manifesto. It is not a passiv
 <summary>Foundation Dependencies (Loaded with framework)</summary>
 
 - [vc-loctree](../foundations/vc-loctree/SKILL.md) — primary map and structural awareness.
-- [vc-aicx](../foundations/vc-aicx/SKILL.md) — primary memory and steerability index.
+- [vc-aicx](../foundations/vc-aicx/SKILL.md) — primary intentions and steerability index.
 </details>
 
 One critical rule:

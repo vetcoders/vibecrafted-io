@@ -11,11 +11,7 @@ interface Props {
   lang?: 'en' | 'pl';
 }
 
-const {
-  title,
-  description = 'Guided installer for the Vibecrafted release engine.',
-  lang = 'en',
-} = Astro.props;
+const { title, description, lang = 'en' } = Astro.props;
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
@@ -24,12 +20,17 @@ const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
 const dict = getTranslations(lang);
 const navLabels = dict.nav;
 const footer = dict.footer;
-const isPl = lang === 'pl';
-const homeHref = isPl ? '/pl/' : '/en/';
-const quickstartHref = isPl ? '/pl/quickstart/' : '/en/quickstart/';
-const faqHref = isPl ? '/pl/faq/' : '/en/faq/';
-const toggleHref = isPl ? '/en/install/' : '/pl/install/';
-const toggleLang = isPl ? 'en' : 'pl';
+const wizardLayoutCopy = dict.sections.wizardLayout;
+const resolvedDescription = description ?? wizardLayoutCopy.defaultDescription;
+const basePath = `/${lang}`;
+const otherLang = lang === 'pl' ? 'en' : 'pl';
+const homeHref = `${basePath}/`;
+const quickstartHref = `${basePath}/quickstart/`;
+const faqHref = `${basePath}/faq/`;
+const toggleHref = `/${otherLang}/install/`;
+const toggleLang = otherLang;
+const closeInstallerLabel = wizardLayoutCopy.closeInstaller;
+const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 ---
 
 <!DOCTYPE html>
@@ -39,9 +40,9 @@ const toggleLang = isPl ? 'en' : 'pl';
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>{title}</title>
-    <meta content={description} name="description">
+    <meta content={resolvedDescription} name="description">
     <meta content={title} property="og:title">
-    <meta content={description} property="og:description">
+    <meta content={resolvedDescription} property="og:description">
     <meta content={ogImageUrl} property="og:image">
     <meta content="website" property="og:type">
     <meta content={canonicalUrl} property="og:url">
@@ -49,7 +50,7 @@ const toggleLang = isPl ? 'en' : 'pl';
     <meta content={ogLocale} property="og:locale">
     <meta content="summary_large_image" name="twitter:card">
     <meta content={title} name="twitter:title">
-    <meta content={description} name="twitter:description">
+    <meta content={resolvedDescription} name="twitter:description">
     <meta content={ogImageUrl} name="twitter:image">
     <meta content="@VetCoders" name="twitter:site">
     <meta content="index,follow" name="robots">
@@ -60,7 +61,9 @@ const toggleLang = isPl ? 'en' : 'pl';
     <link href="/presence/logo-128.png" rel="apple-touch-icon">
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
     <style>
       html, body {
@@ -74,11 +77,17 @@ const toggleLang = isPl ? 'en' : 'pl';
 </head>
 <body class="wizard-page">
     <main class="wizard-shell">
+        <div
+            class="wizard-shell__backdrop"
+            aria-hidden="true"
+            data-installer-close
+            data-close-target={homeHref}
+        ></div>
         <div class="wizard-shell__frame">
             <header class="wizard-shell__topbar vt-site-topbar">
                 <a class="brand" href={homeHref}>
                     <span class="brand-mark vt-site-brand" transition:persist>
-                        <span class="brand-wordmark">vibecrafted</span>
+                        <span class="brand-wordmark">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
                         <Image
                             src={logo32}
                             alt=""
@@ -95,6 +104,21 @@ const toggleLang = isPl ? 'en' : 'pl';
                     <a href={quickstartHref}>{navLabels.quickstart}</a>
                     <a href={faqHref}>{navLabels.faq}</a>
                     <a href={toggleHref} hreflang={toggleLang} lang={toggleLang}>{navLabels.toggleShort}</a>
+                    <a
+                        href={homeHref}
+                        aria-label={closeInstallerLabel}
+                        class="wizard-close-btn"
+                        title={closeInstallerLabel}
+                        data-installer-close
+                        data-close-target={homeHref}
+                        data-astro-reload
+                    >
+                        <span class="wizard-close-btn__label">{closeInstallerShort}</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </a>
                 </nav>
             </header>
             <div class="wizard-shell__content">
@@ -113,19 +137,60 @@ const toggleLang = isPl ? 'en' : 'pl';
                             densities={[1, 2]}
                             format="webp"
                         />
-                        <span class="footer-title">{footer.brand}</span>
+                        <span class="footer-title footer-wordmark">{footer.brand}</span>
                     </div>
-                    <p class="footer-tagline">{footer.tagline}</p>
-                    <nav class="footer-links" aria-label={navLabels.navFooter}>
-                        <a href={quickstartHref}>{navLabels.quickstart}</a>
-                        <a href={faqHref}>{navLabels.faq}</a>
-                        <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer">{navLabels.github}</a>
-                    </nav>
-                    <p class="footer-copyright">{footer.copyright}</p>
+                    <div class="footer-meta">
+                        <span class="footer-tagline">{footer.byline}</span>
+                        <span class="footer-meta-sep" aria-hidden="true">·</span>
+                        <span class="footer-copyright">{footer.copyright}</span>
+                        <span class="footer-meta-sep" aria-hidden="true">·</span>
+                        <span class="footer-license">{footer.license}</span>
+                    </div>
                 </div>
             </footer>
         </div>
     </main>
+    <script is:inline define:vars={{ homeHref }}>
+      const closePath = homeHref;
+      const closeEvent = 'vibecrafted-installer:closing';
+      let closing = false;
+
+      async function closeInstaller(targetHref) {
+        if (closing) return;
+        closing = true;
+
+        window.dispatchEvent(new CustomEvent(closeEvent));
+
+        if (window.__VIBECRAFTED_LIVE__ === true) {
+          try {
+            await Promise.race([
+              fetch('/api/session', {
+                method: 'DELETE',
+                headers: { Accept: 'application/json' },
+                cache: 'no-store',
+                keepalive: true,
+              }),
+              new Promise((resolve) => window.setTimeout(resolve, 450)),
+            ]);
+          } catch {}
+        }
+
+        window.location.assign(targetHref);
+      }
+
+      document.addEventListener(
+        'click',
+        (event) => {
+          if (!(event.target instanceof Element)) return;
+          const trigger = event.target.closest('[data-installer-close]');
+          if (!trigger) return;
+          event.preventDefault();
+          event.stopPropagation();
+          closeInstaller(trigger.getAttribute('data-close-target') || closePath);
+        },
+        { capture: true }
+      );
+    </script>
 </body>
 </html>
 
@@ -233,6 +298,12 @@ const toggleLang = isPl ? 'en' : 'pl';
     min-height: min(calc(100dvh - 1.6rem), 46rem);
   }
 
+  .wizard-shell__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
   .wizard-shell::before,
   .wizard-shell::after {
     content: "";
@@ -261,6 +332,7 @@ const toggleLang = isPl ? 'en' : 'pl';
 
   .wizard-shell__frame {
     position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -334,6 +406,36 @@ const toggleLang = isPl ? 'en' : 'pl';
     transform: translateY(-1px);
   }
 
+  .wizard-close-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-left: 0.5rem;
+    padding: 0.35rem 0.62rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(229, 236, 245, 0.78);
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .wizard-close-btn__label {
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .wizard-close-btn:hover,
+  .wizard-close-btn:focus-visible {
+    background: rgba(212, 144, 92, 0.15) !important;
+    border-color: rgba(212, 144, 92, 0.4) !important;
+    color: var(--copper-bright, #d4905c) !important;
+  }
+
   .brand {
     display: flex;
     align-items: center;
@@ -369,9 +471,11 @@ const toggleLang = isPl ? 'en' : 'pl';
 
   .brand-wordmark {
     color: var(--steel-edge);
-    font-size: 0.98rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
+    font-family: var(--font-head, 'Fraunces', serif);
+    font-size: 1.05rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    text-transform: none;
   }
 
   .brand-logo {
@@ -412,8 +516,11 @@ const toggleLang = isPl ? 'en' : 'pl';
 
   .footer-container--wizard {
     width: 100%;
-    gap: 0.4rem;
-    padding-block: 0.85rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 0.52rem;
   }
 
   .footer-container {
@@ -431,8 +538,6 @@ const toggleLang = isPl ? 'en' : 'pl';
     gap: 0.7rem;
     color: var(--steel-edge);
     font-family: var(--font-mono);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
   }
 
   .footer-logo {
@@ -445,64 +550,54 @@ const toggleLang = isPl ? 'en' : 'pl';
     font-family: var(--font-mono);
     font-size: 0.78rem;
     font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
+  }
+
+  .footer-wordmark {
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .footer-meta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    color: var(--steel-dark);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    line-height: 1.35;
   }
 
   .footer-tagline {
     margin: 0;
-    max-width: 34rem;
-    color: var(--steel-dark);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    max-width: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
     letter-spacing: 0.04em;
-    line-height: 1.35;
-    text-align: center;
+    line-height: inherit;
+    text-align: right;
     text-transform: none;
   }
 
-  .footer-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: var(--footer-links-gap);
-    margin: 0;
+  .footer-meta-sep {
+    color: rgba(163, 184, 199, 0.56);
   }
 
-  .footer-links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: auto;
-    padding: 0.15rem 0;
-    color: var(--steel-dark);
-    font-family: var(--font-mono);
-    font-size: 0.69rem;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-decoration: none;
-    text-transform: uppercase;
-    transition:
-      color 0.2s ease,
-      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-      text-shadow 0.18s ease;
-  }
-
-  .footer-links a:hover,
-  .footer-links a:focus-visible {
-    color: var(--steel);
-    transform: translateY(-1px);
-    text-shadow: 0 0 14px rgba(163, 184, 199, 0.1);
+  .footer-license {
+    letter-spacing: 0.08em;
+    text-transform: none;
   }
 
   .footer-copyright {
     margin: 0;
-    color: var(--steel-dark);
-    font-family: var(--font-mono);
-    font-size: 0.64rem;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
     font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-transform: none;
   }
 
   @media (max-width: 720px) {
@@ -537,26 +632,22 @@ const toggleLang = isPl ? 'en' : 'pl';
 
     .brand-wordmark {
       font-size: 0.84rem;
-      letter-spacing: 0.16em;
+      letter-spacing: 0;
     }
 
     .footer-container--wizard {
+      flex-direction: column;
       padding-inline: 0.95rem;
       padding-block: 0.72rem;
     }
 
-    .footer-tagline {
-      width: auto;
-      padding: 0;
-      margin-left: 0;
-      border-left: 0;
+    .footer-meta {
+      justify-content: center;
       text-align: center;
-      line-height: 1.5;
     }
 
-    .footer-links {
-      gap: 0.75rem 1rem;
-      padding: 0 1rem;
+    .footer-tagline {
+      text-align: center;
     }
   }
 </style>

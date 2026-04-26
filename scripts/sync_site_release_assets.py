@@ -2,12 +2,19 @@
 from __future__ import annotations
 
 import json
+import shlex
 import shutil
 from pathlib import Path
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11
+    import tomli as tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUNDLE_ROOT = REPO_ROOT / "framework"
 SITE_PUBLIC = REPO_ROOT / "site" / "public"
+SITE_SRC = REPO_ROOT / "site" / "src"
 
 
 def read_version(bundle_root: Path) -> str:
@@ -60,6 +67,57 @@ def write_channel_manifest(site_public: Path, version: str, archive_name: str) -
     )
 
 
+def _render_phase_commands(cmd: list[str]) -> list[str]:
+    if not cmd:
+        return []
+    if len(cmd) >= 3 and cmd[1] == "-c":
+        script = cmd[2]
+        return [line.strip() for line in script.splitlines() if line.strip()]
+    return [shlex.join(cmd)]
+
+
+def export_install_manifest(bundle_root: Path, site_src: Path) -> Path:
+    source_manifest = bundle_root / "install.toml"
+    manifest = tomllib.loads(source_manifest.read_text(encoding="utf-8"))
+    diagnostics = manifest.get("diagnostics", {})
+
+    export_payload = {
+        "title": manifest.get("title", "Vibecrafted"),
+        "version": read_version(bundle_root),
+        "persist": bool(manifest.get("persist", False)),
+        "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+        "phases": [
+            {
+                "key": phase["key"],
+                "label": phase["label"],
+                "optional": bool(phase.get("optional", False)),
+                "reason": phase.get("reason", "").strip(),
+                "reasonLines": [
+                    line.strip()
+                    for line in phase.get("reason", "").splitlines()
+                    if line.strip()
+                ],
+                "commands": _render_phase_commands(phase.get("cmd", [])),
+            }
+            for phase in manifest.get("phase", [])
+        ],
+        "diagnostics": {
+            "categories": diagnostics.get("categories", []),
+            "labels": diagnostics.get("labels", {}),
+            "commands": diagnostics.get("commands", {}),
+            "paths": diagnostics.get("paths", {}),
+        },
+    }
+
+    output_path = site_src / "lib" / "generated" / "install-manifest.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(export_payload, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return output_path
+
+
 def prune_stale_release_artifacts(site_public: Path, archive_name: str) -> None:
     keep = {
         archive_name,
@@ -84,6 +142,7 @@ def prune_stale_release_artifacts(site_public: Path, archive_name: str) -> None:
 def sync_site_release_assets(
     bundle_root: Path = BUNDLE_ROOT,
     site_public: Path = SITE_PUBLIC,
+    site_src: Path = SITE_SRC,
 ) -> dict[str, str]:
     version = read_version(bundle_root)
     archive_name = release_archive_name(version)
@@ -91,7 +150,8 @@ def sync_site_release_assets(
     required_files = {
         bundle_root / "install.sh": site_public / "install.sh",
         bundle_root / "install.sh.sig": site_public / "install.sh.sig",
-        bundle_root / "vibecrafted-signing.pub": site_public / "vibecrafted-signing.pub",
+        bundle_root / "vibecrafted-signing.pub": site_public
+        / "vibecrafted-signing.pub",
         bundle_root / "SHA256SUMS": site_public / "SHA256SUMS",
         bundle_root / "VERSION": site_public / "VERSION",
         bundle_root / archive_name: site_public / archive_name,
@@ -112,12 +172,14 @@ def sync_site_release_assets(
 
     prune_stale_release_artifacts(site_public, archive_name)
     write_channel_manifest(site_public, version, archive_name)
+    manifest_json = export_install_manifest(bundle_root, site_src)
 
     return {
         "version": version,
         "archive": archive_name,
         "bundle_dir": str(bundle_root),
         "public_dir": str(site_public),
+        "manifest_json": str(manifest_json),
     }
 
 

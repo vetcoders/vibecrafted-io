@@ -1,25 +1,39 @@
 ---
+import { getEntry } from 'astro:content';
 import MarbleCanvas from '../../components/MarbleCanvas.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
+import type { Lang } from '../../lib/i18n';
 
 const { lang } = Astro.props as { lang: Lang };
-const hero = getTranslations(lang).sections.hero;
+
+const entry = await getEntry('i18n', `${lang}/hero`);
+if (!entry) {
+    throw new Error(`Hero content not found for lang=${lang}`);
+}
+const hero = entry.data;
+
+function renderAccents(input: string | undefined): string {
+    if (!input) return '';
+    return input.replace(
+        /<Accent>([\s\S]*?)<\/Accent>/g,
+        '<span class="manifesto-title__framework-accent">$1</span>',
+    );
+}
+
+const frameworkTitleHtml = renderAccents(hero.frameworkTitle);
 ---
-<article class="founder-manifesto">
-    <Reveal client:load tag="section" class="hero-split">
+<article class="founder-manifesto surface--grid">
+    <Reveal client:load tag="section" class="hero-split hero-section">
         <header class="hero-copy">
             <h1 class="manifesto-title">
                 <span class="manifesto-title__script">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
                 <span class="manifesto-title__rule" aria-hidden="true"></span>
                 <span class="manifesto-title__framework">
-                    <Fragment set:html={hero.frameworkTitleHtml} />
+                    <Fragment set:html={frameworkTitleHtml} />
                 </span>
             </h1>
             <p class="manifesto-lead">{hero.lead}</p>
-            <p class="manifesto-quote">
-                <Fragment set:html={hero.quoteHtml} />
-            </p>
+            <p class="manifesto-quote">{hero.quote}</p>
             <div class="manifesto-actions">
                 <a href="#evidence" class="btn-solid">{hero.evidence}</a>
                 <a href={hero.quickstartHref} class="btn-outline">{hero.quickstart}</a>
@@ -39,9 +53,10 @@ const hero = getTranslations(lang).sections.hero;
 
     .hero-split {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-lg);
-        align-items: stretch;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: clamp(2rem, 6vw, 5.5rem);
+        row-gap: var(--space-lg);
+        align-items: center;
         min-height: var(--view-inner);
         padding: calc(var(--view-offset) + var(--space-lg)) 0 var(--space-lg);
         scroll-snap-align: start;
@@ -50,9 +65,29 @@ const hero = getTranslations(lang).sections.hero;
     .hero-copy {
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
-        align-self: start;
-        padding-top: clamp(3.25rem, 10.5vh, 6.75rem);
+        justify-content: center;
+        justify-self: start;
+        min-height: var(--hero-canvas-max);
+        max-width: var(--hero-canvas-max);
+        padding-block: 0;
+    }
+
+    .manifesto-title {
+        gap: clamp(0.15rem, 0.4vh, 0.35rem);
+    }
+
+    .manifesto-title__script {
+        font-size: clamp(3.35rem, 6vw, 5.85rem);
+    }
+
+    .manifesto-lead {
+        margin-top: clamp(1rem, 3vh, 2rem);
+    }
+
+    .btn-solid,
+    .btn-outline {
+        min-height: 2.4rem;
+        padding: 0.55rem 1.2rem;
     }
 
     @media (max-width: 900px) {
@@ -66,12 +101,19 @@ const hero = getTranslations(lang).sections.hero;
         .hero-copy {
             text-align: center;
             align-self: auto;
+            justify-self: center;
+            min-height: 0;
+            max-width: min(100%, 34rem);
             padding-top: 0;
         }
 
         .manifesto-title__rule,
         .manifesto-lead {
             margin-inline: auto;
+        }
+
+        .manifesto-lead {
+            margin-top: 0;
         }
 
         .manifesto-actions {

@@ -19,7 +19,7 @@
   }
 </script>
 
-<section id="skills" class="skills-section">
+<section id="skills" class="skills-section surface--grid">
   <Reveal tag="div" class="container">
     <div class="section-label">{section.label}</div>
     <h2 class="section-title">{section.title}</h2>

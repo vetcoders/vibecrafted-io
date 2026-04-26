@@ -36,8 +36,16 @@ about what the product is.
    make bundle-check
    make check
    make test
+   make semgrep
    env -u ZELLIJ -u ZELLIJ_PANE_ID -u ZELLIJ_SESSION_NAME -u VIBECRAFTED_OPERATOR_SESSION bash scripts/check-portable.sh
    ```
+
+   `make semgrep` is the security gate; the local pre-commit and
+   pre-push hooks under `scripts/hooks/` run the same invocation, so a
+   green hook on the release commit gives the same answer as the gate.
+   Any blocking finding must be fixed, accepted in writing inside the
+   release report, or deferred with a tracked follow-up — no silent
+   skips.
 
 2. Installer truth
    Confirm every public install surface keeps the same contract:
@@ -56,17 +64,18 @@ about what the product is.
    as a separate lane from this repo commit. Minimum rebuild command:
 
    ```bash
-   pnpm --dir ~/Libraxis/01_deployed_libraxis_vm/vibecrafted-io/site build
+   pnpm --dir "<vibecrafted-io-checkout>/site" build
    ```
 
-   Minimum drift checks before any public launch:
+   Minimum drift checks before any public launch (run from your
+   `vibecrafted-io` checkout):
 
    ```bash
    rg -n "Interactive terminals always enter the installer TUI|curl -fsSL https://vibecrafted.io/install.sh \\| bash$" \
-     ~/Libraxis/01_deployed_libraxis_vm/vibecrafted-io/README.md \
-     ~/Libraxis/01_deployed_libraxis_vm/vibecrafted-io/docs/install.sh \
-     ~/Libraxis/01_deployed_libraxis_vm/vibecrafted-io/docs/QUICK_START.md \
-     ~/Libraxis/01_deployed_libraxis_vm/vibecrafted-io/site/src
+     README.md \
+     docs/install.sh \
+     docs/QUICK_START.md \
+     site/src
    ```
 
    If that grep still finds old TUI-only or direct-only wording in the portal
@@ -106,11 +115,24 @@ about what the product is.
    - the portal and installer are both ready for real strangers
    - someone is available to answer comments for the full launch window
 
+## Release report contract
+
+Every release run produces a report under
+`$VIBECRAFTED_ROOT/.vibecrafted/artifacts/<org>/<repo>/<YYYY_MMDD>/reports/`
+that follows the canonical template at
+[`skills/vc-release/references/release-report-template.md`](../skills/vc-release/references/release-report-template.md).
+The four mandatory sections — security gate, exposed surface inventory,
+deployment mode decision, and post-release install smoke from the
+published artefact — are non-negotiable. A release without all four
+sections populated is blocked, not "almost done."
+
 ## Supporting docs
 
 - [Quick Start](./QUICK_START.md)
 - [Marketplace Listing](./MARKETPLACE_LISTING.md)
 - [Submission Forms](./SUBMISSION_FORMS.md)
 - [Installer Reference](./installer/REFERENCE.md)
+- [Release Report Template](../skills/vc-release/references/release-report-template.md)
+- [Deployment Reality Matrix](../skills/vc-release/references/deployment-reality.md)
 
 `//𝚟𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.`

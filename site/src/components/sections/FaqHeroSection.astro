@@ -1,10 +1,26 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
-import DocsSearch from '../DocsSearch.svelte';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.faqHero;
+
+interface FaqHeroData {
+    label: string;
+    title: string;
+    lead: string;
+    quote: string;
+    primaryHref: string;
+    primaryLabel: string;
+    secondaryHref: string;
+    secondaryLabel: string;
+}
+
+const entry = await getEntry('i18n', `${lang}/faqhero`);
+if (!entry) {
+    throw new Error(`FAQ hero content not found for lang=${lang}`);
+}
+const section = entry.data as unknown as FaqHeroData;
 ---
 <Reveal client:load tag="section" class="docs-hero">
     <div class="section-label">{section.label}</div>
@@ -15,5 +31,4 @@ const section = getTranslations(lang).sections.faqHero;
         <a class="btn-solid" href={section.primaryHref}>{section.primaryLabel}</a>
         <a class="btn-outline" href={section.secondaryHref}>{section.secondaryLabel}</a>
     </div>
-    <DocsSearch client:load lang={lang} section="faq" />
 </Reveal>

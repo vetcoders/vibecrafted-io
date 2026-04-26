@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -19,34 +20,70 @@ from typing import Any
 from urllib.parse import urlparse
 
 try:
+    from control_plane_launch import launch_workflow, normalize_launch_spec
+    from control_plane_state import sync_state
     from installer_brand import PRODUCT_LINE, TAGLINE, VAPOR_HEADER
-    from installer_tui import (
-        CATEGORY_LABELS,
-        helper_layer_path,
-        read_framework_version,
-        run_diagnostics,
-        start_here_path,
-        summarize_diagnostics,
-    )
-    from runtime_paths import vibecrafted_home
+    from runtime_paths import read_version_file, vibecrafted_home, xdg_config_home
 except ModuleNotFoundError:  # pragma: no cover - depends on entrypoint
+    from scripts.control_plane_launch import launch_workflow, normalize_launch_spec
+    from scripts.control_plane_state import sync_state
     from scripts.installer_brand import PRODUCT_LINE, TAGLINE, VAPOR_HEADER
-    from scripts.installer_tui import (
-        CATEGORY_LABELS,
-        helper_layer_path,
-        read_framework_version,
-        run_diagnostics,
-        start_here_path,
-        summarize_diagnostics,
+    from scripts.runtime_paths import (
+        read_version_file,
+        vibecrafted_home,
+        xdg_config_home,
     )
-    from scripts.runtime_paths import vibecrafted_home
 
 
 OUTPUT_TAIL_LIMIT = 120
+CATEGORY_LABELS = {
+    "frameworks": "Frameworks",
+    "bundled": "Bundled toolchain",
+    "foundations": "Foundations",
+    "toolchains": "Toolchains",
+    "agents": "Agents",
+    "additional_tools": "Additional tools",
+}
+CATEGORY_ORDER = tuple(CATEGORY_LABELS)
+FOUNDATION_COMMANDS = ("loctree-mcp", "aicx-mcp", "prview", "screenscribe")
+BUNDLED_BIN_NAMES = ("aicx-mcp", "aicx", "loctree-mcp", "loctree", "loct", "prview")
+TOOLCHAIN_COMMANDS = ("python3", "node", "git", "rsync")
+AGENT_COMMANDS = ("claude", "codex", "gemini")
+ADDITIONAL_TOOL_COMMANDS = ("mise", "starship", "atuin", "zoxide")
 
 
 def default_source_dir() -> str:
     return str(Path(__file__).resolve().parent.parent)
+
+
+def read_framework_version(source_dir: str) -> str:
+    return read_version_file(source_dir)
+
+
+def framework_store_dir() -> Path:
+    return vibecrafted_home() / "skills"
+
+
+def helper_layer_path() -> Path:
+    return xdg_config_home() / "vetcoders" / "vc-skills.sh"
+
+
+def install_log_path() -> Path:
+    return vibecrafted_home() / "install.log"
+
+
+def start_here_path() -> Path:
+    return vibecrafted_home() / "START_HERE.md"
+
+
+def runtime_skill_views() -> dict[str, Path]:
+    home = Path.home()
+    return {
+        "agents": home / ".agents" / "skills",
+        "claude": home / ".claude" / "skills",
+        "codex": home / ".codex" / "skills",
+        "gemini": home / ".gemini" / "skills",
+    }
 
 
 def installer_script_path(source_dir: str) -> Path:
@@ -112,6 +149,183 @@ def build_install_steps(source_dir: str, *, with_shell: bool) -> list[InstallSte
     return steps
 
 
+def _command_check(name: str) -> dict[str, Any]:
+    path = shutil.which(name)
+    return {
+        "label": name,
+        "found": bool(path),
+        "detail": path or f"{name} not found on PATH",
+        "kind": "command",
+    }
+
+
+def _path_check(
+    label: str, path: Path, *, found: bool | None = None, detail: str | None = None
+) -> dict[str, Any]:
+    is_found = path.exists() if found is None else found
+    return {
+        "label": label,
+        "found": is_found,
+        "detail": detail or str(path),
+        "kind": "path",
+    }
+
+
+def _framework_checks() -> dict[str, dict[str, Any]]:
+    store_dir = framework_store_dir()
+    helper_file = helper_layer_path()
+    skills = []
+    if store_dir.is_dir():
+        skills = sorted(
+            child.name
+            for child in store_dir.iterdir()
+            if child.is_dir() and child.name.startswith("vc-")
+        )
+
+    binary_path = shutil.which("vibecraft") or shutil.which("vibecrafted")
+
+    active_views = []
+    for runtime, path in runtime_skill_views().items():
+        if not path.is_dir():
+            continue
+        entries = [entry.name for entry in path.iterdir()]
+        if entries:
+            active_views.append(f"{runtime} ({len(entries)})")
+
+    return {
+        "workflows": _path_check(
+            "workflows",
+            store_dir,
+            found=bool(skills),
+            detail=f"{len(skills)} installed skill directories in {store_dir}"
+            if skills
+            else f"No installed skill directories in {store_dir}",
+        ),
+        "helpers": _path_check(
+            "helpers",
+            helper_file,
+            detail=str(helper_file)
+            if helper_file.exists()
+            else f"Missing helper file at {helper_file}",
+        ),
+        "binaries": {
+            "label": "binaries",
+            "found": bool(binary_path),
+            "detail": binary_path or "vibecraft/vibecrafted not found on PATH",
+            "kind": "command",
+        },
+        "symlinks": {
+            "label": "symlinks",
+            "found": bool(active_views),
+            "detail": ", ".join(active_views)
+            if active_views
+            else "No runtime skill views detected in $HOME/.agents, $HOME/.claude, $HOME/.codex, or $HOME/.gemini",
+            "kind": "path",
+        },
+    }
+
+
+def _bundled_os() -> str:
+    if sys.platform == "darwin":
+        return "macos"
+    if sys.platform.startswith("linux"):
+        return "linux"
+    if sys.platform.startswith(("win", "cygwin")):
+        return "windows"
+    return sys.platform
+
+
+def _bundled_arch() -> str:
+    machine = platform.machine().lower()
+    if machine in ("x86_64", "amd64"):
+        return "x86_64"
+    if machine in ("aarch64", "arm64"):
+        return "aarch64"
+    if machine == "armv7l":
+        return "armv7"
+    return machine or "unknown"
+
+
+def bundled_bin_root(source_dir: str) -> Path:
+    override = os.environ.get("VIBECRAFTED_BUNDLED_BIN")
+    if override:
+        return Path(override).expanduser()
+    per_arch = Path(source_dir) / "tools" / "bin" / f"{_bundled_os()}-{_bundled_arch()}"
+    if per_arch.is_dir():
+        return per_arch
+    return Path(source_dir) / "tools" / "bin"
+
+
+def _bundled_check(name: str, source_dir: str) -> dict[str, Any]:
+    root = bundled_bin_root(source_dir)
+    path = root / name
+    if path.is_file() and os.access(path, os.X_OK):
+        return {
+            "label": name,
+            "found": True,
+            "detail": str(path),
+            "kind": "bundled",
+        }
+    missing_detail = (
+        f"{name} missing from bundled drop-in ({root})"
+        if root.is_dir()
+        else f"{name} - bundled drop-in directory not present ({root})"
+    )
+    return {
+        "label": name,
+        "found": False,
+        "detail": missing_detail,
+        "kind": "bundled",
+    }
+
+
+def run_diagnostics(
+    source_dir: str | None = None,
+) -> dict[str, dict[str, dict[str, Any]]]:
+    """Check: frameworks, bundled toolchain, foundations, toolchains, agents, tools."""
+    if source_dir is None:
+        source_dir = default_source_dir()
+    diagnostics: dict[str, dict[str, dict[str, Any]]] = {}
+    diagnostics["frameworks"] = _framework_checks()
+    diagnostics["bundled"] = {
+        name: _bundled_check(name, source_dir) for name in BUNDLED_BIN_NAMES
+    }
+    diagnostics["foundations"] = {
+        name: _command_check(name) for name in FOUNDATION_COMMANDS
+    }
+    diagnostics["toolchains"] = {
+        name: _command_check(name) for name in TOOLCHAIN_COMMANDS
+    }
+    diagnostics["agents"] = {name: _command_check(name) for name in AGENT_COMMANDS}
+    diagnostics["additional_tools"] = {
+        name: _command_check(name) for name in ADDITIONAL_TOOL_COMMANDS
+    }
+    return diagnostics
+
+
+def summarize_diagnostics(
+    diagnostics: dict[str, dict[str, dict[str, Any]]],
+) -> tuple[list[str], list[str], dict[str, list[str]]]:
+    found_items: list[str] = []
+    missing_items: list[str] = []
+    needs_install: dict[str, list[str]] = {}
+
+    for category in CATEGORY_ORDER:
+        missing_in_category: list[str] = []
+        for name, entry in diagnostics.get(category, {}).items():
+            label = entry.get("label", name)
+            flat_label = f"{CATEGORY_LABELS[category]}: {label}"
+            if entry.get("found"):
+                found_items.append(flat_label)
+            else:
+                missing_items.append(flat_label)
+                missing_in_category.append(label)
+        if missing_in_category:
+            needs_install[category] = missing_in_category
+
+    return found_items, missing_items, needs_install
+
+
 def install_runtime_env(base_env: dict[str, str] | None = None) -> dict[str, str]:
     env = dict(os.environ if base_env is None else base_env)
     path_entries = env.get("PATH", "").split(os.pathsep) if env.get("PATH") else []
@@ -172,15 +386,43 @@ class InstallRun:
 
 
 class InstallController:
-    def __init__(self, source_dir: str) -> None:
+    def __init__(self, source_dir: str, *, bundle_dir: str | None = None) -> None:
         self.source_dir = str(Path(source_dir).resolve())
         self.version = read_framework_version(self.source_dir)
-        self.diagnostics = run_diagnostics()
+        self.diagnostics = run_diagnostics(self.source_dir)
         self.found_items, self.missing_items, self.needs_install = (
             summarize_diagnostics(self.diagnostics)
         )
         self._lock = threading.Lock()
         self._run = InstallRun()
+        self.site_dist_dir = self._resolve_site_dist(bundle_dir)
+        self.bundled_bin_dir = bundled_bin_root(self.source_dir)
+
+    def _resolve_site_dist(self, explicit: str | None) -> Path | None:
+        """Locate the Svelte site bundle shipped with the source tree.
+
+        Resolution order:
+        1. --bundle-dir flag (explicit)
+        2. VIBECRAFTED_SITE_BUNDLE env var
+        3. <source>/site/dist (authored layout)
+        4. <source>/dist (release-tarball layout)
+
+        Returns None when no bundle is present; the request handler
+        then falls back to the legacy inline HTML.
+        """
+        candidates: list[Path] = []
+        if explicit:
+            candidates.append(Path(explicit))
+        env_bundle = os.environ.get("VIBECRAFTED_SITE_BUNDLE")
+        if env_bundle:
+            candidates.append(Path(env_bundle))
+        root = Path(self.source_dir)
+        candidates.extend([root / "site" / "dist", root / "dist"])
+
+        for candidate in candidates:
+            if (candidate / "en" / "install" / "index.html").is_file():
+                return candidate.resolve()
+        return None
 
     def _category_cards(self) -> list[dict[str, Any]]:
         cards: list[dict[str, Any]] = []
@@ -218,6 +460,8 @@ class InstallController:
         except FileNotFoundError:
             install_plan = []
 
+        control_plane = self.control_plane_payload()
+
         return {
             "brand": {
                 "header": VAPOR_HEADER,
@@ -231,6 +475,9 @@ class InstallController:
             "guide_path_display": _trim_home(str(start_here_path())),
             "helper_path": str(helper_layer_path()),
             "helper_path_display": _trim_home(str(helper_layer_path())),
+            "bundled_bin_dir": str(self.bundled_bin_dir),
+            "bundled_bin_display": _trim_home(str(self.bundled_bin_dir)),
+            "bundled_bin_present": self.bundled_bin_dir.is_dir(),
             "found_count": len(self.found_items),
             "missing_count": len(self.missing_items),
             "found_items": self.found_items,
@@ -238,8 +485,29 @@ class InstallController:
             "needs_install": self.needs_install,
             "categories": self._category_cards(),
             "install_plan": install_plan,
+            "control_plane": control_plane,
+            "launcher_defaults": {
+                "workflows": ["workflow", "research", "review", "marbles"],
+                "agents": ["claude", "codex", "gemini"],
+                "runtimes": ["headless", "terminal", "visible"],
+            },
             "status": self.status_payload(),
         }
+
+    def control_plane_payload(self) -> dict[str, Any]:
+        snapshot = sync_state()
+        skill_store = framework_store_dir()
+        skills_ready = 0
+        if skill_store.is_dir():
+            skills_ready = sum(
+                1
+                for child in skill_store.iterdir()
+                if child.is_dir() and child.name.startswith("vc-")
+            )
+        snapshot["helper_path"] = str(helper_layer_path())
+        snapshot["guide_path"] = str(start_here_path())
+        snapshot["skills_ready"] = skills_ready
+        return snapshot
 
     def status_payload(self) -> dict[str, Any]:
         with self._lock:
@@ -354,6 +622,22 @@ class InstallController:
             return False, f"Could not open {guide}"
         return True, f"Opened {_trim_home(str(guide))}"
 
+    def launch_workflow(self, payload: dict[str, Any]) -> tuple[bool, dict[str, Any]]:
+        try:
+            spec = normalize_launch_spec(payload, self.source_dir)
+            launch_payload = launch_workflow(
+                spec,
+                self.source_dir,
+                env=install_runtime_env(),
+            )
+            return True, launch_payload
+        except (FileNotFoundError, ValueError) as exc:
+            return False, {
+                "accepted": False,
+                "message": str(exc),
+                "control_plane": self.control_plane_payload(),
+            }
+
 
 class InstallerHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
@@ -368,21 +652,124 @@ class InstallerHTTPServer(ThreadingHTTPServer):
         self.controller = controller
 
 
+STATIC_MIME_TYPES: dict[str, str] = {
+    ".html": "text/html; charset=utf-8",
+    ".htm": "text/html; charset=utf-8",
+    ".js": "application/javascript; charset=utf-8",
+    ".mjs": "application/javascript; charset=utf-8",
+    ".css": "text/css; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+    ".map": "application/json; charset=utf-8",
+    ".svg": "image/svg+xml",
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+    ".avif": "image/avif",
+    ".gif": "image/gif",
+    ".ico": "image/x-icon",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".ttf": "font/ttf",
+    ".otf": "font/otf",
+    ".txt": "text/plain; charset=utf-8",
+    ".xml": "application/xml; charset=utf-8",
+    ".webmanifest": "application/manifest+json",
+}
+
+
 class InstallerRequestHandler(BaseHTTPRequestHandler):
     server: InstallerHTTPServer
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        if parsed.path == "/":
+        path = parsed.path
+        if path.startswith("/api/"):
+            if path == "/api/preflight":
+                self._send_json(self.server.controller.preflight_payload())
+                return
+            if path == "/api/install/status":
+                self._send_json(self.server.controller.status_payload())
+                return
+            if path == "/api/control-plane":
+                self._send_json(self.server.controller.control_plane_payload())
+                return
+            self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
+            return
+
+        static_file = self._resolve_static(path)
+        if static_file is not None:
+            self._send_file(static_file)
+            return
+
+        if path == "/":
             self._send_html(build_html(self.server.controller.preflight_payload()))
             return
-        if parsed.path == "/api/preflight":
-            self._send_json(self.server.controller.preflight_payload())
-            return
-        if parsed.path == "/api/install/status":
-            self._send_json(self.server.controller.status_payload())
-            return
+
         self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
+
+    def _resolve_static(self, url_path: str) -> Path | None:
+        site_dist = self.server.controller.site_dist_dir
+        if site_dist is None:
+            return None
+
+        if url_path in ("/", ""):
+            candidate = site_dist / "en" / "install" / "index.html"
+        elif url_path in ("/en/install", "/en/install/"):
+            candidate = site_dist / "en" / "install" / "index.html"
+        elif url_path in ("/pl/install", "/pl/install/"):
+            candidate = site_dist / "pl" / "install" / "index.html"
+        else:
+            relative = url_path.lstrip("/")
+            if not relative:
+                return None
+            candidate = site_dist / relative
+            if url_path.endswith("/"):
+                candidate = candidate / "index.html"
+
+        try:
+            resolved = candidate.resolve()
+        except (OSError, RuntimeError):
+            return None
+
+        try:
+            resolved.relative_to(site_dist)
+        except ValueError:
+            return None
+
+        if resolved.is_file():
+            return resolved
+        return None
+
+    def _send_file(self, path: Path) -> None:
+        try:
+            data = path.read_bytes()
+        except OSError:
+            self._send_json(
+                {"error": "Asset not readable"}, status=HTTPStatus.INTERNAL_SERVER_ERROR
+            )
+            return
+        mime = STATIC_MIME_TYPES.get(path.suffix.lower(), "application/octet-stream")
+        # Mark Astro-built install pages as live when served by us. The
+        # Svelte InstallerShell reads window.__VIBECRAFTED_LIVE__ to decide
+        # between preview (static manifest) and live (this API) mode; without
+        # the flag, hostname-only detection false-positives on Astro dev.
+        if path.suffix.lower() == ".html":
+            try:
+                html = data.decode("utf-8")
+            except UnicodeDecodeError:
+                html = None
+            if html is not None and "__VIBECRAFTED_LIVE__" not in html:
+                injection = "<script>window.__VIBECRAFTED_LIVE__=true;</script></head>"
+                if "</head>" in html:
+                    html = html.replace("</head>", injection, 1)
+                    data = html.encode("utf-8")
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(data)
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
@@ -404,6 +791,13 @@ class InstallerRequestHandler(BaseHTTPRequestHandler):
             self._send_json(
                 {"ok": ok, "message": message},
                 status=HTTPStatus.OK if ok else HTTPStatus.BAD_REQUEST,
+            )
+            return
+        if parsed.path == "/api/workflows/launch":
+            ok, payload = self.server.controller.launch_workflow(self._read_json())
+            self._send_json(
+                payload,
+                status=HTTPStatus.ACCEPTED if ok else HTTPStatus.BAD_REQUEST,
             )
             return
         self._send_json({"error": "Not found"}, status=HTTPStatus.NOT_FOUND)
@@ -449,7 +843,7 @@ def build_html(preflight: dict[str, Any]) -> str:
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Vibecrafted Guided Installer</title>
+            <title>Vibecrafted Control Plane</title>
             <style>
               :root {
                 --bg: #091016;
@@ -669,8 +1063,118 @@ def build_html(preflight: dict[str, Any]) -> str:
               .main {
                 padding: 18px 18px 18px 0;
                 display: grid;
-                grid-template-rows: auto minmax(0, 1fr) auto;
+                grid-template-rows: auto auto minmax(0, 1fr) auto;
                 gap: 16px;
+              }
+
+              .control-plane {
+                display: grid;
+                gap: 14px;
+                grid-template-columns: 1.2fr 1fr 1fr;
+                padding: 14px;
+              }
+
+              .panel-card {
+                padding: 16px;
+                border-radius: var(--radius-lg);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(255, 255, 255, 0.02);
+                display: grid;
+                gap: 12px;
+                min-height: 0;
+              }
+
+              .panel-card h3,
+              .panel-card h4 {
+                margin: 0;
+              }
+
+              .panel-card h4 {
+                font-size: 14px;
+                color: var(--patina);
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+              }
+
+              .launcher-form {
+                display: grid;
+                gap: 10px;
+              }
+
+              .launcher-grid,
+              .status-grid {
+                display: grid;
+                gap: 10px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+              }
+
+              .field {
+                display: grid;
+                gap: 6px;
+              }
+
+              .field label {
+                font-size: 12px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted-strong);
+              }
+
+              .field input,
+              .field select {
+                width: 100%;
+                padding: 11px 12px;
+                border-radius: 14px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(4, 8, 12, 0.78);
+                color: var(--text);
+              }
+
+              .run-list,
+              .event-list {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                display: grid;
+                gap: 8px;
+              }
+
+              .run-row,
+              .event-row {
+                padding: 12px 14px;
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.07);
+                background: rgba(0, 0, 0, 0.16);
+                display: grid;
+                gap: 6px;
+              }
+
+              .run-head,
+              .event-head {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                align-items: center;
+              }
+
+              .run-meta,
+              .event-meta {
+                color: var(--muted);
+                font-size: 13px;
+                line-height: 1.5;
+              }
+
+              .warning-list {
+                margin: 0;
+                padding-left: 18px;
+                color: var(--warn);
+                display: grid;
+                gap: 6px;
+              }
+
+              .launch-feedback {
+                min-height: 1.3em;
+                color: var(--muted);
               }
 
               .progress {
@@ -1141,6 +1645,9 @@ def build_html(preflight: dict[str, Any]) -> str:
 
                 .lead-grid,
                 .install-grid,
+                .control-plane,
+                .launcher-grid,
+                .status-grid,
                 .category-grid,
                 .summary-grid {
                   grid-template-columns: 1fr;
@@ -1158,7 +1665,7 @@ def build_html(preflight: dict[str, Any]) -> str:
             <div class="shell">
               <aside class="rail">
                 <section class="rail-card rail-brand">
-                  <div class="eyebrow">Guided install</div>
+                  <div class="eyebrow">Control plane</div>
                   <strong>%%HEADER%%</strong>
                   <h1>Ship AI-built software without the vibe hangover</h1>
                   <p class="rail-lead">
@@ -1204,12 +1711,108 @@ def build_html(preflight: dict[str, Any]) -> str:
                   <p class="slide-note">%%PRODUCT_LINE%%</p>
                   <code class="fallback-code">make wizard</code>
                   <p class="slide-note">
-                    Terminal-native fallback stays available for operators who prefer the TUI rhythm. The browser path is the effortless public front door.
+                    Local checkout GUI stays available for operators who want this browser-guided rhythm. For terminal-native flow, use <code>make vibecrafted</code>.
                   </p>
                 </section>
               </aside>
 
               <main class="main">
+                <section class="main-card control-plane">
+                  <section class="panel-card">
+                    <div class="eyebrow">Start</div>
+                    <h3>Launch the control plane without touching raw shell glue</h3>
+                    <p class="summary-copy">
+                      The GUI is launch-capable on purpose: it dispatches through the same command deck, then switches to observability instead of pretending to be the operator console.
+                    </p>
+                    <form class="launcher-form" id="launcher-form">
+                      <div class="launcher-grid">
+                        <div class="field">
+                          <label for="launch-skill">Workflow</label>
+                          <select id="launch-skill" name="skill"></select>
+                        </div>
+                        <div class="field">
+                          <label for="launch-agent">Agent</label>
+                          <select id="launch-agent" name="agent"></select>
+                        </div>
+                        <div class="field">
+                          <label for="launch-runtime">Runtime</label>
+                          <select id="launch-runtime" name="runtime"></select>
+                        </div>
+                        <div class="field">
+                          <label for="launch-root">Root</label>
+                          <input id="launch-root" name="root" type="text">
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label for="launch-prompt">Prompt</label>
+                        <input id="launch-prompt" name="prompt" type="text" placeholder="Launch with an inline prompt">
+                      </div>
+                      <div class="field">
+                        <label for="launch-file">Prompt File</label>
+                        <input id="launch-file" name="file" type="text" placeholder="/absolute/path/to/brief.md">
+                      </div>
+                      <div class="button-row">
+                        <button class="primary" id="launch-button" type="submit">Launch workflow</button>
+                        <button class="secondary open-guide-button" type="button">Open START_HERE</button>
+                      </div>
+                    </form>
+                    <p class="launch-feedback" id="launch-feedback"></p>
+                  </section>
+
+                  <section class="panel-card">
+                    <div class="eyebrow">Observe</div>
+                    <h3>Active and recent runs</h3>
+                    <div class="status-grid">
+                      <div class="count">
+                        <span>Active</span>
+                        <strong id="active-run-count">0</strong>
+                      </div>
+                      <div class="count">
+                        <span>Recent</span>
+                        <strong id="recent-run-count">0</strong>
+                      </div>
+                    </div>
+                    <div>
+                      <h4>Warnings</h4>
+                      <ul class="warning-list" id="warning-list"></ul>
+                    </div>
+                    <div>
+                      <h4>Active runs</h4>
+                      <ul class="run-list" id="active-run-list"></ul>
+                    </div>
+                    <div>
+                      <h4>Recent events</h4>
+                      <ul class="event-list" id="event-list"></ul>
+                    </div>
+                  </section>
+
+                  <section class="panel-card">
+                    <div class="eyebrow">Foundations</div>
+                    <h3>Doctor truth and helper surface</h3>
+                    <p class="summary-copy">
+                      Same machine truth as the installer preflight, exposed as a calmer control-plane summary.
+                    </p>
+                    <div class="status-grid">
+                      <div class="count">
+                        <span>Skills ready</span>
+                        <strong id="skills-ready-count">0</strong>
+                      </div>
+                      <div class="count">
+                        <span>Missing</span>
+                        <strong id="needs-install-count">0</strong>
+                      </div>
+                    </div>
+                    <div>
+                      <h4>Helper layer</h4>
+                      <div class="command-box"><code id="helper-path-inline"></code></div>
+                    </div>
+                    <div>
+                      <h4>Needs install</h4>
+                      <ul class="compact-list" id="needs-install-list"></ul>
+                    </div>
+                  </section>
+                </section>
+
                 <ol class="progress main-card" id="wizard-progress">
                   <li>
                     <button class="progress-button" data-step="0" type="button">
@@ -1254,7 +1857,7 @@ def build_html(preflight: dict[str, Any]) -> str:
                     <article class="slide is-active" data-step="0">
                       <section class="slide-card">
                         <div class="eyebrow">Step 1 of 6</div>
-                        <h2 class="slide-title">Welcome to the guided install</h2>
+                        <h2 class="slide-title">Welcome to the control plane</h2>
                         <div class="slide-body">
                           <div class="lead-grid">
                             <div class="main-card">
@@ -1295,9 +1898,9 @@ def build_html(preflight: dict[str, Any]) -> str:
                               </p>
                             </section>
                             <section class="summary-card">
-                              <h3>Terminal fallback</h3>
+                              <h3>Local checkout GUI</h3>
                               <p class="summary-copy">
-                                `make wizard` stays available as the expert path. Useful when you want the same cadence directly inside the terminal.
+                                `make wizard` opens this same browser-guided surface from a local checkout. `make vibecrafted` stays the shell-first default.
                               </p>
                             </section>
                           </div>
@@ -1444,6 +2047,24 @@ def build_html(preflight: dict[str, Any]) -> str:
                 source: document.getElementById('source-value'),
                 guide: document.getElementById('guide-value'),
                 helper: document.getElementById('helper-value'),
+                helperInline: document.getElementById('helper-path-inline'),
+                launcherForm: document.getElementById('launcher-form'),
+                launchSkill: document.getElementById('launch-skill'),
+                launchAgent: document.getElementById('launch-agent'),
+                launchRuntime: document.getElementById('launch-runtime'),
+                launchRoot: document.getElementById('launch-root'),
+                launchPrompt: document.getElementById('launch-prompt'),
+                launchFile: document.getElementById('launch-file'),
+                launchButton: document.getElementById('launch-button'),
+                launchFeedback: document.getElementById('launch-feedback'),
+                activeRunCount: document.getElementById('active-run-count'),
+                recentRunCount: document.getElementById('recent-run-count'),
+                activeRunList: document.getElementById('active-run-list'),
+                eventList: document.getElementById('event-list'),
+                warningList: document.getElementById('warning-list'),
+                skillsReadyCount: document.getElementById('skills-ready-count'),
+                needsInstallCount: document.getElementById('needs-install-count'),
+                needsInstallList: document.getElementById('needs-install-list'),
                 readyCount: document.getElementById('ready-count'),
                 missingCount: document.getElementById('missing-count'),
                 categoryGrid: document.getElementById('category-grid'),
@@ -1474,8 +2095,10 @@ def build_html(preflight: dict[str, Any]) -> str:
               };
 
               let pollTimer = null;
+              let controlPlaneTimer = null;
               let currentStep = 0;
               let latestStatus = boot.status;
+              let latestControlPlane = boot.control_plane || { active_runs: [], recent_runs: [], warnings: [], events: [] };
               const stepHints = [
                 'Welcome. This flow stays explanatory until you explicitly start the install.',
                 'The GUI is the public front door, but it still runs the repo-owned installer truth.',
@@ -1496,6 +2119,93 @@ def build_html(preflight: dict[str, Any]) -> str:
 
               function statusClass(found) {
                 return found ? 'status-pill status-pill--ok' : 'status-pill status-pill--warn';
+              }
+
+              function optionMarkup(values, selectedValue) {
+                return values.map((value) => (
+                  `<option value="${escapeHtml(value)}" ${value === selectedValue ? 'selected' : ''}>${escapeHtml(value)}</option>`
+                )).join('');
+              }
+
+              function populateLauncherOptions() {
+                dom.launchSkill.innerHTML = optionMarkup(boot.launcher_defaults.workflows, 'workflow');
+                dom.launchAgent.innerHTML = optionMarkup(boot.launcher_defaults.agents, 'claude');
+                dom.launchRuntime.innerHTML = optionMarkup(boot.launcher_defaults.runtimes, 'headless');
+                dom.launchRoot.value = boot.source_dir || '';
+                syncLaunchForm();
+              }
+
+              function syncLaunchForm() {
+                const skill = dom.launchSkill.value;
+                const researchMode = skill === 'research';
+                dom.launchAgent.disabled = researchMode;
+                if (researchMode) {
+                  dom.launchFeedback.textContent = 'Research launches the triple-agent swarm through the existing command deck.';
+                } else if (!latestStatus.running) {
+                  dom.launchFeedback.textContent = '';
+                }
+              }
+
+              function formatTimestamp(value) {
+                if (!value) {
+                  return 'unknown time';
+                }
+                const parsed = new Date(value);
+                return Number.isNaN(parsed.valueOf()) ? value : parsed.toLocaleString();
+              }
+
+              function renderRunRows(runs, emptyLabel) {
+                if (!runs.length) {
+                  return `<li class="run-row"><div class="run-meta">${escapeHtml(emptyLabel)}</div></li>`;
+                }
+                return runs.map((run) => `
+                  <li class="run-row">
+                    <div class="run-head">
+                      <strong>${escapeHtml(run.run_id)}</strong>
+                      <span class="status-pill ${run.health === 'stalled' ? 'status-pill--warn' : run.state === 'failed' ? 'status-pill--fail' : 'status-pill--ok'}">${escapeHtml(run.state)}</span>
+                    </div>
+                    <div class="run-meta">
+                      ${escapeHtml(run.agent)} · ${escapeHtml(run.skill)} · ${escapeHtml(run.mode)}<br>
+                      ${escapeHtml(run.operator_session || 'no operator session')}<br>
+                      ${escapeHtml(formatTimestamp(run.updated_at))}
+                    </div>
+                  </li>
+                `).join('');
+              }
+
+              function renderEventRows(events) {
+                if (!events.length) {
+                  return '<li class="event-row"><div class="event-meta">No control-plane events captured yet.</div></li>';
+                }
+                return events.map((event) => `
+                  <li class="event-row">
+                    <div class="event-head">
+                      <strong>${escapeHtml(event.run_id || 'run')}</strong>
+                      <span class="status-pill">${escapeHtml(event.kind || 'event')}</span>
+                    </div>
+                    <div class="event-meta">${escapeHtml(event.message || '')}<br>${escapeHtml(formatTimestamp(event.ts || ''))}</div>
+                  </li>
+                `).join('');
+              }
+
+              function renderControlPlane(controlPlane) {
+                latestControlPlane = controlPlane || latestControlPlane;
+                dom.activeRunCount.textContent = String((latestControlPlane.active_runs || []).length);
+                dom.recentRunCount.textContent = String((latestControlPlane.recent_runs || []).length);
+                dom.activeRunList.innerHTML = renderRunRows(
+                  latestControlPlane.active_runs || [],
+                  'No active runs yet. Launch from Start or use the command deck.'
+                );
+                dom.eventList.innerHTML = renderEventRows(latestControlPlane.events || []);
+                dom.warningList.innerHTML = (latestControlPlane.warnings && latestControlPlane.warnings.length)
+                  ? latestControlPlane.warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('')
+                  : '<li>No warnings right now.</li>';
+                dom.helperInline.textContent = latestControlPlane.helper_path || boot.helper_path_display || '';
+                dom.skillsReadyCount.textContent = String(latestControlPlane.skills_ready || 0);
+                dom.needsInstallCount.textContent = String(boot.missing_count || 0);
+                dom.needsInstallList.innerHTML = (boot.missing_items && boot.missing_items.length)
+                  ? boot.missing_items.map((item) => `<li>${escapeHtml(item)}</li>`).join('')
+                  : '<li>Nothing missing. This machine already looks ready.</li>';
               }
 
               function setGuideFeedback(message) {
@@ -1596,6 +2306,8 @@ def build_html(preflight: dict[str, Any]) -> str:
                   ? boot.install_plan.map((step) => `<li><strong>${escapeHtml(step.label)}</strong><div class="item-detail">${escapeHtml(step.command)}</div></li>`).join('')
                   : '<li>Install plan is not available for this source tree.</li>';
 
+                populateLauncherOptions();
+                renderControlPlane(boot.control_plane || {});
                 renderStatus(latestStatus);
                 setStep(0);
               }
@@ -1719,6 +2431,14 @@ def build_html(preflight: dict[str, Any]) -> str:
                 return response.json();
               }
 
+              async function fetchControlPlane() {
+                const response = await fetch('/api/control-plane', { cache: 'no-store' });
+                if (!response.ok) {
+                  throw new Error('Could not fetch control-plane state');
+                }
+                return response.json();
+              }
+
               async function pollStatus() {
                 try {
                   const status = await fetchStatus();
@@ -1730,6 +2450,16 @@ def build_html(preflight: dict[str, Any]) -> str:
                   dom.statusChip.className = 'chip fail';
                   dom.statusChip.textContent = 'Connection issue';
                   dom.statusText.textContent = error.message;
+                }
+              }
+
+              async function pollControlPlane() {
+                try {
+                  renderControlPlane(await fetchControlPlane());
+                } catch (error) {
+                  dom.launchFeedback.textContent = error.message;
+                } finally {
+                  controlPlaneTimer = window.setTimeout(pollControlPlane, 2500);
                 }
               }
 
@@ -1757,6 +2487,8 @@ def build_html(preflight: dict[str, Any]) -> str:
                 renderStatus(latestStatus);
               });
 
+              dom.launchSkill.addEventListener('change', syncLaunchForm);
+
               dom.installForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 if (pollTimer) {
@@ -1780,6 +2512,35 @@ def build_html(preflight: dict[str, Any]) -> str:
 
               dom.installButton.addEventListener('click', () => {
                 dom.installForm.requestSubmit();
+              });
+
+              dom.launcherForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                const launchPayload = {
+                  skill: dom.launchSkill.value,
+                  agent: dom.launchSkill.value === 'research' ? 'swarm' : dom.launchAgent.value,
+                  mode: dom.launchSkill.value,
+                  runtime: dom.launchRuntime.value,
+                  root: dom.launchRoot.value.trim(),
+                  prompt: dom.launchPrompt.value.trim(),
+                  file: dom.launchFile.value.trim(),
+                };
+
+                const response = await fetch('/api/workflows/launch', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(launchPayload),
+                });
+                const payload = await response.json();
+                dom.launchFeedback.textContent = payload.message || '';
+                if (payload.control_plane) {
+                  renderControlPlane(payload.control_plane);
+                }
+                if (!response.ok) {
+                  return;
+                }
+                dom.launchPrompt.value = '';
+                dom.launchFile.value = '';
               });
 
               dom.openGuideButtons.forEach((button) => {
@@ -1830,6 +2591,7 @@ def build_html(preflight: dict[str, Any]) -> str:
 
               renderBoot();
               pollStatus();
+              pollControlPlane();
             </script>
           </body>
         </html>
@@ -1864,17 +2626,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Start the local server without opening a browser tab.",
     )
+    parser.add_argument(
+        "--bundle-dir",
+        default=None,
+        help=(
+            "Optional path to the pre-built Svelte site bundle (site/dist). "
+            "Takes precedence over VIBECRAFTED_SITE_BUNDLE env var and the "
+            "default <source>/site/dist lookup."
+        ),
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    controller = InstallController(args.source)
+    controller = InstallController(args.source, bundle_dir=args.bundle_dir)
     server = InstallerHTTPServer((args.host, args.port), controller)
     host, port = server.server_address[:2]
     url = f"http://{host}:{port}/"
 
-    print(f"Guided installer ready at {url}")
+    print(f"Vibecrafted control plane ready at {url}")
     print("Press Ctrl-C to stop the local server.")
     if not args.no_open:
         _open_target(url)
@@ -1882,7 +2653,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopping guided installer.")
+        print("\nStopping Vibecrafted control plane.")
     finally:
         server.server_close()
 

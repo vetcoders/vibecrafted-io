@@ -1,48 +1,67 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.quickstartResources;
-const basePath = lang === 'pl' ? '/pl' : '/en';
-const ui = {
-    reveal: lang === 'pl' ? 'Zobacz więcej' : 'See more',
-    pathLabel: lang === 'pl' ? 'Następny krok' : 'Next step',
-    pathLead:
-        lang === 'pl'
-            ? 'Kiedy quickstart już ma sens, skieruj się do warstwy wyjaśniającej.'
-            : 'Once quickstart makes sense, move into the explanatory layer.',
-    faq: 'FAQ',
-    foundation: lang === 'pl' ? 'Fundamenty' : 'Foundation',
-    overview: lang === 'pl' ? 'Przegląd' : 'Overview',
-    sourceLabel: lang === 'pl' ? 'Źródła kanoniczne' : 'Canonical sources',
-};
 
+const entry = await getEntry('i18n', `${lang}/quickstartresources`);
+if (!entry) {
+    throw new Error(`Quickstart resources content not found for lang=${lang}`);
+}
+
+interface ResourceCard {
+    kicker: string;
+    title: string;
+    items: string[];
+}
+
+interface ResourceLink {
+    href: string;
+    label: string;
+}
+
+interface NextStepBlock {
+    label: string;
+    lead: string;
+    faq: string;
+    foundation: string;
+    overview: string;
+}
+
+const data = entry.data;
+const cards = (data.cards ?? []) as ResourceCard[];
+const links = (data.links ?? []) as ResourceLink[];
+const nextStep = data.nextStep as NextStepBlock;
+const reveal = data.reveal as string;
+const sourceLabel = data.sourceLabel as string;
+
+const basePath = `/${lang}`;
 const pathLinks = [
-    { href: `${basePath}/faq/`, label: ui.faq },
-    { href: `${basePath}/#foundation`, label: ui.foundation },
-    { href: `${basePath}/`, label: ui.overview },
+    { href: `${basePath}/faq/`, label: nextStep.faq },
+    { href: `${basePath}/#foundation`, label: nextStep.foundation },
+    { href: `${basePath}/`, label: nextStep.overview },
 ];
 ---
 <Reveal client:load tag="section" id="quickstart-resources">
     <div class="docs-columns">
-        {section.cards.map((card, index) => (
+        {cards.map((card, index) => (
             <div id={`quickstart-resource-${index + 1}`}>
                 <ProductDetailCard
                     accent={index === 0 ? 'amber' : 'steel'}
                     eyebrow={card.kicker}
                     title={card.title}
                     bodyHtml={card.items[0]}
-                    revealLabel={ui.reveal}
+                    revealLabel={reveal}
                     bullets={card.items.slice(1)}
                 />
             </div>
         ))}
     </div>
     <div class="surface-path">
-        <p class="surface-path__label">{ui.pathLabel}</p>
-        <p class="surface-path__lead">{ui.pathLead}</p>
+        <p class="surface-path__label">{nextStep.label}</p>
+        <p class="surface-path__lead">{nextStep.lead}</p>
         <div class="surface-path__links">
             {pathLinks.map((link) => (
                 <a href={link.href}>{link.label}</a>
@@ -50,9 +69,9 @@ const pathLinks = [
         </div>
     </div>
     <details class="source-layer">
-        <summary>{ui.sourceLabel}</summary>
+        <summary>{sourceLabel}</summary>
         <div class="source-layer__content">
-            {section.links.map((link) => (
+            {links.map((link) => (
                 <a
                     href={link.href}
                     rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}

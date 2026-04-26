@@ -1,17 +1,48 @@
 ---
+import { getEntry } from 'astro:content';
 import MermaidViewer from '../../components/MermaidViewer.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import {
+    mermaidEn,
+    mermaidFullEn,
+    mermaidFullPl,
+    mermaidPl,
+} from '../../lib/diagrams/pipeline';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type PipelineNote = { title: string; body: string };
+type PipelineMermaidModal = { open: string; close: string; title: string };
+type PipelineData = {
+    label: string;
+    title: string;
+    sub: string;
+    mermaidModal: PipelineMermaidModal;
+    notes: PipelineNote[];
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.pipeline;
+
+const entry = await getEntry('i18n', `${lang}/pipeline`);
+if (!entry) {
+    throw new Error(`Pipeline content not found for lang=${lang}`);
+}
+const section = entry.data as PipelineData;
+
+const mermaidCode = lang === 'pl' ? mermaidPl : mermaidEn;
+const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
 ---
-<section class="pipeline-section" id="pipeline">
+<section class="pipeline-section surface--grid" id="pipeline">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <MermaidViewer client:visible highlightedCode={section.highlighted} code={section.mermaid} />
+        <MermaidViewer
+            client:visible
+            highlightedCode=""
+            code={mermaidCode}
+            fullCode={mermaidFull}
+            modalLabels={section.mermaidModal}
+        />
         <div class="pipeline-notes">
             {section.notes.map((note, index) => (
                 <article class="pipeline-note">
@@ -55,11 +86,12 @@ const section = getTranslations(lang).sections.pipeline;
     .pipeline-num {
         display: block;
         margin-bottom: var(--space-xs);
-        color: var(--copper);
+        color: var(--orange);
         font-family: var(--font-mono);
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        opacity: 0.8;
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        opacity: 0.9;
     }
 
     .pipeline-note h3 {

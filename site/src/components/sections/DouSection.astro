@@ -1,9 +1,30 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
+type DouChecklistItem = { kind: 'check' | 'cross'; text: string };
+type DouData = {
+    label: string;
+    title: string;
+    quote: string;
+    lead: string;
+    diagnosticLabel: string;
+    checklist: DouChecklistItem[];
+    summary: string;
+    caption: string;
+    bars: string[];
+    scoreline: string;
+};
+
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.dou;
+
+const entry = await getEntry('i18n', `${lang}/dou`);
+if (!entry) {
+    throw new Error(`DoU content not found for lang=${lang}`);
+}
+const section = entry.data as DouData;
+
 const trajectoryScale = [0, 25, 50, 75, 100];
 const trajectoryBars = [
   { className: 'bar-fill bar-fill--copper', label: section.bars[0], score: 15 },
@@ -13,7 +34,7 @@ const trajectoryBars = [
   { className: 'bar-fill bar-fill--patina', label: section.bars[4], score: 100 },
 ];
 ---
-<section class="manifesto-section" id="dou">
+<section class="manifesto-section surface--grid" id="dou">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
