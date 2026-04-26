@@ -14,7 +14,17 @@ interface Reference {
   title: string;
   venue: string;
   note: string;
+  url: string;
 }
+
+const REF_URLS = {
+  brooks: 'https://en.wikipedia.org/wiki/The_Mythical_Man-Month',
+  ousterhout: 'https://web.stanford.edu/~ouster/cgi-bin/book.php',
+  mitchell: 'https://arxiv.org/abs/1810.03993',
+  gebru: 'https://arxiv.org/abs/1803.09010',
+  bender: 'https://doi.org/10.1145/3442188.3445922',
+  hooker: 'https://arxiv.org/abs/2009.06489',
+};
 
 const references_en: Reference[] = [
   {
@@ -23,6 +33,7 @@ const references_en: Reference[] = [
     title: 'The Mythical Man-Month.',
     venue: 'Addison-Wesley, 1975',
     note: "The original observation that adding throw-power without coordination makes things worse, not faster. Convergence is the answer to that math.",
+    url: REF_URLS.brooks,
   },
   {
     num: '02',
@@ -30,6 +41,7 @@ const references_en: Reference[] = [
     title: 'A Philosophy of Software Design.',
     venue: 'Yaknyam Press, 2018',
     note: 'Deep modules over shallow APIs — the principle behind why each operator owns one sharp protocol, not a thousand prompts.',
+    url: REF_URLS.ousterhout,
   },
   {
     num: '03',
@@ -37,6 +49,7 @@ const references_en: Reference[] = [
     title: 'Model Cards for Model Reporting.',
     venue: 'FAccT 2019',
     note: 'Documenting what a system can and cannot do before it ships. DoU is this idea, applied to a build instead of a model.',
+    url: REF_URLS.mitchell,
   },
   {
     num: '04',
@@ -44,6 +57,7 @@ const references_en: Reference[] = [
     title: 'Datasheets for Datasets.',
     venue: 'Communications of the ACM, 2021',
     note: 'Every input declares its scope upfront. The board makes the same demand of every throw — declare contract before code.',
+    url: REF_URLS.gebru,
   },
   {
     num: '05',
@@ -51,6 +65,7 @@ const references_en: Reference[] = [
     title: 'On the Dangers of Stochastic Parrots.',
     venue: 'FAccT 2021',
     note: "Why scaling alone doesn't yield understanding — surface fluency without grounded truth doesn't ship.",
+    url: REF_URLS.bender,
   },
   {
     num: '06',
@@ -58,6 +73,7 @@ const references_en: Reference[] = [
     title: 'The Hardware Lottery.',
     venue: 'Communications of the ACM, 2021',
     note: 'Runtime substrate decides which ideas survive. Convergence systems need predictable execution, not just smart prompts.',
+    url: REF_URLS.hooker,
   },
 ];
 
@@ -68,6 +84,7 @@ const references_pl: Reference[] = [
     title: 'The Mythical Man-Month.',
     venue: 'Addison-Wesley, 1975',
     note: 'Pierwotna obserwacja była prosta: dorzucenie większej siły bez koordynacji nie przyspiesza pracy, tylko ją pogarsza. W vibecrafted. odpowiedzią na ten problem jest konwergencja, czyli systemowe domykanie wariancji zamiast dokładania kolejnego chaosu.',
+    url: REF_URLS.brooks,
   },
   {
     num: '02',
@@ -75,6 +92,7 @@ const references_pl: Reference[] = [
     title: 'A Philosophy of Software Design.',
     venue: 'Yaknyam Press, 2018',
     note: 'Głębokie moduły są lepsze niż płytkie API, bo niosą większą sprawczość przy mniejszym narzucie. W vibecrafted. ta zasada wraca w operatorach: każdy ma jeden ostry protokół, a nie tysiąc luźnych promptów.',
+    url: REF_URLS.ousterhout,
   },
   {
     num: '03',
@@ -82,6 +100,7 @@ const references_pl: Reference[] = [
     title: 'Model Cards for Model Reporting.',
     venue: 'FAccT 2019',
     note: 'Zanim system trafi do ludzi, trzeba jasno opisać, co potrafi, a czego nie. DoU robi podobną robotę dla buildu: nie ocenia tylko tego, czy działa, ale też czy da się go znaleźć, zrozumieć i sensownie wypuścić.',
+    url: REF_URLS.mitchell,
   },
   {
     num: '04',
@@ -89,6 +108,7 @@ const references_pl: Reference[] = [
     title: 'Datasheets for Datasets.',
     venue: 'Communications of the ACM, 2021',
     note: 'Każdy zbiór danych powinien mieć zdefiniowane pochodzenie, zakres możliwości i ograniczenia — jeszcze zanim ktokolwiek zacznie go używać. Board w vibecrafted. wymaga tego samego od każdego rzutu: kontrakt deklarujesz przed kodem, nie po nim.',
+    url: REF_URLS.gebru,
   },
   {
     num: '05',
@@ -96,6 +116,7 @@ const references_pl: Reference[] = [
     title: 'On the Dangers of Stochastic Parrots.',
     venue: 'FAccT 2021',
     note: 'Sama skala nie produkuje rozumienia — płynność powierzchniowa bez ugruntowania w rzeczywistości to nie jest produkt, który się wypuszcza. Konwergencja istnieje właśnie po to, żeby odróżnić jedno od drugiego.',
+    url: REF_URLS.bender,
   },
   {
     num: '06',
@@ -103,6 +124,7 @@ const references_pl: Reference[] = [
     title: 'The Hardware Lottery.',
     venue: 'Communications of the ACM, 2021',
     note: 'To, jaki masz runtime i środowisko wykonania, decyduje o tym, które pomysły mają szansę przetrwać. System konwergencji potrzebuje przewidywalnego podłoża, nie tylko sprytnych promptów.',
+    url: REF_URLS.hooker,
   },
 ];
 
@@ -128,13 +150,18 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
 
     <div class="refs__grid">
       {references.map((reference) => (
-        <article class="refs__item">
+        <a
+          class="refs__item"
+          href={reference.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <span class="refs__num">REF · {reference.num}</span>
           <span class="refs__author">{reference.author}</span>
-          <span class="refs__title">{reference.title}</span>
+          <span class="refs__title">{reference.title}<span class="refs__ext" aria-hidden="true"> ↗</span></span>
           <span class="refs__venue">{reference.venue}</span>
           <span class="refs__note">{reference.note}</span>
-        </article>
+        </a>
       ))}
     </div>
   </div>
@@ -175,8 +202,38 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
   }
 
   .refs__item {
+    display: block;
     padding: 22px 0;
     border-bottom: 1px solid var(--rule-dark-soft);
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .refs__item:hover,
+  .refs__item:focus-visible {
+    opacity: 0.78;
+  }
+
+  .refs__item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .refs__ext {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 0.7em;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .refs__item:hover .refs__ext,
+  .refs__item:focus-visible .refs__ext {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .refs__num {
