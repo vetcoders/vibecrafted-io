@@ -169,7 +169,7 @@ site-dev:
 
 site-build:
 	@echo "Installing site deps..."
-	@cd site && pnpm install --frozen-lockfile=false
+	@cd site && pnpm install --frozen-lockfile
 	@echo "Building static site..."
 	@cd site && pnpm run build
 
@@ -277,15 +277,16 @@ bundle-preview:
 	      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
 		printf "  \033[32m✓\033[0m Nothing to bundle — upstream and framework/ are already aligned.\n"; \
 		printf "    (tarball present, VERSION matched, file trees identical)\n\n"; \
-		exit 1; \
+		exit 0; \
 	fi
 	@echo "  Changes detected. Projecting tarball..."
 	@TMP_DIR=$$(mktemp -d -t vc-preview-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ >/dev/null && \
 	  tar -czf $$TMP_DIR/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted 2>/dev/null && \
-	  TAR_SHA=$$(shasum -a 256 $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
-	  INSTALL_SHA=$$(shasum -a 256 $(UPSTREAM_ROOT)/install.sh | cut -d' ' -f1) && \
+	  if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
+	  TAR_SHA=$$($$SHA256_CMD $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
+	  INSTALL_SHA=$$($$SHA256_CMD $(UPSTREAM_ROOT)/install.sh | cut -d' ' -f1) && \
 	  TAR_BYTES=$$(wc -c < $$TMP_DIR/$(BUNDLE_ARCHIVE) | tr -d ' ') && \
 	  printf "  \033[1mProjected archive\033[0m: %s (%s bytes)\n" "$(BUNDLE_ARCHIVE)" "$$TAR_BYTES" && \
 	  printf "  Projected SHA256 (tarball) : %s\n" "$$TAR_SHA" && \
@@ -306,8 +307,9 @@ bundle-build:
 	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
 	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
-	@TAR_SHA=$$(shasum -a 256 $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
-	  INSTALL_SHA=$$(shasum -a 256 $(BUNDLE_ROOT)/install.sh | cut -d' ' -f1) && \
+	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
+	  TAR_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
+	  INSTALL_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/install.sh | cut -d' ' -f1) && \
 	  printf "%s  %s\n%s  %s\n" \
 	    "$$TAR_SHA" "$(BUNDLE_ARCHIVE)" \
 	    "$$INSTALL_SHA" "install.sh" \
