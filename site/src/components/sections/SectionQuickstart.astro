@@ -1,0 +1,45 @@
+---
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import QuickstartCarousel from '../QuickstartCarousel.svelte';
+---
+
+<SectionShell
+  number="06"
+  title="QUICKSTART"
+  centerLabel="INIT → SHIP · SIX THROWS"
+  figure="06 · DWG VC-006"
+  surface="ink"
+  seam="to-ink"
+  id="quickstart"
+>
+  <div class="quickstart">
+    <h2 class="quickstart__heading">
+      From <em>init</em> to <em class="accent-2">ship</em> in six throws.
+    </h2>
+
+    <QuickstartCarousel client:load />
+  </div>
+
+  <SectionFooter nextNumber="07" nextTitle="REFERENCES" surface="ink" />
+</SectionShell>
+
+<style>
+  .quickstart__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.8vw, 72px);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 56px;
+  }
+
+  .quickstart__heading em {
+    font-style: italic;
+  }
+
+  .quickstart__heading em.accent-2 {
+    color: var(--accent-2);
+  }
+</style>

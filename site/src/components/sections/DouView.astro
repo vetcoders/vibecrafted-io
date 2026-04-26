@@ -1,0 +1,391 @@
+---
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const t = getTranslations(lang).sections.dou;
+
+const trajectoryScale = [0, 25, 50, 75, 100];
+const trajectoryBars = [
+  { label: t.bars[0], score: 15, accent: 'copper' },
+  { label: t.bars[1], score: 40, accent: 'copper' },
+  { label: t.bars[2], score: 65, accent: 'steel' },
+  { label: t.bars[3], score: 85, accent: 'steel' },
+  { label: t.bars[4], score: 100, accent: 'teal' },
+] as const;
+---
+
+<section class="douview" id="dou">
+  <div class="douview__inner">
+    <header class="douview__header">
+      <div class="douview__eyebrow-row">
+        <span class="douview__eyebrow">DOU</span>
+        <span class="douview__fig">FIG. 09 · DWG VC-009</span>
+      </div>
+      <div class="douview__rule" aria-hidden="true"></div>
+      <h1 class="douview__title">
+        The <em>Definition</em> of <em class="accent-2">Undone.</em>
+      </h1>
+    </header>
+
+    <div class="douview__grid">
+      <div class="douview__left">
+        <blockquote class="douview__quote">{t.quote}</blockquote>
+
+        <p class="douview__lead">{t.lead}</p>
+
+        <p class="douview__diag-label">{t.diagnosticLabel}</p>
+        <ul class="douview__list">
+          {t.checklist.map((item) => (
+            <li class={`douview__list-item douview__list-item--${item.kind}`}>
+              <span class="douview__list-mark" aria-hidden="true">
+                {item.kind === 'check' ? '+' : '–'}
+              </span>
+              <span class="douview__list-text">{item.text}</span>
+            </li>
+          ))}
+        </ul>
+
+        <p class="douview__summary">{t.summary}</p>
+      </div>
+
+      <div class="douview__right">
+        <p class="douview__caption">{t.caption}</p>
+
+        <div class="douview__panel">
+          <div class="douview__scale" aria-hidden="true">
+            {trajectoryScale.map((tick) => (
+              <span class="douview__tick">{tick}</span>
+            ))}
+          </div>
+
+          <div class="douview__bars" role="list" aria-label={t.scoreline}>
+            {trajectoryBars.map((bar) => (
+              <div class="douview__bar" role="listitem">
+                <div class="douview__bar-head">
+                  <span class="douview__bar-name">{bar.label}</span>
+                  <span class="douview__bar-score">{bar.score}</span>
+                </div>
+                <div class="douview__bar-track" aria-hidden="true">
+                  <span
+                    class={`douview__bar-fill douview__bar-fill--${bar.accent}`}
+                    style={`--bar-value: ${bar.score}%;`}
+                  ></span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <p class="douview__scoreline">{t.scoreline}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .douview {
+    width: 100%;
+    background: var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .douview__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .douview__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .douview__rule {
+    height: 1px;
+    background: var(--rule-dark);
+    margin-bottom: 40px;
+  }
+
+  .douview__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(44px, 6vw, 96px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 72px;
+  }
+
+  .douview__title em {
+    font-style: italic;
+  }
+
+  .douview__title em.accent-2 {
+    color: var(--accent-2);
+  }
+
+  /* ── Grid ───────────────────────────────────────────────── */
+
+  .douview__grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+
+  /* ── Left column ────────────────────────────────────────── */
+
+  .douview__quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(20px, 1.8vw, 26px);
+    line-height: 1.4;
+    color: var(--fg-on-dark);
+    margin: 0 0 32px;
+    padding: 0;
+    border-left: 2px solid var(--accent);
+    padding-left: 24px;
+    max-width: 56ch;
+  }
+
+  .douview__lead {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--fg-on-dark-dim);
+    margin: 0 0 40px;
+    max-width: 56ch;
+  }
+
+  .douview__diag-label {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--fg-on-dark);
+    margin: 0 0 16px;
+  }
+
+  .douview__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .douview__list-item {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .douview__list-mark {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .douview__list-item--check .douview__list-mark {
+    color: var(--accent-2);
+  }
+
+  .douview__list-item--cross .douview__list-mark {
+    color: var(--accent);
+  }
+
+  .douview__list-item--check .douview__list-text {
+    color: var(--fg-on-dark);
+  }
+
+  .douview__list-item--cross .douview__list-text {
+    color: var(--fg-on-dark);
+  }
+
+  .douview__summary {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    margin: 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule-dark-soft);
+    max-width: 56ch;
+  }
+
+  /* ── Right column ───────────────────────────────────────── */
+
+  .douview__caption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 0 0 18px;
+  }
+
+  .douview__panel {
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+    background: rgba(14, 14, 12, 0.5);
+    padding: 24px 26px 28px;
+  }
+
+  .douview__scale {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--fg-on-dark-mute);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--rule-dark-soft);
+  }
+
+  .douview__tick {
+    text-align: left;
+  }
+
+  .douview__tick:last-child {
+    text-align: right;
+  }
+
+  .douview__bars {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .douview__bar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .douview__bar-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .douview__bar-name {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--fg-on-dark);
+  }
+
+  .douview__bar-score {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--fg-on-dark-dim);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .douview__bar-track {
+    position: relative;
+    height: 8px;
+    background: var(--rule-dark-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .douview__bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--bar-value, 0%);
+    border-radius: 999px;
+    transition: width 0.6s ease-out;
+  }
+
+  .douview__bar-fill--copper {
+    background: linear-gradient(
+      90deg,
+      rgba(var(--accent-rgb), 0.5),
+      var(--accent)
+    );
+  }
+
+  .douview__bar-fill--steel {
+    background: linear-gradient(
+      90deg,
+      rgba(140, 152, 158, 0.55),
+      rgba(170, 180, 184, 0.85)
+    );
+  }
+
+  .douview__bar-fill--teal {
+    background: linear-gradient(
+      90deg,
+      rgba(61, 122, 114, 0.6),
+      var(--accent-2)
+    );
+  }
+
+  .douview__scoreline {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 18px 0 0;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 900px) {
+    .douview {
+      padding: 64px 0 88px;
+    }
+
+    .douview__inner {
+      padding: 0 24px;
+    }
+
+    .douview__title {
+      margin-bottom: 48px;
+    }
+
+    .douview__grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .douview__quote {
+      font-size: 18px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .douview__bar-fill {
+      transition: none;
+    }
+  }
+</style>

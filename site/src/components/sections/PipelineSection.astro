@@ -1,47 +1,22 @@
 ---
-import { getEntry } from 'astro:content';
-import MermaidViewer from '../../components/MermaidViewer.svelte';
-import {
-    mermaidEn,
-    mermaidFullEn,
-    mermaidFullPl,
-    mermaidPl,
-} from '../../lib/diagrams/pipeline';
-import type { Lang } from '../../lib/i18n';
+import PipelineHero from '../../components/PipelineHero.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
-type PipelineNote = { title: string; body: string };
-type PipelineMermaidModal = { open: string; close: string; title: string };
-type PipelineData = {
-    label: string;
-    title: string;
-    sub: string;
-    mermaidModal: PipelineMermaidModal;
-    notes: PipelineNote[];
-};
-
 const { lang } = Astro.props as { lang: Lang };
-
-const entry = await getEntry('i18n', `${lang}/pipeline`);
-if (!entry) {
-    throw new Error(`Pipeline content not found for lang=${lang}`);
-}
-const section = entry.data as PipelineData;
-
-const mermaidCode = lang === 'pl' ? mermaidPl : mermaidEn;
-const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
+const section = getTranslations(lang).sections.pipeline;
 ---
 <section class="pipeline-section surface--grid" id="pipeline">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
         <h2 class="section-title">{section.title}</h2>
         <p class="section-sub">{section.sub}</p>
-        <MermaidViewer
+        <PipelineHero
             client:visible
-            highlightedCode=""
-            code={mermaidCode}
-            fullCode={mermaidFull}
+            stages={section.hero.stages}
+            source={section.mermaidFull}
             modalLabels={section.mermaidModal}
+            controls={section.controls}
         />
         <div class="pipeline-notes">
             {section.notes.map((note, index) => (
@@ -60,7 +35,7 @@ const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
         background: var(--glass-panel-bg-strong);
         border: 1px solid var(--glass-panel-border);
         border-radius: 10px;
-        padding: var(--space-md);
+        padding: clamp(1.4rem, 2.6vw, 2.2rem);
         margin-bottom: var(--space-md);
         backdrop-filter: blur(24px) saturate(122%);
         -webkit-backdrop-filter: blur(24px) saturate(122%);
@@ -70,7 +45,8 @@ const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
     .pipeline-notes {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1rem;
+        gap: 0.9rem;
+        margin-top: 1.4rem;
     }
 
     .pipeline-note {
@@ -80,29 +56,31 @@ const mermaidFull = lang === 'pl' ? mermaidFullPl : mermaidFullEn;
         backdrop-filter: blur(20px) saturate(120%);
         -webkit-backdrop-filter: blur(20px) saturate(120%);
         box-shadow: 0 12px 30px var(--shadow-sm), inset 0 1px 0 var(--glass-panel-highlight);
-        padding: 1rem 1rem 0.9rem;
+        padding: 0.85rem 0.95rem 0.8rem;
     }
 
     .pipeline-num {
         display: block;
         margin-bottom: var(--space-xs);
-        color: var(--orange);
+        color: var(--steel-dark);
         font-family: var(--font-mono);
-        font-size: 0.7rem;
-        letter-spacing: 0.25em;
+        font-size: 0.65rem;
+        letter-spacing: 0.28em;
         text-transform: uppercase;
-        opacity: 0.9;
+        opacity: 0.85;
     }
 
     .pipeline-note h3 {
-        margin-bottom: 0.35rem;
-        font-size: 0.96rem;
+        margin-bottom: 0.3rem;
+        font-size: 0.86rem;
+        color: var(--steel-edge, var(--stone-light));
     }
 
     .pipeline-note p {
         margin: 0;
-        color: var(--steel-edge-strong);
-        font-size: 0.9rem;
+        color: var(--steel-edge-muted, var(--steel-edge-strong));
+        font-size: 0.82rem;
+        line-height: 1.5;
     }
 
     @media (max-width: 768px) {

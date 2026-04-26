@@ -1,0 +1,115 @@
+/*
+ * Landing V2 tokens — scoped to `.v2-scope` (applied on <body> by
+ * LayoutV2.astro). Coexists with legacy tokens from tokens.css; does NOT
+ * override anything on :root, so legacy Layout.astro consumers keep their
+ * current mint-muted / Fraunces styling untouched.
+ *
+ * Source of truth: /Users/silver/Downloads/explore/HANDOFF.md § 1 (tokens).
+ * Mockup: Vibecrafted Hero V1.html + 5 section screenshots in hero-v1/.
+ */
+
+.v2-scope {
+  /* ─── Surface ─────────────────────────────────────────────── */
+  --v2-black: #080807;
+  --v2-ink: #080807;
+  --v2-ink-soft: #171615;
+  --v2-ash: #2d2b27;
+  --v2-paper: #d8d1c4;
+  --v2-paper-soft: #e5ded2;
+  --v2-ink-rgb: 23, 22, 21;
+  --v2-paper-rgb: 216, 209, 196;
+  --v2-accent-rgb: 207, 111, 78;
+
+  /* ─── Text on dark ───────────────────────────────────────── */
+  --v2-fg-on-dark: #f5f4ef;
+  --v2-fg-on-dark-dim: rgba(245, 244, 239, 0.62);
+  --v2-fg-on-dark-mute: rgba(245, 244, 239, 0.42);
+
+  /* ─── Text on paper ──────────────────────────────────────── */
+  --v2-fg-on-paper: #171615;
+  --v2-fg-on-paper-dim: rgba(23, 22, 21, 0.64);
+  --v2-fg-on-paper-mute: rgba(23, 22, 21, 0.46);
+
+  /* ─── Accents ────────────────────────────────────────────── */
+  /* Rust (--v2-accent): "convergence" concept, CTA borders,
+     active tab underlines, phase numbers. NEVER used on "AI agents". */
+  --v2-accent: #cf6f4e;
+  --v2-copper: var(--v2-accent);
+  --v2-accent-red: #c0392b;
+  /* Teal (--v2-accent-2): DoU / Release / converged states,
+     second italic in "vibes/vectors" pattern. */
+  --v2-accent-2: #3d7a72;
+  /* Amber: warning + "waiting" state only. */
+  --v2-accent-amber: #c99a3b;
+
+  /* ─── Rules (hairlines) ──────────────────────────────────── */
+  --v2-rule-dark: rgba(245, 244, 239, 0.12);
+  --v2-rule-dark-soft: rgba(245, 244, 239, 0.06);
+  --v2-rule-paper: rgba(23, 22, 21, 0.17);
+  --v2-rule-paper-soft: rgba(23, 22, 21, 0.09);
+
+  /* ─── Typography ─────────────────────────────────────────── */
+  --v2-font-display: "Instrument Serif", "Times New Roman", serif;
+  --v2-font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --v2-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Legacy font stack — available globally for branding/typography variants
+     that need them. V2 layout still uses Instrument Serif + Inter + JBM. */
+  --v2-font-serif: "Lora", Georgia, serif;
+  --v2-font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  --v2-font-script: "Allura", "Brush Script MT", cursive;
+
+  /* ─── Radius ─────────────────────────────────────────────── */
+  /* Never pill-rounded. 2px everywhere. */
+  --v2-radius: 2px;
+
+  /* ─── Layout ─────────────────────────────────────────────── */
+  --v2-max-width: 1280px;
+  --v2-section-padding-y-top: 140px;
+  --v2-section-padding-y-bottom: 160px;
+  --v2-section-padding-x: 48px;
+
+  /* ─── Hero ───────────────────────────────────────────────── */
+  --v2-hero-min-height: 720px;
+
+  /* ─── Convenience aliases (scoped to .v2-scope only) ─────── */
+  /* Section components use these shorter names. They don't leak to :root
+     because they're defined inside .v2-scope. Legacy tokens of the same
+     name on :root (if any) are shadowed only within this subtree. */
+  --ink: var(--v2-ink);
+  --ink-soft: var(--v2-ink-soft);
+  --ash: var(--v2-ash);
+  --paper: var(--v2-paper);
+  --paper-soft: var(--v2-paper-soft);
+  --fg-on-dark: var(--v2-fg-on-dark);
+  --fg-on-dark-dim: var(--v2-fg-on-dark-dim);
+  --fg-on-dark-mute: var(--v2-fg-on-dark-mute);
+  --fg-on-paper: var(--v2-fg-on-paper);
+  --fg-on-paper-dim: var(--v2-fg-on-paper-dim);
+  --fg-on-paper-mute: var(--v2-fg-on-paper-mute);
+  --accent: var(--v2-accent);
+  --accent-rgb: var(--v2-accent-rgb);
+  --accent-red: var(--v2-accent-red);
+  --accent-2: var(--v2-accent-2);
+  --accent-amber: var(--v2-accent-amber);
+  --rule-dark: var(--v2-rule-dark);
+  --rule-dark-soft: var(--v2-rule-dark-soft);
+  --rule-paper: var(--v2-rule-paper);
+  --rule-paper-soft: var(--v2-rule-paper-soft);
+  --font-display: var(--v2-font-display);
+  --font-body: var(--v2-font-body);
+  --font-mono: var(--v2-font-mono);
+  --font-serif: var(--v2-font-serif);
+  --font-sans: var(--v2-font-sans);
+  --font-script: var(--v2-font-script);
+}
+
+/* Narrow-viewport tuning — shared by all V2 sections. Individual sections
+   override where needed. */
+@media (max-width: 720px) {
+  .v2-scope {
+    --v2-section-padding-y-top: 80px;
+    --v2-section-padding-y-bottom: 100px;
+    --v2-section-padding-x: 24px;
+  }
+}
