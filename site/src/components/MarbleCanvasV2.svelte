@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
   import type { Lang } from '../lib/i18n';
 
   // ── Props ──────────────────────────────────────────────────────────
@@ -522,7 +521,7 @@
       marbleCount = marbles.length;
       const pct = slots.length ? Math.round(displayCoverageRatio() * 100) : 0;
       coveragePct = pct + '%';
-      untrack(() => onStats?.(marbles.length, pct));
+      onStats?.(marbles.length, pct);
     }
 
     function buildBoard(): void {
@@ -582,7 +581,7 @@
       if (!slots.length) {
         marbleCount = 0;
         coveragePct = '0%';
-        untrack(() => onStats?.(0, 0));
+        onStats?.(0, 0);
         ctx.clearRect(0, 0, width, height);
         return;
       }
