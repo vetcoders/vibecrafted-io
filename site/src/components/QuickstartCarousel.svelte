@@ -463,7 +463,7 @@
   .qcar__btn:focus-visible:not(:disabled) {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(217, 119, 87, 0.06);
+    background: rgba(var(--accent-rgb), 0.06);
   }
 
   .qcar__btn:disabled {

@@ -20,10 +20,10 @@
   }
 
   const GROUP_META = [
-    { id: 'installation', color: '#d97757' },
+    { id: 'installation', color: 'var(--accent)' },
     { id: 'skills', color: '#3d7a72' },
     { id: 'workflow', color: '#c99a3b' },
-    { id: 'commercial', color: '#f5f4ef' },
+    { id: 'commercial', color: 'var(--fg-on-dark)' },
   ] as const;
 
   let { lang = 'en' } = $props<Props>();
@@ -37,7 +37,7 @@
   const indexedGroups: FaqGroup[] = $derived(content.groups.map((group, groupIndex) => {
     const meta = GROUP_META[groupIndex] ?? {
       id: `group-${groupIndex}`,
-      color: '#f5f4ef',
+      color: 'var(--fg-on-dark)',
     };
     const offset = content.groups.slice(0, groupIndex).reduce((sum, previous) => sum + previous.items.length, 0);
     return {

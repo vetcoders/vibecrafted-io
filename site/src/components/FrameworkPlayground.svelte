@@ -330,7 +330,7 @@
   const OPERATORS: OperatorId[] = ['loctree', 'aicx', 'prview', 'screenscribe', 'agents', 'marbles'];
   const MARBLE_COLORS: Record<MarbleTone, { base: string; light: string }> = {
     teal: { base: '#3d7a72', light: '#a6c5bc' },
-    steel: { base: '#c8c2b4', light: '#ece7dc' },
+    steel: { base: '#c8c2b4', light: '#e5ded2' },
     copper: { base: '#cf6f4e', light: '#e5b18e' },
     mint: { base: '#6fc993', light: '#b8f3c8' },
     danger: { base: '#d85a4f', light: '#ffb0a8' }

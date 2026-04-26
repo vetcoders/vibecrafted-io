@@ -10,9 +10,15 @@
 
 .v2-scope {
   /* ─── Surface ─────────────────────────────────────────────── */
-  --v2-ink: #0e0e0c;
-  --v2-paper: #ece7dc;
-  --v2-paper-soft: #e4dfd2;
+  --v2-black: #080807;
+  --v2-ink: #080807;
+  --v2-ink-soft: #171615;
+  --v2-ash: #2d2b27;
+  --v2-paper: #d8d1c4;
+  --v2-paper-soft: #e5ded2;
+  --v2-ink-rgb: 23, 22, 21;
+  --v2-paper-rgb: 216, 209, 196;
+  --v2-accent-rgb: 207, 111, 78;
 
   /* ─── Text on dark ───────────────────────────────────────── */
   --v2-fg-on-dark: #f5f4ef;
@@ -20,14 +26,15 @@
   --v2-fg-on-dark-mute: rgba(245, 244, 239, 0.42);
 
   /* ─── Text on paper ──────────────────────────────────────── */
-  --v2-fg-on-paper: #1a1a18;
-  --v2-fg-on-paper-dim: rgba(26, 26, 24, 0.62);
-  --v2-fg-on-paper-mute: rgba(26, 26, 24, 0.42);
+  --v2-fg-on-paper: #171615;
+  --v2-fg-on-paper-dim: rgba(23, 22, 21, 0.64);
+  --v2-fg-on-paper-mute: rgba(23, 22, 21, 0.46);
 
   /* ─── Accents ────────────────────────────────────────────── */
   /* Rust (--v2-accent): "convergence" concept, CTA borders,
      active tab underlines, phase numbers. NEVER used on "AI agents". */
-  --v2-accent: #d97757;
+  --v2-accent: #cf6f4e;
+  --v2-copper: var(--v2-accent);
   --v2-accent-red: #c0392b;
   /* Teal (--v2-accent-2): DoU / Release / converged states,
      second italic in "vibes/vectors" pattern. */
@@ -38,8 +45,8 @@
   /* ─── Rules (hairlines) ──────────────────────────────────── */
   --v2-rule-dark: rgba(245, 244, 239, 0.12);
   --v2-rule-dark-soft: rgba(245, 244, 239, 0.06);
-  --v2-rule-paper: rgba(26, 26, 24, 0.14);
-  --v2-rule-paper-soft: rgba(26, 26, 24, 0.07);
+  --v2-rule-paper: rgba(23, 22, 21, 0.17);
+  --v2-rule-paper-soft: rgba(23, 22, 21, 0.09);
 
   /* ─── Typography ─────────────────────────────────────────── */
   --v2-font-display: "Instrument Serif", "Times New Roman", serif;
@@ -70,6 +77,8 @@
      because they're defined inside .v2-scope. Legacy tokens of the same
      name on :root (if any) are shadowed only within this subtree. */
   --ink: var(--v2-ink);
+  --ink-soft: var(--v2-ink-soft);
+  --ash: var(--v2-ash);
   --paper: var(--v2-paper);
   --paper-soft: var(--v2-paper-soft);
   --fg-on-dark: var(--v2-fg-on-dark);
@@ -79,6 +88,7 @@
   --fg-on-paper-dim: var(--v2-fg-on-paper-dim);
   --fg-on-paper-mute: var(--v2-fg-on-paper-mute);
   --accent: var(--v2-accent);
+  --accent-rgb: var(--v2-accent-rgb);
   --accent-red: var(--v2-accent-red);
   --accent-2: var(--v2-accent-2);
   --accent-amber: var(--v2-accent-amber);

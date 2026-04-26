@@ -66,7 +66,7 @@
   }
 
   const PALETTES_CURRENT: Palette[] = [
-    { base: '#d97757', accent: '#f4c89a', name: 'amber' },
+    { base: '#cf6f4e', accent: '#e5b18e', name: 'amber' },
     { base: '#6a9bcc', accent: '#c2ddf0', name: 'ocean' },
     { base: '#788c5d', accent: '#bdd4a0', name: 'forest' },
     { base: '#b0aea5', accent: '#e8e6dc', name: 'smoke' },
@@ -77,7 +77,7 @@
   ];
 
   const PALETTES_V2_COLOR: Palette[] = [
-    { base: '#d97757', accent: '#f4c89a', name: 'rust' },
+    { base: '#cf6f4e', accent: '#e5b18e', name: 'rust' },
     { base: '#6a9bcc', accent: '#c2ddf0', name: 'blue' },
     { base: '#788c5d', accent: '#bdd4a0', name: 'olive' },
     { base: '#b0aea5', accent: '#e8e6dc', name: 'off-white' },

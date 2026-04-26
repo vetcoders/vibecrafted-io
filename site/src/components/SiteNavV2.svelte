@@ -207,10 +207,11 @@
     padding: 22px 48px;
     gap: 24px;
     color: var(--fg-on-dark);
-    background: rgba(14, 14, 12, 0.82);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    border-bottom: 1px solid var(--rule-dark);
+    background: rgba(23, 22, 21, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.11);
+    box-shadow: 0 12px 28px -28px rgba(0, 0, 0, 0.78);
   }
 
   /* ── Brand ───────────────────────────────────────────────── */
@@ -326,7 +327,7 @@
 
   .v2nav__install:hover,
   .v2nav__install:focus-visible {
-    background: rgba(217, 119, 87, 0.1);
+    background: rgba(var(--accent-rgb), 0.1);
   }
 
   .v2nav__install-arrow {
@@ -345,9 +346,9 @@
     align-items: center;
     gap: 18px;
     padding: 14px 28px;
-    background: rgba(14, 14, 12, 0.92);
-    backdrop-filter: blur(14px) saturate(120%);
-    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    background: rgba(23, 22, 21, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--rule-dark);
     border-radius: 2px;
     opacity: 0;
@@ -394,7 +395,7 @@
   .v2nav__dropdown-copy {
     appearance: none;
     background: transparent;
-    border: 1px solid rgba(217, 119, 87, 0.55);
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
     color: var(--accent);
     padding: 6px 14px;
     font-family: var(--font-mono);
@@ -409,7 +410,7 @@
 
   .v2nav__dropdown-copy:hover,
   .v2nav__dropdown-copy:focus-visible {
-    background: rgba(217, 119, 87, 0.08);
+    background: rgba(var(--accent-rgb), 0.08);
     border-color: var(--accent);
   }
 

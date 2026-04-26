@@ -314,12 +314,12 @@ const ctas = {
   .qspage__cta--accent {
     background: transparent;
     color: var(--accent);
-    border: 1px solid rgba(217, 119, 87, 0.55);
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
   }
 
   .qspage__cta--accent:hover,
   .qspage__cta--accent:focus-visible {
-    background: rgba(217, 119, 87, 0.06);
+    background: rgba(var(--accent-rgb), 0.06);
     border-color: var(--accent);
   }
 
@@ -461,7 +461,7 @@ const ctas = {
   :global(.qspage__copy) {
     appearance: none;
     background: transparent;
-    border: 1px solid rgba(217, 119, 87, 0.55);
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
     color: var(--accent);
     padding: 6px 14px;
     font-family: var(--font-mono);
@@ -476,7 +476,7 @@ const ctas = {
 
   :global(.qspage__copy:hover),
   :global(.qspage__copy:focus-visible) {
-    background: rgba(217, 119, 87, 0.08);
+    background: rgba(var(--accent-rgb), 0.08);
     border-color: var(--accent);
     color: var(--accent);
   }
@@ -598,8 +598,8 @@ const ctas = {
   .qspage__link:hover,
   .qspage__link:focus-visible {
     color: var(--accent);
-    border-color: rgba(217, 119, 87, 0.5);
-    background: rgba(217, 119, 87, 0.04);
+    border-color: rgba(var(--accent-rgb), 0.5);
+    background: rgba(var(--accent-rgb), 0.04);
   }
 
   /* ── Next-step nudge ──────────────────────────────────── */

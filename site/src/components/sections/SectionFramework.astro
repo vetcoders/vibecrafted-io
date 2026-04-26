@@ -125,12 +125,12 @@ const operators = [
 
     --ph-core-accent: var(--accent);
     --ph-core-accent-bright: var(--accent);
-    --ph-core-border: rgba(217, 119, 87, 0.55);
-    --ph-core-inset: rgba(217, 119, 87, 0.32);
-    --ph-core-glow: rgba(217, 119, 87, 0.18);
-    --ph-core-bg-radial: rgba(217, 119, 87, 0.16);
+    --ph-core-border: rgba(var(--accent-rgb), 0.55);
+    --ph-core-inset: rgba(var(--accent-rgb), 0.32);
+    --ph-core-glow: rgba(var(--accent-rgb), 0.18);
+    --ph-core-bg-radial: rgba(var(--accent-rgb), 0.16);
     --ph-core-name-color: var(--accent);
-    --ph-core-subtitle-color: rgba(217, 119, 87, 0.88);
+    --ph-core-subtitle-color: rgba(var(--accent-rgb), 0.88);
     --ph-core-shadow: rgba(0, 0, 0, 0.5);
 
     --ph-btn-bg: transparent;
@@ -140,9 +140,9 @@ const operators = [
     --ph-btn-hover-border: var(--fg-on-dark-mute);
     --ph-btn-accent-color: var(--accent);
     --ph-btn-accent-bright: var(--accent);
-    --ph-btn-accent-bg: rgba(217, 119, 87, 0.08);
-    --ph-btn-accent-bg-hover: rgba(217, 119, 87, 0.14);
-    --ph-btn-accent-border: rgba(217, 119, 87, 0.4);
+    --ph-btn-accent-bg: rgba(var(--accent-rgb), 0.08);
+    --ph-btn-accent-bg-hover: rgba(var(--accent-rgb), 0.14);
+    --ph-btn-accent-border: rgba(var(--accent-rgb), 0.4);
     --ph-btn-radius: 2px;
 
     --ph-source-bg: rgba(245, 244, 239, 0.03);
@@ -162,7 +162,7 @@ const operators = [
     --ph-modal-title-color: var(--fg-on-dark);
     --ph-modal-close-bg: transparent;
     --ph-modal-close-color: var(--fg-on-dark-dim);
-    --ph-modal-close-hover-bg: rgba(217, 119, 87, 0.12);
+    --ph-modal-close-hover-bg: rgba(var(--accent-rgb), 0.12);
 
     --ph-mmd-error-color: var(--accent);
   }
