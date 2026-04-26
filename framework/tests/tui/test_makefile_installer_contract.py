@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -70,3 +71,48 @@ def test_bundle_check_uses_portable_mktemp_template() -> None:
 
     assert 'mktemp "$$tmp_root/vibecrafted-bundle.XXXXXX"' in text
     assert 'mktemp "$$tmp_root/vibecrafted-bundle.XXXXXX.plugin"' not in text
+
+
+def test_install_manifest_post_install_uses_mirror_sync() -> None:
+    text = (REPO_ROOT / "install.toml").read_text(encoding="utf-8")
+
+    assert (
+        'python3 scripts/vetcoders_install.py install --source "." '
+        "--with-shell --compact --non-interactive --mirror"
+    ) in text
+
+
+def test_makefile_exposes_version_bump_contract() -> None:
+    text = (REPO_ROOT / "Makefile").read_text(encoding="utf-8")
+
+    assert "make version-show" in text
+    assert "make version-bump VERSION=X" in text
+    assert (
+        "VERSION is required. Usage: make version-bump VERSION={patch|minor|major|x.y.z}"
+        in text
+    )
+    assert "scripts/version_bump.py" in text
+
+
+def test_make_version_bump_updates_configured_version_file(tmp_path: Path) -> None:
+    version_file = tmp_path / "VERSION"
+    version_file.write_text("1.4.1\n", encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            "make",
+            "-f",
+            str(REPO_ROOT / "Makefile"),
+            "version-bump",
+            "VERSION=minor",
+            f"VERSION_FILE={version_file}",
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "Bumped: v1.4.1 -> v1.5.0" in result.stdout
+    assert version_file.read_text(encoding="utf-8") == "1.5.0\n"
