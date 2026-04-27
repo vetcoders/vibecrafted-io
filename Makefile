@@ -15,7 +15,18 @@ DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 # Release pipeline anchors. Upstream is the canonical framework source;
 # BUNDLE_ROOT in this repo tracks it and holds the signed tarball that
 # later syncs into site/public/ via scripts/sync_site_release_assets.py.
-UPSTREAM_ROOT ?= $(HOME)/Libraxis/vc-runtime/vibecrafted
+#
+# Keep the default portable: prefer a sibling/local framework checkout, while
+# still allowing explicit CI/operator overrides:
+#   make bundle-build UPSTREAM_ROOT=/path/to/VibeCrafted
+REPO_PARENT := $(abspath $(CURDIR)/..)
+UPSTREAM_ROOT_CANDIDATES := \
+	$(REPO_PARENT)/VibeCrafted \
+	$(REPO_PARENT)/vibecrafted \
+	$(HOME)/Git/VibeCrafted \
+	$(HOME)/Libraxis/vc-runtime/vibecrafted
+DETECTED_UPSTREAM_ROOT := $(firstword $(foreach dir,$(UPSTREAM_ROOT_CANDIDATES),$(if $(wildcard $(dir)/VERSION),$(dir))))
+UPSTREAM_ROOT ?= $(or $(DETECTED_UPSTREAM_ROOT),$(firstword $(UPSTREAM_ROOT_CANDIDATES)))
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
 BUNDLE_ROOT   := $(CURDIR)/framework
 FRAMEWORK_RUNTIME_TESTS := \
