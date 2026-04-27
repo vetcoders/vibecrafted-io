@@ -460,7 +460,10 @@
 
 <style>
   .live-wizard {
+    box-sizing: border-box;
     width: min(64rem, 100%);
+    height: auto;
+    min-height: clamp(34rem, calc(100dvh - 9.5rem), 46rem);
     margin: 0 auto;
     padding: clamp(1rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.6rem);
     display: flex;
@@ -468,6 +471,9 @@
     gap: clamp(0.9rem, 1.4vw, 1.25rem);
     font-family: var(--lw-sans);
     color: var(--lw-text);
+  }
+  .live-wizard :global(*) {
+    box-sizing: border-box;
   }
 
   .lw-header {
@@ -490,7 +496,7 @@
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
   }
 
   .lw-brand-tagline {
@@ -524,14 +530,14 @@
 
   .lw-track {
     height: 2px;
-    background: rgba(218, 197, 167, 0.14);
-    border-radius: 999px;
+    background: rgba(245, 244, 239, 0.16);
+    border-radius: 2px;
     overflow: hidden;
   }
 
   .lw-track-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--lw-copper), var(--lw-copper-bright));
+    background: linear-gradient(90deg, rgba(245, 244, 239, 0.46), var(--lw-teal-bright));
     transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -565,9 +571,9 @@
   .lw-step-pip {
     width: 0.95rem;
     height: 0.95rem;
-    border-radius: 999px;
+    border-radius: 50%;
     background: var(--lw-surface);
-    border: 1px solid rgba(218, 197, 167, 0.2);
+    border: 1px solid rgba(245, 244, 239, 0.24);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -577,15 +583,15 @@
   }
 
   .lw-step.active .lw-step-pip {
-    border-color: var(--lw-copper-bright);
-    background: var(--lw-copper-bright);
+    border-color: var(--lw-copper);
+    background: var(--lw-copper);
     transform: scale(1.15);
   }
 
   .lw-step.done .lw-step-pip {
-    border-color: var(--lw-copper);
-    background: var(--lw-copper);
-    color: #fff;
+    border-color: var(--lw-teal-bright);
+    background: var(--lw-teal-bright);
+    color: var(--installer-stone);
   }
 
   .lw-step.active {
@@ -595,7 +601,9 @@
   .lw-stage {
     display: flex;
     flex-direction: column;
-    min-height: 22rem;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: auto;
   }
 
   .lw-panel {
@@ -603,8 +611,9 @@
     flex-direction: column;
     gap: 0.85rem;
     padding: clamp(1rem, 1.8vw, 1.5rem) clamp(1rem, 1.8vw, 1.5rem);
+    min-height: 100%;
     border: 1px solid var(--lw-border);
-    border-radius: 1.1rem;
+    border-radius: 8px;
     background: var(--lw-surface);
     backdrop-filter: blur(18px) saturate(118%);
     -webkit-backdrop-filter: blur(18px) saturate(118%);
@@ -617,9 +626,10 @@
 
   .lw-title {
     margin: 0;
+    font-family: var(--lw-display);
     font-size: clamp(1.2rem, 2vw, 1.55rem);
-    font-weight: 600;
-    letter-spacing: 0.01em;
+    font-weight: 400;
+    letter-spacing: 0;
   }
 
   .lw-lead {
@@ -634,11 +644,10 @@
     flex-direction: column;
     gap: 0.65rem;
     padding: 0.85rem 1rem 0.95rem;
-    border-radius: 0.85rem;
+    border-radius: 8px;
     background:
-      radial-gradient(circle at 18% 0%, rgba(212, 144, 92, 0.1), transparent 55%),
-      linear-gradient(180deg, rgba(18, 20, 24, 0.62), rgba(9, 10, 13, 0.78));
-    border: 1px solid rgba(212, 144, 92, 0.22);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.64), rgba(8, 8, 7, 0.82));
+    border: 1px solid rgba(245, 244, 239, 0.16);
     box-shadow:
       0 22px 42px rgba(0, 0, 0, 0.28),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -659,7 +668,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
   }
 
   .lw-install-hero-hint {
@@ -679,11 +688,11 @@
     display: flex;
     flex-direction: column;
     padding: 0.75rem 0.95rem;
-    border-radius: 0.65rem;
+    border-radius: 6px;
     font-family: var(--lw-mono);
     font-size: 0.75rem;
-    background: rgba(12, 14, 18, 0.6);
-    border: 1px solid rgba(163, 184, 199, 0.18);
+    background: rgba(10, 10, 9, 0.66);
+    border: 1px solid rgba(245, 244, 239, 0.14);
   }
 
   .lw-missing-components {
@@ -719,7 +728,7 @@
     flex-direction: column;
     gap: 0.55rem;
     padding: 0.2rem 0.1rem 0;
-    border-top: 1px dashed rgba(163, 184, 199, 0.14);
+    border-top: 1px dashed rgba(245, 244, 239, 0.16);
     padding-top: 0.65rem;
   }
 
@@ -729,7 +738,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
     flex-shrink: 0;
   }
 
@@ -784,9 +793,9 @@
     align-self: flex-start;
     padding: 0.65rem 1.1rem;
     border: 1px solid var(--lw-copper);
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(184, 115, 51, 0.24), rgba(184, 115, 51, 0.08));
-    color: var(--lw-text);
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--lw-copper-bright), var(--lw-copper));
+    color: var(--installer-stone);
     font-family: var(--lw-mono);
     font-size: 0.72rem;
     font-weight: 600;
@@ -799,7 +808,7 @@
   .lw-cta:hover:not(:disabled),
   .lw-cta:focus-visible:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(184, 115, 51, 0.18);
+    box-shadow: 0 10px 24px rgba(207, 111, 78, 0.18);
   }
 
   .lw-cta:disabled {
@@ -816,8 +825,8 @@
   .lw-cat {
     padding: 0.85rem;
     border: 1px solid var(--lw-border);
-    border-radius: 0.8rem;
-    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    background: rgba(245, 244, 239, 0.025);
   }
 
   .lw-cat header {
@@ -856,7 +865,7 @@
   }
 
   .lw-cat li.found .lw-dot {
-    background: var(--lw-copper-bright);
+    background: var(--lw-teal-bright);
   }
 
   .lw-cat li.missing .lw-dot {
@@ -877,7 +886,7 @@
   }
 
   .lw-count {
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
   }
 
   .lw-plan {
@@ -894,8 +903,8 @@
     gap: 0.7rem;
     padding: 0.7rem 0.85rem;
     border: 1px solid var(--lw-border);
-    border-radius: 0.7rem;
-    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    background: rgba(245, 244, 239, 0.025);
   }
 
   .lw-plan-idx {
@@ -903,7 +912,7 @@
     font-size: 0.62rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
   }
 
   .lw-plan-body {
@@ -930,7 +939,7 @@
   .lw-check input {
     width: 1rem;
     height: 1rem;
-    accent-color: var(--lw-copper);
+    accent-color: var(--lw-teal);
   }
 
   .lw-stage-line {
@@ -949,7 +958,7 @@
   }
 
   .lw-stage-value {
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
     font-weight: 600;
   }
 
@@ -967,21 +976,21 @@
   .lw-plan-compact li {
     padding: 0.28rem 0.55rem;
     border: 1px solid var(--lw-border);
-    border-radius: 999px;
+    border-radius: 6px;
     color: var(--lw-text-dim);
   }
 
   .lw-plan-compact li.active {
     color: var(--lw-text);
-    background: rgba(184, 115, 51, 0.14);
-    border-color: var(--lw-copper);
+    background: rgba(61, 122, 114, 0.14);
+    border-color: rgba(143, 185, 173, 0.38);
   }
 
   .lw-output {
     margin: 0;
     padding: 0.75rem 0.9rem;
     border: 1px solid var(--lw-border);
-    border-radius: 0.7rem;
+    border-radius: 6px;
     background: rgba(0, 0, 0, 0.42);
     font-family: var(--lw-mono);
     font-size: 0.74rem;
@@ -1014,7 +1023,7 @@
     font-size: 0.62rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--lw-copper-bright);
+    color: var(--lw-teal-bright);
   }
 
   .lw-next ul {
@@ -1035,7 +1044,7 @@
   }
 
   .lw-next code {
-    color: var(--lw-copper-bright);
+    color: var(--lw-text);
   }
 
   .lw-next li span {
@@ -1051,8 +1060,8 @@
   .lw-btn {
     padding: 0.55rem 1rem;
     border: 1px solid var(--lw-border);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.03);
+    border-radius: 2px;
+    background: rgba(245, 244, 239, 0.04);
     color: var(--lw-text);
     font-family: var(--lw-mono);
     font-size: 0.7rem;
@@ -1065,7 +1074,7 @@
 
   .lw-btn:hover:not(:disabled),
   .lw-btn:focus-visible:not(:disabled) {
-    border-color: var(--lw-copper);
+    border-color: rgba(245, 244, 239, 0.28);
     transform: translateY(-1px);
   }
 
@@ -1079,6 +1088,11 @@
   }
 
   @media (max-width: 720px) {
+    .live-wizard {
+      padding: 0.75rem 0.72rem;
+      gap: 0.7rem;
+    }
+
     .lw-steps {
       overflow-x: auto;
       flex-wrap: nowrap;
@@ -1086,6 +1100,14 @@
 
     .lw-step {
       flex-shrink: 0;
+    }
+
+    .lw-panel {
+      padding: 0.9rem 0.78rem;
+    }
+
+    .lw-nav {
+      justify-content: space-between;
     }
   }
 </style>

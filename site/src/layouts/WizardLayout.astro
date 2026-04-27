@@ -4,6 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations } from '../lib/i18n';
 import '../styles/global.css';
+import '../styles/tokens-v2.css';
 
 interface Props {
   title: string;
@@ -63,19 +64,19 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
     <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
     <style>
       html, body {
         margin: 0;
         padding: 0;
-        height: 100dvh;
-        overflow: hidden;
+        min-height: 100dvh;
+        overflow-x: hidden;
         background: var(--stone-deep, #0e0e11);
       }
     </style>
 </head>
-<body class="wizard-page">
+<body class="wizard-page v2-scope">
     <main class="wizard-shell">
         <div
             class="wizard-shell__backdrop"
@@ -263,8 +264,22 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     display: grid;
     place-items: center;
     padding: clamp(0.8rem, 2vw, 1.35rem);
-    overflow: hidden;
-    background: var(--stone-deep, #0e0e11);
+    overflow-x: hidden;
+    overflow-y: auto;
+    isolation: isolate;
+    --font-head: var(--v2-font-display, "Instrument Serif", "Times New Roman", serif);
+    --font-body: var(--v2-font-body, "Inter", system-ui, -apple-system, sans-serif);
+    --font-mono: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    --copper: var(--v2-accent, #cf6f4e);
+    --copper-bright: #d09a83;
+    --stone-deep: var(--v2-ink, #080807);
+    --steel-edge: var(--v2-fg-on-dark, #f5f4ef);
+    --steel-dark: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    --steel-border-soft: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    background:
+      linear-gradient(180deg, rgba(8, 8, 7, 0.98), rgba(15, 14, 13, 0.98) 48%, rgba(8, 8, 7, 0.99)),
+      var(--stone-deep, #080807);
   }
 
   body.wizard-page::before,
@@ -272,30 +287,31 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     content: "";
     position: fixed;
     inset: 0;
+    z-index: 0;
     pointer-events: none;
   }
 
   body.wizard-page::before {
     background:
-      radial-gradient(circle at 22% 18%, rgba(184, 115, 51, 0.16), transparent 28%),
-      radial-gradient(circle at 78% 16%, rgba(90, 138, 122, 0.12), transparent 24%),
-      radial-gradient(circle at 52% 82%, rgba(163, 184, 199, 0.08), transparent 30%);
-    opacity: 0.95;
-    mix-blend-mode: screen;
+      linear-gradient(90deg, rgba(245, 244, 239, 0.04) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(245, 244, 239, 0.035) 1px, transparent 1px);
+    background-size: 84px 84px;
+    opacity: 0.24;
+    mask-image: linear-gradient(180deg, transparent, #000 22%, #000 78%, transparent);
   }
 
   body.wizard-page::after {
     background:
-      linear-gradient(180deg, rgba(7, 8, 10, 0.22), rgba(7, 8, 10, 0.72)),
-      radial-gradient(circle at 50% 24%, transparent 30%, rgba(9, 10, 12, 0.62) 100%);
+      linear-gradient(180deg, rgba(8, 8, 7, 0.1), rgba(8, 8, 7, 0.68)),
+      linear-gradient(90deg, rgba(245, 244, 239, 0.035), transparent 32%, transparent 70%, rgba(61, 122, 114, 0.08));
   }
 
   .wizard-shell {
     position: relative;
     z-index: 1;
     width: min(100%, 76rem);
-    height: min(calc(100dvh - 1.6rem), 58rem);
-    min-height: min(calc(100dvh - 1.6rem), 46rem);
+    height: auto;
+    min-height: calc(100dvh - clamp(1.6rem, 4vw, 2.7rem));
   }
 
   .wizard-shell__backdrop {
@@ -311,7 +327,8 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     pointer-events: none;
     border-radius: 999px;
     filter: blur(42px);
-    opacity: 0.42;
+    display: none;
+    opacity: 0;
   }
 
   .wizard-shell::before {
@@ -319,7 +336,7 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     height: 16rem;
     top: -2rem;
     right: 8%;
-    background: rgba(184, 115, 51, 0.22);
+    background: rgba(61, 122, 114, 0.14);
   }
 
   .wizard-shell::after {
@@ -335,17 +352,17 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     z-index: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 0;
+    height: auto;
+    min-height: inherit;
     border: 1px solid rgba(196, 212, 224, 0.16);
-    border-radius: clamp(1.4rem, 3vw, 2rem);
+    border-radius: clamp(0.5rem, 1.4vw, 0.9rem);
     background:
-      linear-gradient(180deg, rgba(10, 12, 15, 0.92), rgba(8, 9, 12, 0.98)),
-      radial-gradient(circle at top right, rgba(184, 115, 51, 0.12), transparent 34%);
+      linear-gradient(180deg, rgba(13, 13, 12, 0.96), rgba(8, 8, 7, 0.99)),
+      linear-gradient(90deg, rgba(245, 244, 239, 0.035), transparent 34%, rgba(61, 122, 114, 0.07));
     box-shadow:
       0 32px 80px rgba(0, 0, 0, 0.38),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .wizard-shell__frame::before,
@@ -360,12 +377,12 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
   .wizard-shell__frame::before {
     top: 0;
-    background: linear-gradient(90deg, rgba(184, 115, 51, 0), rgba(184, 115, 51, 0.58), rgba(163, 184, 199, 0.18), rgba(184, 115, 51, 0));
+    background: linear-gradient(90deg, rgba(245, 244, 239, 0), rgba(245, 244, 239, 0.2), rgba(61, 122, 114, 0.18), rgba(245, 244, 239, 0));
   }
 
   .wizard-shell__frame::after {
     bottom: 0;
-    background: linear-gradient(90deg, rgba(163, 184, 199, 0), rgba(163, 184, 199, 0.2), rgba(184, 115, 51, 0.42), rgba(163, 184, 199, 0));
+    background: linear-gradient(90deg, rgba(163, 184, 199, 0), rgba(163, 184, 199, 0.18), rgba(61, 122, 114, 0.16), rgba(163, 184, 199, 0));
   }
 
   .wizard-shell__topbar {
@@ -374,10 +391,9 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     justify-content: space-between;
     gap: 1rem;
     padding: 0.95rem 1rem 0.65rem;
-    border-bottom: 1px solid rgba(196, 212, 224, 0.12);
+    border-bottom: 1px solid rgba(245, 244, 239, 0.12);
     background:
-      linear-gradient(180deg, rgba(11, 13, 16, 0.9), rgba(10, 12, 15, 0.72)),
-      radial-gradient(circle at top left, rgba(184, 115, 51, 0.12), transparent 36%);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.94), rgba(12, 12, 11, 0.78));
     backdrop-filter: blur(18px) saturate(118%);
     -webkit-backdrop-filter: blur(18px) saturate(118%);
   }
@@ -391,10 +407,10 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
   }
 
   .wizard-shell__links a {
-    color: rgba(229, 236, 245, 0.78);
+    color: rgba(245, 244, 239, 0.7);
     font-family: var(--font-mono, 'JetBrains Mono', monospace);
-    font-size: 0.74rem;
-    letter-spacing: 0.1em;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
     text-decoration: none;
     text-transform: uppercase;
     transition: color 0.18s ease, transform 0.18s ease;
@@ -402,7 +418,7 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
   .wizard-shell__links a:hover,
   .wizard-shell__links a:focus-visible {
-    color: var(--copper-bright, #d4905c);
+    color: rgba(245, 244, 239, 0.94);
     transform: translateY(-1px);
   }
 
@@ -414,9 +430,9 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     margin-left: 0.5rem;
     padding: 0.35rem 0.62rem;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(229, 236, 245, 0.78);
+    background: rgba(245, 244, 239, 0.06);
+    border: 1px solid rgba(245, 244, 239, 0.12);
+    color: rgba(245, 244, 239, 0.72);
     cursor: pointer;
     transition: all 0.18s ease;
   }
@@ -431,9 +447,9 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
   .wizard-close-btn:hover,
   .wizard-close-btn:focus-visible {
-    background: rgba(212, 144, 92, 0.15) !important;
-    border-color: rgba(212, 144, 92, 0.4) !important;
-    color: var(--copper-bright, #d4905c) !important;
+    background: rgba(245, 244, 239, 0.1) !important;
+    border-color: rgba(245, 244, 239, 0.28) !important;
+    color: rgba(245, 244, 239, 0.94) !important;
   }
 
   .brand {
@@ -455,7 +471,10 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     gap: inherit;
     border-radius: 999px;
     padding: 0.18rem 0.35rem;
-    box-shadow: var(--brand-mark-shadow);
+    background: rgba(8, 8, 7, 0.48);
+    box-shadow:
+      inset 0 0 0 1px rgba(245, 244, 239, 0.1),
+      0 10px 24px rgba(0, 0, 0, 0.18);
     transition:
       transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.22s ease;
@@ -485,8 +504,10 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
   }
 
   .wizard-shell__content {
-    flex: 1;
+    flex: 1 0 auto;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .footer-shell {
@@ -508,10 +529,9 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
   .footer-shell--wizard {
     margin-top: 0;
-    border-top: 1px solid rgba(196, 212, 224, 0.12);
+    border-top: 1px solid rgba(245, 244, 239, 0.1);
     background:
-      linear-gradient(180deg, rgba(10, 12, 15, 0.72), rgba(8, 9, 12, 0.92)),
-      radial-gradient(circle at bottom right, rgba(90, 138, 122, 0.1), transparent 40%);
+      linear-gradient(180deg, rgba(12, 12, 11, 0.7), rgba(8, 8, 7, 0.94));
   }
 
   .footer-container--wizard {
@@ -607,7 +627,7 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
 
     .wizard-shell {
       width: 100%;
-      height: 100dvh;
+      height: auto;
       min-height: 100dvh;
     }
 
@@ -615,6 +635,7 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
       border-left: 0;
       border-right: 0;
       border-radius: 0;
+      min-height: 100dvh;
     }
 
     .wizard-shell__topbar {
@@ -623,7 +644,27 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     }
 
     .wizard-shell__links {
-      gap: 0.35rem 0.7rem;
+      gap: 0.35rem 0.58rem;
+    }
+
+    .wizard-shell__links a {
+      font-size: 0.64rem;
+      letter-spacing: 0.06em;
+    }
+
+    .wizard-close-btn {
+      margin-left: 0;
+      padding: 0.42rem;
+    }
+
+    .wizard-close-btn__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
     }
 
     .brand {
@@ -638,7 +679,12 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     .footer-container--wizard {
       flex-direction: column;
       padding-inline: 0.95rem;
-      padding-block: 0.72rem;
+      padding-block: 0.48rem;
+      gap: 0.28rem;
+    }
+
+    .footer-meta {
+      display: none;
     }
 
     .footer-meta {

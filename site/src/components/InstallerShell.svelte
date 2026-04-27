@@ -80,8 +80,10 @@
   .installer-shell {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    height: 100%;
+    gap: 0.72rem;
+    flex: 1 0 auto;
+    min-height: 100%;
+    height: auto;
   }
 
   .installer-shell__demo-banner {
@@ -90,12 +92,12 @@
     gap: 0.7rem;
     align-self: flex-start;
     margin: 0 clamp(0.95rem, 2.4vw, 1.6rem);
-    padding: 0.45rem 0.8rem;
-    border: 1px solid rgba(212, 144, 92, 0.24);
-    border-radius: 999px;
+    padding: 0.4rem 0.66rem;
+    border: 1px solid rgba(245, 244, 239, 0.14);
+    border-radius: 6px;
     background:
-      linear-gradient(180deg, rgba(18, 20, 24, 0.72), rgba(8, 9, 12, 0.82)),
-      radial-gradient(circle at left, rgba(184, 115, 51, 0.14), transparent 45%);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.86), rgba(8, 8, 7, 0.94)),
+      linear-gradient(90deg, rgba(245, 244, 239, 0.055), transparent 72%);
     color: var(--installer-text);
     font-family: var(--installer-font-mono);
   }
@@ -106,9 +108,9 @@
     justify-content: center;
     min-width: 3.2rem;
     padding: 0.18rem 0.45rem;
-    border-radius: 999px;
-    background: rgba(212, 144, 92, 0.16);
-    color: var(--installer-copper-bright);
+    border-radius: 3px;
+    background: rgba(245, 244, 239, 0.08);
+    color: var(--installer-text);
     font-size: 0.64rem;
     font-weight: 700;
     letter-spacing: 0.16em;
@@ -129,10 +131,9 @@
     margin: 0 clamp(0.95rem, 2.4vw, 1.6rem);
     padding: clamp(1.25rem, 4vw, 2rem);
     border: 1px solid var(--installer-border);
-    border-radius: clamp(1rem, 2vw, 1.4rem);
+    border-radius: clamp(0.5rem, 1.5vw, 0.8rem);
     background:
-      linear-gradient(180deg, rgba(18, 20, 24, 0.82), rgba(8, 9, 12, 0.9)),
-      radial-gradient(circle at top, rgba(184, 115, 51, 0.12), transparent 38%);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.86), rgba(8, 8, 7, 0.95));
     text-align: center;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.06),
@@ -159,9 +160,9 @@
 
   .installer-shell__bridge-action {
     padding: 0.6rem 1rem;
-    border: 1px solid rgba(212, 144, 92, 0.24);
-    border-radius: 999px;
-    background: rgba(212, 144, 92, 0.12);
+    border: 1px solid rgba(245, 244, 239, 0.18);
+    border-radius: 4px;
+    background: rgba(245, 244, 239, 0.07);
     color: var(--installer-text);
     cursor: pointer;
     font-family: var(--installer-font-mono);

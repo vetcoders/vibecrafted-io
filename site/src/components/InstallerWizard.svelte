@@ -379,20 +379,24 @@
    *  Design tokens inherit from global.css.
    * =================================================================== */
   .wizard {
+    box-sizing: border-box;
     width: 100%;
     max-width: 66rem;
     margin: 0 auto;
-    min-height: 100%;
-    height: 100%;
+    min-height: clamp(34rem, calc(100dvh - 9.5rem), 46rem);
+    height: auto;
     padding: clamp(1rem, 2.1vw, 1.45rem) clamp(0.95rem, 2.4vw, 1.6rem);
     font-family: var(--f-sans);
     color: var(--c-text);
     display: flex;
     flex-direction: column;
     gap: clamp(0.8rem, 1.3vw, 1.1rem);
-    overflow: hidden;
+    overflow: visible;
     -webkit-user-select: none;
     user-select: none;
+  }
+  .wizard :global(*) {
+    box-sizing: border-box;
   }
 
   /* ---- Progress track + dots ---- */
@@ -407,13 +411,13 @@
     left: 12%;
     right: 12%;
     height: 1px;
-    background: rgba(163, 184, 199, 0.14);
+    background: rgba(245, 244, 239, 0.16);
     border-radius: 1px;
     overflow: hidden;
   }
   .wz-track-fill {
     height: 100%;
-    background: var(--c-copper);
+    background: linear-gradient(90deg, rgba(245, 244, 239, 0.46), var(--c-teal-bright));
     border-radius: 1px;
     transition: width 0.35s var(--ease);
   }
@@ -438,8 +442,8 @@
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    border: 1.5px solid rgba(163, 184, 199, 0.18);
-    background: rgba(10, 11, 14, 0.88);
+    border: 1.5px solid rgba(245, 244, 239, 0.24);
+    background: rgba(23, 22, 21, 0.94);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -450,12 +454,12 @@
   .wz-dot.active .wz-pip {
     border-color: var(--c-copper);
     background: var(--c-copper);
-    box-shadow: 0 0 14px var(--c-glow), 0 0 28px rgba(184, 115, 51, 0.08);
+    box-shadow: 0 0 12px var(--c-glow);
     transform: scale(1.18);
   }
   .wz-dot.done .wz-pip {
-    border-color: var(--c-copper-bright);
-    background: var(--c-copper-bright);
+    border-color: var(--c-teal-bright);
+    background: var(--c-teal-bright);
     color: var(--c-stone);
   }
   .wz-dot.done .wz-pip svg { display: block; }
@@ -465,32 +469,32 @@
     font-size: 0.56rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: var(--c-text-dim);
+    color: rgba(245, 244, 239, 0.52);
     transition: color 0.2s;
   }
-  .wz-dot.active .wz-dot-label { color: var(--c-copper-bright); }
-  .wz-dot.done .wz-dot-label { color: var(--c-text); }
+  .wz-dot.active .wz-dot-label { color: rgba(245, 244, 239, 0.92); }
+  .wz-dot.done .wz-dot-label { color: rgba(245, 244, 239, 0.82); }
 
   /* ---- Slide stage ---- */
   .wz-stage {
-    flex: 1 1 0;
-    min-height: 0;
+    flex: 1 1 auto;
+    min-height: clamp(23rem, 46dvh, 31rem);
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
     padding: clamp(1rem, 2.2vw, 1.35rem);
-    border: 1px solid var(--c-border);
-    border-radius: calc(var(--radius-lg, 20px) + 2px);
+    border: 1px solid rgba(245, 244, 239, 0.13);
+    border-radius: var(--radius-lg, 8px);
     background: var(--c-surface-strong);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      0 20px 44px rgba(0, 0, 0, 0.22);
+      0 18px 36px rgba(0, 0, 0, 0.2);
     scrollbar-width: thin;
-    scrollbar-color: var(--c-copper) transparent;
+    scrollbar-color: rgba(245, 244, 239, 0.26) transparent;
   }
   .wz-stage::-webkit-scrollbar { width: 3px; }
   .wz-stage::-webkit-scrollbar-track { background: transparent; }
-  .wz-stage::-webkit-scrollbar-thumb { background: var(--c-copper); border-radius: 2px; }
+  .wz-stage::-webkit-scrollbar-thumb { background: rgba(245, 244, 239, 0.26); border-radius: 2px; }
 
   .wz-slide {
     min-height: 100%;
@@ -557,17 +561,17 @@
     gap: 0.72rem;
   }
   .wz-title {
-    font-family: var(--f-sans);
+    font-family: var(--f-display);
     font-size: clamp(1.45rem, 3vw, 1.95rem);
-    font-weight: 600;
+    font-weight: 400;
     margin-bottom: 0.45rem;
     color: var(--c-text);
     line-height: 1.1;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
   .wz-body {
     font-size: 0.92rem;
-    line-height: 1.72;
+    line-height: 1.62;
     color: var(--c-text-dim);
     margin-bottom: 0;
     max-width: 56ch;
@@ -581,11 +585,10 @@
   }
   .wz-welcome-note {
     padding: 0.8rem 0.9rem;
-    border-radius: calc(var(--radius-md, 12px) + 1px);
-    border: 1px solid rgba(212, 144, 92, 0.18);
+    border-radius: var(--radius-md, 6px);
+    border: 1px solid rgba(245, 244, 239, 0.13);
     background:
-      linear-gradient(180deg, rgba(17, 18, 23, 0.88), rgba(11, 12, 16, 0.94)),
-      radial-gradient(circle at top right, rgba(184, 115, 51, 0.08), transparent 46%);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.78), rgba(10, 10, 9, 0.94));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     text-align: left;
   }
@@ -596,7 +599,7 @@
     font-size: 0.58rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
   }
   .wz-welcome-note-value {
     margin: 0;
@@ -613,10 +616,10 @@
     font-weight: 600;
     min-height: 3rem;
     padding: 0.78rem 1.45rem;
-    border-radius: calc(var(--radius-sm, 6px) + 2px);
-    border: 1px solid rgba(184, 115, 51, 0.44);
-    background: var(--c-copper);
-    color: var(--c-stone);
+    border-radius: var(--radius-sm, 2px);
+    border: 1px solid rgba(245, 244, 239, 0.2);
+    background: linear-gradient(180deg, rgba(245, 244, 239, 0.1), rgba(245, 244, 239, 0.055));
+    color: var(--c-text);
     cursor: pointer;
     transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
     display: inline-flex;
@@ -624,11 +627,14 @@
     gap: 0.5rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    box-shadow: 0 14px 30px rgba(184, 115, 51, 0.2);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 12px 24px rgba(0, 0, 0, 0.22);
   }
   .wz-cta:hover {
-    background: var(--c-copper-bright);
-    box-shadow: 0 18px 34px rgba(184, 115, 51, 0.28);
+    border-color: rgba(207, 111, 78, 0.46);
+    background: linear-gradient(180deg, rgba(207, 111, 78, 0.16), rgba(245, 244, 239, 0.07));
+    box-shadow: 0 14px 26px rgba(0, 0, 0, 0.24);
     transform: translateY(-2px);
   }
   .wz-cta-arrow {
@@ -652,10 +658,10 @@
     display: flex;
     gap: 0.7rem;
     padding: 0.85rem 0.95rem 0.85rem 0.85rem;
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-left: 2px solid rgba(184, 115, 51, 0.55);
-    border-radius: calc(var(--radius-md, 12px) + 1px);
+    background: linear-gradient(180deg, rgba(23, 22, 21, 0.76), rgba(9, 9, 8, 0.92));
+    border: 1px solid rgba(245, 244, 239, 0.12);
+    border-left: 2px solid rgba(143, 185, 173, 0.42);
+    border-radius: var(--radius-md, 6px);
     align-items: flex-start;
     animation: cardIn 0.35s var(--ease) both;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -695,13 +701,13 @@
     align-items: center;
     gap: 0.6rem;
     padding: 0.38rem 0.8rem;
-    border-radius: 999px;
+    border-radius: var(--radius-md, 6px);
     background: linear-gradient(
       90deg,
-      rgba(184, 115, 51, 0.08),
+      rgba(245, 244, 239, 0.055),
       rgba(163, 184, 199, 0.04)
     );
-    border: 1px solid var(--c-border);
+    border: 1px solid rgba(245, 244, 239, 0.12);
     font-family: var(--f-mono);
     font-size: 0.62rem;
     letter-spacing: 0.14em;
@@ -721,7 +727,7 @@
   }
   .wz-stan-chip--req .wz-stan-chip-dot,
   .wz-stan-chip--req .wz-stan-chip-count {
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
   }
   .wz-stan-chip--opt .wz-stan-chip-dot,
   .wz-stan-chip--opt .wz-stan-chip-count {
@@ -752,9 +758,9 @@
     align-items: center;
     gap: 0.65rem;
     padding: 0.55rem 0.72rem;
-    border-radius: calc(var(--radius-sm, 6px) + 4px);
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
+    border-radius: var(--radius-md, 6px);
+    background: linear-gradient(180deg, rgba(23, 22, 21, 0.72), rgba(10, 10, 9, 0.92));
+    border: 1px solid rgba(245, 244, 239, 0.1);
     font-family: var(--f-mono);
     font-size: 0.74rem;
     animation: cardIn 0.3s var(--ease) both;
@@ -766,7 +772,7 @@
     text-align: center;
     flex-shrink: 0;
   }
-  .wz-badge.req { color: var(--c-copper-bright); }
+  .wz-badge.req { color: var(--c-teal-bright); }
   .wz-badge.opt { color: var(--c-text-dim); }
   .wz-check-label {
     flex: 1;
@@ -780,8 +786,8 @@
     border-radius: 999px;
   }
   .wz-tag.req {
-    background: rgba(184, 115, 51, 0.1);
-    color: var(--c-copper-bright);
+    background: rgba(61, 122, 114, 0.14);
+    color: var(--c-teal-bright);
   }
   .wz-tag.opt {
     background: rgba(163, 184, 199, 0.06);
@@ -793,7 +799,7 @@
     margin-top: 0.9rem;
   }
   /* Primary variant — the curl command is the step's centre of gravity.
-     Upscaled type, copper ring, and a filled Copy button that reads as
+     Upscaled type, restrained ring, and a filled Copy button that reads as
      a real action rather than an outline hint. Sits inside wz-install-hero
      in step 3, so it does not need margin-top auto anymore. */
   .wz-cmd-block--primary {
@@ -806,7 +812,7 @@
     inset: -1px;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(212, 144, 92, 0.55), rgba(184, 115, 51, 0.08) 55%, rgba(163, 184, 199, 0.08));
+    background: linear-gradient(135deg, rgba(245, 244, 239, 0.26), rgba(245, 244, 239, 0.06) 55%, rgba(61, 122, 114, 0.18));
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -817,12 +823,11 @@
   }
   .wz-cmd-block--primary .wz-cmd-bar {
     padding: 1.05rem 1.2rem;
-    border-color: rgba(212, 144, 92, 0.62);
-    background: linear-gradient(180deg, rgba(22, 24, 28, 0.92), rgba(9, 10, 13, 0.98));
+    border-color: rgba(245, 244, 239, 0.2);
+    background: linear-gradient(180deg, rgba(23, 22, 21, 0.94), rgba(8, 8, 7, 0.98));
     box-shadow:
-      0 0 0 1px rgba(184, 115, 51, 0.22),
+      0 0 0 1px rgba(245, 244, 239, 0.08),
       0 24px 56px rgba(0, 0, 0, 0.4),
-      0 0 48px rgba(184, 115, 51, 0.14),
       inset 0 1px 0 rgba(255, 255, 255, 0.09);
   }
   .wz-cmd-block--primary .wz-cmd-prompt {
@@ -832,7 +837,7 @@
     font-size: 0.95rem;
     letter-spacing: 0.01em;
   }
-  .wz-cmd-block--primary :global(.wz-cmd-copy) {
+  .wz-cmd-block--primary :global(.wz-cmd-copy[data-copy-managed='svelte']) {
     min-height: 2.9rem;
     padding: 0.72rem 1.25rem;
     font-size: 0.72rem;
@@ -842,20 +847,20 @@
     background: linear-gradient(180deg, var(--c-copper-bright), var(--c-copper));
     border-color: var(--c-copper-bright);
     box-shadow:
-      0 8px 22px rgba(184, 115, 51, 0.28),
+      0 8px 20px rgba(207, 111, 78, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.22),
       inset 0 -1px 0 rgba(0, 0, 0, 0.28);
   }
-  .wz-cmd-block--primary :global(.wz-cmd-copy:hover) {
+  .wz-cmd-block--primary :global(.wz-cmd-copy[data-copy-managed='svelte']:hover) {
     color: var(--c-stone);
-    background: linear-gradient(180deg, #e7a272, var(--c-copper-bright));
+    background: linear-gradient(180deg, #d9a18b, var(--c-copper-bright));
     transform: translateY(-2px);
     box-shadow:
-      0 12px 28px rgba(184, 115, 51, 0.38),
+      0 10px 24px rgba(207, 111, 78, 0.22),
       inset 0 1px 0 rgba(255, 255, 255, 0.28),
       inset 0 -1px 0 rgba(0, 0, 0, 0.28);
   }
-  .wz-cmd-block--primary :global(.wz-cmd-copy.is-copied) {
+  .wz-cmd-block--primary :global(.wz-cmd-copy[data-copy-managed='svelte'].is-copied) {
     color: var(--c-stone);
     background: linear-gradient(180deg, #8fc0aa, #5a8a7a);
     border-color: #8fc0aa;
@@ -866,16 +871,16 @@
     align-items: center;
     gap: 0.8rem;
     padding: 0.82rem 0.92rem;
-    background: linear-gradient(180deg, rgba(18, 20, 24, 0.82), rgba(9, 10, 13, 0.94));
-    border: 1px solid rgba(212, 144, 92, 0.3);
-    border-radius: calc(var(--radius-md, 12px) + 1px);
+    background: linear-gradient(180deg, rgba(23, 22, 21, 0.82), rgba(8, 8, 7, 0.94));
+    border: 1px solid rgba(245, 244, 239, 0.16);
+    border-radius: var(--radius-md, 6px);
     box-shadow:
       0 18px 34px rgba(0, 0, 0, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
   .wz-cmd-prompt {
     font-family: var(--f-mono);
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
     font-weight: 700;
     flex-shrink: 0;
   }
@@ -889,7 +894,7 @@
     -webkit-user-select: all;
     user-select: all;
   }
-  .wz-cmd-copy {
+  :global(.wz-cmd-copy[data-copy-managed='svelte']) {
     font-family: var(--f-mono);
     display: inline-flex;
     align-items: center;
@@ -897,10 +902,10 @@
     min-height: 2.75rem;
     padding: 0.62rem 0.95rem;
     font-size: 0.68rem;
-    background: rgba(14, 16, 20, 0.84);
-    border: 1px solid rgba(184, 115, 51, 0.24);
-    border-radius: 999px;
-    color: var(--copper-bright);
+    background: rgba(23, 22, 21, 0.84);
+    border: 1px solid rgba(245, 244, 239, 0.18);
+    border-radius: var(--radius-sm, 2px);
+    color: var(--c-text);
     cursor: pointer;
     transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     flex-shrink: 0;
@@ -909,21 +914,21 @@
     text-transform: uppercase;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
-  .wz-cmd-copy:hover {
-    border-color: rgba(212, 144, 92, 0.54);
+  :global(.wz-cmd-copy[data-copy-managed='svelte']:hover) {
+    border-color: rgba(245, 244, 239, 0.3);
     color: var(--c-text);
-    background: rgba(184, 115, 51, 0.12);
+    background: rgba(245, 244, 239, 0.08);
     transform: translateY(-1px);
   }
-  .wz-cmd-copy.is-copied {
-    border-color: var(--c-copper-bright);
-    color: var(--c-copper-bright);
-    background: rgba(184, 115, 51, 0.08);
+  :global(.wz-cmd-copy[data-copy-managed='svelte'].is-copied) {
+    border-color: var(--c-teal-bright);
+    color: var(--c-teal-bright);
+    background: rgba(61, 122, 114, 0.14);
   }
-  .wz-cmd-copy.is-error {
-    border-color: rgba(163, 184, 199, 0.26);
+  :global(.wz-cmd-copy[data-copy-managed='svelte'].is-error) {
+    border-color: rgba(245, 244, 239, 0.22);
     color: var(--c-text);
-    background: rgba(20, 23, 28, 0.92);
+    background: rgba(23, 22, 21, 0.92);
   }
 
   /* ---- Install hero (step 3) ----
@@ -954,11 +959,10 @@
     flex-direction: column;
     gap: 0.55rem;
     padding: 0.75rem 0.9rem 0.85rem;
-    border-radius: calc(var(--radius-md, 12px) + 2px);
+    border-radius: var(--radius-lg, 8px);
     background:
-      radial-gradient(circle at 18% 0%, rgba(212, 144, 92, 0.1), transparent 55%),
-      linear-gradient(180deg, rgba(18, 20, 24, 0.62), rgba(9, 10, 13, 0.78));
-    border: 1px solid rgba(212, 144, 92, 0.22);
+      linear-gradient(180deg, rgba(23, 22, 21, 0.64), rgba(8, 8, 7, 0.82));
+    border: 1px solid rgba(245, 244, 239, 0.16);
     box-shadow:
       0 22px 42px rgba(0, 0, 0, 0.28),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -976,7 +980,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
   }
   .wz-install-hero-hint {
     font-family: var(--f-mono);
@@ -992,7 +996,7 @@
     align-items: baseline;
     gap: 0.5rem 0.7rem;
     padding: 0.2rem 0.1rem 0;
-    border-top: 1px dashed rgba(163, 184, 199, 0.14);
+    border-top: 1px dashed rgba(245, 244, 239, 0.16);
     padding-top: 0.55rem;
   }
   .wz-install-run-kicker {
@@ -1001,7 +1005,7 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
     flex-shrink: 0;
   }
   .wz-install-run-body {
@@ -1046,22 +1050,23 @@
   /* ---- Terminal sim ---- */
   .wz-terminal {
     padding: 1.25rem 1.5rem;
-    background: #0d0f14;
-    border: 1px solid rgba(184, 115, 51, 0.2);
-    border-radius: calc(var(--radius-md, 12px) + 1px);
+    background: #0b0b0a;
+    border: 1px solid rgba(245, 244, 239, 0.14);
+    border-radius: var(--radius-md, 6px);
     font-family: var(--f-mono);
     font-size: 0.82rem;
     line-height: 1.6;
-    color: #e6edf3;
+    color: rgba(245, 244, 239, 0.86);
     max-height: 20rem;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--c-copper) transparent;
+    scrollbar-color: rgba(245, 244, 239, 0.24) transparent;
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
   }
   .wz-term-line {
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: normal;
+    overflow-wrap: break-word;
     margin-bottom: 0.2rem;
     animation: termIn 0.1s ease both;
   }
@@ -1073,7 +1078,7 @@
     display: inline-block;
     width: 0.5rem;
     height: 1.1rem;
-    background: var(--c-copper-bright);
+    background: var(--c-teal-bright);
     animation: blink 0.8s step-end infinite;
     vertical-align: middle;
     margin-left: 2px;
@@ -1110,12 +1115,12 @@
     font-size: 0.74rem;
     line-height: 1.55;
     color: rgba(230, 237, 243, 0.82);
-    border-color: rgba(163, 184, 199, 0.18);
-    background: linear-gradient(180deg, rgba(13, 15, 20, 0.94), rgba(9, 10, 13, 0.96));
+    border-color: rgba(245, 244, 239, 0.14);
+    background: linear-gradient(180deg, rgba(11, 11, 10, 0.94), rgba(8, 8, 7, 0.96));
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-terminal--demo .wz-cursor {
-    background: rgba(212, 144, 92, 0.65);
+    background: rgba(143, 185, 173, 0.68);
   }
   .wz-terminal-meta {
     display: flex;
@@ -1131,7 +1136,7 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
   }
   .wz-terminal-copy {
     margin: 0;
@@ -1152,27 +1157,27 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.32rem 0.78rem;
-    border-radius: 999px;
+    border-radius: var(--radius-md, 6px);
     font-family: var(--f-mono);
     font-size: 0.62rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
     background: linear-gradient(
       90deg,
-      rgba(184, 115, 51, 0.18),
-      rgba(184, 115, 51, 0.06)
+      rgba(61, 122, 114, 0.2),
+      rgba(61, 122, 114, 0.06)
     );
-    border: 1px solid rgba(184, 115, 51, 0.35);
-    box-shadow: 0 0 0 1px rgba(184, 115, 51, 0.12),
-                0 10px 24px rgba(184, 115, 51, 0.14),
+    border: 1px solid rgba(143, 185, 173, 0.34);
+    box-shadow: 0 0 0 1px rgba(61, 122, 114, 0.12),
+                0 10px 24px rgba(0, 0, 0, 0.18),
                 inset 0 1px 0 rgba(255, 255, 255, 0.06);
     animation: stampIn 0.6s var(--ease) both;
   }
   .wz-done-stamp-mark {
     font-size: 0.6rem;
-    color: var(--c-copper-bright);
-    filter: drop-shadow(0 0 6px rgba(212, 144, 92, 0.55));
+    color: var(--c-teal-bright);
+    filter: none;
   }
   .wz-done-stamp-text {
     line-height: 1;
@@ -1205,10 +1210,10 @@
     align-items: baseline;
     gap: 0.75rem;
     padding: 0.72rem 0.85rem 0.72rem 0.95rem;
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-left: 2px solid var(--c-copper);
-    border-radius: calc(var(--radius-md, 12px) + 1px);
+    background: linear-gradient(180deg, rgba(23, 22, 21, 0.74), rgba(9, 9, 8, 0.92));
+    border: 1px solid rgba(245, 244, 239, 0.12);
+    border-left: 2px solid rgba(143, 185, 173, 0.46);
+    border-radius: var(--radius-md, 6px);
     animation: cardIn 0.35s var(--ease) both;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
@@ -1216,7 +1221,7 @@
     font-family: var(--f-mono);
     font-size: 0.58rem;
     letter-spacing: 0.18em;
-    color: var(--c-copper-bright);
+    color: var(--c-teal-bright);
     opacity: 0.7;
     width: 1.1rem;
     flex-shrink: 0;
@@ -1225,7 +1230,7 @@
   .wz-next-cmd-code {
     font-family: var(--f-mono);
     font-size: 0.74rem;
-    color: var(--c-copper-bright);
+    color: var(--c-text);
     white-space: nowrap;
     flex-shrink: 0;
     letter-spacing: 0.08em;
@@ -1254,7 +1259,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.35rem 0 0;
-    border-top: 1px solid rgba(163, 184, 199, 0.14);
+    border-top: 1px solid rgba(245, 244, 239, 0.12);
     flex-shrink: 0;
   }
   .wz-btn {
@@ -1272,8 +1277,8 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   .wz-btn-back {
-    background: rgba(14, 16, 20, 0.64);
-    border: 1px solid rgba(163, 184, 199, 0.16);
+    background: rgba(23, 22, 21, 0.64);
+    border: 1px solid rgba(245, 244, 239, 0.16);
     color: var(--c-text-dim);
   }
   .wz-btn-back:hover:not(:disabled) {
@@ -1286,16 +1291,16 @@
     cursor: not-allowed;
   }
   .wz-btn-next {
-    background: var(--c-copper);
+    background: linear-gradient(180deg, var(--c-copper-bright), var(--c-copper));
     border: 1px solid var(--c-copper);
     color: var(--c-stone);
     font-weight: 700;
-    box-shadow: 0 12px 24px rgba(184, 115, 51, 0.22);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
   }
   .wz-btn-next:hover {
     background: var(--c-copper-bright);
     border-color: var(--c-copper-bright);
-    box-shadow: 0 16px 28px rgba(184, 115, 51, 0.28);
+    box-shadow: 0 14px 26px rgba(207, 111, 78, 0.18);
     transform: translateY(-1px);
   }
   .wz-btn-done {
@@ -1322,16 +1327,16 @@
     border: 1px solid var(--c-copper-bright);
     color: var(--c-stone);
     box-shadow:
-      0 14px 30px rgba(184, 115, 51, 0.26),
+      0 12px 26px rgba(207, 111, 78, 0.18),
       inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
   .wz-btn-finish:hover {
-    background: linear-gradient(180deg, #e7a272, var(--c-copper-bright));
+    background: linear-gradient(180deg, #d9a18b, var(--c-copper-bright));
     border-color: var(--c-copper-bright);
     color: var(--c-stone);
     transform: translateY(-1px);
     box-shadow:
-      0 18px 34px rgba(184, 115, 51, 0.34),
+      0 16px 30px rgba(207, 111, 78, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   .wz-counter {
@@ -1349,11 +1354,12 @@
   @media (max-width: 720px) {
     .wizard {
       max-width: none;
-      padding: 0.95rem 0.85rem 0.8rem;
+      padding: 0.72rem 0.72rem 0.62rem;
+      gap: 0.62rem;
     }
 
     .wz-stage {
-      padding: 0.95rem 0.82rem;
+      padding: 0.9rem 0.78rem;
     }
 
     .wz-grid {
@@ -1367,15 +1373,31 @@
 
     .wz-welcome-split {
       grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .wz-terminal-shell--hero {
+      display: none;
     }
 
     .wz-cmd-bar {
       grid-template-columns: auto minmax(0, 1fr);
+      align-items: flex-start;
+      gap: 0.55rem;
     }
 
-    .wz-cmd-copy {
+    :global(.wz-cmd-copy[data-copy-managed='svelte']) {
       grid-column: 1 / -1;
       width: 100%;
+    }
+
+    .wz-cmd-block--primary .wz-cmd-text {
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    .wz-cmd-text {
+      overflow-wrap: anywhere;
     }
 
     .wz-terminal-meta {
@@ -1418,7 +1440,45 @@
     }
 
     .wz-dot-label {
-      font-size: 0.5rem;
+      font-size: 0.48rem;
+      letter-spacing: 0.1em;
+    }
+
+    .wz-title {
+      font-size: clamp(1.52rem, 8vw, 1.9rem);
+    }
+
+    .wz-body {
+      font-size: 0.94rem;
+      line-height: 1.58;
+    }
+
+    .wz-cta {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0.65rem;
+    }
+
+    .wz-hint {
+      font-size: 0.58rem;
+      line-height: 1.35;
+    }
+
+    .wz-nav {
+      padding-top: 0.25rem;
+    }
+
+    .wz-btn {
+      width: 2.55rem;
+      height: 2.55rem;
+    }
+
+    .wz-btn-done,
+    .wz-btn-finish {
+      width: auto;
+      min-width: 5.6rem;
+      padding-inline: 1rem;
+      border-radius: 999px;
     }
   }
 
