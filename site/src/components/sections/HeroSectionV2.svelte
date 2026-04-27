@@ -86,13 +86,32 @@
 <style>
   .hero {
     position: relative;
+    isolation: isolate;
     width: 100%;
     height: 100vh;
     min-height: 720px;
     scroll-snap-align: start;
-    background: var(--ink);
+    background:
+      radial-gradient(circle at 50% 24%, rgba(var(--v2-paper-rgb), 0.045), transparent 36rem),
+      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 48%),
+      var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 28%, rgba(var(--v2-paper-rgb), 0.11) 0 0.8px, transparent 1.45px),
+      radial-gradient(circle at 72% 64%, rgba(var(--v2-paper-rgb), 0.075) 0 0.7px, transparent 1.35px),
+      repeating-linear-gradient(90deg, rgba(var(--v2-paper-rgb), 0.024) 0 1px, transparent 1px 8px);
+    background-size: 19px 19px, 27px 27px, 100% 100%;
+    mix-blend-mode: screen;
+    opacity: 0.28;
   }
 
   .hero__vignette {

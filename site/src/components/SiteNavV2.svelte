@@ -62,7 +62,7 @@
     if (openTimer) { clearTimeout(openTimer); openTimer = null; }
     if (!dropdownOpen) return;
     if (closeTimer) return;
-    closeTimer = setTimeout(() => { dropdownOpen = false; closeTimer = null; }, 140);
+    closeTimer = setTimeout(() => { dropdownOpen = false; closeTimer = null; }, 520);
   }
 
   function openImmediately() {
@@ -336,10 +336,10 @@
   }
 
   .v2nav__dropdown {
-    position: fixed;
-    top: 64px;
-    left: 50%;
-    transform: translate(-50%, -8px);
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    transform: translateY(-8px);
     width: min(880px, calc(100vw - 96px));
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -361,7 +361,7 @@
 
   .v2nav__dropdown--open {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     pointer-events: auto;
   }
 

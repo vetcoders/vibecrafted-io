@@ -48,6 +48,19 @@
   --v2-rule-paper: rgba(23, 22, 21, 0.17);
   --v2-rule-paper-soft: rgba(23, 22, 21, 0.09);
 
+  /* ─── Editorial paper material ──────────────────────────── */
+  --v2-paper-wash-on-ink: rgba(216, 209, 196, 0.055);
+  --v2-paper-wash-on-paper: rgba(229, 222, 210, 0.34);
+  --v2-paper-fiber-ink: rgba(245, 244, 239, 0.13);
+  --v2-paper-fiber-paper: rgba(23, 22, 21, 0.07);
+  --v2-paper-hairline: rgba(23, 22, 21, 0.24);
+  --v2-paper-hairline-soft: rgba(23, 22, 21, 0.12);
+  --v2-paper-glass: rgba(216, 209, 196, 0.34);
+  --v2-paper-glass-strong: rgba(216, 209, 196, 0.48);
+  --v2-paper-glass-highlight: rgba(255, 255, 255, 0.22);
+  --v2-paper-glass-shadow: 0 18px 44px rgba(23, 22, 21, 0.12);
+  --v2-paper-backdrop: blur(20px) saturate(0.92) contrast(0.96);
+
   /* ─── Typography ─────────────────────────────────────────── */
   --v2-font-display: "Instrument Serif", "Times New Roman", serif;
   --v2-font-body: "Inter", system-ui, -apple-system, sans-serif;
@@ -96,6 +109,17 @@
   --rule-dark-soft: var(--v2-rule-dark-soft);
   --rule-paper: var(--v2-rule-paper);
   --rule-paper-soft: var(--v2-rule-paper-soft);
+  --paper-wash-on-ink: var(--v2-paper-wash-on-ink);
+  --paper-wash-on-paper: var(--v2-paper-wash-on-paper);
+  --paper-fiber-ink: var(--v2-paper-fiber-ink);
+  --paper-fiber-paper: var(--v2-paper-fiber-paper);
+  --paper-hairline: var(--v2-paper-hairline);
+  --paper-hairline-soft: var(--v2-paper-hairline-soft);
+  --paper-glass: var(--v2-paper-glass);
+  --paper-glass-strong: var(--v2-paper-glass-strong);
+  --paper-glass-highlight: var(--v2-paper-glass-highlight);
+  --paper-glass-shadow: var(--v2-paper-glass-shadow);
+  --paper-backdrop: var(--v2-paper-backdrop);
   --font-display: var(--v2-font-display);
   --font-body: var(--v2-font-body);
   --font-mono: var(--v2-font-mono);

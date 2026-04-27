@@ -228,9 +228,12 @@ const jsonLd = JSON.stringify({
   }
 
   body.v2-scope {
+    position: relative;
     margin: 0;
     padding: 0;
-    background: var(--v2-ink);
+    background:
+      radial-gradient(circle at 50% 18%, rgba(var(--v2-paper-rgb), 0.035), transparent 34rem),
+      var(--v2-ink);
     color: var(--v2-fg-on-dark);
     font-family: var(--v2-font-body);
     font-size: 16px;
@@ -238,6 +241,22 @@ const jsonLd = JSON.stringify({
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  body.v2-scope::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(var(--v2-paper-rgb), 0.18) 0 0.8px, transparent 1.35px),
+      radial-gradient(circle at 78% 62%, rgba(var(--v2-ink-rgb), 0.10) 0 0.75px, transparent 1.4px),
+      repeating-linear-gradient(0deg, rgba(var(--v2-paper-rgb), 0.045) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(90deg, rgba(var(--v2-ink-rgb), 0.028) 0 1px, transparent 1px 9px);
+    background-size: 17px 17px, 23px 23px, 100% 100%, 100% 100%;
+    mix-blend-mode: soft-light;
+    opacity: 0.32;
   }
 
   /* Scroll behavior for anchor navigation (nav links → #about, #framework, etc.) */
@@ -280,7 +299,9 @@ const jsonLd = JSON.stringify({
    * view-transitions. */
   body.v2-scope .v2-main {
     display: block;
-    background: var(--v2-ink);
+    background:
+      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 420px),
+      var(--v2-ink);
   }
   body.v2-scope .v2-main--subpage {
     padding-top: 72px;
