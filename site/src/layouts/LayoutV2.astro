@@ -141,6 +141,71 @@ const jsonLd = JSON.stringify({
   <script is:inline type="application/ld+json" set:html={jsonLd} />
   <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
   <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+  <script is:inline>
+    (() => {
+      if (window.__vcScrollFadeRuntime) return;
+      window.__vcScrollFadeRuntime = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let targets = [];
+      let ticking = false;
+
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+      const sync = () => {
+        ticking = false;
+
+        if (reduceMotion.matches) {
+          targets.forEach((target) => {
+            target.style.removeProperty('--scroll-fade-opacity');
+            target.style.removeProperty('--scroll-fade-y');
+          });
+          return;
+        }
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+        const center = viewportHeight * 0.5;
+
+        targets.forEach((target) => {
+          const rect = target.getBoundingClientRect();
+          const targetHeight = Math.max(1, Math.min(rect.height, viewportHeight));
+          const targetCenter = rect.top + rect.height * 0.5;
+          const centerDistance = Math.abs(targetCenter - center);
+          const centerFade = 1 - clamp((centerDistance - viewportHeight * 0.18) / (viewportHeight * 0.42), 0, 1);
+          const visiblePx = clamp(Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0), 0, targetHeight);
+          const visibilityFade = clamp(visiblePx / targetHeight, 0, 1);
+          const opacity = clamp(Math.max(centerFade, visibilityFade * 1.15), 0.08, 1);
+          const direction = targetCenter < center ? -1 : 1;
+          const offset = Math.round((1 - opacity) * 18 * direction);
+
+          target.style.setProperty('--scroll-fade-opacity', opacity.toFixed(3));
+          target.style.setProperty('--scroll-fade-y', `${offset}px`);
+        });
+      };
+
+      const schedule = () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(sync);
+      };
+
+      const boot = () => {
+        targets = Array.from(document.querySelectorAll('[data-scroll-fade]'));
+        sync();
+      };
+
+      document.addEventListener('astro:page-load', boot);
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule, { passive: true });
+      reduceMotion.addEventListener?.('change', schedule);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+  </script>
 </head>
 <body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
   <SiteNavV2 client:load lang={lang} currentPath={currentPath} toggleHref={toggleHref} />
@@ -178,10 +243,12 @@ const jsonLd = JSON.stringify({
   /* Scroll behavior for anchor navigation (nav links → #about, #framework, etc.) */
   html:has(body.v2-scope) {
     scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
   }
   @media (prefers-reduced-motion: reduce) {
     html:has(body.v2-scope) {
       scroll-behavior: auto;
+      scroll-snap-type: none;
     }
   }
   body.v2-scope [id] {
@@ -217,5 +284,22 @@ const jsonLd = JSON.stringify({
   }
   body.v2-scope .v2-main--subpage {
     padding-top: 72px;
+  }
+
+  body.v2-scope [data-scroll-fade] {
+    opacity: var(--scroll-fade-opacity, 1);
+    transform: translate3d(0, var(--scroll-fade-y, 0), 0);
+    transition:
+      opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body.v2-scope [data-scroll-fade] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
   }
 </style>

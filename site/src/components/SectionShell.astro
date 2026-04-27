@@ -23,7 +23,7 @@ const {
 ---
 
 <section id={id} data-seam={seam} class:list={['v2-section', `v2-section--${surface}`, className]}>
-  <div class="v2-section__inner">
+  <div class="v2-section__inner" data-scroll-fade>
     <div class="v2-section__header">
       <span class="v2-section__num">§ {number} · {title}</span>
       {centerLabel && <span class="v2-section__center">{centerLabel}</span>}
@@ -39,7 +39,11 @@ const {
 <style>
   .v2-section {
     width: 100%;
-    padding: 72px 0 88px;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    scroll-snap-align: start;
+    padding: var(--v2-section-padding-y-top) 0 var(--v2-section-padding-y-bottom);
   }
 
   .v2-section--ink {
@@ -76,9 +80,10 @@ const {
   }
 
   .v2-section__inner {
-    max-width: 1280px;
+    width: 100%;
+    max-width: var(--v2-max-width);
     margin: 0 auto;
-    padding: 0 48px;
+    padding: 0 var(--v2-section-padding-x);
   }
 
   .v2-section__header {
@@ -135,11 +140,9 @@ const {
 
   @media (max-width: 720px) {
     .v2-section {
-      padding: 48px 0 64px;
-    }
-
-    .v2-section__inner {
-      padding: 0 24px;
+      min-height: auto;
+      align-items: start;
+      padding: var(--v2-section-padding-y-top) 0 var(--v2-section-padding-y-bottom);
     }
 
     .v2-section__rule {

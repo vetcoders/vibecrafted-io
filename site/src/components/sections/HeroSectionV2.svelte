@@ -40,7 +40,7 @@
     />
   </div>
 
-  <div class="hero__overlay">
+  <div class="hero__overlay" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
       {hero.heading.pre}<br />
@@ -60,7 +60,7 @@
     </div>
   </div>
 
-  <div class="hero__telemetry" aria-hidden="true">
+  <div class="hero__telemetry" aria-hidden="true" data-scroll-fade>
     <span class="hero__tele-row">
       <span class="hero__tele-label">{hero.telemetry.marbles}</span>
       <span class="hero__tele-dot">·</span>
@@ -89,6 +89,7 @@
     width: 100%;
     height: 100vh;
     min-height: 720px;
+    scroll-snap-align: start;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
