@@ -378,6 +378,7 @@
   let grooveCount = $state(0);
   let filledCount = $state(0);
   let fillableCount = $state(0);
+  const loopComplete = $derived(fillableCount > 0 && filledCount >= fillableCount);
   let marbleCount = $state(0);
   let statusLine = $state('');
 
@@ -613,6 +614,9 @@
     filledCount = filled;
     marbleCount = marbles.filter((marble) => marble.alpha > 0.05).length;
     convergence = Math.round((filled / fillable) * 100);
+    if (filled >= fillable && fillable > 0) {
+      statusLine = locale === 'pl' ? 'pętla domknięta · plansza zbiegła' : 'loop complete · board converged';
+    }
   }
 
   function setPhase(index: number) {
@@ -993,7 +997,10 @@
   });
 </script>
 
-<section class="game" aria-labelledby="framework-game-title">
+<section
+  class={['game', loopComplete && 'game--complete']}
+  aria-labelledby="framework-game-title"
+>
   <div class="game__chrome">
     <span class="game__chrome-brand" aria-hidden="true">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<i>.</i></span>
     <span class="game__chrome-center">{copy.top.center}</span>
@@ -1080,6 +1087,7 @@
           type="button"
           class="primary-actions__throw"
           onclick={throwMarbles}
+          disabled={loopComplete}
         >
           <span class="primary-actions__chev" aria-hidden="true">▸</span>
           {copy.board.throwRound}
@@ -1668,6 +1676,51 @@
   .primary-actions__icon {
     font-size: 14px;
     color: var(--dim);
+  }
+
+  .primary-actions__throw:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /*
+   * Win state: filled === fillable. The badge brightens and gains a
+   * mint glow, the board picks up a faint mint inner halo, the throw
+   * button steps back, and reset becomes the primary mint pill —
+   * subtle enough to honour Monika's "no fanfare" brief, but clear
+   * enough that the player feels the loop close.
+   */
+  .game--complete .converge-badge {
+    color: #c5dbd3;
+  }
+
+  .game--complete .converge-badge__value,
+  .game--complete .converge-badge__label {
+    color: #c5dbd3;
+    text-shadow: 0 0 14px rgba(166, 197, 188, 0.55);
+  }
+
+  .game--complete .board {
+    box-shadow:
+      inset 0 0 36px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(166, 197, 188, 0.2),
+      inset 0 0 80px rgba(166, 197, 188, 0.14);
+    border-color: rgba(166, 197, 188, 0.34);
+  }
+
+  .game--complete .metrics__primary strong {
+    color: var(--mint);
+  }
+
+  .game--complete .primary-actions__reset {
+    border-color: var(--mint);
+    color: var(--mint);
+  }
+
+  .game--complete .primary-actions__reset:hover,
+  .game--complete .primary-actions__reset:focus-visible {
+    background: rgba(166, 197, 188, 0.1);
+    color: #c5dbd3;
   }
 
   .control-panel {
