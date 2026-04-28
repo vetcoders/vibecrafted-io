@@ -30,7 +30,7 @@
 
   const requiredCategories = ['toolchains', 'agents'];
   const requiredCommands = ['loctree-mcp', 'aicx-mcp'];
-  const dynamicChecks = (() => {
+  const dynamicChecks = $derived.by(() => {
     const checks: Array<{ label: string; required: boolean }> = [];
     const diags = manifest.diagnostics;
     if (diags && diags.categories) {
@@ -44,16 +44,18 @@
       }
     }
     return checks;
-  })();
-  const requiredCount = dynamicChecks.filter((c) => c.required).length;
-  const optionalCount = dynamicChecks.length - requiredCount;
+  });
+  const requiredCount = $derived(dynamicChecks.filter((c) => c.required).length);
+  const optionalCount = $derived(dynamicChecks.length - requiredCount);
 
   const phaseIcons = ['\u25C8', '\u21CB', '\u2318', '\u21B3'];
-  const dynamicPhases = (manifest.phases || []).map((p: { label: string; reason: string }, idx: number) => ({
-    icon: phaseIcons[idx % phaseIcons.length],
-    name: p.label,
-    desc: p.reason.split('\n')[0] || p.reason,
-  }));
+  const dynamicPhases = $derived(
+    (manifest.phases || []).map((p: { label: string; reason: string }, idx: number) => ({
+      icon: phaseIcons[idx % phaseIcons.length],
+      name: p.label,
+      desc: p.reason.split('\n')[0] || p.reason,
+    }))
+  );
 
   const pages = $derived(wizardCopy.pages);
   const activePage = $derived(pages[currentStep]);
@@ -539,15 +541,6 @@
   }
 
   /* ---- Content typography ---- */
-  .wz-center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-height: 100%;
-    gap: 0.75rem;
-  }
   .wz-welcome-split {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
@@ -1099,10 +1092,6 @@
     flex: 1;
     min-height: 16rem;
     max-height: 22rem;
-  }
-  .wz-terminal-shell--primary .wz-terminal {
-    min-height: 13rem;
-    max-height: 19rem;
   }
   /* Demoted variant for step 3 — terminal animation is illustration,
      not action. Slightly smaller type, muted frame, fills remaining space

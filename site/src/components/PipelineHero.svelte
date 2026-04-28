@@ -574,7 +574,7 @@
     height: auto;
   }
 
-  .ph-mmd-error {
+  :global(.ph-mmd-error) {
     color: var(--ph-mmd-error-color, var(--copper-bright, #e28a5c));
     font-family: var(--font-mono);
     font-size: 0.74rem;
