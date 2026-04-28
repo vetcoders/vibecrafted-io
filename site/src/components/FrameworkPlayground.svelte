@@ -227,11 +227,11 @@
         brand: 'Vibecrafted.',
         center: 'Framework — gra',
         fig: 'FIG. 06 · GAME VC-006',
-        mode: 'Tryb nauki'
+        mode: 'Tryb'
       },
       hero: {
         kicker: '§ 06 · Pętla frameworka',
-        title: 'Rzuć marble’e na planszę.',
+        title: 'Rzuć marble na planszę.',
         lead:
           'Większość chybi, odbije się albo zabłądzi. Uruchom kolejną rundę. Część osiądzie, część ruszy dalej. Powtarzaj, aż plansza się wypełni, a wzór stanie się czytelny.',
         foot:
@@ -239,7 +239,7 @@
       },
       board: {
         shape: 'Kształt planszy',
-        density: 'Gęstość rowków',
+        density: 'Zagęszczenie',
         operators: 'Liczba kulek w rzucie',
         precision: 'Precyzja',
         spawn: 'Wpuść operatorów',
@@ -254,7 +254,7 @@
         teaching: 'Powierzchnia nauki — nie output produkcyjny.',
         pickShape: 'Wybierz kształt',
         runHint: 'obserwuję konwergencję...',
-        throwRound: 'Rzuć rundę',
+        throwRound: 'Rozpocznij rundę',
         filled: 'Wypełnione',
         advanced: 'Zaawansowane',
         previous: 'Poprzednia faza',
@@ -272,8 +272,7 @@
           eyebrow: '01 · Frame',
           title: 'Frame',
           verb: 'Zdefiniuj planszę',
-          body:
-            'Ustaw zewnętrzną granicę pracy. Zanim agenci zaczną optymalizować, system potrzebuje realnego kształtu.',
+          body: 'Ustal kształt planszy.',
           command: 'vc-scaffold my-project',
           note: 'Najpierw granica. Praca bez ramy szybko zamienia się w drift.',
           fill: 0.08,
@@ -625,7 +624,7 @@
     marbleCount = marbles.filter((marble) => marble.alpha > 0.05).length;
     convergence = Math.round((filled / fillable) * 100);
     if (filled >= fillable && fillable > 0) {
-      statusLine = locale === 'pl' ? 'pętla domknięta · plansza zbiegła' : 'loop complete · board converged';
+      statusLine = locale === 'pl' ? 'plansza pełna' : 'loop complete · board converged';
     }
   }
 
@@ -1176,7 +1175,7 @@
               class={['density-button', density === level && 'density-button--active']}
               onclick={() => setDensity(level)}
             >
-              {level === 1 ? (locale === 'pl' ? 'Mało' : 'Low') : level === 2 ? (locale === 'pl' ? 'Średnio' : 'Medium') : (locale === 'pl' ? 'Dużo' : 'High')}
+              {level === 1 ? (locale === 'pl' ? 'Małe' : 'Low') : level === 2 ? (locale === 'pl' ? 'Średnie' : 'Medium') : (locale === 'pl' ? 'Duże' : 'High')}
             </button>
           {/each}
         </div>
