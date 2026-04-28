@@ -1007,7 +1007,6 @@
   aria-labelledby="framework-game-title"
 >
   <div class="game__chrome">
-    <span class="game__chrome-brand" aria-hidden="true">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<i>.</i></span>
     <span class="game__chrome-center">{copy.top.center}</span>
     <span class="game__chrome-fig">{copy.top.fig}</span>
   </div>
@@ -1263,25 +1262,19 @@
     color: var(--muted);
   }
 
-  .game__chrome-brand {
-    justify-self: start;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: 18px;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--paper);
-  }
-
-  .game__chrome-brand i {
-    font-style: italic;
-    color: var(--copper);
-  }
-
+  /*
+   * The global SiteNavV2 above already carries the Vibecrafted.
+   * wordmark, so this chrome only needs the figure label centred and
+   * the figure number end-aligned. The empty first column keeps the
+   * centre column truly centred without re-introducing a wordmark.
+   */
   .game__chrome-center {
+    grid-column: 2;
     justify-self: center;
   }
 
   .game__chrome-fig {
+    grid-column: 3;
     justify-self: end;
   }
 
@@ -2217,9 +2210,9 @@
       gap: 8px;
     }
 
-    .game__chrome-brand,
     .game__chrome-center,
     .game__chrome-fig {
+      grid-column: 1;
       justify-self: start;
     }
 
