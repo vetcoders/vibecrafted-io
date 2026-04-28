@@ -54,6 +54,7 @@
       advanced: string;
       previous: string;
       nextPhase: string;
+      pickMarble: string;
     };
     shapes: Record<BoardShape, string>;
     phases: PhaseCopy[];
@@ -134,7 +135,8 @@
         filled: 'Filled',
         advanced: 'Advanced',
         previous: 'Previous phase',
-        nextPhase: 'Next phase'
+        nextPhase: 'Next phase',
+        pickMarble: 'Pick marble'
       },
       shapes: {
         ring: 'Ring',
@@ -256,7 +258,8 @@
         filled: 'Wypełnione',
         advanced: 'Zaawansowane',
         previous: 'Poprzednia faza',
-        nextPhase: 'Następna faza'
+        nextPhase: 'Następna faza',
+        pickMarble: 'Wybierz kulkę'
       },
       shapes: {
         ring: 'Ring',
@@ -371,6 +374,7 @@
   let activeIndex = $state(0);
   let shape = $state<BoardShape>('ring');
   let density = $state(1);
+  let selectedTone = $state<MarbleTone>('teal');
   let operatorCount = $state(6);
   let precision = $state(72);
   let running = $state(false);
@@ -691,10 +695,10 @@
       const tryHit = rand() < hitChance;
       const slot = tryHit ? pickOpenSlot(rand) : null;
       if (slot) {
-        marbles.push(createMarble(slot, activePhase.tone, false, 1));
+        marbles.push(createMarble(slot, selectedTone, false, 1));
         settled += 1;
       } else {
-        marbles.push(createMissMarble(rand, activePhase.tone));
+        marbles.push(createMissMarble(rand, selectedTone));
         missed += 1;
       }
     }
@@ -1084,6 +1088,23 @@
       <div class="command">
         <span>{copy.board.command}</span>
         <code>$ {activePhase.command}</code>
+      </div>
+
+      <div class="marble-picker" role="group" aria-label={copy.board.pickMarble}>
+        <span class="marble-picker__label">{copy.board.pickMarble}</span>
+        <div class="marble-picker__choices">
+          {#each (['teal', 'steel', 'copper'] as MarbleTone[]) as toneKey}
+            <button
+              type="button"
+              class={['marble-pick', `marble-pick--${toneKey}`, selectedTone === toneKey && 'marble-pick--active']}
+              aria-pressed={selectedTone === toneKey}
+              aria-label={toneKey}
+              onclick={() => (selectedTone = toneKey)}
+            >
+              <span class={['marble-pick__sphere', `marble-pick__sphere--${toneKey}`]} aria-hidden="true"></span>
+            </button>
+          {/each}
+        </div>
       </div>
 
       <div class="primary-actions">
@@ -1608,6 +1629,89 @@
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
     color: var(--mint);
     font-size: 13px;
+  }
+
+  /*
+   * Marble picker: tone selection for the next throw. Three glass
+   * orbs in the brand palette (teal · steel · copper) sit centred
+   * above the throw row. The selected orb gets a hairline ring +
+   * mint accent so the player sees which colour is loaded next.
+   */
+  .marble-picker {
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 18px;
+    padding: 6px 4px 0;
+  }
+
+  .marble-picker__label {
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .marble-picker__choices {
+    display: inline-flex;
+    gap: 12px;
+  }
+
+  .marble-pick {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 180ms ease, transform 180ms ease;
+  }
+
+  .marble-pick:hover {
+    border-color: var(--rule-strong);
+  }
+
+  .marble-pick--active,
+  .marble-pick--active:hover {
+    border-color: var(--mint);
+    transform: scale(1.04);
+  }
+
+  .marble-pick:focus-visible {
+    outline: none;
+    border-color: var(--paper);
+  }
+
+  .marble-pick__sphere {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.45),
+      inset -2px -3px 6px rgba(0, 0, 0, 0.32),
+      inset 3px 4px 6px rgba(255, 255, 255, 0.18);
+  }
+
+  .marble-pick__sphere--teal {
+    background:
+      radial-gradient(circle at 32% 28%, #a6c5bc 0%, #3d7a72 38%, #1a3a36 100%);
+  }
+
+  .marble-pick__sphere--steel {
+    background:
+      radial-gradient(circle at 32% 28%, #f0ebde 0%, #c8c2b4 40%, #6f6a5e 100%);
+  }
+
+  .marble-pick__sphere--copper {
+    background:
+      radial-gradient(circle at 32% 28%, #f0c4a3 0%, #cf6f4e 40%, #5e2c1c 100%);
   }
 
   /*
