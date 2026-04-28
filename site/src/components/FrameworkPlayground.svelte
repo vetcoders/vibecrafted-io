@@ -514,6 +514,41 @@
     };
   }
 
+  /*
+   * Miss-marble: target is outside the board, no slot assigned. The
+   * marble flies past the edge and fades — that's a "chybiony rzut".
+   */
+  function createMissMarble(rand: () => number, tone: MarbleTone): Marble {
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
+    const startAngle = rand() * Math.PI * 2;
+    const innerScale = 0.45 + rand() * 0.35;
+    const startX = cx + Math.cos(startAngle) * rx * innerScale;
+    const startY = cy + Math.sin(startAngle) * ry * innerScale;
+    const targetAngle = startAngle + (rand() - 0.5) * 1.4;
+    const targetScale = 1.55 + rand() * 0.4;
+    const targetX = cx + Math.cos(targetAngle) * rx * targetScale;
+    const targetY = cy + Math.sin(targetAngle) * ry * targetScale;
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = Math.min(6, dist * 0.06);
+    return {
+      x: startX,
+      y: startY,
+      tx: targetX,
+      ty: targetY,
+      vx: (dx / dist) * speed + (rand() - 0.5) * 0.6,
+      vy: (dy / dist) * speed + (rand() - 0.5) * 0.6,
+      tone,
+      alpha: 1,
+      settled: false,
+      slot: null,
+      seed: Math.floor(rand() * 99999)
+    };
+  }
+
   function addBlocker(rand: () => number) {
     const slot = pickOpenSlot(rand);
     if (!slot) return;
@@ -522,7 +557,7 @@
     pings.push({ x: point.x, y: point.y, alpha: 1, danger: true });
   }
 
-  function rebuildBoard(seedMarbles = true) {
+  function rebuildBoard(seedMarbles = false) {
     slots = makeSlots();
     marbles = [];
     pings = [];
@@ -563,7 +598,7 @@
     activeIndex = clamp(index, 0, copy.phases.length - 1);
     running = false;
     statusLine = `${activePhase.title}: ${copy.status.phase}`;
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function nextPhase() {
@@ -574,17 +609,17 @@
     activeIndex = 0;
     running = false;
     statusLine = copy.status.reset;
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function setShape(next: BoardShape) {
     shape = next;
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function setDensity(next: number) {
     density = clamp(next, 1, 3);
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function setOperators(event: Event) {
@@ -593,7 +628,7 @@
 
   function setPrecision(event: Event) {
     precision = Number((event.target as HTMLInputElement).value);
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function spawnBatch(count = operatorCount, tone: MarbleTone = activePhase.tone) {
@@ -606,6 +641,37 @@
       marbles.push(createMarble(slot, tone, false, activePhase.id === 'converge' ? 0.7 : 1));
     }
     statusLine = copy.status.spawned;
+    updateReadouts();
+    startLoop();
+  }
+
+  /*
+   * Throw a round of marbles. Each marble independently rolls hit/miss
+   * based on the precision slider (35..92 → 0.30..0.85 hit chance).
+   * Hits fly to an open slot and settle; misses fly past the board
+   * edge and fade out. This is the player-facing primary action.
+   */
+  function throwMarbles() {
+    if (!width || !height) return;
+    const rand = seeded(Date.now() % 100000);
+    const hitChance = clamp(precision / 100, 0.3, 0.85);
+    let settled = 0;
+    let missed = 0;
+    for (let i = 0; i < operatorCount; i += 1) {
+      const tryHit = rand() < hitChance;
+      const slot = tryHit ? pickOpenSlot(rand) : null;
+      if (slot) {
+        marbles.push(createMarble(slot, activePhase.tone, false, 1));
+        settled += 1;
+      } else {
+        marbles.push(createMissMarble(rand, activePhase.tone));
+        missed += 1;
+      }
+    }
+    statusLine =
+      locale === 'pl'
+        ? `${settled} osiadło · ${missed} chybiło`
+        : `${settled} settled · ${missed} missed`;
     updateReadouts();
     startLoop();
   }
@@ -687,6 +753,27 @@
     marble.x += marble.vx * dt;
     marble.y += marble.vy * dt;
 
+    /*
+     * Miss-marble path: no slot, target sits past the board edge.
+     * Once the marble crosses the edge we start fading it; when fully
+     * faded it is marked settled so the tick loop can splice it.
+     */
+    if (marble.slot === null) {
+      const cx = width / 2;
+      const cy = height / 2;
+      const { rx, ry } = boardRadii();
+      const edge = Math.max(rx, ry) * 1.02;
+      const distFromCenter = Math.hypot(marble.x - cx, marble.y - cy);
+      if (distFromCenter > edge) {
+        marble.alpha -= 0.045 * dt;
+        if (marble.alpha <= 0) {
+          marble.alpha = 0;
+          marble.settled = true;
+        }
+      }
+      return;
+    }
+
     const speed = Math.hypot(marble.vx, marble.vy);
     if (distance < 2.6 && speed < 0.85) {
       marble.settled = true;
@@ -702,6 +789,9 @@
     lastFrame = now;
 
     marbles.forEach((marble) => updateMarble(marble, dt));
+    // Drop fully-faded miss-marbles so they stop counting toward the
+    // marbleCount readout and stop being drawn.
+    marbles = marbles.filter((marble) => !(marble.slot === null && marble.alpha <= 0));
     pings = pings.map((ping) => ({ ...ping, alpha: ping.alpha - 0.05 * dt })).filter((ping) => ping.alpha > 0);
 
     if (running) {
@@ -745,7 +835,7 @@
     canvasEl.style.height = `${height}px`;
     context = canvasEl.getContext('2d');
     context?.setTransform(dpr, 0, 0, dpr, 0, 0);
-    rebuildBoard(true);
+    rebuildBoard(false);
   }
 
   function drawBoardFrame(ctx: CanvasRenderingContext2D) {
