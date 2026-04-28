@@ -554,11 +554,9 @@
   function updateReadouts() {
     const fillable = Math.max(1, slots.filter((slot) => !slot.blocked).length);
     const filled = slots.filter((slot) => slot.filled).length;
-    const blockedPenalty = slots.filter((slot) => slot.blocked).length * 3;
-    const targetReadout = Math.round(clamp(activePhase.fill + (activePhase.id === 'frame' ? 0 : precision / 350), 0, 0.96) * 100);
     grooveCount = slots.length;
     marbleCount = marbles.filter((marble) => marble.alpha > 0.05).length;
-    convergence = clamp(Math.max(Math.round((filled / fillable) * 100), targetReadout) - blockedPenalty, 0, 100);
+    convergence = Math.round((filled / fillable) * 100);
   }
 
   function setPhase(index: number) {
@@ -770,21 +768,41 @@
   }
 
   function drawSlot(ctx: CanvasRenderingContext2D, slot: Slot) {
-    if (!slot.blocked) return;
     const point = mapSlot(slot);
-    const radius = Math.max(5, Math.min(width, height) * 0.018);
+    if (slot.blocked) {
+      const radius = Math.max(5, Math.min(width, height) * 0.018);
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(216, 90, 79, 0.55)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(point.x - 5, point.y - 5);
+      ctx.lineTo(point.x + 5, point.y + 5);
+      ctx.moveTo(point.x + 5, point.y - 5);
+      ctx.lineTo(point.x - 5, point.y + 5);
+      ctx.strokeStyle = 'rgba(255, 176, 168, 0.7)';
+      ctx.stroke();
+      return;
+    }
+    if (slot.filled) return;
+    /*
+     * Empty slot bedding — visible dimple where a marble can settle.
+     * Drawn for every open slot so the player sees the goal shape
+     * before the first throw. Filled slots are covered by the marble.
+     */
+    const radius = Math.max(4, Math.min(width, height) * 0.014);
     ctx.beginPath();
     ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(216, 90, 79, 0.55)';
-    ctx.lineWidth = 1.4;
-    ctx.stroke();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(point.x - 5, point.y - 5);
-    ctx.lineTo(point.x + 5, point.y + 5);
-    ctx.moveTo(point.x + 5, point.y - 5);
-    ctx.lineTo(point.x - 5, point.y + 5);
-    ctx.strokeStyle = 'rgba(255, 176, 168, 0.7)';
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.22)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([1.5, 2]);
     ctx.stroke();
+    ctx.setLineDash([]);
   }
 
   function drawMarble(ctx: CanvasRenderingContext2D, marble: Marble) {
@@ -1286,13 +1304,8 @@
     border: 1px solid var(--rule);
     background:
       radial-gradient(
-        circle at center,
-        rgba(245, 244, 239, 0.08) 1px,
-        transparent 1.6px
-      ) 0 0 / 26px 26px,
-      radial-gradient(
         ellipse 70% 60% at 50% 50%,
-        rgba(245, 244, 239, 0.025) 0%,
+        rgba(245, 244, 239, 0.03) 0%,
         rgba(2, 4, 5, 0) 68%
       ),
       rgba(2, 4, 5, 0.42);
