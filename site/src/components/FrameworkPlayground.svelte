@@ -49,6 +49,11 @@
       teaching: string;
       pickShape: string;
       runHint: string;
+      throwRound: string;
+      filled: string;
+      advanced: string;
+      previous: string;
+      nextPhase: string;
     };
     shapes: Record<BoardShape, string>;
     phases: PhaseCopy[];
@@ -102,20 +107,21 @@
       },
       hero: {
         kicker: '§ 06 · Framework loop',
-        title: 'Learn the loop by shaping the board.',
+        title: 'Throw marbles onto the board.',
         lead:
-          'Shape the frame, load truth, send operators through the slots, then watch weak fits fall away before release.',
-        foot: 'Five phases. Six operators. One board.'
+          'Most miss, bounce, collide, and wander. Run another round. Some settle. Some keep moving. Repeat until the board fills and the pattern becomes clear.',
+        foot:
+          "A metaphor for coding with AI agents: the first throw gives you a lot of fast code and a lot of chaos. It's the next iterations that make the solution settle, errors fall away, and the project edge toward release."
       },
       board: {
         shape: 'Board shape',
         density: 'Groove density',
-        operators: 'Operators',
-        precision: 'Precision fill',
+        operators: 'Throw size',
+        precision: 'Precision',
         spawn: 'Spawn operators',
         converge: 'Run convergence',
         next: 'Next phase',
-        reset: 'Reset loop',
+        reset: 'Reset',
         command: 'Command',
         convergence: 'Convergence',
         grooves: 'Grooves',
@@ -123,7 +129,12 @@
         signal: 'Signal',
         teaching: 'Teaching surface — not production output.',
         pickShape: 'Pick shape',
-        runHint: 'watching convergence...'
+        runHint: 'watching convergence...',
+        throwRound: 'Throw round',
+        filled: 'Filled',
+        advanced: 'Advanced',
+        previous: 'Previous phase',
+        nextPhase: 'Next phase'
       },
       shapes: {
         ring: 'Ring',
@@ -218,20 +229,21 @@
       },
       hero: {
         kicker: '§ 06 · Pętla frameworka',
-        title: 'Zrozum pętlę, kształtując planszę.',
+        title: 'Rzuć marble’e na planszę.',
         lead:
-          'Ustaw ramę, załaduj prawdę o repo, wpuść operatorów w sloty i zobacz, jak słabe dopasowania odpadają przed releasem.',
-        foot: 'Pięć faz. Sześć operatorów. Jedna plansza.'
+          'Większość chybi, odbije się albo zabłądzi. Uruchom kolejną rundę. Część osiądzie, część ruszy dalej. Powtarzaj, aż plansza się wypełni, a wzór stanie się czytelny.',
+        foot:
+          'To metafora kodowania z agentami AI: pierwszy rzut daje dużo szybkiego kodu i dużo chaosu. Dopiero kolejne iteracje sprawiają, że rozwiązanie osiada, błędy odpadają, a projekt zaczyna zbliżać się do release’u.'
       },
       board: {
         shape: 'Kształt planszy',
         density: 'Gęstość rowków',
-        operators: 'Operatorzy',
+        operators: 'Liczba kulek w rzucie',
         precision: 'Precyzja',
         spawn: 'Wpuść operatorów',
         converge: 'Uruchom konwergencję',
         next: 'Następna faza',
-        reset: 'Reset pętli',
+        reset: 'Reset',
         command: 'Komenda',
         convergence: 'Konwergencja',
         grooves: 'Rowki',
@@ -239,7 +251,12 @@
         signal: 'Sygnał',
         teaching: 'Powierzchnia nauki — nie output produkcyjny.',
         pickShape: 'Wybierz kształt',
-        runHint: 'obserwuję konwergencję...'
+        runHint: 'obserwuję konwergencję...',
+        throwRound: 'Rzuć rundę',
+        filled: 'Wypełnione',
+        advanced: 'Zaawansowane',
+        previous: 'Poprzednia faza',
+        nextPhase: 'Następna faza'
       },
       shapes: {
         ring: 'Ring',
@@ -359,6 +376,8 @@
   let running = $state(false);
   let convergence = $state(0);
   let grooveCount = $state(0);
+  let filledCount = $state(0);
+  let fillableCount = $state(0);
   let marbleCount = $state(0);
   let statusLine = $state('');
 
@@ -590,6 +609,8 @@
     const fillable = Math.max(1, slots.filter((slot) => !slot.blocked).length);
     const filled = slots.filter((slot) => slot.filled).length;
     grooveCount = slots.length;
+    fillableCount = fillable;
+    filledCount = filled;
     marbleCount = marbles.filter((marble) => marble.alpha > 0.05).length;
     convergence = Math.round((filled / fillable) * 100);
   }
@@ -980,29 +1001,40 @@
   </div>
 
   <div class="game__grid">
-    <aside class="phase-rail" aria-label="Framework phases">
-      {#each copy.phases as phase, index}
+    <aside class="phase-narrative" aria-label="Framework loop narrative">
+      <p class="phase-narrative__kicker">{copy.hero.kicker}</p>
+      <h1 id="framework-game-title" class="phase-narrative__title">{copy.hero.title}</h1>
+      <p class="phase-narrative__lead">{copy.hero.lead}</p>
+
+      <hr class="phase-narrative__rule" aria-hidden="true" />
+
+      <div class="phase-narrative__phase">
+        <p class="phase-narrative__eyebrow">{activePhase.eyebrow}</p>
+        <h2 class="phase-narrative__verb"><em>{activePhase.verb}</em></h2>
+        <p class="phase-narrative__body">{activePhase.body}</p>
+        <p class="phase-narrative__note"><strong>{activePhase.title}.</strong> {activePhase.note}</p>
+      </div>
+
+      <nav class="phase-narrative__nav" aria-label="Phase navigation">
         <button
           type="button"
-          class={['phase-card', activeIndex === index && 'phase-card--active']}
-          onclick={() => setPhase(index)}
-          aria-current={activeIndex === index ? 'step' : undefined}
-        >
-          <span class="phase-card__num">{String(index + 1).padStart(2, '0')}</span>
-          <span class="phase-card__kicker">{phase.title}</span>
-          <strong>{phase.verb}</strong>
-          <span>{phase.body}</span>
-        </button>
-      {/each}
+          class="phase-narrative__navbtn"
+          disabled={activeIndex === 0}
+          onclick={() => setPhase(activeIndex - 1)}
+          aria-label={copy.board.previous}
+        >←</button>
+        <span class="phase-narrative__step">{activeIndex + 1} / {copy.phases.length}</span>
+        <button
+          type="button"
+          class="phase-narrative__navbtn"
+          disabled={activeIndex === copy.phases.length - 1}
+          onclick={() => setPhase(activeIndex + 1)}
+          aria-label={copy.board.nextPhase}
+        >→</button>
+      </nav>
     </aside>
 
     <main class="stage">
-      <div class="stage__intro">
-        <p class="stage__kicker">{copy.hero.kicker}</p>
-        <h1 id="framework-game-title">{copy.hero.title}</h1>
-        <p>{copy.hero.lead}</p>
-      </div>
-
       <div class="board-wrap">
         <div
           class="board"
@@ -1023,9 +1055,9 @@
         </div>
 
         <div class="metrics" aria-label="Board readout">
-          <div>
-            <span>{copy.board.convergence}</span>
-            <strong>{convergence}%</strong>
+          <div class="metrics__primary">
+            <span>{copy.board.filled}</span>
+            <strong>{filledCount} <i aria-hidden="true">/</i> {fillableCount}</strong>
           </div>
           <div>
             <span>{copy.board.grooves}</span>
@@ -1041,6 +1073,25 @@
       <div class="command">
         <span>{copy.board.command}</span>
         <code>$ {activePhase.command}</code>
+      </div>
+
+      <div class="primary-actions">
+        <button
+          type="button"
+          class="primary-actions__throw"
+          onclick={throwMarbles}
+        >
+          <span class="primary-actions__chev" aria-hidden="true">▸</span>
+          {copy.board.throwRound}
+        </button>
+        <button
+          type="button"
+          class="primary-actions__reset"
+          onclick={resetLoop}
+        >
+          <span class="primary-actions__icon" aria-hidden="true">↻</span>
+          {copy.board.reset}
+        </button>
       </div>
     </main>
 
@@ -1082,57 +1133,59 @@
         </div>
       </section>
 
-      <section class="control-group">
-        <label>
-          <span>{copy.board.density}</span>
-          <select bind:value={density} onchange={() => setDensity(density)}>
-            <option value={1}>Low</option>
-            <option value={2}>Medium</option>
-            <option value={3}>High</option>
-          </select>
-        </label>
-        <label>
-          <span>{copy.board.operators}</span>
-          <input type="range" min="2" max="9" bind:value={operatorCount} oninput={setOperators} />
-          <b>{operatorCount}</b>
-        </label>
-        <label>
-          <span>{copy.board.precision}</span>
-          <input type="range" min="35" max="92" bind:value={precision} oninput={setPrecision} />
-          <b>{precision}%</b>
-        </label>
-      </section>
+      <details class="advanced-drawer">
+        <summary class="advanced-drawer__summary">
+          <span>{copy.board.advanced}</span>
+          <span class="advanced-drawer__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="advanced-drawer__body">
+          <section class="control-group">
+            <label>
+              <span>{copy.board.density}</span>
+              <select bind:value={density} onchange={() => setDensity(density)}>
+                <option value={1}>Low</option>
+                <option value={2}>Medium</option>
+                <option value={3}>High</option>
+              </select>
+            </label>
+            <label>
+              <span>{copy.board.operators}</span>
+              <input type="range" min="2" max="9" bind:value={operatorCount} oninput={setOperators} />
+              <b>{operatorCount}</b>
+            </label>
+            <label>
+              <span>{copy.board.precision}</span>
+              <input type="range" min="35" max="92" bind:value={precision} oninput={setPrecision} />
+              <b>{precision}%</b>
+            </label>
+          </section>
 
-      <section class="operator-strip" aria-label="Operators">
-        {#each OPERATORS as operator}
-          <div class="operator-row">
-            <span>{copy.operators[operator].label}</span>
-            <em>{copy.operators[operator].kind}</em>
+          <section class="operator-strip" aria-label="Operators">
+            {#each OPERATORS as operator}
+              <div class="operator-row">
+                <span>{copy.operators[operator].label}</span>
+                <em>{copy.operators[operator].kind}</em>
+              </div>
+            {/each}
+          </section>
+
+          <div class="actions">
+            <button type="button" class="action action--spawn" onclick={spawnOperators}>
+              {copy.board.spawn}
+            </button>
+            <button type="button" class="action action--converge" onclick={runConvergence}>
+              {running ? copy.board.runHint : copy.board.converge}
+            </button>
+            <div class="actions__secondary">
+              <button type="button" onclick={nextPhase}>{copy.board.next} →</button>
+            </div>
           </div>
-        {/each}
-      </section>
-
-      <div class="actions">
-        <button type="button" class="action action--spawn" onclick={spawnOperators}>
-          {copy.board.spawn}
-        </button>
-        <button type="button" class="action action--converge" onclick={runConvergence}>
-          {running ? copy.board.runHint : copy.board.converge}
-        </button>
-        <div class="actions__secondary">
-          <button type="button" onclick={nextPhase}>{copy.board.next} →</button>
-          <button type="button" onclick={resetLoop}>{copy.board.reset}</button>
         </div>
-      </div>
-
-      <p class="phase-note">
-        <strong>{activePhase.verb}</strong>
-        {activePhase.note}
-      </p>
+      </details>
     </aside>
   </div>
 
-  <p class="game__footer">{copy.hero.foot} · {copy.board.teaching}</p>
+  <p class="game__footer">{copy.hero.foot}</p>
 </section>
 
 <style>
@@ -1220,152 +1273,162 @@
     flex: 1 1 auto;
   }
 
-  .phase-rail {
+  /*
+   * Phase narrative (left column): one phase at a time. Hero copy on
+   * top sets the metaphor (throw → miss → settle). Below a hairline,
+   * the active phase carries its own eyebrow / verb / body / note.
+   * Prev/next buttons cycle through the five phases without giving
+   * the player a wall of cards to parse.
+   */
+  .phase-narrative {
     min-height: 0;
     overflow: auto;
-    padding: 6px 0 10px 0;
+    padding: 4px 0 10px 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 14px;
   }
 
-  /*
-   * Phase cards: subtle list, not a stack of cards. The active phase
-   * carries the typographic weight via a left accent rule + serif size,
-   * not a heavy bordered box.
-   */
-  .phase-card {
-    display: grid;
-    grid-template-columns: 36px 1fr;
-    gap: 4px 14px;
-    width: 100%;
-    padding: 14px 10px 14px 12px;
-    border: 0;
-    border-left: 1px solid var(--rule-soft);
-    border-radius: 0;
-    background: transparent;
-    color: var(--dim);
-    text-align: left;
-    transition:
-      border-color 220ms ease,
-      color 220ms ease,
-      transform 220ms ease;
-  }
-
-  .phase-card:hover {
-    color: var(--muted);
-    border-left-color: var(--rule-strong);
-  }
-
-  .phase-card--active {
-    color: var(--paper);
-    border-left-color: var(--copper);
-    transform: translateX(2px);
-  }
-
-  .phase-card__num {
-    grid-row: span 3;
+  .phase-narrative__kicker {
+    margin: 0;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    color: var(--dim);
-    align-self: start;
-    padding-top: 8px;
-  }
-
-  .phase-card--active .phase-card__num {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
     color: var(--copper);
   }
 
-  .phase-card__kicker {
+  .phase-narrative__title {
+    margin: 0;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+    color: var(--paper);
+  }
+
+  .phase-narrative__lead {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 36ch;
+  }
+
+  .phase-narrative__rule {
+    border: 0;
+    border-top: 1px solid var(--rule-soft);
+    margin: 4px 0 0;
+    width: 100%;
+  }
+
+  .phase-narrative__phase {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .phase-narrative__eyebrow {
+    margin: 0;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--dim);
-  }
-
-  .phase-card--active .phase-card__kicker {
     color: var(--copper);
   }
 
-  .phase-card strong {
+  .phase-narrative__verb {
+    margin: 0;
     font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: 22px;
+    font-size: clamp(26px, 2.8vw, 36px);
+    line-height: 1.1;
     font-weight: 400;
-    color: inherit;
-    line-height: 1.05;
-  }
-
-  .phase-card--active strong {
-    font-size: clamp(28px, 3vw, 36px);
-    font-style: italic;
     color: var(--paper);
   }
 
-  .phase-card span:last-child {
-    font-size: 12px;
-    line-height: 1.4;
-    color: var(--dim);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .phase-narrative__verb em {
+    font-style: italic;
   }
 
-  .phase-card--active span:last-child {
+  .phase-narrative__body {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
     color: var(--muted);
+    max-width: 38ch;
+  }
+
+  .phase-narrative__note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--dim);
+    font-style: italic;
+    max-width: 38ch;
+  }
+
+  .phase-narrative__note strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .phase-narrative__nav {
+    margin-top: auto;
+    padding-top: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .phase-narrative__navbtn {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .phase-narrative__navbtn:hover:not(:disabled),
+  .phase-narrative__navbtn:focus-visible:not(:disabled) {
+    border-color: var(--copper);
+    color: var(--copper);
+    outline: none;
+  }
+
+  .phase-narrative__navbtn:disabled {
+    opacity: 0.32;
+    cursor: not-allowed;
+  }
+
+  .phase-narrative__step {
+    justify-self: center;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--dim);
   }
 
   .stage {
     min-height: 0;
-    padding: 10px 0 0;
+    padding: 0;
     display: grid;
-    grid-template-rows: auto 1fr auto;
-    align-content: start;
-    gap: 18px;
+    grid-template-rows: 1fr auto auto;
+    align-content: stretch;
+    gap: 14px;
     min-width: 0;
-  }
-
-  /*
-   * Stage intro is now a quiet caption above the board, not a competing
-   * hero. The narrative moment lives on the active phase-card to the
-   * left; this row carries only the section title for context + SEO.
-   */
-  .stage__intro {
-    max-width: 920px;
-    width: 100%;
-    margin: 0 auto;
-    text-align: left;
-    padding: 0 4px;
-  }
-
-  .stage__kicker {
-    margin: 0 0 4px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--copper);
-  }
-
-  .stage h1 {
-    margin: 0;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: clamp(20px, 2.2vw, 26px);
-    line-height: 1.15;
-    font-weight: 400;
-    letter-spacing: 0;
-    color: var(--muted);
-  }
-
-  .stage__intro > p:last-child {
-    margin: 4px 0 0;
-    max-width: 640px;
-    color: var(--dim);
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    line-height: 1.45;
   }
 
   .board-wrap {
@@ -1486,6 +1549,24 @@
   }
 
   /*
+   * Filled X/Y is the goal counter. It carries more weight than the
+   * other metrics so the player keeps an eye on what "winning" means.
+   */
+  .metrics__primary strong {
+    font-size: clamp(28px, 2.8vw, 38px);
+    color: var(--paper);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .metrics__primary strong i {
+    font-style: normal;
+    color: var(--dim);
+    font-size: 0.7em;
+  }
+
+  /*
    * Command line: terminal-style readout, no panel chrome. A single
    * hairline above keeps it tied to the board without boxing it in.
    */
@@ -1514,6 +1595,79 @@
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
     color: var(--mint);
     font-size: 13px;
+  }
+
+  /*
+   * Primary actions: the Throw button is the player's main lever.
+   * Mint border ties it to the convergence accent; chevron arrow on
+   * the left echoes the mockup's "▸ NEXT LOOP" pill. Reset sits
+   * beside it as a quiet secondary so the player can start over
+   * without losing it in a drawer.
+   */
+  .primary-actions {
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    padding: 4px 0 0;
+  }
+
+  .primary-actions__throw,
+  .primary-actions__reset {
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-radius: 2px;
+    background: transparent;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease,
+      background 180ms ease;
+  }
+
+  .primary-actions__throw {
+    padding: 0 28px;
+    border: 1px solid var(--mint);
+    color: var(--mint);
+  }
+
+  .primary-actions__throw:hover,
+  .primary-actions__throw:focus-visible {
+    background: rgba(166, 197, 188, 0.1);
+    color: #c5dbd3;
+    outline: none;
+  }
+
+  .primary-actions__chev {
+    color: var(--mint);
+    font-size: 14px;
+  }
+
+  .primary-actions__reset {
+    padding: 0 22px;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+  }
+
+  .primary-actions__reset:hover,
+  .primary-actions__reset:focus-visible {
+    border-color: var(--paper);
+    color: var(--paper);
+    outline: none;
+  }
+
+  .primary-actions__icon {
+    font-size: 14px;
+    color: var(--dim);
   }
 
   .control-panel {
@@ -1602,6 +1756,58 @@
 
   .control-group:first-of-type {
     border-top: 0;
+    padding-top: 4px;
+  }
+
+  /*
+   * Advanced drawer: power-user knobs (density, throw size, precision,
+   * full operator list, legacy spawn/converge/next-phase) live here
+   * collapsed by default. Native <details> handles toggle so it works
+   * without extra state and stays accessible by keyboard.
+   */
+  .advanced-drawer {
+    margin-top: 4px;
+  }
+
+  .advanced-drawer__summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 180ms ease;
+  }
+
+  .advanced-drawer__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .advanced-drawer__summary:hover {
+    color: var(--paper);
+  }
+
+  .advanced-drawer__chev {
+    transition: transform 220ms ease;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .advanced-drawer[open] .advanced-drawer__chev {
+    transform: rotate(180deg);
+    color: var(--copper);
+  }
+
+  .advanced-drawer__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     padding-top: 4px;
   }
 
@@ -1860,25 +2066,31 @@
       height: min(52vh, 460px);
     }
 
-    .phase-rail,
+    .phase-narrative,
     .control-panel {
       padding: 16px 0;
       border-top: 1px solid var(--rule-soft);
     }
 
-    .phase-rail {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(140px, 1fr));
-      overflow-x: auto;
-    }
-
-    .phase-card {
-      min-width: 150px;
+    .phase-narrative {
+      max-width: 540px;
     }
 
     .control-panel {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .converge-badge {
+      grid-column: 1 / -1;
+    }
+
+    .control-panel__top {
+      grid-column: 1 / -1;
+    }
+
+    .advanced-drawer {
+      grid-column: 1 / -1;
     }
 
     .operator-strip,
