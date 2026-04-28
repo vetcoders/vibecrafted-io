@@ -370,7 +370,7 @@
 
   let activeIndex = $state(0);
   let shape = $state<BoardShape>('ring');
-  let density = $state(2);
+  let density = $state(1);
   let operatorCount = $state(6);
   let precision = $state(72);
   let running = $state(false);
@@ -411,12 +411,17 @@
   function makeSlots(): Slot[] {
     const list: Slot[] = [];
     const rand = seeded(slotSeed());
-    const base = density === 1 ? 5 : density === 2 ? 7 : 9;
+    /*
+     * Slot counts were tuned down so a casual run can finish in a
+     * reasonable number of throws. Density now means: Low ~14-18
+     * dimples, Medium ~28-36, High ~50-60 — across all three shapes.
+     */
+    const base = density === 1 ? 3 : density === 2 ? 5 : 7;
 
     if (shape === 'ring') {
-      const rings = density === 1 ? [0.32, 0.58, 0.84] : density === 2 ? [0.24, 0.45, 0.66, 0.86] : [0.18, 0.34, 0.5, 0.66, 0.84];
+      const rings = density === 1 ? [0.42, 0.82] : density === 2 ? [0.32, 0.6, 0.86] : [0.24, 0.46, 0.68, 0.88];
       rings.forEach((radius, ringIndex) => {
-        const count = Math.max(6, Math.round(base * radius * 4.4));
+        const count = Math.max(5, Math.round(base * radius * 3.4));
         for (let i = 0; i < count; i += 1) {
           const angle = (Math.PI * 2 * i) / count + ringIndex * 0.22;
           list.push({
@@ -450,8 +455,8 @@
         for (let col = -limit; col <= limit; col += 2) {
           const jitter = density === 3 ? 0.015 : 0;
           list.push({
-            x: col / limit + (rand() - 0.5) * jitter,
-            y: row / limit + (rand() - 0.5) * jitter,
+            x: col / Math.max(limit, 1) + (rand() - 0.5) * jitter,
+            y: row / Math.max(limit, 1) + (rand() - 0.5) * jitter,
             filled: false,
             blocked: false,
             order: list.length
@@ -1141,6 +1146,21 @@
         </div>
       </section>
 
+      <section class="control-group control-group--density">
+        <p>{copy.board.density}</p>
+        <div class="density-grid">
+          {#each [1, 2, 3] as level}
+            <button
+              type="button"
+              class={['density-button', density === level && 'density-button--active']}
+              onclick={() => setDensity(level)}
+            >
+              {level === 1 ? (locale === 'pl' ? 'Mało' : 'Low') : level === 2 ? (locale === 'pl' ? 'Średnio' : 'Medium') : (locale === 'pl' ? 'Dużo' : 'High')}
+            </button>
+          {/each}
+        </div>
+      </section>
+
       <details class="advanced-drawer">
         <summary class="advanced-drawer__summary">
           <span>{copy.board.advanced}</span>
@@ -1148,14 +1168,6 @@
         </summary>
         <div class="advanced-drawer__body">
           <section class="control-group">
-            <label>
-              <span>{copy.board.density}</span>
-              <select bind:value={density} onchange={() => setDensity(density)}>
-                <option value={1}>Low</option>
-                <option value={2}>Medium</option>
-                <option value={3}>High</option>
-              </select>
-            </label>
             <label>
               <span>{copy.board.operators}</span>
               <input type="range" min="2" max="9" bind:value={operatorCount} oninput={setOperators} />
@@ -1906,6 +1918,48 @@
 
   .shape-button--active,
   .shape-button--active:hover {
+    color: var(--paper);
+    border-color: var(--copper);
+    background: transparent;
+  }
+
+  /*
+   * Density picker mirrors the shape grid above it: 3 buttons, mono
+   * uppercase labels, copper accent on active. Kept on the surface
+   * so the player can ease the goal count without diving into the
+   * advanced drawer.
+   */
+  .density-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .density-button {
+    min-height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    background: transparent;
+    color: var(--dim);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .density-button:hover {
+    color: var(--muted);
+    border-color: var(--rule-strong);
+  }
+
+  .density-button--active,
+  .density-button--active:hover {
     color: var(--paper);
     border-color: var(--copper);
     background: transparent;
