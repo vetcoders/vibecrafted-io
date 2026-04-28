@@ -67,6 +67,13 @@ const operators = [
         </div>
       ))}
     </div>
+
+    <a class="framework__cta" href={`/${lang}/framework/`}>
+      <span class="framework__cta-label">
+        {lang === 'pl' ? 'Otwórz Playground' : 'Open the Playground'}
+      </span>
+      <span class="framework__cta-arrow" aria-hidden="true">→</span>
+    </a>
   </div>
 
   <SectionFooter nextNumber="05" nextTitle={chrome.operator.title} surface="ink" lang={lang} />
@@ -236,5 +243,39 @@ const operators = [
     .framework__operators-grid {
       grid-template-columns: 1fr;
     }
+  }
+
+  .framework__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 56px;
+    padding: 14px 22px;
+    border: 1px solid var(--rule-dark);
+    background: transparent;
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .framework__cta-arrow {
+    color: var(--accent);
+    transition: transform 220ms ease;
+  }
+
+  .framework__cta:hover,
+  .framework__cta:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+    outline: none;
+  }
+
+  .framework__cta:hover .framework__cta-arrow,
+  .framework__cta:focus-visible .framework__cta-arrow {
+    transform: translateX(4px);
   }
 </style>
