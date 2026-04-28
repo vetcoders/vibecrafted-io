@@ -27,6 +27,7 @@
   const dict = $derived(getTranslations(lang));
 
   let query = $state('');
+  // svelte-ignore state_referenced_locally
   let activeSection = $state<DocsSearchSection>(defaultSection);
   let activeIndex = $state(-1);
   let focused = $state(false);
@@ -35,6 +36,7 @@
   let shortcutLabel = $state('Ctrl K');
   let inputEl: HTMLInputElement | null = $state(null);
   let containerEl: HTMLElement | null = $state(null);
+  // svelte-ignore state_referenced_locally
   let previousRouteKey = `${lang}:${defaultSection}`;
 
   const searchData = $derived(
@@ -271,7 +273,6 @@
       placeholder={searchData.placeholder}
       aria-label={dict.nav.search}
       aria-keyshortcuts={showShortcut ? shortcutKeys : undefined}
-      aria-expanded={expanded}
       aria-controls="search-shell-panel"
       onfocus={() => (focused = true)}
       onkeydown={handleKeydown}

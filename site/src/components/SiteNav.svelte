@@ -250,14 +250,6 @@
       text-shadow 0.2s ease;
   }
 
-  .nav-link--button {
-    appearance: none;
-    border: 0;
-    background: none;
-    cursor: pointer;
-    font: inherit;
-  }
-
   /* Top copper underline — matches phase-bar active marker (Image #33) */
   .nav-link::before {
     content: '';
@@ -478,11 +470,6 @@
       flex: none;
       min-height: 3rem;
       padding: 0.1rem 0.2rem;
-    }
-
-    .nav-links--mobile .nav-link--search {
-      grid-column: 1 / -1;
-      justify-content: center;
     }
 
     .nav-link--mobile-item {
