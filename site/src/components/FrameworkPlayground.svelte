@@ -374,7 +374,8 @@
   let activeIndex = $state(0);
   let shape = $state<BoardShape>('ring');
   let density = $state(1);
-  let selectedTone = $state<MarbleTone>('teal');
+  let selectedTone: MarbleTone = $state('teal');
+  const PICK_TONES: MarbleTone[] = ['teal', 'steel', 'copper'];
   let operatorCount = $state(6);
   let precision = $state(72);
   let running = $state(false);
@@ -754,7 +755,7 @@
       ty: target.y,
       vx: (dx / dist) * speed,
       vy: (dy / dist) * speed,
-      tone: activePhase.tone,
+      tone: selectedTone,
       alpha: 1,
       settled: false,
       slot,
@@ -831,7 +832,7 @@
     if (running) {
       waveDelay -= 16.67 * dt;
       if (waveDelay <= 0 && waveCount > 0) {
-        spawnBatch(Math.max(2, Math.ceil(operatorCount / 2)), waveCount % 2 ? 'mint' : 'steel');
+        spawnBatch(Math.max(2, Math.ceil(operatorCount / 2)), selectedTone);
         waveCount -= 1;
         waveDelay = 520;
       }
@@ -1093,13 +1094,13 @@
       <div class="marble-picker" role="group" aria-label={copy.board.pickMarble}>
         <span class="marble-picker__label">{copy.board.pickMarble}</span>
         <div class="marble-picker__choices">
-          {#each (['teal', 'steel', 'copper'] as MarbleTone[]) as toneKey}
+          {#each PICK_TONES as toneKey}
             <button
               type="button"
               class={['marble-pick', `marble-pick--${toneKey}`, selectedTone === toneKey && 'marble-pick--active']}
               aria-pressed={selectedTone === toneKey}
               aria-label={toneKey}
-              onclick={() => (selectedTone = toneKey)}
+              onclick={() => { selectedTone = toneKey; }}
             >
               <span class={['marble-pick__sphere', `marble-pick__sphere--${toneKey}`]} aria-hidden="true"></span>
             </button>
