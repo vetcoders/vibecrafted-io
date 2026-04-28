@@ -283,8 +283,7 @@
           eyebrow: '02 · Perceive',
           title: 'Perceive',
           verb: 'Załaduj prawdę repo',
-          body:
-            'Loctree, AICX i historia ustalają, co naprawdę jest prawdą, zanim ruszy pierwszy throw implementacyjny.',
+          body: 'Sprawdź, co naprawdę jest na planszy.',
           command: 'vibecrafted init codex',
           note: 'Percepcja bije pamięć. Ground truth bije intuicję.',
           fill: 0.22,
@@ -295,8 +294,7 @@
           eyebrow: '03 · Work',
           title: 'Work',
           verb: 'Wpuść specjalistów',
-          body:
-            'Siła specjalistów wchodzi na planszę. Research, implementacja, review i runtime capture zaczynają wypełniać realne sloty.',
+          body: 'Wpuść specjalistów na planszę.',
           command: 'vibecrafted workflow claude --prompt "Zaplanuj i zaimplementuj auth"',
           note: 'Przepustowość ma sens tylko wtedy, gdy każdy throw ma swój slot.',
           fill: 0.42,
@@ -307,8 +305,7 @@
           eyebrow: '04 · Converge',
           title: 'Converge',
           verb: 'Zmniejsz entropię',
-          body:
-            'Follow-up, Marbles i DoU ujawniają słabe dopasowania. Plansza zapętla pracę, aż blokery są widoczne i redukowalne.',
+          body: 'Niech słabe dopasowania odpadną.',
           command: 'vibecrafted marbles codex --prompt "Reduce remaining P0/P1/P2"',
           note: 'Pytanie nie brzmi, czy działa. Pytanie brzmi, co nadal jest źle.',
           fill: 0.68,
@@ -319,8 +316,7 @@
           eyebrow: '05 · Ship',
           title: 'Ship',
           verb: 'Domknij surface',
-          body:
-            'Decorate, Hydrate i Release zamieniają domknięte repo w zrozumiałą, dostępną powierzchnię produktu.',
+          body: 'Wypuść planszę w świat.',
           command: 'vibecrafted release codex --prompt "Prepare release steps"',
           note: 'Release zaczyna się wtedy, gdy ktoś spoza repo może z tego skorzystać.',
           fill: 0.9,
