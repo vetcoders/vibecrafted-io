@@ -332,7 +332,7 @@
     teal: { base: '#3d7a72', light: '#a6c5bc' },
     steel: { base: '#c8c2b4', light: '#e5ded2' },
     copper: { base: '#cf6f4e', light: '#e5b18e' },
-    mint: { base: '#6fc993', light: '#b8f3c8' },
+    mint: { base: '#a6c5bc', light: '#d0e0d8' },
     danger: { base: '#d85a4f', light: '#ffb0a8' }
   };
 
@@ -832,7 +832,7 @@
     pings.forEach((ping) => {
       ctx.beginPath();
       ctx.arc(ping.x, ping.y, (1 - ping.alpha) * 22 + 4, 0, Math.PI * 2);
-      ctx.strokeStyle = ping.danger ? `rgba(216, 90, 79, ${ping.alpha * 0.5})` : `rgba(111, 201, 147, ${ping.alpha * 0.28})`;
+      ctx.strokeStyle = ping.danger ? `rgba(216, 90, 79, ${ping.alpha * 0.5})` : `rgba(166, 197, 188, ${ping.alpha * 0.32})`;
       ctx.lineWidth = 1;
       ctx.stroke();
     });
@@ -1037,9 +1037,9 @@
     --rule: rgba(245, 244, 239, 0.1);
     --rule-soft: rgba(245, 244, 239, 0.06);
     --rule-strong: rgba(245, 244, 239, 0.18);
-    --copper: var(--v2-copper, #cf6f4e);
-    --teal: var(--v2-teal, #4f9f9a);
-    --mint: #79d996;
+    --copper: var(--v2-accent, #cf6f4e);
+    --teal: var(--v2-accent-2, #3d7a72);
+    --mint: #a6c5bc;
     min-height: calc(100vh - 72px);
     height: calc(100vh - 72px);
     color: var(--paper);
@@ -1270,30 +1270,34 @@
     max-width: 1040px;
     width: 100%;
     margin: 0 auto;
-    min-height: clamp(420px, 52vh, 640px);
   }
 
   /*
-   * Board: hairline frame, immersive ink fill, soft inset glow that lets
-   * the canvas marbles read as the only solid object on screen. The
-   * rounded corners are gone — the board reads as a window into the
-   * scene, not a panel.
+   * Board: hairline frame, ink fill, with a visible dot field acting as
+   * the marble bedding. The dots show through to make slot positions
+   * legible without canvas drawing them — same role as the old grooves
+   * the operator was missing after the radial backdrop landed.
    */
   .board {
     position: relative;
     height: 100%;
-    min-height: clamp(380px, 50vh, 600px);
+    min-height: clamp(320px, 44vh, 520px);
     border-radius: 2px;
     border: 1px solid var(--rule);
     background:
       radial-gradient(
+        circle at center,
+        rgba(245, 244, 239, 0.08) 1px,
+        transparent 1.6px
+      ) 0 0 / 26px 26px,
+      radial-gradient(
         ellipse 70% 60% at 50% 50%,
-        rgba(245, 244, 239, 0.04) 0%,
-        rgba(2, 4, 5, 0.0) 65%
+        rgba(245, 244, 239, 0.025) 0%,
+        rgba(2, 4, 5, 0) 68%
       ),
-      rgba(2, 4, 5, 0.55);
+      rgba(2, 4, 5, 0.42);
     box-shadow:
-      inset 0 0 80px rgba(0, 0, 0, 0.55),
+      inset 0 0 36px rgba(0, 0, 0, 0.5),
       inset 0 0 0 1px rgba(245, 244, 239, 0.02);
     overflow: hidden;
     cursor: crosshair;
@@ -1479,7 +1483,7 @@
     height: 6px;
     border-radius: 50%;
     background: var(--mint);
-    box-shadow: 0 0 8px rgba(121, 217, 150, 0.55);
+    box-shadow: 0 0 8px rgba(166, 197, 188, 0.6);
   }
 
   /*
@@ -1688,8 +1692,8 @@
 
   .action--converge:hover {
     border-color: var(--mint);
-    background: rgba(121, 217, 150, 0.06);
-    color: #b8f3c8;
+    background: rgba(166, 197, 188, 0.08);
+    color: #c5dbd3;
   }
 
   .actions__secondary {
