@@ -866,6 +866,7 @@
 
 <section class="game" aria-labelledby="framework-game-title">
   <div class="game__chrome">
+    <span class="game__chrome-brand" aria-hidden="true">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<i>.</i></span>
     <span class="game__chrome-center">{copy.top.center}</span>
     <span class="game__chrome-fig">{copy.top.fig}</span>
   </div>
@@ -936,6 +937,22 @@
     </main>
 
     <aside class="control-panel" aria-label="Board controls">
+      <div class="converge-badge" aria-hidden="true">
+        <svg viewBox="0 0 120 120" class="converge-badge__ring">
+          <circle
+            cx="60"
+            cy="60"
+            r="54"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-dasharray="2 4"
+          />
+        </svg>
+        <span class="converge-badge__value">{convergence}%</span>
+        <span class="converge-badge__label">{copy.board.convergence}</span>
+      </div>
+
       <div class="control-panel__top">
         <span class="mode-dot"></span>
         <span>{copy.top.mode}</span>
@@ -1013,23 +1030,34 @@
 <style>
   .game {
     --ink: var(--v2-ink, #080807);
+    --ink-deep: #050504;
     --paper: var(--v2-fg-on-dark, #f5f4ef);
     --muted: var(--v2-fg-muted, rgba(245, 244, 239, 0.62));
     --dim: rgba(245, 244, 239, 0.36);
-    --rule: rgba(245, 244, 239, 0.13);
-    --rule-strong: rgba(245, 244, 239, 0.2);
+    --rule: rgba(245, 244, 239, 0.1);
+    --rule-soft: rgba(245, 244, 239, 0.06);
+    --rule-strong: rgba(245, 244, 239, 0.18);
     --copper: var(--v2-copper, #cf6f4e);
     --teal: var(--v2-teal, #4f9f9a);
     --mint: #79d996;
     min-height: calc(100vh - 72px);
     height: calc(100vh - 72px);
     color: var(--paper);
+    /*
+     * Atmospheric backdrop: radial light pool centred on the board,
+     * fading to deep ink at the edges. A subtle dot field replaces the
+     * old linear grid for less "dashboard overlay", more depth.
+     */
     background:
-      linear-gradient(rgba(245, 244, 239, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(245, 244, 239, 0.035) 1px, transparent 1px),
-      var(--ink);
-    background-size: 72px 72px;
-    padding: 18px 28px 18px;
+      radial-gradient(
+        ellipse 70% 60% at 50% 38%,
+        rgba(245, 244, 239, 0.045) 0%,
+        rgba(245, 244, 239, 0.018) 38%,
+        transparent 72%
+      ),
+      radial-gradient(circle, rgba(245, 244, 239, 0.05) 1px, transparent 1.5px) 0 0 / 28px 28px,
+      radial-gradient(ellipse 100% 80% at 50% 50%, var(--ink) 30%, var(--ink-deep) 100%);
+    padding: 18px 32px 18px;
     font-family: var(--v2-font-body, Inter, system-ui, sans-serif);
     overflow: auto;
     scrollbar-gutter: stable;
@@ -1041,11 +1069,11 @@
   .game__chrome {
     position: relative;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto 1fr;
     gap: 24px;
-    align-items: center;
+    align-items: baseline;
     flex: 0 0 auto;
-    padding-bottom: 12px;
+    padding-bottom: 14px;
     border-bottom: 1px solid var(--rule);
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
     font-size: 12px;
@@ -1054,72 +1082,102 @@
     color: var(--muted);
   }
 
+  .game__chrome-brand {
+    justify-self: start;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: 18px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--paper);
+  }
+
+  .game__chrome-brand i {
+    font-style: italic;
+    color: var(--copper);
+  }
+
   .game__chrome-center {
     justify-self: center;
   }
 
   .game__chrome-fig {
-    position: absolute;
-    right: 0;
+    justify-self: end;
   }
 
   .game__grid {
     display: grid;
-    grid-template-columns: minmax(200px, 260px) minmax(520px, 1fr) minmax(260px, 320px);
-    gap: 24px;
+    grid-template-columns: minmax(220px, 280px) minmax(560px, 1fr) minmax(260px, 320px);
+    gap: 32px;
     min-height: 0;
     flex: 1 1 auto;
-    border-left: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
   }
 
   .phase-rail {
-    border-right: 1px solid var(--rule);
     min-height: 0;
     overflow: auto;
-    padding: 16px 16px 10px 0;
+    padding: 6px 0 10px 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 2px;
   }
 
+  /*
+   * Phase cards: subtle list, not a stack of cards. The active phase
+   * carries the typographic weight via a left accent rule + serif size,
+   * not a heavy bordered box.
+   */
   .phase-card {
     display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 6px 12px;
+    grid-template-columns: 36px 1fr;
+    gap: 4px 14px;
     width: 100%;
-    min-height: 82px;
-    padding: 12px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    background: rgba(245, 244, 239, 0.02);
-    color: var(--muted);
+    padding: 14px 10px 14px 12px;
+    border: 0;
+    border-left: 1px solid var(--rule-soft);
+    border-radius: 0;
+    background: transparent;
+    color: var(--dim);
     text-align: left;
     transition:
-      border-color 180ms ease,
-      background 180ms ease,
-      color 180ms ease;
+      border-color 220ms ease,
+      color 220ms ease,
+      transform 220ms ease;
   }
 
-  .phase-card:hover,
+  .phase-card:hover {
+    color: var(--muted);
+    border-left-color: var(--rule-strong);
+  }
+
   .phase-card--active {
-    border-color: rgba(214, 120, 69, 0.72);
-    background: rgba(214, 120, 69, 0.08);
     color: var(--paper);
+    border-left-color: var(--copper);
+    transform: translateX(2px);
   }
 
   .phase-card__num {
     grid-row: span 3;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: 31px;
-    color: var(--teal);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--dim);
+    align-self: start;
+    padding-top: 8px;
+  }
+
+  .phase-card--active .phase-card__num {
+    color: var(--copper);
   }
 
   .phase-card__kicker {
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
     font-size: 10px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .phase-card--active .phase-card__kicker {
     color: var(--copper);
   }
 
@@ -1127,39 +1185,58 @@
     font-family: var(--v2-font-display, "Instrument Serif", serif);
     font-size: 22px;
     font-weight: 400;
+    color: inherit;
+    line-height: 1.05;
+  }
+
+  .phase-card--active strong {
+    font-size: clamp(28px, 3vw, 36px);
+    font-style: italic;
     color: var(--paper);
   }
 
   .phase-card span:last-child {
     font-size: 12px;
-    line-height: 1.35;
+    line-height: 1.4;
+    color: var(--dim);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
+  .phase-card--active span:last-child {
+    color: var(--muted);
+  }
+
   .stage {
     min-height: 0;
-    padding: 16px 0 0;
+    padding: 10px 0 0;
     display: grid;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto 1fr auto;
     align-content: start;
-    gap: 12px;
+    gap: 18px;
     min-width: 0;
   }
 
+  /*
+   * Stage intro is now a quiet caption above the board, not a competing
+   * hero. The narrative moment lives on the active phase-card to the
+   * left; this row carries only the section title for context + SEO.
+   */
   .stage__intro {
-    max-width: 760px;
+    max-width: 920px;
+    width: 100%;
     margin: 0 auto;
     text-align: left;
+    padding: 0 4px;
   }
 
   .stage__kicker {
-    margin: 0 0 8px;
+    margin: 0 0 4px;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.2em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--copper);
   }
@@ -1167,18 +1244,19 @@
   .stage h1 {
     margin: 0;
     font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: clamp(38px, 4vw, 48px);
-    line-height: 1;
+    font-size: clamp(20px, 2.2vw, 26px);
+    line-height: 1.15;
     font-weight: 400;
     letter-spacing: 0;
-    max-width: 760px;
+    color: var(--muted);
   }
 
   .stage__intro > p:last-child {
-    margin: 10px 0 0;
-    max-width: 720px;
-    color: var(--muted);
-    font-size: 15px;
+    margin: 4px 0 0;
+    max-width: 640px;
+    color: var(--dim);
+    font-size: 12px;
+    letter-spacing: 0.04em;
     line-height: 1.45;
   }
 
@@ -1186,21 +1264,37 @@
     min-height: 0;
     align-self: stretch;
     display: grid;
-    grid-template-rows: auto auto;
-    gap: 10px;
-    align-content: start;
-    max-width: 920px;
+    grid-template-rows: 1fr auto;
+    gap: 14px;
+    align-content: stretch;
+    max-width: 1040px;
     width: 100%;
     margin: 0 auto;
+    min-height: clamp(420px, 52vh, 640px);
   }
 
+  /*
+   * Board: hairline frame, immersive ink fill, soft inset glow that lets
+   * the canvas marbles read as the only solid object on screen. The
+   * rounded corners are gone — the board reads as a window into the
+   * scene, not a panel.
+   */
   .board {
     position: relative;
-    height: clamp(320px, 44vh, 500px);
-    min-height: 0;
-    border-radius: 8px;
-    border: 1px solid var(--rule-strong);
-    background: rgba(2, 4, 5, 0.42);
+    height: 100%;
+    min-height: clamp(380px, 50vh, 600px);
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+    background:
+      radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(245, 244, 239, 0.04) 0%,
+        rgba(2, 4, 5, 0.0) 65%
+      ),
+      rgba(2, 4, 5, 0.55);
+    box-shadow:
+      inset 0 0 80px rgba(0, 0, 0, 0.55),
+      inset 0 0 0 1px rgba(245, 244, 239, 0.02);
     overflow: hidden;
     cursor: crosshair;
   }
@@ -1214,43 +1308,54 @@
     position: absolute;
     top: 20px;
     display: grid;
-    gap: 5px;
+    gap: 6px;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--dim);
     pointer-events: none;
   }
 
   .board__hud b {
     color: var(--paper);
     font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
   }
 
   .board__hud--left {
-    left: 22px;
+    left: 24px;
   }
 
   .board__hud--right {
-    right: 22px;
+    right: 24px;
     text-align: right;
     max-width: 240px;
   }
 
+  /*
+   * Metrics: a quiet readout strip — no box, no fill. Hairline above
+   * the row separates it from the board without re-introducing a card.
+   */
   .metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0;
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    background: rgba(245, 244, 239, 0.03);
-    overflow: hidden;
+    padding: 12px 4px 2px;
+    border-top: 1px solid var(--rule-soft);
   }
 
   .metrics div {
-    padding: 10px 16px;
-    border-right: 1px solid var(--rule);
+    padding: 0 16px;
+    border-right: 1px solid var(--rule-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .metrics div:first-child {
+    padding-left: 0;
   }
 
   .metrics div:last-child {
@@ -1258,59 +1363,103 @@
   }
 
   .metrics span {
-    display: block;
-    margin-bottom: 4px;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--dim);
   }
 
   .metrics strong {
     font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: 24px;
+    font-size: clamp(22px, 2.2vw, 28px);
     font-weight: 400;
     color: var(--mint);
+    line-height: 1;
   }
 
+  /*
+   * Command line: terminal-style readout, no panel chrome. A single
+   * hairline above keeps it tied to the board without boxing it in.
+   */
   .command {
-    max-width: 920px;
+    max-width: 1040px;
     width: 100%;
     margin: 0 auto;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 16px;
-    align-items: center;
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    padding: 10px 14px;
-    background: rgba(245, 244, 239, 0.025);
+    align-items: baseline;
+    padding: 10px 4px 4px;
+    border-top: 1px solid var(--rule-soft);
   }
 
   .command span {
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.16em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--dim);
   }
 
   .command code {
     overflow-wrap: anywhere;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    color: var(--paper);
-    font-size: 14px;
+    color: var(--mint);
+    font-size: 13px;
   }
 
   .control-panel {
     min-height: 0;
     overflow: auto;
-    border-left: 1px solid var(--rule);
-    padding: 16px 0 10px 16px;
+    padding: 6px 0 10px 4px;
     display: flex;
     flex-direction: column;
     gap: 14px;
+  }
+
+  /*
+   * Convergence badge: the right column's hero. Round dotted ring
+   * houses the live percentage in serif, with a mono kicker beneath.
+   * No box, no fill — just light geometry on the ink.
+   */
+  .converge-badge {
+    position: relative;
+    align-self: center;
+    width: clamp(132px, 12vw, 158px);
+    height: clamp(132px, 12vw, 158px);
+    display: grid;
+    place-items: center;
+    color: var(--mint);
+    margin: 4px 0 8px;
+  }
+
+  .converge-badge__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .converge-badge__value {
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(34px, 3.4vw, 44px);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--mint);
+    letter-spacing: -0.01em;
+  }
+
+  .converge-badge__label {
+    position: absolute;
+    bottom: 28%;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--mint);
+    opacity: 0.78;
   }
 
   .control-panel__top {
@@ -1319,26 +1468,34 @@
     align-items: center;
     gap: 10px;
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 11px;
-    letter-spacing: 0.18em;
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--paper);
+    color: var(--muted);
   }
 
   .mode-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: var(--mint);
+    box-shadow: 0 0 8px rgba(121, 217, 150, 0.55);
   }
 
+  /*
+   * Section blocks inside the right column: hairline top-rule instead
+   * of a full bordered card. Reads as scaffolding, not panels.
+   */
   .control-group,
   .operator-strip,
   .phase-note {
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    padding: 12px;
-    background: rgba(245, 244, 239, 0.025);
+    padding: 14px 0 4px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .control-group:first-of-type {
+    border-top: 0;
+    padding-top: 4px;
   }
 
   .control-group p,
@@ -1359,22 +1516,33 @@
   }
 
   .shape-button {
-    min-height: 60px;
+    min-height: 58px;
     display: grid;
     place-items: center;
     gap: 8px;
-    border-radius: 6px;
-    border: 1px solid var(--rule);
+    border-radius: 2px;
+    border: 1px solid var(--rule-soft);
     background: transparent;
-    color: var(--muted);
+    color: var(--dim);
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 12px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
   }
 
-  .shape-button--active {
+  .shape-button:hover {
+    color: var(--muted);
+    border-color: var(--rule-strong);
+  }
+
+  .shape-button--active,
+  .shape-button--active:hover {
     color: var(--paper);
     border-color: var(--copper);
-    background: rgba(214, 120, 69, 0.08);
+    background: transparent;
   }
 
   .shape-icon {
@@ -1471,23 +1639,56 @@
   .action,
   .actions__secondary button {
     min-height: 44px;
-    border-radius: 6px;
+    border-radius: 2px;
     border: 1px solid var(--rule-strong);
-    background: rgba(245, 244, 239, 0.02);
+    background: transparent;
     color: var(--paper);
     font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
-    font-size: 12px;
-    letter-spacing: 0.16em;
+    font-size: 11px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      color 180ms ease;
+  }
+
+  .actions__secondary button {
+    border-color: var(--rule);
+    color: var(--muted);
+  }
+
+  .action:hover,
+  .actions__secondary button:hover {
+    border-color: var(--paper);
+    color: var(--paper);
+  }
+
+  .action:focus-visible,
+  .actions__secondary button:focus-visible {
+    outline: 1px solid var(--paper);
+    outline-offset: 2px;
   }
 
   .action--spawn {
     border-color: rgba(214, 120, 69, 0.82);
+    color: var(--copper);
+  }
+
+  .action--spawn:hover {
+    border-color: var(--copper);
+    background: rgba(214, 120, 69, 0.08);
     color: #ffc28d;
   }
 
   .action--converge {
     border-color: rgba(121, 217, 150, 0.75);
+    color: var(--mint);
+  }
+
+  .action--converge:hover {
+    border-color: var(--mint);
+    background: rgba(121, 217, 150, 0.06);
     color: #b8f3c8;
   }
 
@@ -1500,7 +1701,8 @@
   .phase-note {
     margin: 0;
     color: var(--muted);
-    line-height: 1.45;
+    font-size: 12px;
+    line-height: 1.55;
   }
 
   .phase-note strong {
@@ -1508,8 +1710,10 @@
     margin-bottom: 6px;
     color: var(--paper);
     font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: 20px;
+    font-style: italic;
+    font-size: 22px;
     font-weight: 400;
+    line-height: 1.1;
   }
 
   .game__footer {
@@ -1551,9 +1755,8 @@
 
     .phase-rail,
     .control-panel {
-      border: 1px solid var(--rule);
-      border-radius: 8px;
-      padding: 16px;
+      padding: 16px 0;
+      border-top: 1px solid var(--rule-soft);
     }
 
     .phase-rail {
@@ -1588,17 +1791,14 @@
       gap: 8px;
     }
 
+    .game__chrome-brand,
     .game__chrome-center,
     .game__chrome-fig {
       justify-self: start;
     }
 
-    .game__chrome-fig {
-      position: static;
-    }
-
     .stage h1 {
-      font-size: 40px;
+      font-size: 22px;
     }
 
     .board {
