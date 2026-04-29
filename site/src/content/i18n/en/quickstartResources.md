@@ -27,7 +27,8 @@ cards:
       - "macOS or Linux"
       - "Git, Python 3.10+, and <code>make</code>"
       - "One or more agent CLIs: Codex, Claude, or Gemini"
-      - "Optional but high-value foundations: loctree, aicx, prview, ScreenScribe"
+      - "Required foundations: loctree and aicx"
+      - "Recommended evidence tools: prview and ScreenScribe"
 
   - kicker: "What you get"
     title: "Operational surfaces after install"

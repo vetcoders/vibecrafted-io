@@ -36,7 +36,7 @@ export const pl = {
     brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
     byline: "with AI Agents by VetCoders",
     tagline:
-      "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
+      "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
     copyright: "(c)2024-2026 VetCoders",
     license: "BSL 1.1",
   },
@@ -77,9 +77,10 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "vibecrafted. — Silnik release'u dla software'u budowanego z AI.",
+      title:
+        "vibecrafted. — Release engine dla oprogramowania generowanego przez AI.",
       description:
-        "Zamienia kod wygenerowany przez agentów w software, który obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
+        "Doprowadza repo po agentach do wydania, które obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
     },
     faq: {
       title: "vibecrafted. · FAQ",
@@ -94,15 +95,15 @@ export const pl = {
   landingV2: {
     hero: {
       ariaLabel: "Sekcja główna",
-      eyebrow: "SILNIK RELEASE'U",
+      eyebrow: "RELEASE ENGINE",
       heading: {
-        pre: "Silnik release'u",
+        pre: "Release engine",
         prefix: "dla",
-        emFirst: "software'u budowanego z AI,",
-        mid: "który da się",
+        emFirst: "oprogramowania generowanego przez AI,",
+        mid: "które trzeba",
         emLast: "dowieźć.",
       },
-      body: "Weź repo, które agenci już wyprodukowali, znajdź co nadal nie jest prawdą i doprowadź je do release'u, który obca osoba może zainstalować, zrozumieć i użyć.",
+      body: "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
       ctaPrimary: "INSTALUJ",
       ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
       telemetry: {
@@ -560,10 +561,10 @@ export const pl = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'Silnik <span class="manifesto-title__framework-accent">release</span>&apos;u dla software&apos;u budowanego z AI',
-      lead: "Zamień kod wygenerowany przez agentów w software, który obca osoba może zainstalować, zrozumieć i użyć.",
+        'Release <span class="manifesto-title__framework-accent">engine</span> dla oprogramowania generowanego przez AI',
+      lead: "Doprowadź repo po agentach do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
       quoteHtml:
-        "Weź repo, które agenci już wyprodukowali, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć.",
+        "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, któremu można zaufać.",
       evidence: "Dowody",
       quickstart: "Otwórz szybki start",
       quickstartHref: "/pl/quickstart/",
@@ -991,13 +992,13 @@ flowchart LR
     },
     get: {
       label: "Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-      title: "Zainstaluj silnik release'u. Uruchom pętlę.",
-      sub: "Zbootstrapuj control plane przez publiczną ścieżkę instalacji, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu.",
+      title: "Zainstaluj release engine. Uruchom workflow.",
+      sub: "Zainstaluj panel kontrolny i wejdź w pierwszy workflow prowadzący do realnego release.",
       cards: [
         {
           step: "01",
-          title: "Zbootstrapuj control plane",
-          body: "Zainstaluj framework lokalnie przez publiczną ścieżkę bootstrapu. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo.",
+          title: "Zainstaluj panel kontrolny",
+          body: "Zainstaluj framework lokalnie przez publiczną ścieżkę. Jeśli chcesz prowadzony instalator w przeglądarce, użyj <code>make vibecrafted</code> w repo.",
           command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
         },
         {
@@ -1033,7 +1034,7 @@ flowchart LR
       title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska.",
       quote:
-        "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
+        "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
       primaryHref: "/pl/",
       primaryLabel: "Wróć do przeglądu",
       secondaryHref: "/pl/framework/",
@@ -1057,7 +1058,8 @@ flowchart LR
             "macOS albo Linux",
             "Git, Python 3.10+ i <code>make</code>",
             "Co najmniej jeden runtime: Codex, Claude albo Gemini",
-            "Opcjonalnie, ale bardzo przydatne: loctree, aicx, prview, ScreenScribe",
+            "Wymagane fundamenty: loctree i aicx",
+            "Zalecane narzędzia dowodowe: prview i ScreenScribe",
           ],
         },
         {
@@ -1187,7 +1189,7 @@ flowchart LR
               questionHtml:
                 "Co dokładnie sprawdza <code>vibecrafted doctor</code>?",
               answerHtml:
-                "<code>doctor</code> sprawdza, czy lokalne środowisko jest gotowe do pracy z agentami: czy istnieje wspólny katalog narzędzi, czy helpery są dostępne, czy odwołania agentów działają, czy opcjonalne narzędzia takie jak loctree, aicx, prview i ScreenScribe są na miejscu oraz czy shell nie wypisuje zbędnych komunikatów, które mogłyby zepsuć automatyzację.",
+                "<code>doctor</code> sprawdza, czy lokalne środowisko jest gotowe do pracy z agentami: czy istnieje wspólny katalog narzędzi, czy helpery są dostępne, czy odwołania agentów działają, czy wymagane fundamenty <code>loctree-mcp</code> i <code>aicx-mcp</code> są na miejscu, czy narzędzia dowodowe takie jak prview i ScreenScribe są dostępne oraz czy shell nie wypisuje zbędnych komunikatów, które mogłyby zepsuć automatyzację.",
             },
             {
               questionHtml:
@@ -1213,10 +1215,9 @@ flowchart LR
                 "Bo 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. nie jest tylko rozmową z modelem. Framework kotwiczy pracę w repo, decyzjach, artefaktach i kolejnych iteracjach. Dzięki temu agent pracuje na realnym kontekście produktu, a nie na luźnym opisie zadania.",
             },
             {
-              questionHtml:
-                "Czy mogę używać 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez loctree albo aicx?",
+              questionHtml: "Czy loctree i aicx są wymagane?",
               answerHtml:
-                "Tak, ale z mniejszą ilością kontekstu. Framework nadal działa, tylko agent gorzej rozumie strukturę projektu i ma słabszą ciągłość między sesjami.",
+                "Nie uczciwie. <code>loctree</code> i <code>aicx</code> są wymaganymi fundamentami: jedno daje agentowi percepcję struktury, drugie przywraca wcześniejsze decyzje i intencje. Jeśli któregoś brakuje, najpierw napraw warstwę fundamentów.",
             },
             {
               questionHtml:

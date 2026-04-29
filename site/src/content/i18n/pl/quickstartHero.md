@@ -12,7 +12,7 @@ title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍
 lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska."
 
 # Pull-quote shown below the lead.
-quote: "Od repo wygenerowanego przez AI do produktu gotowego do release'u."
+quote: "Od repo po agentach do wydania, które ktoś obcy może zainstalować."
 
 # Primary action — solid button.
 primaryHref: "/pl/"

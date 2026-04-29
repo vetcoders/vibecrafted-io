@@ -21,7 +21,7 @@ steps:
 
   - kicker: "Step 2"
     title: "Run the doctor"
-    body: "Check the staged control plane, shell helpers, and optional foundations before you blame the workflow."
+    body: "Check the staged control plane, shell helpers, and required foundations before you blame the workflow."
     command: "vibecrafted doctor"
     note: "If something is yellow, the doctor tells you what is missing instead of leaving you to guess."
 

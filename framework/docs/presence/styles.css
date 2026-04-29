@@ -708,7 +708,7 @@ h6 {
   color: var(--steel-edge);
 }
 
-/* old .manifesto-canvas-container removed — replaced by .hero-canvas */
+/* The manifesto canvas now uses the shared hero canvas surface. */
 
 .manifesto-body {
   max-width: var(--page-shell);

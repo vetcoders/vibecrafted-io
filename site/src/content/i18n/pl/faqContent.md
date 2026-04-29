@@ -28,7 +28,7 @@ groups:
       - questionHtml: "Czy mogę zainstalować 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez edycji konfiguracji shella?"
         answerHtml: "Tak. W trybie interaktywnym możesz zrezygnować z instalacji helperów. Jeśli chcesz mieć je tylko w bieżącej sesji, załaduj ręcznie skrypt pomocniczy <code>${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh</code>."
       - questionHtml: "Co dokładnie sprawdza <code>vibecrafted doctor</code>?"
-        answerHtml: "Polecenie <code>doctor</code> sprawdza centralny magazyn, dostępność helperów, stan odwołań agentów, opcjonalne fundamenty, takie jak loctree, aicx, prview i ScreenScribe, oraz to, czy środowisko nie przeszkadza narzędziom agentowym w stabilnej pracy."
+        answerHtml: "Polecenie <code>doctor</code> sprawdza centralny magazyn, dostępność helperów, stan odwołań agentów, wymagane fundamenty (<code>loctree-mcp</code> i <code>aicx-mcp</code>), narzędzia dowodowe takie jak prview i ScreenScribe oraz to, czy środowisko nie przeszkadza narzędziom agentowym w stabilnej pracy."
       - questionHtml: "Którą ścieżkę instalacji wybrać w CI lub automatyzacji?"
         answerHtml: 'Użyj <code>make install</code>, jeśli chcesz prostą ścieżkę bez interakcji. Jeśli potrzebujesz pełnej kontroli z poziomu wiersza poleceń, uruchom <code>python3 scripts/vetcoders_install.py install --source "$PWD" --non-interactive</code>.'
 
@@ -39,8 +39,8 @@ groups:
         answerHtml: "Agent to runtime &mdash; na przykład Codex, Claude albo Gemini. Skill to zestaw instrukcji i zasad pracy, które mówią agentowi, jak ma działać na danym etapie."
       - questionHtml: "Dlaczego nie po prostu ChatGPT, Copilot albo jeden wielki prompt?"
         answerHtml: "Bo 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. nie służy tylko do rozmowy z modelem. Opiera pracę na strukturze kodu, pamięci decyzji i iteracji. Dzięki temu model widzi repo i realną powierzchnię produktu, zamiast improwizować po omacku."
-      - questionHtml: "Czy mogę używać 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez loctree albo aicx?"
-        answerHtml: "Technicznie tak, ale tracisz rozumienie struktury i ciągłość między sesjami. Framework dalej działa, tylko agent pracuje na dużo słabszym kontekście."
+      - questionHtml: "Czy loctree i aicx są wymagane?"
+        answerHtml: "Nie uczciwie. <code>loctree</code> i <code>aicx</code> są wymaganymi fundamentami: jedno daje agentowi percepcję struktury, drugie przywraca wcześniejsze decyzje i intencje. Jeśli któregoś brakuje, najpierw napraw warstwę fundamentów."
       - questionHtml: "Jak przepchnąć <code>screenscribe review</code> przez wczesną walidację modeli?"
         answerHtml: "Potraktuj to jak prawdę runtime, a nie rytuał. CLI musi być widoczny na <code>PATH</code>, <code>~/.config/screenscribe/config.env</code> musi być zgodne z domyślną konfiguracją Libraxis, dla aliasów modeli używaj <code>ai-suggestions</code>, ustaw <code>SCREENSCRIBE_VISION=false</code> jako intencję operatora i pamiętaj, że obecny CLI nadal nadpisuje tę flagę podczas <code>review</code>, więc launcher musi wstrzykiwać <code>--no-vision</code> dla zwykłych uruchomień review na obecnej ścieżce Libraxis. Lokalnym źródłem prawdy w repo jest dokument ScreenScribe Review Gate."
       - questionHtml: "Co to jest pętla Marbles?"

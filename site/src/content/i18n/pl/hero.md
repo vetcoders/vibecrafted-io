@@ -3,13 +3,13 @@
 # Renderowane przez: site/src/components/sections/HeroSection.astro
 
 # Podtytuł pod wordmarkiem. <Accent>…</Accent> opakowuje wyróżnione słowo.
-frameworkTitle: "Silnik <Accent>release</Accent>'u dla oprogramowania budowanego z AI"
+frameworkTitle: "Release <Accent>engine</Accent> dla oprogramowania generowanego przez AI"
 
 # Jednozdaniowy tagline pod tytułem.
-lead: "Dowieź oprogramowanie budowane z AI bez vibe hangover."
+lead: "Doprowadź repo po agentach do wydania, które obca osoba może zainstalować, zrozumieć i użyć."
 
 # Dłuższy cytat-manifest pod leadem.
-quote: "Weź repo, które agenci już wytworzyli, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć."
+quote: "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, któremu można zaufać."
 
 # Główny przycisk — kotwica do #evidence.
 evidence: "Dowody"

@@ -27,7 +27,8 @@ cards:
       - "macOS albo Linux"
       - "Git, Python 3.10+ i <code>make</code>"
       - "Co najmniej jeden runtime: Codex, Claude albo Gemini"
-      - "Opcjonalnie, ale bardzo przydatne: loctree, aicx, prview, ScreenScribe"
+      - "Wymagane fundamenty: loctree i aicx"
+      - "Zalecane narzędzia dowodowe: prview i ScreenScribe"
 
   - kicker: "Po instalacji"
     title: "Co dostajesz po instalacji"

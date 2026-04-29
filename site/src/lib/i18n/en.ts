@@ -1054,7 +1054,8 @@ flowchart LR
             "macOS or Linux",
             "Git, Python 3.10+, and <code>make</code>",
             "One or more agent CLIs: Codex, Claude, or Gemini",
-            "Optional but high-value foundations: loctree, aicx, prview, ScreenScribe",
+            "Required foundations: loctree and aicx",
+            "Recommended evidence tools: prview and ScreenScribe",
           ],
         },
         {
@@ -1104,7 +1105,7 @@ flowchart LR
         {
           kicker: "Step 2",
           title: "Run the doctor",
-          body: "Check the install, shell helpers, and optional foundations before starting a workflow.",
+          body: "Check the install, shell helpers, and required foundations before starting a workflow.",
           command: "vibecrafted doctor",
           note: "If something is yellow, the doctor tells you what is missing instead of leaving you to guess.",
         },
@@ -1184,7 +1185,7 @@ flowchart LR
               questionHtml:
                 "What does <code>make doctor</code> actually check?",
               answerHtml:
-                "The doctor verifies the central store, helper availability, symlink health, optional foundations such as loctree, aicx, prview, and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling.",
+                "The doctor verifies the central store, helper availability, symlink health, required foundations (<code>loctree-mcp</code> and <code>aicx-mcp</code>), evidence tools such as prview and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling.",
             },
             {
               questionHtml:
@@ -1211,9 +1212,9 @@ flowchart LR
                 "Because 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is trying to solve system-shaping, not just chat convenience. It combines structural awareness, decision retrieval, convergence loops, and shipping audits so the model sees the repo and the product surface instead of improvising blind.",
             },
             {
-              questionHtml: "Can I use 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. without loctree or aicx?",
+              questionHtml: "Are loctree and aicx required?",
               answerHtml:
-                "Technically yes, but you lose structural perception and session continuity. The framework still runs, but the agent is operating with much weaker context.",
+                "Not honestly. <code>loctree</code> and <code>aicx</code> are required foundations: one gives the agent structural perception, the other restores prior decisions and intent. If either is missing, fix the foundation layer before trusting the workflow.",
             },
             {
               questionHtml:

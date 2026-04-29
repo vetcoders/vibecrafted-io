@@ -4,8 +4,8 @@
 
 # Eyebrow / tytuł / podtytuł sekcji.
 label: "Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍."
-title: "Zainstaluj silnik release'u. Uruchom pętlę."
-sub: "Zbootstrapuj control plane przez publiczną ścieżkę instalacji, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu."
+title: "Zainstaluj release engine. Uruchom workflow."
+sub: "Zainstaluj panel kontrolny i wejdź w pierwszy workflow prowadzący do realnego release."
 
 # Duża pomarańczowa CTA pod kartami. Wizard installa specyficzny dla locale.
 installWizardHref: "/pl/install/"
@@ -16,8 +16,8 @@ installWizardLabel: "Otwórz prowadzony instalator"
 # literalna komenda shell pokazywana w pasku copy.
 cards:
   - step: "01"
-    title: "Zbootstrapuj control plane"
-    body: "Zainstaluj framework lokalnie przez publiczną ścieżkę bootstrapu. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo."
+    title: "Zainstaluj panel kontrolny"
+    body: "Zainstaluj framework lokalnie przez publiczną ścieżkę. Jeśli chcesz prowadzony instalator w przeglądarce, użyj <code>make vibecrafted</code> w repo."
     command: "curl -fsSL https://vibecrafted.io/install.sh | bash"
   - step: "02"
     title: "Wejdź przez command deck"

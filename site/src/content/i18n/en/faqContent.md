@@ -28,7 +28,7 @@ groups:
       - questionHtml: "Can I install 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. without editing my shell config?"
         answerHtml: "Yes. During the interactive path you can opt out of shell-helper installation. If you still want helpers in the current session, source <code>${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh</code> manually."
       - questionHtml: "What does <code>make doctor</code> actually check?"
-        answerHtml: "The doctor verifies the central store, helper availability, symlink health, optional foundations such as loctree, aicx, prview, and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling."
+        answerHtml: "The doctor verifies the central store, helper availability, symlink health, required foundations (<code>loctree-mcp</code> and <code>aicx-mcp</code>), evidence tools such as prview and ScreenScribe, plus whether your shell environment is quiet enough for agent tooling."
       - questionHtml: "Which install path should I use in CI or automation?"
         answerHtml: 'Use <code>make install</code> for the direct non-interactive path, or call <code>python3 scripts/vetcoders_install.py install --source "$PWD" --non-interactive</code> when you want full CLI control.'
 
@@ -39,8 +39,8 @@ groups:
         answerHtml: "An agent is the runtime, such as Codex, Claude, or Gemini. A skill is the instruction set and workflow protocol that tells that runtime how to behave for a specific engineering phase."
       - questionHtml: "Why not just use ChatGPT, Copilot, or a single giant prompt?"
         answerHtml: "Because 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is trying to solve system-shaping, not just chat convenience. It combines structural awareness, decision retrieval, convergence loops, and shipping audits so the model sees the repo and the product surface instead of improvising blind."
-      - questionHtml: "Can I use 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. without loctree or aicx?"
-        answerHtml: "Technically yes, but you lose structural perception and session continuity. The framework still runs, but the agent is operating with much weaker context."
+      - questionHtml: "Are loctree and aicx required?"
+        answerHtml: "Not honestly. <code>loctree</code> and <code>aicx</code> are required foundations: one gives the agent structural perception, the other restores prior decisions and intent. If either is missing, fix the foundation layer before trusting the workflow."
       - questionHtml: "How do I get <code>screenscribe review</code> past early model validation?"
         answerHtml: "Treat it as runtime truth, not folklore. Keep the CLI reachable on <code>PATH</code>, keep <code>~/.config/screenscribe/config.env</code> aligned with the Libraxis defaults, use <code>ai-suggestions</code> for the model aliases, set <code>SCREENSCRIBE_VISION=false</code> as operator intent, and remember that the current CLI still overrides that stored flag during <code>review</code>, so the launcher surface must inject <code>--no-vision</code> for plain review runs on the current Libraxis path. The repo-local source of truth is the ScreenScribe Review Gate doc."
       - questionHtml: "What is the Marbles loop?"
