@@ -657,6 +657,8 @@ def test_repo_launcher_is_directly_executable() -> None:
     assert "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍." in result.stdout
     assert expected_version in result.stdout
     assert "vibecrafted dashboard" in result.stdout
+    assert "vibecrafted telemetry smoke" in result.stdout
+    assert "\n  telemetry smoke" not in result.stdout
     assert 'vibecrafted hydrate codex --prompt "Package the product"' in result.stdout
     assert "START_HERE.md" in result.stdout
 
@@ -1221,6 +1223,21 @@ def test_marbles_help_lists_delete_control_subcommand() -> None:
     assert (
         "vc-marbles <pause|stop|resume|session|inspect|delete> [args]" in result.stdout
     )
+
+
+def test_marbles_flags_without_agent_get_actionable_error() -> None:
+    result = subprocess.run(
+        [str(LAUNCHER), "marbles", "--count", "8", "--depth", "10"],
+        check=False,
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode != 0
+    assert "Missing marbles agent before flags." in result.stderr
+    assert "Try: vibecrafted marbles codex --count 8 --depth 10" in result.stderr
+    assert "Unknown agent: --count" not in result.stderr
 
 
 def test_marbles_delete_control_subcommand_routes_to_helper(tmp_path: Path) -> None:
