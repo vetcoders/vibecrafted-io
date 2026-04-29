@@ -7,8 +7,8 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 const t = getTranslations(lang).sections.dou;
-const homeHref = lang === 'pl' ? '/pl/' : '/en/';
-const homeLabel = lang === 'pl' ? 'WRÓĆ NA MAIN PAGE' : 'BACK TO MAIN PAGE';
+const homeHref = lang === 'pl' ? '/pl/' : '/';
+const homeLabel = lang === 'pl' ? 'WRÓĆ DO STRONY GŁÓWNEJ' : 'BACK TO MAIN';
 
 const trajectoryScale = [0, 25, 50, 75, 100];
 const trajectoryBars = [

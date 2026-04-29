@@ -16,6 +16,7 @@ import type { Lang } from '../lib/i18n';
 import SiteNavV2 from '../components/SiteNavV2.svelte';
 import SiteFooterV2 from '../components/SiteFooterV2.svelte';
 import SearchShellV2 from '../components/SearchShellV2.svelte';
+import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/tokens-v2.css';
 
 interface Props {
@@ -36,7 +37,7 @@ interface Props {
 
 const {
   title,
-  description = 'Release engine for AI-developed software.',
+  description = 'Release engine for AI-built software.',
   lang = 'en',
   ogImage = '/presence/og-image.png',
   ogType = 'website',
@@ -56,6 +57,14 @@ function computeToggleHref(path: string, currentLang: Lang): string {
 }
 
 const toggleHref = computeToggleHref(currentPath, lang);
+
+const [searchDataAll, searchDataQuickstart, searchDataFaq] = hideSearch
+  ? [null, null, null]
+  : await Promise.all([
+      getDocsSearchData(lang, 'all'),
+      getDocsSearchData(lang, 'quickstart'),
+      getDocsSearchData(lang, 'faq'),
+    ]);
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
 const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
@@ -205,6 +214,89 @@ const jsonLd = JSON.stringify({
         boot();
       }
     })();
+
+    (() => {
+      if (window.__vcSoftSectionSettleRuntime) return;
+      window.__vcSoftSectionSettleRuntime = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const settled = new Set();
+      let idleTimer = 0;
+      let programmatic = false;
+      let userScrollIntent = false;
+
+      const isLanding = () =>
+        document.body?.matches('.v2-scope[data-has-hero="true"]') && !reduceMotion.matches;
+
+      const markIntent = () => {
+        userScrollIntent = true;
+      };
+
+      const getKey = (target, index) => target.id || target.dataset?.settleKey || `v2-frame-${index}`;
+
+      const settleIfClose = () => {
+        window.clearTimeout(idleTimer);
+        idleTimer = 0;
+
+        if (!isLanding() || !userScrollIntent || programmatic) return;
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+        const threshold = Math.min(220, viewportHeight * 0.22);
+        const candidates = Array.from(document.querySelectorAll('.hero, .v2-section[id]'));
+
+        let best = null;
+        candidates.forEach((target, index) => {
+          const key = getKey(target, index);
+          if (settled.has(key)) return;
+
+          const rect = target.getBoundingClientRect();
+          const distance = Math.abs(rect.top);
+          const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+          const visibleRatio = visible / Math.max(1, Math.min(rect.height, viewportHeight));
+
+          if (distance <= threshold && visibleRatio >= 0.48 && (!best || distance < best.distance)) {
+            best = { target, key, distance };
+          }
+        });
+
+        if (!best || best.distance < 8) return;
+
+        settled.add(best.key);
+        programmatic = true;
+        window.scrollTo({
+          top: window.scrollY + best.target.getBoundingClientRect().top,
+          behavior: 'smooth',
+        });
+        window.setTimeout(() => {
+          programmatic = false;
+          userScrollIntent = false;
+        }, 420);
+      };
+
+      const scheduleSettle = () => {
+        if (!isLanding() || !userScrollIntent || programmatic) return;
+        window.clearTimeout(idleTimer);
+        idleTimer = window.setTimeout(settleIfClose, 150);
+      };
+
+      const bootSettle = () => {
+        window.clearTimeout(idleTimer);
+        userScrollIntent = false;
+        programmatic = false;
+        settled.clear();
+      };
+
+      window.addEventListener('wheel', markIntent, { passive: true });
+      window.addEventListener('touchmove', markIntent, { passive: true });
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+          markIntent();
+        }
+      });
+      window.addEventListener('scroll', scheduleSettle, { passive: true });
+      document.addEventListener('astro:page-load', bootSettle);
+      bootSettle();
+    })();
   </script>
 </head>
 <body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
@@ -213,7 +305,15 @@ const jsonLd = JSON.stringify({
     <slot />
   </main>
   {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
-  {!hideSearch && <SearchShellV2 client:load lang={lang} />}
+  {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
+    <SearchShellV2
+      client:load
+      lang={lang}
+      searchDataAll={searchDataAll}
+      searchDataQuickstart={searchDataQuickstart}
+      searchDataFaq={searchDataFaq}
+    />
+  )}
 </body>
 </html>
 
@@ -259,10 +359,10 @@ const jsonLd = JSON.stringify({
     opacity: 0.32;
   }
 
-  /* Scroll behavior for anchor navigation (nav links → #about, #framework, etc.) */
+  /* Anchor links can glide, but vertical snap made the full-bleed views fight natural scrolling. */
   html:has(body.v2-scope) {
     scroll-behavior: smooth;
-    scroll-snap-type: y proximity;
+    scroll-snap-type: none;
   }
   @media (prefers-reduced-motion: reduce) {
     html:has(body.v2-scope) {

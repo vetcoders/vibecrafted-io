@@ -19,6 +19,8 @@
   const pctLabel = $derived(String(convergePct).padStart(3, '0'));
   const countLabel = $derived(String(marbleCount).padStart(3, '0'));
   const hero = $derived(getTranslations(lang).landingV2.hero);
+  const headingLastWord = $derived(hero.heading.emLast.replace(/\.$/, ''));
+  const headingLastDot = $derived(hero.heading.emLast.endsWith('.') ? '.' : '');
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
   const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
@@ -49,7 +51,7 @@
         <em class="hero__heading-em-first">{hero.heading.emFirst}</em>
       </span>
       <span class="hero__heading-line">
-        {hero.heading.mid} <em class="accent">{hero.heading.emLast}</em>
+        {hero.heading.mid} <em class="hero__heading-em-last">{headingLastWord}</em><span class="hero__heading-dot">{headingLastDot}</span>
       </span>
     </h1>
     <p class="hero__body">
@@ -95,7 +97,6 @@
     width: 100%;
     height: 100vh;
     min-height: 720px;
-    scroll-snap-align: start;
     background:
       radial-gradient(circle at 50% 24%, rgba(var(--v2-paper-rgb), 0.045), transparent 36rem),
       linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 48%),
@@ -202,14 +203,11 @@
 
   .hero--en .hero__heading-em-first {
     font-style: normal;
+    color: var(--accent);
   }
 
   .hero__heading em {
     font-style: italic;
-  }
-
-  .hero__heading em.accent {
-    color: var(--accent);
   }
 
   .hero__body {

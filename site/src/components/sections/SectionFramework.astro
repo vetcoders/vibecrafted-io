@@ -13,6 +13,7 @@ const dict = getTranslations(lang);
 const pipeline = dict.sections.pipeline;
 const chrome = dict.landingV2;
 const section = dict.v2Sections.framework;
+const playgroundHref = `/${lang}/framework/`;
 ---
 
 <SectionShell
@@ -49,15 +50,19 @@ const section = dict.v2Sections.framework;
 
     <div class="framework__operators-grid">
       {section.operators.map((operator) => (
-        <div class="framework__op-card">
+        <a
+          class="framework__op-card"
+          href={playgroundHref}
+          aria-label={`${operator.name} — ${section.cta}`}
+        >
           <span class="framework__op-num">OP · {operator.num}</span>
           <span class="framework__op-name">{operator.name}</span>
           <span class="framework__op-kind">· {operator.kind}</span>
-        </div>
+        </a>
       ))}
     </div>
 
-    <a class="framework__cta" href={`/${lang}/framework/`}>
+    <a class="framework__cta" href={playgroundHref}>
       <span class="framework__cta-label">
         {section.cta}
       </span>
@@ -198,6 +203,20 @@ const section = dict.v2Sections.framework;
     display: flex;
     flex-direction: column;
     gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .framework__op-card:hover,
+  .framework__op-card:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.62);
+    background: rgba(var(--accent-rgb), 0.055);
+    transform: translateY(-2px);
+    outline: none;
   }
 
   .framework__op-num {

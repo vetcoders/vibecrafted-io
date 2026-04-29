@@ -68,15 +68,13 @@ export const en = {
         overview: "Back to Overview",
       },
       resultsLabel: "RESULTS",
-      empty:
-        "Full-text search ships in the next iteration. For now, try Fast Paths above or the nav.",
+      empty: "Type at least two characters to search the static docs index.",
     },
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Release engine for AI-developed software.",
-      description:
-        "Turn AI-generated code into software a stranger can install, trust, and use.",
+      title: "Vibecrafted — Release engine for AI-built software.",
+      description: "Ship AI-built software without the vibe hangover.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -96,11 +94,11 @@ export const en = {
       heading: {
         pre: "Release Engine",
         prefix: "for",
-        emFirst: "AI-developed software",
-        mid: "that actually",
+        emFirst: "AI-built",
+        mid: "software that actually",
         emLast: "ships.",
       },
-      body: "Take the repo your agents already made, find what is still false, and turn it into a release a stranger can install, trust, and use.",
+      body: "Ship AI-built software without the vibe hangover. Take the repo your agents already made and turn it into a release a stranger can install, trust, and use.",
       ctaPrimary: "INSTALL",
       ctaSecondary: "READ THE DOCS",
       telemetry: {
@@ -558,7 +556,7 @@ export const en = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'Release <span class="manifesto-title__framework-accent">engine</span> for AI-developed software',
+        'Release <span class="manifesto-title__framework-accent">engine</span> for AI-built software',
       lead: "Turn AI-generated code into software a stranger can install, trust, and use.",
       quoteHtml:
         "Take the repo your agents already produced and turn it into something a stranger can install, trust, and use.",

@@ -1,13 +1,26 @@
 <script lang="ts">
   import { getTranslations, type Lang } from '../lib/i18n';
+  import {
+    searchDocs,
+    type DocsSearchData,
+    type DocsSearchSection,
+  } from '../lib/search/docs-search';
 
   interface Props {
     lang?: Lang;
+    searchDataAll: DocsSearchData;
+    searchDataQuickstart: DocsSearchData;
+    searchDataFaq: DocsSearchData;
   }
 
-  let { lang = 'en' }: Props = $props();
+  let {
+    lang = 'en',
+    searchDataAll,
+    searchDataQuickstart,
+    searchDataFaq,
+  }: Props = $props();
 
-  type Tab = 'all' | 'quickstart' | 'faq';
+  type Tab = DocsSearchSection;
 
   const labels = $derived(getTranslations(lang).v2Chrome.search);
   const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');
@@ -33,7 +46,18 @@
   let panelEl: HTMLDivElement | undefined = $state();
   let triggerEl: HTMLButtonElement | undefined = $state();
   let inputEl: HTMLInputElement | undefined = $state();
+  let activeIndex = $state(-1);
   let surfaceFrame = 0;
+
+  const activeData = $derived(
+    activeTab === 'quickstart'
+      ? searchDataQuickstart
+      : activeTab === 'faq'
+        ? searchDataFaq
+        : searchDataAll,
+  );
+  const hasQuery = $derived(query.trim().length >= 2);
+  const results = $derived(searchDocs(activeData.items, lang, query));
 
   function openPanel() {
     open = true;
@@ -60,6 +84,26 @@
       event.preventDefault();
       closePanel();
       triggerEl?.focus();
+      return;
+    }
+
+    if (!open || !hasQuery || results.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      activeIndex = (activeIndex + 1) % results.length;
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      activeIndex = (activeIndex - 1 + results.length) % results.length;
+      return;
+    }
+
+    if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault();
+      window.location.assign(results[activeIndex].href);
     }
   }
 
@@ -91,6 +135,17 @@
   $effect(() => {
     const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform);
     shortcutLabel = isMac ? '⌘K' : 'Ctrl K';
+  });
+
+  $effect(() => {
+    if (!hasQuery || results.length === 0) {
+      activeIndex = -1;
+      return;
+    }
+
+    if (activeIndex < 0 || activeIndex >= results.length) {
+      activeIndex = 0;
+    }
   });
 
   $effect(() => {
@@ -146,12 +201,30 @@
         </div>
       </div>
 
-      {#if query.trim().length >= 2}
+      {#if hasQuery}
         <div class="v2search__results">
-          <span class="v2search__results-label">{labels.resultsLabel}</span>
-          <p class="v2search__results-empty">
-            {labels.empty}
-          </p>
+          <span class="v2search__results-label">{activeData.resultsLabel}</span>
+          {#if results.length > 0}
+            <div class="v2search__result-list" role="listbox" aria-label={activeData.resultsLabel}>
+              {#each results as result, index (result.href)}
+                <a
+                  class="v2search__result"
+                  class:v2search__result--active={index === activeIndex}
+                  href={result.href}
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  onmouseenter={() => (activeIndex = index)}
+                >
+                  <span class="v2search__result-title">{result.title}</span>
+                  <span class="v2search__result-body">{result.body}</span>
+                </a>
+              {/each}
+            </div>
+          {:else}
+            <p class="v2search__results-empty">
+              {activeData.noResultsLabel}
+            </p>
+          {/if}
         </div>
       {/if}
     </div>
@@ -465,6 +538,59 @@
     margin: 0;
   }
 
+  .v2search__result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .v2search__result {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 0 11px;
+    border-top: 1px solid rgba(var(--v2-ink-rgb), 0.10);
+    color: var(--v2search-text-dim);
+    background: transparent;
+    transition:
+      color 0.15s ease,
+      border-color 0.15s ease,
+      padding-left 0.15s ease;
+  }
+
+  .v2search__result:first-child {
+    border-top: 0;
+  }
+
+  .v2search__result:hover,
+  .v2search__result:focus-visible,
+  .v2search__result--active {
+    color: var(--v2search-text);
+    border-color: rgba(var(--accent-rgb), 0.38);
+    padding-left: 8px;
+    outline: none;
+  }
+
+  .v2search__result-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.35;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: currentColor;
+  }
+
+  .v2search__result-body {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--v2search-text-dim);
+  }
+
   /* ── Responsive ──────────────────────────────────────────── */
 
   @media (max-width: 720px) {
@@ -490,7 +616,8 @@
     }
     .v2search__trigger,
     .v2search__tab,
-    .v2search__fast {
+    .v2search__fast,
+    .v2search__result {
       transition: none;
     }
   }

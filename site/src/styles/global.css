@@ -225,7 +225,7 @@
   --stats-backdrop: blur(8px);
   --stats-font-size: 0.8rem;
 
-  /* View system — each nav link = one full-height view */
+  /* View system — each nav link can occupy a full-height editorial view. */
   --view-height: 100svh;
   --view-offset: var(--nav-height);
   --view-inner: calc(var(--view-height) - var(--view-offset));
@@ -238,7 +238,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-snap-type: y proximity;
+  scroll-snap-type: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -586,11 +586,13 @@ h4 em {
 /* old .manifesto-canvas-container removed — replaced by .hero-canvas */
 
 /*
- * SECTIONS — landing sections snap to view-height; floating / compact
+ * SECTIONS — landing sections can fill view-height; floating / compact
  * sections (like SearchShell panels) must opt OUT so they don't inherit
  * 100vh from a blanket rule. The old rule forced every <section> to
  * view-inner, which stretched the SearchShell panel despite its own
  * max-height cap. We now exclude known-floating classes explicitly.
+ * Vertical snap is intentionally off: full-bleed views should feel guided,
+ * not like the page is wrestling the user's scroll input.
  */
 section:not([class*="search-shell"]):not(.docs-hero):not([class*="a-phase"]) {
   display: flex;
@@ -598,7 +600,6 @@ section:not([class*="search-shell"]):not(.docs-hero):not([class*="a-phase"]) {
   min-height: var(--view-inner);
   padding: var(--space-lg) 0;
   scroll-margin-top: var(--view-offset);
-  scroll-snap-align: start;
 }
 
 .view {
@@ -608,7 +609,6 @@ section:not([class*="search-shell"]):not(.docs-hero):not([class*="a-phase"]) {
   min-height: var(--view-inner);
   padding: var(--space-lg) 0;
   scroll-margin-top: var(--view-offset);
-  scroll-snap-align: start;
 }
 
 /*

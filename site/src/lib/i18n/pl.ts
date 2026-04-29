@@ -72,7 +72,7 @@ export const pl = {
       },
       resultsLabel: "WYNIKI",
       empty:
-        "Pełne wyszukiwanie - już wkrótce. Skorzystaj z szybkiej wyszukiwarki powyżej.",
+        "Wpisz co najmniej dwa znaki, żeby przeszukać statyczny indeks dokumentacji.",
     },
   },
   v2Pages: {

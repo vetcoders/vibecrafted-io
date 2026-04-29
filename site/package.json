@@ -8,10 +8,12 @@
   "scripts": {
     "prebuild": "python3 ../scripts/sync_site_release_assets.py && python3 ../scripts/sync_manifest.py",
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && node check-v2-search.mjs && node check-scroll-flow.mjs",
     "check": "astro check",
     "smoke:installer-close": "node check-installer-close.mjs",
     "smoke:routes": "node check-route-transitions.mjs",
+    "smoke:scroll-flow": "node check-scroll-flow.mjs",
+    "smoke:v2-search": "node check-v2-search.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
