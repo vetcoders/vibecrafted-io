@@ -56,13 +56,14 @@ export const pl = {
       ariaLabel: "Wyszukiwanie",
       openAria: "Otwórz wyszukiwarkę",
       queryAria: "Wpisz szukaną frazę",
-      placeholder: "Szukaj: framework, marble, doctor…",
+      placeholder: "Szukaj: install, auth, Stripe, deploy…",
       tabs: {
         all: "WSZYSTKIE SEKCJE",
         quickstart: "SZYBKI START",
         faq: "FAQ",
       },
-      prompt: "Zadaj dowolne pytanie",
+      prompt:
+        "Zapytaj co to naprawia, jak to zainstalować albo gdzie zwykle chowa się ryzyko release.",
       fastPathsLabel: "SZYBKIE ŚCIEŻKI",
       fastPaths: {
         framework: "Playground frameworka",
@@ -97,18 +98,18 @@ export const pl = {
       ariaLabel: "Sekcja główna",
       eyebrow: "RELEASE ENGINE",
       heading: {
-        pre: "Release Engine",
-        prefix: "dla\u00a0generowanego przez AI,",
-        emFirst: "oprogramowania,",
-        mid: "który",
-        emLast: "dowozi.",
+        pre: "Repo po agentach",
+        prefix: "w",
+        emFirst: "produkt",
+        mid: "któremu da się",
+        emLast: "zaufać.",
       },
-      body: "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
+      body: "Vibe hangover zaczyna się po demie: kruchy auth, niejasne dane, zgubione webhooki, deploy na modlitwę. Vibecrafted znajduje te szwy i doprowadza repo do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
       ctaPrimary: "INSTALUJ",
       ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
       telemetry: {
-        marbles: "MARBLES",
-        converge: "KONWERGENCJA",
+        marbles: "CHECKI",
+        converge: "GOTOWE",
         live: "LIVE",
       },
       scroll: "PRZEWIŃ",
@@ -202,27 +203,27 @@ export const pl = {
     },
     problem: {
       headingHtml:
-        'Agenci AI pracują szybko<br />Codebase potrzebuje <em class="accent">silnika release\'u</em><br />albo praca się rozjeżdża',
-      body: "Wygenerowanie kodu przestało być najtrudniejszą częścią. Trudne jest wiedzieć, co jest prawdą, co można bezpiecznie wypuścić i co tylko udaje, że jest skończone.",
+        'Aplikacje po agentach wyglądają na gotowe<br />gdy auth, dane, płatności i deploy nadal są <em class="accent">kruche</em>',
+      body: "Generowanie kodu dowozi demo. Prawdziwi użytkownicy, pieniądze, security review i kolejny developer pokazują miejsca, których żaden prompt nie wziął na własność.",
       symptoms: [
         {
-          label: "Tryb awarii A",
-          body: "Każdy agent zostawia wiarygodną odpowiedź, ale bez wspólnego kontraktu. Trzy sesje później masz trzy architektury i jednego zmęczonego człowieka od merge'y.",
+          label: "Security review",
+          body: "Aplikacja działa, ale auth ma tylko admin/user, tokeny żyją w złym miejscu i nikt nie umie pokazać, kto może dotknąć których danych.",
         },
         {
-          label: "Tryb awarii B",
-          body: "Aplikacja wygląda, jakby działała, ale instalacja, docs, runtime gates i dowody release są porozrzucane. To nie jest popsute. To jest niedowieźne.",
+          label: "Ścieżka pieniędzy",
+          body: "Stripe działa, aż przestaje. Webhook crashuje raz, nie ma retry, a klient znajduje brakującą usługę szybciej niż system.",
         },
       ],
     },
     framework: {
       headingHtml:
-        'Pięć faz. Sześciu operatorów. Jedna plansza<br /><em class="accent-2">Tyle struktury, żeby zobaczyć pracę</em>',
+        'Nie rewrite. Sprint stabilizacji<br /><em class="accent-2">Znajdź słabe szwy i je domknij</em>',
       subtitle:
-        "To nie motywacyjna nakładka na prompty. To mały model operacyjny: co następny agent może zmienić, jaki dowód ma zostawić i kiedy powierzchnia nadal nie jest gotowa.",
-      operatorsHeadingHtml: "Warstwa <em>operatorów</em>",
+        "Vibecrafted zostawia momentum z kodu pisanego przez AI i dokłada brakującą dyscyplinę release: mapę repo, następne cięcie, prawdę runtime i dowód dla kolejnej sesji.",
+      operatorsHeadingHtml: "Jak działa <em>pass</em>",
       operatorsSub:
-        "Małe skille z wąskim zadaniem. Pomagają agentowi wejść w repo, zostawić ślad i nie udawać, że jeden pass jest całą prawdą.",
+        "Każdy workflow ma jedno zadanie. Przeczytać repo, zrobić cięcie, sprawdzić realną ścieżkę albo nazwać to, co nadal nie jest gotowe. Nazwy przychodzą później; dowód pierwszy.",
       cta: "Otwórz Playground",
       operators: [
         { num: "00", name: "loctree", kind: "STRUKTURA" },
@@ -235,12 +236,12 @@ export const pl = {
     },
     operator: {
       headingHtml:
-        'Zainstaluj <em>command deck</em><br />Niech praca zostawia <em class="accent-2">ślad</em>',
+        'Zainstaluj lokalnie<br />Niech każdy run zostawia <em class="accent-2">ślad</em>',
       installSteps: [
         {
           step: "KROK 01",
           command: "$ curl -fsSL vibecrafted.io/install.sh | bash",
-          note: "Jeden lokalny bootstrap. Stawia command deck i powierzchnię launchera.",
+          note: "Jeden lokalny bootstrap. Instaluje komendy i otwiera prowadzony launcher.",
         },
         {
           step: "KROK 02",
@@ -417,7 +418,7 @@ export const pl = {
       },
     },
     quickstart: {
-      headingHtml: "Pierwsza ścieżka przez <em>command deck</em>",
+      headingHtml: "Zacznij od pierwszego <em>użytecznego sygnału</em>",
       carousel: {
         ariaLabel: "Karuzela kroków szybkiego startu",
         slideAria: "Krok {num}: {title}",

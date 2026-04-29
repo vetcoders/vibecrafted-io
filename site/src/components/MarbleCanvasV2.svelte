@@ -644,7 +644,7 @@
       board.radius = Math.min(width, height) * boardScale;
       marbleRadius = Math.max(10, board.radius * 0.08);
       buildBoard();
-      loopTimer = 140 + Math.random() * 120;
+      loopTimer = 900 + Math.random() * 500;
       if (reducedMotion) {
         renderStaticBoard();
         scheduleReducedMotionCycle();
@@ -745,10 +745,10 @@
         marbles.push({
           x: board.x + Math.cos(angle) * spawnSpread,
           y: board.y + Math.sin(angle) * spawnSpread - board.radius * chaosLevel * 0.5,
-          vx: (Math.random() - 0.5) * 16 * chaosLevel,
-          vy: (Math.random() - 0.5) * 12 * chaosLevel + 4,
-          z: 40 + Math.random() * 120 + chaosLevel * 100,
-          vz: (Math.random() - 0.2) * 8,
+          vx: (Math.random() - 0.5) * 7 * chaosLevel,
+          vy: (Math.random() - 0.5) * 5 * chaosLevel + 2,
+          z: 24 + Math.random() * 60 + chaosLevel * 54,
+          vz: (Math.random() - 0.2) * 4,
           target: slot,
           settled: false,
           chaosLevel,
@@ -758,7 +758,7 @@
 
       // Early waves: dislodge a settled marble to keep motion alive
       if (progress < 0.6 && marbles.length > 3 && currentLoop < targetLoops) {
-        const dislodgeChance = (1 - progress) * 0.08;
+        const dislodgeChance = (1 - progress) * 0.03;
         for (let j = marbles.length - 1; j >= 0; j--) {
           const m = marbles[j];
           if (m.settled && Math.random() < dislodgeChance) {
@@ -808,7 +808,7 @@
         const dy = m.target.y - m.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        m.vz -= 1.0;
+        m.vz -= 0.55;
         m.z += m.vz;
         if (m.z < 0) {
           m.z = 0;
@@ -817,8 +817,8 @@
         const inAir = m.z > 0;
 
         const mChaos = (m.chaosLevel || 0.5) * (1 - conv * 0.8);
-        const jitter = dist > marbleRadius * 2.4 ? (Math.random() - 0.5) * 3.2 * mChaos : 0;
-        const attract = (0.018 + conv * 0.02) * (inAir ? 0.25 : 1.0);
+        const jitter = dist > marbleRadius * 2.4 ? (Math.random() - 0.5) * 1.4 * mChaos : 0;
+        const attract = (0.010 + conv * 0.014) * (inAir ? 0.25 : 1.0);
         m.vx += dx * attract + jitter;
         m.vy += dy * attract + jitter;
 
@@ -848,7 +848,7 @@
         loopTimer -= dt;
         if (loopTimer <= 0) {
           throwWave();
-          loopTimer = 1200 + Math.random() * 900;
+          loopTimer = 2300 + Math.random() * 1600;
         }
       }
       renderScene();

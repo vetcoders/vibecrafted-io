@@ -201,6 +201,14 @@
     max-width: 20ch;
   }
 
+  .hero--pl .hero__heading {
+    font-size: clamp(48px, 7.2vw, 94px);
+  }
+
+  .hero--pl .hero__heading-line {
+    max-width: 16ch;
+  }
+
   .hero--en .hero__heading-em-first {
     font-style: normal;
     color: var(--accent);

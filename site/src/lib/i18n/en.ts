@@ -53,13 +53,14 @@ export const en = {
       ariaLabel: "Search",
       openAria: "Open search",
       queryAria: "Search query",
-      placeholder: "Search framework, marble, doctor…",
+      placeholder: "Search install, auth, Stripe, deploy…",
       tabs: {
         all: "ALL SURFACES",
         quickstart: "QUICK START",
         faq: "FAQ",
       },
-      prompt: "Ask for a command, product surface, or operating question.",
+      prompt:
+        "Ask what it fixes, how to install it, or where release risk usually hides.",
       fastPathsLabel: "FAST PATHS",
       fastPaths: {
         framework: "Framework playground",
@@ -92,18 +93,18 @@ export const en = {
       ariaLabel: "Hero",
       eyebrow: "RELEASE ENGINE",
       heading: {
-        pre: "Release Engine",
-        prefix: "for",
+        pre: "Turn agent-built repos",
+        prefix: "into",
         emFirst: "AI-built",
-        mid: "software that actually",
-        emLast: "ships.",
+        mid: "software people can",
+        emLast: "trust.",
       },
-      body: "Ship AI-built software without the vibe hangover. Take the repo your agents already made and turn it into a release a stranger can install, trust, and use.",
+      body: "The vibe hangover is what comes after the demo: fragile auth, unclear data, missed webhooks, scary deploys. Vibecrafted finds those seams and turns the repo into a release a stranger can install, trust, and use.",
       ctaPrimary: "INSTALL",
       ctaSecondary: "READ THE DOCS",
       telemetry: {
-        marbles: "MARBLES",
-        converge: "CONVERGE",
+        marbles: "CHECKS",
+        converge: "READY",
         live: "LIVE",
       },
       scroll: "SCROLL",
@@ -197,27 +198,27 @@ export const en = {
     },
     problem: {
       headingHtml:
-        'AI agents move fast<br />Your codebase needs a <em class="accent">release engine</em><br />or the work drifts',
-      body: "Generated code is not the hard part anymore. The hard part is knowing what is true, what is safe to ship, and what is still quietly pretending to be done.",
+        'Agent-built apps can look done<br />while auth, data, payments, and deploy are still <em class="accent">fragile</em>',
+      body: "Code generation gets you to a demo. Real users, money, security reviews, and the next developer expose the parts no prompt ever owned.",
       symptoms: [
         {
-          label: "Failure mode A",
-          body: "Every agent leaves a plausible answer, but no shared contract. Three sessions later you have three architectures and one exhausted human merge engine.",
+          label: "Security review",
+          body: "The app works, but auth is admin/user only, tokens live in the wrong place, and nobody can prove who may touch which data.",
         },
         {
-          label: "Failure mode B",
-          body: "The app appears to work, but install, docs, runtime gates, and release evidence are scattered. It is not broken. It is unshippable.",
+          label: "Money path",
+          body: "Stripe works until it does not. A webhook fails once, there is no retry, and the customer finds the missing service before the system does.",
         },
       ],
     },
     framework: {
       headingHtml:
-        'Five phases. Six operators. One board<br /><em class="accent-2">Enough structure to see the work</em>',
+        'Not a rewrite. A stabilization sprint<br /><em class="accent-2">Find the weak seams, then close them</em>',
       subtitle:
-        "The framework is not a motivational wrapper around prompts. It is a small operating model for deciding what the next agent is allowed to change, what evidence it owes, and when the surface is still not ready.",
-      operatorsHeadingHtml: "The <em>operator layer</em>",
+        "Vibecrafted keeps the momentum from AI-built software and adds the missing release discipline: map the repo, assign the next cut, verify runtime truth, and leave evidence for the next session.",
+      operatorsHeadingHtml: "How the <em>pass</em> runs",
       operatorsSub:
-        "Small skills with narrow jobs. They help an agent enter the repo, leave evidence, and avoid pretending one pass is the whole truth.",
+        "Each workflow has one job. Read the repo, make the cut, test the real path, or audit what is still not ready. Names come later; the evidence comes first.",
       cta: "Open the Playground",
       operators: [
         { num: "00", name: "loctree", kind: "STRUCTURE" },
@@ -230,12 +231,12 @@ export const en = {
     },
     operator: {
       headingHtml:
-        'Install the <em>command deck</em><br />Let the work leave a <em class="accent-2">trail</em>',
+        'Install it locally<br />Let every run leave a <em class="accent-2">trail</em>',
       installSteps: [
         {
           step: "STEP 01",
           command: "$ curl -fsSL vibecrafted.io/install.sh | bash",
-          note: "One local bootstrap. It stages the command deck and launcher surface.",
+          note: "One local bootstrap. It installs the commands and opens the guided launcher.",
         },
         {
           step: "STEP 02",
@@ -412,7 +413,7 @@ export const en = {
       },
     },
     quickstart: {
-      headingHtml: "A first path through the <em>command deck</em>",
+      headingHtml: "Start with the first <em>useful signal</em>",
       carousel: {
         ariaLabel: "Quickstart steps carousel",
         slideAria: "Step {num}: {title}",

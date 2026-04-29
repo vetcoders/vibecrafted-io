@@ -71,8 +71,8 @@ assert.match(englishCopy, /emFirst:\s*"AI-built"/, 'English hero should say AI-b
 assert.doesNotMatch(englishCopy, /AI-developed/, 'English hero should not use ambiguous AI-developed wording.');
 assert.match(
   englishCopy,
-  /Ship AI-built software without the vibe hangover\./,
-  'English hero should keep the vibe hangover tagline visible.',
+  /The vibe hangover is what comes after the demo:/,
+  'English hero should explain vibe hangover before the page introduces more vocabulary.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, AI-built accent, and vibe hangover tagline are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, AI-built accent, and plain-language vibe hangover framing are intact.');
