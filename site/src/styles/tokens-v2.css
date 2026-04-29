@@ -1,7 +1,7 @@
 /*
  * Landing V2 tokens — scoped to `.v2-scope` (applied on <body> by
- * LayoutV2.astro). Coexists with legacy tokens from tokens.css; does NOT
- * override anything on :root, so legacy Layout.astro consumers keep their
+ * LayoutV2.astro). Coexists with classic tokens from tokens.css; does NOT
+ * override anything on :root, so classic Layout.astro consumers keep their
  * current mint-muted / Fraunces styling untouched.
  *
  * Source of truth: /Users/silver/Downloads/explore/HANDOFF.md § 1 (tokens).
@@ -66,7 +66,7 @@
   --v2-font-body: "Inter", system-ui, -apple-system, sans-serif;
   --v2-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
-  /* Legacy font stack — available globally for branding/typography variants
+  /* Classic font stack — available globally for branding/typography variants
      that need them. V2 layout still uses Instrument Serif + Inter + JBM. */
   --v2-font-serif: "Lora", Georgia, serif;
   --v2-font-sans: "Poppins", system-ui, -apple-system, sans-serif;
@@ -87,7 +87,7 @@
 
   /* ─── Convenience aliases (scoped to .v2-scope only) ─────── */
   /* Section components use these shorter names. They don't leak to :root
-     because they're defined inside .v2-scope. Legacy tokens of the same
+     because they're defined inside .v2-scope. Classic tokens of the same
      name on :root (if any) are shadowed only within this subtree. */
   --ink: var(--v2-ink);
   --ink-soft: var(--v2-ink-soft);

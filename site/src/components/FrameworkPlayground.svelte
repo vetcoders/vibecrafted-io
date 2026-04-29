@@ -1919,7 +1919,7 @@
 
   /*
    * Advanced drawer: power-user knobs (density, throw size, precision,
-   * full operator list, legacy spawn/converge/next-phase) live here
+   * full operator list, older spawn/converge/next-phase) live here
    * collapsed by default. Native <details> handles toggle so it works
    * without extra state and stays accessible by keyboard.
    */

@@ -44,7 +44,8 @@ export const pl = {
     footer: {
       ariaLabel: "Stopka strony",
       byline: "z agentami AI od VetCoders",
-      tagline: "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
+      tagline:
+        "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
       quickstart: "SZYBKI START",
       faq: "FAQ",
       github: "GITHUB",
@@ -76,9 +77,9 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "vibecrafted. — Buduj i wdrażaj oprogramowanie z Agentami AI.",
+      title: "vibecrafted. — Silnik release'u dla software'u budowanego z AI.",
       description:
-        "Pomaga przejść od pomysłu do release’u. Zamienia projekt w produkt.",
+        "Zamienia kod wygenerowany przez agentów w software, który obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
     },
     faq: {
       title: "vibecrafted. · FAQ",
@@ -93,15 +94,15 @@ export const pl = {
   landingV2: {
     hero: {
       ariaLabel: "Sekcja główna",
-      eyebrow: "FRAMEWORK FOUNDERÓW",
+      eyebrow: "SILNIK RELEASE'U",
       heading: {
-        pre: "Twórz software",
-        prefix: "",
-        emFirst: "z agentami AI,",
-        mid: "którzy naprawdę",
-        emLast: "dochodzą do jednego, spójnego wyniku.",
+        pre: "Silnik release'u",
+        prefix: "dla",
+        emFirst: "software'u budowanego z AI,",
+        mid: "który da się",
+        emLast: "dowieźć.",
       },
-      body: "Vibecrafted porządkuje chaos pracy agentów i zamienia go w gotowe decyzje: jedna plansza, jedna decyzja, jeden release.",
+      body: "Weź repo, które agenci już wyprodukowali, znajdź co nadal nie jest prawdą i doprowadź je do release'u, który obca osoba może zainstalować, zrozumieć i użyć.",
       ctaPrimary: "INSTALUJ",
       ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
       telemetry: {
@@ -150,52 +151,400 @@ export const pl = {
   v2Sections: {
     shift: {
       heading: {
-        first: "Większość narzędzi AI do kodowania dowozi",
-        firstAccent: "vibe.",
-        second: "Vibecrafted dowozi",
-        secondAccent: "produkt.",
+        first: "Większość sesji AI zostawia",
+        firstAccent: "fragmenty.",
+        second: "Vibecrafted nadaje pracy",
+        secondAccent: "współrzędne.",
       },
-      todayLabel: "DZISIAJ",
-      vibecraftedLabel: "Z VIBECRAFTED",
+      todayLabel: "Bez planszy",
+      vibecraftedLabel: "Z planszą",
       todayItems: [
         {
           number: "01",
-          title: "Bez kontraktu.",
-          body: "Każda sesja zaczyna od zera. Agent za każdym razem musi od nowa uczyć się repo, konwencji i Twojego stylu.",
+          title: "Kontekst paruje.",
+          body: "Następna sesja może odziedziczyć diff, ale nie powód stojący za zmianą. Repo ma zmiany; praca nie ma pamięci.",
         },
         {
           number: "02",
-          title: "Nadzieja.",
-          body: "Retry, aż się skompiluje. Retry, aż testy przejdą. Retry, aż zabraknie cierpliwości i siły. To nie jest metoda.",
+          title: "Retry staje się metodą.",
+          body: "Przejście kompilacji zaczyna wyglądać jak dowód. To użyteczny sygnał, tylko nie wystarcza, żeby wiedzieć, czy produkt jest bezpieczny.",
         },
         {
           number: "03",
-          title: "Chaos.",
-          body: "Nie ma protokołu określającego, jak wygląda „done”. Artefakty lądują tam, gdzie akurat upuści je agent.",
+          title: "Done zostaje mgliste.",
+          body: "Artefakty zbierają się w komentarzach, branchach, notatkach i screenshotach. Kolejny agent widzi części, ale nie widzi kształtu.",
         },
       ],
       vibecraftedItems: [
         {
           number: "01",
-          title: "Kontrakt.",
-          body: 'Vibecrafted zamienia prompt w jasny kontrakt pracy: zakres zadania, granice zmian, role operatorów i kryteria „done”. Agent nie improwizuje, tylko wykonuje zadanie w ustalonym zakresie, nie produkując kolejnej wersji "prawie działa".',
+          title: "Kontrakt jest widoczny.",
+          body: "Zakres, owner, dowód i następny ruch siedzą na tej samej powierzchni, zanim agent zacznie ciąć.",
         },
         {
           number: "02",
-          title: "Stan.",
-          body: "Vibecrafted zapisuje nie tylko wynik, ale też kontekst: co zostało zmienione, dlaczego, co przeszło, co wymaga decyzji. Dzięki temu kolejny agent kontynuuje pracę, zamiast odtwarzać ją od zera.",
+          title: "Ślad przeżywa sesję.",
+          body: "Raporty i artefakty zostają przy repo, więc następna sesja może iść od dowodu, a nie od nastroju.",
         },
         {
           number: "03",
-          title: "Konwergencja.",
-          body: "Pięć deterministycznych faz. Scaffold → Craft → Convergence → DoU → Release. Ten sam kontrakt przy każdym rzucie.",
+          title: "Konwergencję da się obejrzeć.",
+          body: "Plansza nie ogłasza zwycięstwa. Pokazuje, co wylądowało, co się przesunęło i co nadal prosi o decyzję.",
         },
       ],
       proofItems: [
         { count: "05", label: "FAZY" },
         { count: "06", label: "OPERATORZY" },
         { count: "01", label: "PLANSZE" },
-        { count: "00", label: "RZUTY" },
+        { count: "00", label: "UTRACONY KONTEKST" },
+      ],
+    },
+    problem: {
+      headingHtml:
+        'Agenci AI pracują szybko.<br />Codebase potrzebuje <em class="accent">silnika release\'u</em><br />albo praca się rozjeżdża.',
+      body: "Wygenerowanie kodu przestało być najtrudniejszą częścią. Trudne jest wiedzieć, co jest prawdą, co można bezpiecznie wypuścić i co tylko udaje, że jest skończone.",
+      symptoms: [
+        {
+          label: "Tryb awarii A",
+          body: "Każdy agent zostawia wiarygodną odpowiedź, ale bez wspólnego kontraktu. Trzy sesje później masz trzy architektury i jednego zmęczonego człowieka od merge'y.",
+        },
+        {
+          label: "Tryb awarii B",
+          body: "Aplikacja wygląda, jakby działała, ale instalacja, docs, runtime gates i dowody release są porozrzucane. To nie jest popsute. To jest niedowieźne.",
+        },
+      ],
+    },
+    framework: {
+      headingHtml:
+        'Pięć faz. Sześciu operatorów. Jedna plansza.<br /><em class="accent-2">Tyle struktury, żeby zobaczyć pracę.</em>',
+      subtitle:
+        "To nie motywacyjna nakładka na prompty. To mały model operacyjny: co następny agent może zmienić, jaki dowód ma zostawić i kiedy powierzchnia nadal nie jest gotowa.",
+      operatorsHeadingHtml: "Warstwa <em>operatorów.</em>",
+      operatorsSub:
+        "Małe skille z wąskim zadaniem. Pomagają agentowi wejść w repo, zostawić ślad i nie udawać, że jeden pass jest całą prawdą.",
+      cta: "Otwórz Playground",
+      operators: [
+        { num: "00", name: "loctree", kind: "STRUKTURA" },
+        { num: "01", name: "aicx", kind: "PAMIĘĆ" },
+        { num: "02", name: "prview", kind: "REVIEW" },
+        { num: "03", name: "ScreenScribe", kind: "RUNTIME" },
+        { num: "04", name: "DoU", kind: "GATE" },
+        { num: "05", name: "Review", kind: "DOMKNIĘCIE" },
+      ],
+    },
+    operator: {
+      headingHtml:
+        'Zainstaluj <em>command deck.</em><br />Niech praca zostawia <em class="accent-2">ślad.</em>',
+      installSteps: [
+        {
+          step: "KROK 01",
+          command: "$ curl -fsSL vibecrafted.io/install.sh | bash",
+          note: "Jeden lokalny bootstrap. Stawia command deck i powierzchnię launchera.",
+        },
+        {
+          step: "KROK 02",
+          command: "$ vibecrafted doctor",
+          note: "Szybki health check, zanim agenci dotkną repo.",
+        },
+        {
+          step: "KROK 03",
+          command: "$ vibecrafted init claude",
+          note: "Pierwszy przelot kontekstowy realnym agentem w realnym repo.",
+        },
+      ],
+      shotHeadingHtml:
+        'Repo dostaje <em class="accent-2">wspólną powierzchnię.</em>',
+      shotBody:
+        "Sesja może się skończyć, ale nie musi zniknąć. Następny agent może odziedziczyć raporty, decyzje i otwarte pytania zamiast zimnego promptu.",
+      bullets: [
+        {
+          title: "Stan ma miejsce.",
+          body: "Artefakty żyją pod $VIBECRAFTED_ROOT/. Nie w pamięci taba, który akurat był otwarty.",
+        },
+        {
+          title: "Runy zostawiają dowód.",
+          body: "Każdy run agenta może nieść prompt, raport, metadane i decyzję, którą miał wesprzeć.",
+        },
+        {
+          title: "Undone zostaje widoczne.",
+          body: "DoU i marbles trzymają nierozwiązane kawałki na planszy, aż ktoś zdecyduje, co znaczą.",
+        },
+      ],
+      practicesLabel: "NAWYKI OPERATORA",
+      practices: [
+        "JEDNO REPO, JEDNA POWIERZCHNIA",
+        "KONTRAKT PRZED PROMPTEM",
+        "DOWÓD PONAD NASTRÓJ",
+        "NIEROZWIĄZANE ZOSTAJE WIDOCZNE",
+      ],
+      boardPreview: {
+        dwg: "VC-001 · REV A",
+        timestamp: "t=14:04:48",
+        meta: "20 MARBLES · 054 KONWERGENCJA",
+        metaLeft: "STAN PLANSZY",
+        live: "LIVE",
+        tabsAria: "Widoki podglądu planszy",
+        tabs: { board: "PLANSZA", marbles: "MARBLES", dou: "DOU" },
+        boardHeaders: {
+          n: "N#",
+          phase: "FAZA",
+          marbles: "MARBLES",
+          coverage: "POKRYCIE",
+          state: "STAN",
+        },
+        boardRows: [
+          {
+            num: "00",
+            phase: "scaffold",
+            marbles: "04",
+            coverage: 10,
+            pct: "100",
+            state: "converged",
+            stateLabel: "SKONWERGOWANE",
+          },
+          {
+            num: "01",
+            phase: "craft",
+            marbles: "12",
+            coverage: 7,
+            pct: "078",
+            state: "active",
+            stateLabel: "AKTYWNE",
+          },
+          {
+            num: "02",
+            phase: "convergence",
+            marbles: "07",
+            coverage: 4,
+            pct: "042",
+            state: "active",
+            stateLabel: "AKTYWNE",
+          },
+          {
+            num: "03",
+            phase: "doU",
+            marbles: "03",
+            coverage: 0,
+            pct: "000",
+            state: "waiting",
+            stateLabel: "CZEKA",
+          },
+          {
+            num: "04",
+            phase: "release",
+            marbles: "00",
+            coverage: 0,
+            pct: "000",
+            state: "blocked",
+            stateLabel: "BLOKADA",
+          },
+        ],
+        marblesHeaders: {
+          time: "CZAS",
+          op: "OP",
+          phase: "FAZA",
+          marble: "MARBLE",
+          status: "STATUS",
+        },
+        marblesLog: [
+          {
+            ts: "14:03:02",
+            op: "loctree",
+            phase: "00/scaffold",
+            msg: "kształt przyjęty, 04 sloty przypisane",
+            status: "ok",
+          },
+          {
+            ts: "14:03:18",
+            op: "aicx",
+            phase: "00/scaffold",
+            msg: "snapshot intencji zapisany",
+            status: "ok",
+          },
+          {
+            ts: "14:03:44",
+            op: "prview",
+            phase: "01/craft",
+            msg: "3 pliki sprawdzone, 1 zmiana wymagana",
+            status: "rej",
+          },
+          {
+            ts: "14:04:09",
+            op: "ScreenScribe",
+            phase: "01/craft",
+            msg: "próbka runtime przechwycona",
+            status: "ok",
+          },
+          {
+            ts: "14:04:31",
+            op: "prview",
+            phase: "01/craft",
+            msg: "wysłane ponownie i zaakceptowane",
+            status: "ok",
+          },
+          {
+            ts: "14:04:48",
+            op: "loctree",
+            phase: "02/convergence",
+            msg: "zduplikowany groove zwinięty",
+            status: "ok",
+          },
+        ],
+        douItems: [
+          {
+            num: "01",
+            severity: "block",
+            phase: "DoU",
+            text: "Status gate'u release nie jest zdefiniowany dla fazy 04.",
+          },
+          {
+            num: "02",
+            severity: "warn",
+            phase: "craft",
+            text: "2 marbles czekają na potwierdzenie pokrycia przez specjalistę.",
+          },
+          {
+            num: "03",
+            severity: "warn",
+            phase: "release",
+            text: "Szablon changeloga nie jest jeszcze podpięty do archiwum planszy.",
+          },
+        ],
+        ticksAria: "{coverage} z 10 ticków wypełnione",
+        caption:
+          "Stan planszy zaobserwowany o {timestamp}, po sześciu rzutach przez fazy 00-02.",
+      },
+    },
+    quickstart: {
+      headingHtml: "Pierwsza ścieżka przez <em>command deck.</em>",
+      carousel: {
+        ariaLabel: "Karuzela kroków szybkiego startu",
+        slideAria: "Krok {num}: {title}",
+        landsLabel: "TRAFIA:",
+        convergeLabel: "KONWERGENCJA",
+        previousLabel: "Poprzedni krok",
+        nextLabel: "Następny krok",
+        dotsLabel: "Nawigacja kroków",
+        goToStep: "Przejdź do kroku {number}",
+        steps: [
+          {
+            num: "01",
+            verb: "CHECK",
+            accent: "default",
+            state: 0,
+            pct: "000",
+            title: "Sprawdź lokalną powierzchnię.",
+            body: "Zacznij od nudnego sygnału: czy launcher wie, gdzie jest, co ma zainstalowane i co wymaga uwagi?",
+            command: "$ vibecrafted doctor",
+            lands: ["ZDROWIE INSTALACJI", "FOUNDATIONS", "PRAWDA LAUNCHERA"],
+          },
+          {
+            num: "02",
+            verb: "INIT",
+            accent: "default",
+            state: 0.3,
+            pct: "030",
+            title: "Niech agent najpierw przeczyta.",
+            body: "Init może wydobyć kształt repo, świeży kontekst i pierwsze ryzyka, zanim zacznie się jakakolwiek edycja.",
+            command: "$ vibecrafted init claude",
+            lands: ["MAPA REPO", "PIERWSZY KONTEKST", "NASTĘPNY RUCH"],
+          },
+          {
+            num: "03",
+            verb: "WORKFLOW",
+            accent: "default",
+            state: 0.6,
+            pct: "060",
+            title: "Wybierz tor pracy.",
+            body: "Workflow pomaga, gdy zadanie potrzebuje odrobiny ceremonii: obejrzeć powierzchnię, zbadać lukę, a potem wykonać cięcie.",
+            command:
+              '$ vibecrafted workflow claude --prompt "Plan and implement <task>"',
+            lands: ["PLAN", "TOR IMPLEMENTACJI", "ŚLAD RAPORTU"],
+          },
+          {
+            num: "04",
+            verb: "MARBLES",
+            accent: "default",
+            state: 0.75,
+            pct: "075",
+            title: "Poszukaj tego, co jeszcze gryzie.",
+            body: "Marbles odpala małe pętle kontrprzykładów. Może znaleźć edge case, fałszywe założenie albo po prostu miejsce, które wymaga decyzji człowieka.",
+            command: "$ vibecrafted marbles codex --count 3 --depth 3",
+            lands: ["KONTRPRZYKŁADY", "PĘTLE FIXÓW", "SYGNAŁ KONWERGENCJI"],
+          },
+          {
+            num: "05",
+            verb: "DOU",
+            accent: "teal",
+            state: 0.9,
+            pct: "090",
+            title: "Nazwij niedomknięte miejsca.",
+            body: "DoU to moment, żeby przestać udawać. Pyta, czego brakuje w instalacji, docsach, runtime, zaufaniu i release.",
+            command:
+              '$ vibecrafted dou claude --prompt "Audit launch readiness"',
+            lands: ["LISTA UNDONE", "RYZYKA SHIPU", "PRAWDA PRODUKTU"],
+          },
+          {
+            num: "06",
+            verb: "RELEASE",
+            accent: "teal",
+            state: 1,
+            pct: "100",
+            title: "Przygotuj handoff.",
+            body: "Release zbiera pracę na zewnątrz: artefakty, notatki deployu, docs i następny krok czytelny dla człowieka.",
+            command:
+              '$ vibecrafted release codex --prompt "Prepare release steps"',
+            lands: ["PLAN RELEASE", "CHECK ARTEFAKTÓW", "NASTĘPNE KROKI"],
+          },
+        ],
+      },
+    },
+    referencesLanding: {
+      headingHtml: "Co <em>czytaliśmy</em>, zanim zbudowaliśmy.",
+      subtitle:
+        "Framework konwergencji jest syntezą badań o handoffach agentów, gate'ach release i kontraktach runtime. Źródła poniżej — sprawdź przed adopcją.",
+    },
+    evidenceWild: {
+      headingHtml: 'Vibe hangover <em class="accent">w terenie.</em>',
+      subtitle:
+        "Kilka field notes z produktów budowanych z agentami i z naszych własnych torów release. Anonimizowane, bo ważniejszy jest wzorzec niż nazwa.",
+      patterns: [
+        {
+          num: "01",
+          label: "RELEASE MIRROR",
+          headline: "Dwa checkouty, dwie prawdy.",
+          observation:
+            "Framework upstream był już naprawiony, ale publiczny landing nadal serwował starszą prawdę installera. Każdy miał rację w swoim checkoutcie; użytkownik widział dryf.",
+          source: "FIELD NOTE · reprezentacyjny tor release",
+          accent: "rust",
+        },
+        {
+          num: "02",
+          label: "HELPER DRIFT",
+          headline: "Runtime się przeniósł. Docs nie.",
+          observation:
+            "Helper script nadal trzymał wczorajsze założenia o ścieżkach po tym, jak główny runtime został naprawiony. Produkt działał, dopóki operator nie poszedł starym tropem.",
+          source: "FIELD NOTE · audyt powierzchni helperów",
+          accent: "amber",
+        },
+        {
+          num: "03",
+          label: "SILENT FAILURES",
+          headline: "Webhook, który nigdy nie spróbował ponownie.",
+          observation:
+            "Checkout wyglądał zdrowo, dopóki aktywacja nie przeszła w claim i webhook truth. Sprzedaż się wydarzyła; historia entitlementu nadal potrzebowała świadka.",
+          source: "ZAOBSERWOWANE · realny founder (zanonimizowane)",
+          accent: "red",
+        },
+        {
+          num: "04",
+          label: "DEPLOY AND PRAY",
+          headline: "Piątkowa migracja odpalona cztery razy.",
+          observation:
+            "Brak stagingu, brak smoke testów, brak rollbacku. Migracja zakleszcza się na lock table. Support tickets rosną, a founder próbuje pamiętać, który tab odpalił się ostatni.",
+          source: "ZAOBSERWOWANE · raporty z terenu",
+          accent: "rust",
+        },
       ],
     },
   },
@@ -211,10 +560,10 @@ export const pl = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'Silnik <span class="manifesto-title__framework-accent">release</span>&apos;u dla oprogramowania budowanego z AI',
-      lead: "Dowieź oprogramowanie budowane z AI bez vibe hangover.",
+        'Silnik <span class="manifesto-title__framework-accent">release</span>&apos;u dla software&apos;u budowanego z AI',
+      lead: "Zamień kod wygenerowany przez agentów w software, który obca osoba może zainstalować, zrozumieć i użyć.",
       quoteHtml:
-        "Weź repo, które agenci już wytworzyli, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć.",
+        "Weź repo, które agenci już wyprodukowali, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć.",
       evidence: "Dowody",
       quickstart: "Otwórz szybki start",
       quickstartHref: "/pl/quickstart/",
@@ -222,7 +571,7 @@ export const pl = {
     pipeline: {
       label: "Metoda",
       title: "Twórz → Konwerguj → Wypuść",
-      sub: "Model operacyjny klasy założycielskiej do kształtowania, odszumiania i wreszcie wypuszczania oprogramowania z agentami AI.",
+      sub: "Mały model operacyjny do kształtowania pracy agentów, redukowania dryfu i przygotowania release surface, którą da się obejrzeć.",
       hero: {
         stages: [
           { name: "Scaffold", subtitle: "przygotuj powierzchnię" },
@@ -413,8 +762,8 @@ flowchart LR
       },
     },
     evidence: {
-      titleHtml: "To nie magia.<br />To rygorystyczna inżynieria.",
-      lead: "Słownictwo jest żywe, bo powstało pod nocną presją. Pod vibem kryje się rygorystyczny model operacyjny dla kontekstu, redukcji wariancji i prawdy o produkcie.",
+      titleHtml: "Mniej magii.<br />Więcej pracy, którą da się obejrzeć.",
+      lead: "Słownictwo może być żywe, jeśli system pozostaje inspekowalny: kontekst przed edycją, dowód po runie i powierzchnia release, która mówi, co nadal jest niepewne.",
       revealLabel: "Otwórz notatkę",
       closeLabel: "Zamknij notatkę",
       detailsLabel: "Konsekwencja operacyjna",
@@ -423,7 +772,7 @@ flowchart LR
           number: "01",
           accent: "steel",
           title: "Kontekst wzbogacony AST",
-          body: "LLM-y halucynują, gdy kodują na ślepo. Dzięki eksternalizacji pamięci architektonicznej w mapy AST, 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. utrzymuje modele dokładnie zorientowane w Twoim codebase.",
+          body: "Modele psują się szybciej, kiedy piszą w repo na ślepo. Mapy strukturalne dają sesji punkty orientacyjne, zanim zacznie edytować.",
           details: [
             "Loctree i pokrewne mapy strukturalne zamieniają repo w teren nawigacyjny jeszcze zanim zacznie się edycja.",
             "Agent pracuje na nazwanych plikach, blast radiusie i topologii symboli zamiast dryfować w mgle grepów.",
@@ -434,7 +783,7 @@ flowchart LR
           number: "02",
           accent: "copper",
           title: "Stochastyczna konwergencja",
-          body: "Generowanie kodu jest stochastyczne. Pętla Marbles wykorzystuje priorytetowane pętle odszumiania, aby nieustannie redukować wariancję, wymuszając stan gotowy do wysyłki.",
+          body: "Generowanie kodu jest szumne. Pętla Marbles daje temu szumowi miejsce: małe pętle, kontrprzykłady i widoczną pracę nierozwiązaną.",
           details: [
             "Jedno odpalenie nie jest dowodem. Pętla stale tnie najbardziej ryzykowne kłamstwo, aż runtime zacznie zgadzać się z obietnicą.",
             "Wczesne pętle usuwają fałsze strukturalne; późniejsze ściskają chropowatość do spokojniejszego i bardziej powtarzalnego kształtu produktu.",
@@ -445,7 +794,7 @@ flowchart LR
           number: "03",
           accent: "patina",
           title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙",
-          body: "Ustrukturyzowana Inżynieria Współpracy Człowiek-AI. Opakowujemy deterministyczne checkpointy ludzkie wokół stochastycznej generacji. Rezultat to system, który kontrolujesz, któremu ufasz i który rozumiesz.",
+          body: "Ustrukturyzowana współpraca człowieka i AI. Rzemiosło jest w handoffie: ludzie trzymają scope, smak i decyzje nieodwracalne; agenci robią fieldwork z dowodem przyczepionym do pracy.",
           details: [
             "Ludzie nie ścigają się z modelem na szybkość pisania; biorą odpowiedzialność za scope, truth checki i nieodwracalne decyzje.",
             "Agenci dostają przestrzeń do głębokiego fieldworku, ale gates, artefakty review i dowód z runtime trzymają finalny kształt w ryzach.",
@@ -538,7 +887,7 @@ flowchart LR
           phase: "Faza 1 · Twórz",
           phaseClass: "build",
           descHtml:
-            "Sprawdzian rzeczywistości. Audyt po implementacji dający brutalny werdykt GO / NO-GO na podstawie bramek jakości.",
+            "Sprawdzian rzeczywistości po implementacji: co się poprawiło, co zdryfowało i czy praca jest gotowa na następną bramkę.",
           tags: ["audyt", "severity", "gotowość"],
           triggerHtml: '"Follow-up check" · "Czy są jeszcze luki?"',
         },
@@ -623,8 +972,8 @@ flowchart LR
       label: "DoU",
       title: "Definicja niezrobionego",
       quote:
-        "Agenci AI rozwiązali najtrudniejszą część tworzenia oprogramowania: sprawienie, żeby rzecz działała. Nie rozwiązali jeszcze drugiej najtrudniejszej: sprawienie, żeby była osiągalna.",
-      lead: "Problem rzadko dotyczy jakości kodu. To brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+        "Agenci AI często potrafią sprawić, że rzecz działa. Nie sprawiają automatycznie, że da się ją znaleźć, zainstalować, zaufać jej albo za nią zapłacić.",
+      lead: "Problem rzadko dotyczy samej jakości kodu. Chodzi o przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
       diagnosticLabel: "Diagnostyka założyciela:",
       checklist: [
         { kind: "check", text: "Testy przechodzą" },
@@ -635,7 +984,7 @@ flowchart LR
         { kind: "cross", text: "Nikt nie może za to zapłacić" },
       ],
       summary:
-        "Punkty 4–6 to Definicja Niezrobionego. Faza 3 wymusza wejście systemu na rynek.",
+        "Punkty 4-6 to Definicja Niezrobionego. Faza 3 pyta, czy system potrafi spotkać się z rynkiem.",
       caption: "Trajektoria konwergencji — pętla aż koło się zapełni",
       bars: ["Pętla 1", "Pętla 2", "Pętla 3", "Pętla 4", "Pętla 5"],
       scoreline: "Wynik: 15 → 40 → 65 → 85 → 100",
@@ -1029,8 +1378,7 @@ flowchart LR
       ],
     },
     wizardLayout: {
-      defaultDescription:
-        "Prowadzony instalator silnika release'u Vibecrafted.",
+      defaultDescription: "Zainstaluj Vibecrafted lokalnie.",
       closeInstaller: "Zamknij instalator",
       closeInstallerShort: "Zamknij",
     },
@@ -1045,16 +1393,15 @@ flowchart LR
     installer: {
       wizard: {
         terminalKicker: "Podgląd instalacji",
-        terminalBody:
-          "Skrypt przygotowuje środowisko, a instalacja jest kontynuowana w przeglądarce.",
+        terminalBody: "Skrypt uruchamia lokalny instalator.",
         welcomeCta: "Pokaż jak to działa",
         installPasteKicker: "Krok 1 · Skopiuj",
         installPasteHint: "Wklej do terminala (macOS lub Linux)",
         installRunKicker: "Krok 2 · Uruchom",
         installRunHint:
-          "Instalator wstaje lokalnie i wraca sterowanie do tej karty — reszta dzieje się tu.",
+          "Instalator otwiera się lokalnie i pokazuje każdy krok tutaj.",
         installPreviewKicker: "Podgląd",
-        installPreviewBody: "Tak wygląda poprawny przebieg instalacji.",
+        installPreviewBody: "Czysta instalacja, krok po kroku.",
         checkSummaryAria: "Podsumowanie diagnostyki",
         doneStamp: "Status · Gotowy",
         steps: {
@@ -1073,13 +1420,11 @@ flowchart LR
         welcomeNotes: [
           {
             label: "Start w terminalu",
-            value:
-              "Komenda inicjująca przygotowuje środowisko i przekazuje sterowanie do przeglądarki.",
+            value: "Komenda startowa uruchamia lokalny instalator.",
           },
           {
             label: "Jawna zgoda",
-            value:
-              "Instalator definiuje plan działań i czeka na autoryzację przed modyfikacją systemu.",
+            value: "Widzisz plan, zanim cokolwiek się zmieni.",
           },
         ],
         terminal: [
@@ -1092,7 +1437,7 @@ flowchart LR
           "[bootstrap] Uruchamianie instalatora...",
           "",
           "[instalator] Witaj -> Wyjaśnienie -> Sprawdzenie -> Lista kontrolna",
-          "[instalator] Proces będzie kontynuowany w przeglądarce dla lepszej czytelności.",
+          "[instalator] Otwieranie lokalnego widoku instalacji.",
           "[instalator] Rozpoczynanie instalacji...",
           "[instalator] [etap] Konfiguracja fundamentów",
           "[instalator] [etap] Instalacja Vibecrafted",
@@ -1101,12 +1446,9 @@ flowchart LR
         pages: [
           {
             label: "Witaj",
-            title: "Widok instalatora",
-            body: [
-              "Instalacja używa przeglądarki do przejrzystego śledzenia stanu.",
-              "Terminal wykonuje logikę bazową, podczas gdy ten widok monitoruje postęp.",
-            ],
-            hint: "Wizualne śledzenie stanu.",
+            title: "Zainstaluj Vibecrafted",
+            body: ["Wklej jedną komendę. Sprawdź plan. Zainstaluj lokalnie."],
+            hint: "Instalacja lokalna.",
           },
           {
             label: "Skład",
@@ -1118,19 +1460,15 @@ flowchart LR
             label: "Stan",
             title: "Weryfikacja środowiska",
             body: [
-              "Stan systemu jest weryfikowany przed egzekucją.",
-              "Dostępne i brakujące zależności są mapowane jawnie.",
+              "Vibecrafted sprawdza, co już jest na miejscu i co trzeba doinstalować.",
             ],
-            hint: "Brak modyfikacji w ciemno.",
+            hint: "Najpierw stan.",
           },
           {
             label: "Instaluj",
             title: "Egzekucja instalacji",
-            body: [
-              "Komenda startowa montuje instalator lokalnie.",
-              "Proces wymaga ostatecznej autoryzacji przed modyfikacją systemu.",
-            ],
-            hint: "Terminal inicjuje interfejs.",
+            body: ["Kliknij Zainstaluj, żeby uruchomić plan."],
+            hint: "Uruchom plan.",
           },
           {
             label: "Gotowe",
@@ -1158,23 +1496,22 @@ flowchart LR
           ready: "Gotowe",
         },
         welcome: {
-          title: "Przegląd diagnostyki instalatora",
+          title: "Zainstaluj Vibecrafted",
           leads: [],
-          cta: "Zaczynamy",
-          componentsFound: "znaleziono",
+          cta: "Start",
+          componentsFound: "komponentów gotowych",
           componentsTotal: "łącznie",
           missingList: "Brakujące komponenty",
-          planPreview: "Co wydarzy się dalej",
-          timeEstimate: "≈ 2 minuty na rozgrzanej maszynie",
-          sourceDir: "instalator znajduje się w",
-          reRun: "Ponów diagnostykę",
+          planPreview: "Plan instalacji",
+          timeEstimate: "Około 2 minuty",
+          sourceDir: "z",
+          reRun: "Skanuj ponownie",
         },
         diagnostics: {
           title: "Co znaleziono",
           present: "Obecne",
           missing: "Brakujące",
-          empty:
-            "Nic jeszcze nie wykryto. Odśwież preflight jeśli to wygląda na błąd.",
+          empty: "Brak skanu. Spróbuj ponownie.",
         },
         plan: {
           title: "Co się wydarzy",
@@ -1183,12 +1520,12 @@ flowchart LR
         },
         consent: {
           title: "Potwierdź instalację",
-          body: "Zaakceptuj, by uruchomić instalator. Nic nie wystartuje zanim klikniesz Zainstaluj.",
-          accept: "Zapoznałem się z planem i akceptuję",
+          body: "Kliknij Zainstaluj, żeby uruchomić plan.",
+          accept: "Akceptuję plan",
           withShell: "Zintegruj helpery shella (zalecane)",
           cta: "Zainstaluj teraz",
-          again: "Instalacja już zakończona — możesz uruchomić ponownie.",
-          running: "Instalacja już trwa. Przejdź do kroku postępu.",
+          again: "Instalacja zakończona. Możesz uruchomić ją ponownie.",
+          running: "Instalacja trwa. Otwórz krok postępu.",
         },
         execute: {
           title: "Trwa instalacja",
@@ -1209,10 +1546,10 @@ flowchart LR
           refresh: "Odśwież preflight",
         },
         status: {
-          loadingPreflight: "Ładuję preflight…",
-          loadFailed: "Preflight się nie powiódł",
+          loadingPreflight: "Skanuję…",
+          loadFailed: "Skan się nie powiódł",
           notConnected:
-            "Lokalny instalator nieosiągalny. Uruchom komendę curl i zostaw terminal otwarty.",
+            "Uruchom instalator komendą curl i zostaw terminal otwarty.",
         },
         nextCommands: [
           { cmd: "vibecrafted doctor", desc: "Weryfikacja stanu" },

@@ -10,46 +10,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 const chrome = getTranslations(lang).landingV2;
-
-const installSteps = [
-  {
-    step: 'STEP 01',
-    command: '$ curl -fsSL vibecrafted.io/install.sh | bash',
-    note: 'One-shot bootstrap. No shell config required.',
-  },
-  {
-    step: 'STEP 02',
-    command: '$ vibecrafted init my-project',
-    note: 'Scaffolds the board. Picks shape based on repo signals.',
-  },
-  {
-    step: 'STEP 03',
-    command: '$ vibecrafted throw --phase scaffold',
-    note: 'Starts phase 00. The first contract gets written.',
-  },
-];
-
-const bullets = [
-  {
-    title: 'Persistent state.',
-    body: "Artifacts live under $VIBECRAFTED_ROOT/. Not your shell history. Not your IDE's memory.",
-  },
-  {
-    title: 'Replayable throws.',
-    body: 'Every marble carries how, when, and under which contract. Rewind any phase.',
-  },
-  {
-    title: 'Auditable convergence.',
-    body: 'DoU is a first-class object. The board knows what is unconverged before you ask.',
-  },
-];
-
-const practices = [
-  'ONE BOARD PER THROW',
-  'CONTRACTS OVER PROMPTS',
-  'STATE IS AN ARTIFACT',
-  'CONVERGENCE IS MEASURABLE',
-];
+const section = getTranslations(lang).v2Sections.operator;
 ---
 
 <SectionShell
@@ -63,11 +24,11 @@ const practices = [
 >
   <div class="op">
     <h2 class="op__heading">
-      Install <em>once.</em> Throw <em class="accent-2">forever.</em>
+      <Fragment set:html={section.headingHtml} />
     </h2>
 
     <div class="op__install">
-      {installSteps.map((item) => (
+      {section.installSteps.map((item) => (
         <div class="op__install-col">
           <span class="op__install-step">{item.step}</span>
           <code class="op__install-cmd">{item.command}</code>
@@ -79,14 +40,12 @@ const practices = [
     <div class="op__shot">
       <div class="op__shot-left">
         <h3 class="op__shot-heading">
-          Your agent now has a <em class="accent-2">board.</em>
+          <Fragment set:html={section.shotHeadingHtml} />
         </h3>
-        <p class="op__shot-body">
-          Every throw leaves a trace. Every trace carries context. The same board opens for every agent, every session — until convergence.
-        </p>
+        <p class="op__shot-body">{section.shotBody}</p>
 
         <ul class="op__bullets">
-          {bullets.map((bullet) => (
+          {section.bullets.map((bullet) => (
             <li>
               <strong class="op__bullet-title">{bullet.title}</strong>
               <span class="op__bullet-body">{bullet.body}</span>
@@ -96,13 +55,13 @@ const practices = [
       </div>
 
       <div class="op__shot-right">
-        <BoardPreview client:visible />
+        <BoardPreview client:visible lang={lang} />
       </div>
     </div>
 
     <div class="op__practices">
-      <span class="op__practices-label">OPERATOR PRACTICES</span>
-      {practices.map((practice) => (
+      <span class="op__practices-label">{section.practicesLabel}</span>
+      {section.practices.map((practice) => (
         <span class="op__practice">{practice}</span>
       ))}
     </div>

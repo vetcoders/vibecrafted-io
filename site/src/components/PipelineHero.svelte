@@ -275,7 +275,7 @@
    *   --ph-modal-panel-radius, --ph-modal-title-color,
    *   --ph-modal-close-bg, --ph-modal-close-color, --ph-modal-close-hover-bg
    *   --ph-mmd-error-color
-   * Each var() below carries a legacy default fallback; defining the property
+   * Each var() below carries a classic default fallback; defining the property
    * on an ancestor element propagates through inheritance.
    */
   .ph-shell {

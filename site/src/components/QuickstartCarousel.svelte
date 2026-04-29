@@ -1,94 +1,35 @@
 <script lang="ts">
   import MicroBoard from './MicroBoard.svelte';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   type BoardAccent = 'default' | 'teal';
 
-  interface Step {
-    num: string;
-    verb: string;
-    title: string;
-    body: string;
-    command: string;
-    lands: string[];
-    state: number;
-    pct: string;
-    accent: BoardAccent;
+  interface Props {
+    lang?: Lang;
   }
 
-  const steps: Step[] = [
-    {
-      num: '01',
-      verb: 'INIT',
-      accent: 'default',
-      state: 0.0,
-      pct: '000',
-      title: 'Scaffold the board.',
-      body: 'Pick the system topology. The board shape and contract are declared upfront — before a single marble is thrown.',
-      command: '$ vibecrafted init my-project',
-      lands: ['VIBECRAFTED/ ROOT', 'BOARD.TOML', 'DWG-0001 MANIFEST'],
-    },
-    {
-      num: '02',
-      verb: 'FROM SCAFFOLD',
-      accent: 'default',
-      state: 0.3,
-      pct: '030',
-      title: 'First throws land.',
-      body: 'Operators pick up the scaffold contract. Four marbles land, the outer frame stabilises, specialists acknowledge capacity.',
-      command: '$ vibecrafted throw --phase scaffold',
-      lands: ['4 MARBLES', 'STRUCTURE CONTRACT', 'CAPACITY MAP'],
-    },
-    {
-      num: '03',
-      verb: 'FROM CRAFT',
-      accent: 'default',
-      state: 0.6,
-      pct: '060',
-      title: 'Specialists work in parallel.',
-      body: 'Each agent brings one skill. Throws go fast — the board shows density, ownership, intent. No prose, just position.',
-      command: '$ vibecrafted throw --phase craft',
-      lands: ['12 MARBLES', 'SPECIALIST COVERAGE', 'REPLAYABLE TRACES'],
-    },
-    {
-      num: '04',
-      verb: 'CONVERGE',
-      accent: 'default',
-      state: 0.75,
-      pct: '075',
-      title: 'Marbles find their grooves.',
-      body: 'Duplicates collapse. Gaps become visible. The board pulls scattered work into shape without asking who threw what.',
-      command: '$ vibecrafted converge',
-      lands: ['MERGE PROTOCOL RUN', '7 MARBLES CONVERGED', 'CONFLICT LOG'],
-    },
-    {
-      num: '05',
-      verb: 'DOU',
-      accent: 'teal',
-      state: 0.9,
-      pct: '090',
-      title: 'Definition of Unconverged.',
-      body: 'Every un-landed marble becomes an explicit question. What is missing, what is blocked, what can ship anyway.',
-      command: '$ vibecrafted dou audit',
-      lands: ['DOU REPORT', '3 OPEN QUESTIONS', 'RELEASE GATE STATUS'],
-    },
-    {
-      num: '06',
-      verb: 'SHIP',
-      accent: 'teal',
-      state: 1.0,
-      pct: '100',
-      title: 'The board becomes the changelog.',
-      body: 'Release is a formality. The contract was declared upfront, the trail is auditable, the artifacts already exist.',
-      command: '$ vibecrafted ship',
-      lands: ['RELEASE TAG v0.1.0', 'CHANGELOG AUTO-BUILT', 'BOARD ARCHIVED'],
-    },
-  ];
+  let { lang = 'en' }: Props = $props();
+
+  const copy = $derived(getTranslations(lang).v2Sections.quickstart.carousel);
+  const steps = $derived(copy.steps);
 
   let activeIndex = $state(0);
   let carouselEl: HTMLDivElement | undefined = $state();
   let viewportEl: HTMLDivElement | undefined = $state();
-  const slideEls: Array<HTMLDivElement | undefined> = $state(new Array(steps.length));
+  const slideEls: Array<HTMLDivElement | undefined> = $state([]);
   let carouselVisible = $state(false);
+
+  function boardAccent(accent: string): BoardAccent {
+    return accent === 'teal' ? 'teal' : 'default';
+  }
+
+  function slideLabel(num: string, title: string): string {
+    return copy.slideAria.replace('{num}', num).replace('{title}', title);
+  }
+
+  function stepLabel(index: number): string {
+    return copy.goToStep.replace('{number}', String(index + 1));
+  }
 
   function scrollToSlide(i: number) {
     const slide = slideEls[i];
@@ -176,7 +117,7 @@
 <div
   class="qcar"
   role="region"
-  aria-label="Quickstart steps carousel"
+  aria-label={copy.ariaLabel}
   bind:this={carouselEl}
   tabindex="0"
 >
@@ -187,7 +128,7 @@
         data-idx={i}
         bind:this={slideEls[i]}
         aria-roledescription="slide"
-        aria-label={`Step ${step.num}: ${step.title}`}
+        aria-label={slideLabel(step.num, step.title)}
       >
         <div class="qcar__slide-head">
           <span class={['qcar__num', step.accent === 'teal' && 'qcar__num--teal']}>{step.num}</span>
@@ -200,7 +141,7 @@
         <code class="qcar__cmd">{step.command}</code>
 
         <div class="qcar__lands">
-          <span class="qcar__lands-label">LANDS:</span>
+          <span class="qcar__lands-label">{copy.landsLabel}</span>
           {#each step.lands as land, li}
             {#if li > 0}<span class="qcar__lands-sep">·</span>{/if}
             <span class="qcar__lands-chip">{land}</span>
@@ -211,11 +152,11 @@
           <MicroBoard
             state={step.state}
             size={108}
-            accent={step.accent}
+            accent={boardAccent(step.accent)}
             dotCount={10}
           />
           <span class={['qcar__converge', step.accent === 'teal' && 'qcar__converge--teal']}>
-            {step.pct}% CONVERGE
+            {step.pct}% {copy.convergeLabel}
           </span>
         </div>
       </article>
@@ -228,20 +169,20 @@
       class="qcar__btn qcar__btn--prev"
       onclick={prev}
       disabled={activeIndex === 0}
-      aria-label="Previous step"
+      aria-label={copy.previousLabel}
     >
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
         <path d="M9 2L4 7l5 5" />
       </svg>
     </button>
 
-    <div class="qcar__dots" role="tablist" aria-label="Step navigation">
+    <div class="qcar__dots" role="tablist" aria-label={copy.dotsLabel}>
       {#each steps as _, i}
         <button
           type="button"
           class={['qcar__dot', i === activeIndex && 'qcar__dot--active']}
           onclick={() => scrollToSlide(i)}
-          aria-label={`Go to step ${i + 1}`}
+          aria-label={stepLabel(i)}
           aria-current={i === activeIndex ? 'true' : 'false'}
           role="tab"
         ></button>
@@ -253,7 +194,7 @@
       class="qcar__btn qcar__btn--next"
       onclick={next}
       disabled={activeIndex === steps.length - 1}
-      aria-label="Next step"
+      aria-label={copy.nextLabel}
     >
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
         <path d="M5 2l5 5-5 5" />

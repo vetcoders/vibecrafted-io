@@ -10,6 +10,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 const chrome = getTranslations(lang).landingV2;
+const section = getTranslations(lang).v2Sections.quickstart;
 ---
 
 <SectionShell
@@ -23,10 +24,10 @@ const chrome = getTranslations(lang).landingV2;
 >
   <div class="quickstart">
     <h2 class="quickstart__heading">
-      From <em>init</em> to <em class="accent-2">ship</em> in six throws.
+      <Fragment set:html={section.headingHtml} />
     </h2>
 
-    <QuickstartCarousel client:load />
+    <QuickstartCarousel client:load lang={lang} />
   </div>
 
   <SectionFooter nextNumber="07" nextTitle={chrome.references.title} surface="ink" lang={lang} />

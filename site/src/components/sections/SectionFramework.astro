@@ -12,15 +12,7 @@ const { lang = 'en' } = Astro.props;
 const dict = getTranslations(lang);
 const pipeline = dict.sections.pipeline;
 const chrome = dict.landingV2;
-
-const operators = [
-  { num: '00', name: 'loctree', kind: 'STRUCTURE' },
-  { num: '01', name: 'aicx', kind: 'MEMORY' },
-  { num: '02', name: 'prview', kind: 'REVIEW' },
-  { num: '03', name: 'ScreenScribe', kind: 'RUNTIME' },
-  { num: '04', name: 'DoU', kind: 'GATE' },
-  { num: '05', name: 'Review', kind: 'CLOSING' },
-];
+const section = dict.v2Sections.framework;
 ---
 
 <SectionShell
@@ -34,12 +26,9 @@ const operators = [
 >
   <div class="framework">
     <h2 class="framework__intro-heading">
-      Five phases. Six operators. One board.<br />
-      <em class="accent-2">Deterministic convergence.</em>
+      <Fragment set:html={section.headingHtml} />
     </h2>
-    <p class="framework__subtitle">
-      The framework is a contract, not a tutorial. Each phase declares what must be true before the next throw. What ends in convergence begins in scope.
-    </p>
+    <p class="framework__subtitle">{section.subtitle}</p>
 
     <div class="framework__pipeline">
       <PipelineHero
@@ -52,14 +41,12 @@ const operators = [
     </div>
 
     <h3 class="framework__operators-heading">
-      The <em>six operators.</em>
+      <Fragment set:html={section.operatorsHeadingHtml} />
     </h3>
-    <p class="framework__operators-sub">
-      Small, sharp skills that carry the board through a phase. Each is a protocol, not a prompt.
-    </p>
+    <p class="framework__operators-sub">{section.operatorsSub}</p>
 
     <div class="framework__operators-grid">
-      {operators.map((operator) => (
+      {section.operators.map((operator) => (
         <div class="framework__op-card">
           <span class="framework__op-num">OP · {operator.num}</span>
           <span class="framework__op-name">{operator.name}</span>
@@ -70,7 +57,7 @@ const operators = [
 
     <a class="framework__cta" href={`/${lang}/framework/`}>
       <span class="framework__cta-label">
-        {lang === 'pl' ? 'Otwórz Playground' : 'Open the Playground'}
+        {section.cta}
       </span>
       <span class="framework__cta-arrow" aria-hidden="true">→</span>
     </a>
@@ -106,7 +93,7 @@ const operators = [
 
   /*
    * Pipeline hero shell — V2 re-skin via inheritable custom properties.
-   * PipelineHero.svelte reads each var() with a legacy fallback chain, so
+   * PipelineHero.svelte reads each var() with a classic fallback chain, so
    * defining them on this ancestor element propagates the V2 palette
    * (rust accent, Instrument Serif, hairline rules, 2px radius) to every
    * sub-element including the Expand modal.

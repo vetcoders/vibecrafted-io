@@ -9,6 +9,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const chrome = getTranslations(lang).landingV2;
+const section = getTranslations(lang).v2Sections.referencesLanding;
 
 interface Reference {
   num: string;
@@ -144,11 +145,9 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
 >
   <div class="refs">
     <h2 class="refs__heading">
-      What we <em>read</em> before we built.
+      <Fragment set:html={section.headingHtml} />
     </h2>
-    <p class="refs__subtitle">
-      The convergence framework is the synthesis of research on agent handoffs, release gates, and runtime contracts. Sources below — consult before adopting.
-    </p>
+    <p class="refs__subtitle">{section.subtitle}</p>
 
     <div class="refs__grid">
       {references.map((reference) => (

@@ -1,6 +1,6 @@
 /*
  * Fonts are loaded via Layout.astro (Fraunces + JetBrains Mono + Allura).
- * JetBrains Mono is kept for operator surfaces and the legacy Allura brand
+ * JetBrains Mono is kept for operator surfaces and the classic Allura brand
  * script; Fraunces carries the headline / lead type used across theme-A.
  *
  * tokens.css carries the full palette/atmosphere/surface theme; this file
@@ -578,7 +578,7 @@ h4 em {
   background: rgba(22, 27, 34, 0.75);
 }
 
-/* legacy .manifesto-canvas-container removed — replaced by .hero-canvas */
+/* old .manifesto-canvas-container removed — replaced by .hero-canvas */
 
 /*
  * SECTIONS — landing sections snap to view-height; floating / compact

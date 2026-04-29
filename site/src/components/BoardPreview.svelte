@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { getTranslations, type Lang } from '../lib/i18n';
+
   interface Props {
+    lang?: Lang;
     initialTab?: 'board' | 'marbles' | 'dou';
     dwg?: string;
     timestamp?: string;
@@ -35,41 +38,26 @@
   }
 
   let {
+    lang = 'en',
     initialTab = 'board',
-    dwg = 'VC-001 · REV A',
-    timestamp = 't=14:04:48',
-    meta = '20 MARBLES · 054 CONVERGE',
+    dwg,
+    timestamp,
+    meta,
     class: cls = '',
   } = $props<Props>();
 
   // svelte-ignore state_referenced_locally
   let activeTab = $state<Tab>(initialTab);
 
-  const boardRows: BoardRow[] = [
-    { num: '00', phase: 'scaffold', marbles: '04', coverage: 10, pct: '100', state: 'converged', stateLabel: 'CONVERGED' },
-    { num: '01', phase: 'craft', marbles: '12', coverage: 7, pct: '078', state: 'active', stateLabel: 'ACTIVE' },
-    { num: '02', phase: 'convergence', marbles: '07', coverage: 4, pct: '042', state: 'active', stateLabel: 'ACTIVE' },
-    { num: '03', phase: 'doU', marbles: '03', coverage: 0, pct: '000', state: 'waiting', stateLabel: 'WAITING' },
-    { num: '04', phase: 'release', marbles: '00', coverage: 0, pct: '000', state: 'blocked', stateLabel: 'BLOCKED' },
-  ];
-
-  const marblesLog: MarbleLogEntry[] = [
-    { ts: '14:03:02', op: 'loctree', phase: '00/scaffold', msg: 'shape accepted, 04 wells assigned', status: 'ok' },
-    { ts: '14:03:18', op: 'aicx', phase: '00/scaffold', msg: 'intent snapshot committed', status: 'ok' },
-    { ts: '14:03:44', op: 'prview', phase: '01/craft', msg: '3 files reviewed, 1 change requested', status: 'rej' },
-    { ts: '14:04:09', op: 'ScreenScribe', phase: '01/craft', msg: 'runtime sample captured', status: 'ok' },
-    { ts: '14:04:31', op: 'prview', phase: '01/craft', msg: 'resubmitted and accepted', status: 'ok' },
-    { ts: '14:04:48', op: 'loctree', phase: '02/convergence', msg: 'duplicate groove collapsed', status: 'ok' },
-  ];
-
-  const douItems: DouItem[] = [
-    { num: '01', severity: 'block', phase: 'DoU', text: 'Release gate status undefined for phase 04.' },
-    { num: '02', severity: 'warn', phase: 'craft', text: '2 marbles waiting on specialist coverage acknowledgement.' },
-    { num: '03', severity: 'warn', phase: 'release', text: 'Changelog template not yet bound to board archive.' },
-  ];
-
+  const copy = $derived(getTranslations(lang).v2Sections.operator.boardPreview);
+  const resolvedDwg = $derived(dwg ?? copy.dwg);
+  const resolvedTimestamp = $derived(timestamp ?? copy.timestamp);
+  const resolvedMeta = $derived(meta ?? copy.meta);
+  const boardRows: BoardRow[] = $derived(copy.boardRows);
+  const marblesLog: MarbleLogEntry[] = $derived(copy.marblesLog);
+  const douItems: DouItem[] = $derived(copy.douItems);
   const ticks = Array.from({ length: 10 });
-  const drawingId = $derived(dwg.split(' · ')[0]);
+  const drawingId = $derived(resolvedDwg.split(' · ')[0]);
 
   function wrapperClass(): string {
     return `bp ${cls}`.trim();
@@ -87,14 +75,14 @@
 <div class={wrapperClass()}>
   <div class="bp__meta">
     <span class="bp__meta-left">
-      BOARD STATE <span class="bp__dot bp__dot--live" aria-hidden="true"></span> LIVE
+      {copy.metaLeft} <span class="bp__dot bp__dot--live" aria-hidden="true"></span> {copy.live}
     </span>
-    <span class="bp__meta-right">DWG {dwg}</span>
+    <span class="bp__meta-right">DWG {resolvedDwg}</span>
   </div>
   <div class="bp__rule" aria-hidden="true"></div>
 
   <div class="bp__tabs-row">
-    <div class="bp__tabs" role="tablist" aria-label="Board preview views">
+    <div class="bp__tabs" role="tablist" aria-label={copy.tabsAria}>
       <button
         type="button"
         role="tab"
@@ -102,7 +90,7 @@
         aria-selected={activeTab === 'board'}
         onclick={() => (activeTab = 'board')}
       >
-        <span class="bp__tab-num">01</span> BOARD
+        <span class="bp__tab-num">01</span> {copy.tabs.board}
       </button>
       <button
         type="button"
@@ -111,7 +99,7 @@
         aria-selected={activeTab === 'marbles'}
         onclick={() => (activeTab = 'marbles')}
       >
-        <span class="bp__tab-num">02</span> MARBLES
+        <span class="bp__tab-num">02</span> {copy.tabs.marbles}
       </button>
       <button
         type="button"
@@ -120,22 +108,22 @@
         aria-selected={activeTab === 'dou'}
         onclick={() => (activeTab = 'dou')}
       >
-        <span class="bp__tab-num">03</span> DOU
+        <span class="bp__tab-num">03</span> {copy.tabs.dou}
       </button>
     </div>
-    <span class="bp__meta-meta">{meta}</span>
+    <span class="bp__meta-meta">{resolvedMeta}</span>
   </div>
   <div class="bp__rule" aria-hidden="true"></div>
 
   {#if activeTab === 'board'}
     <div class="bp__panel bp__panel--board" role="tabpanel">
       <div class="bp__board-head">
-        <span class="bp__board-col bp__board-col--n">N#</span>
-        <span class="bp__board-col bp__board-col--phase">PHASE</span>
-        <span class="bp__board-col bp__board-col--marbles">MARBLES</span>
-        <span class="bp__board-col bp__board-col--cov">COVERAGE</span>
+        <span class="bp__board-col bp__board-col--n">{copy.boardHeaders.n}</span>
+        <span class="bp__board-col bp__board-col--phase">{copy.boardHeaders.phase}</span>
+        <span class="bp__board-col bp__board-col--marbles">{copy.boardHeaders.marbles}</span>
+        <span class="bp__board-col bp__board-col--cov">{copy.boardHeaders.coverage}</span>
         <span class="bp__board-col bp__board-col--pct">%</span>
-        <span class="bp__board-col bp__board-col--state">STATE</span>
+        <span class="bp__board-col bp__board-col--state">{copy.boardHeaders.state}</span>
       </div>
 
       {#each boardRows as row}
@@ -143,7 +131,7 @@
           <span class="bp__board-cell bp__board-cell--n">{row.num}</span>
           <span class="bp__board-cell bp__board-cell--phase">{row.phase}</span>
           <span class="bp__board-cell bp__board-cell--marbles">{row.marbles}</span>
-          <span class="bp__board-cell bp__board-cell--cov" aria-label={`${row.coverage} of 10 ticks filled`}>
+          <span class="bp__board-cell bp__board-cell--cov" aria-label={copy.ticksAria.replace('{coverage}', String(row.coverage))}>
             {#each ticks as _, i}
               <span
                 class={`bp__tick${i < row.coverage ? ` bp__tick--filled-${row.state}` : ''}`}
@@ -159,11 +147,11 @@
   {:else if activeTab === 'marbles'}
     <div class="bp__panel bp__panel--marbles" role="tabpanel">
       <div class="bp__marbles-head">
-        <span class="bp__marbles-col--time">TIME</span>
-        <span class="bp__marbles-col--op">OP</span>
-        <span class="bp__marbles-col--phase">PHASE</span>
-        <span class="bp__marbles-col--msg">MARBLE</span>
-        <span class="bp__marbles-col--status">STATUS</span>
+        <span class="bp__marbles-col--time">{copy.marblesHeaders.time}</span>
+        <span class="bp__marbles-col--op">{copy.marblesHeaders.op}</span>
+        <span class="bp__marbles-col--phase">{copy.marblesHeaders.phase}</span>
+        <span class="bp__marbles-col--msg">{copy.marblesHeaders.marble}</span>
+        <span class="bp__marbles-col--status">{copy.marblesHeaders.status}</span>
       </div>
       {#each marblesLog as entry}
         <div class="bp__marbles-row">
@@ -194,7 +182,7 @@
 
   <div class="bp__caption">
     <span class="bp__caption-text">
-      <em>Fig. 04a</em> — Board state as observed at {timestamp}, after six throws across phases 00–02.
+      <em>Fig. 04a</em> — {copy.caption.replace('{timestamp}', resolvedTimestamp)}
     </span>
     <span class="bp__caption-tags">
       <span class="bp__caption-tag">[{drawingId}]</span>

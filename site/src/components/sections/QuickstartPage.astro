@@ -25,7 +25,7 @@ interface StepItem {
 const steps = stepsData as readonly StepItem[];
 
 // Title rendered with V2 brand grammar (Instrument Serif italic + accent colors).
-// Legacy i18n uses unicode wordmark — V2 uses plain "Vibecrafted." for proper Instrument Serif rendering.
+// Classic i18n uses unicode wordmark — V2 uses plain "Vibecrafted." for proper Instrument Serif rendering.
 const titleByLang: Record<Lang, { pre: string; emFirst: string; mid: string; brand: string; emLast: string; tail: string }> = {
   en: { pre: 'From zero to your ', emFirst: 'first', mid: ' Vibecrafted ', brand: '', emLast: 'loop.', tail: '' },
   pl: { pre: 'Od zera do twojej ', emFirst: 'pierwszej', mid: ' Vibecrafted ', brand: '', emLast: 'pętli.', tail: '' },

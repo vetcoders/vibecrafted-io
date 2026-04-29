@@ -9,6 +9,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 const chrome = getTranslations(lang).landingV2;
+const section = getTranslations(lang).v2Sections.problem;
 ---
 
 <SectionShell
@@ -23,28 +24,17 @@ const chrome = getTranslations(lang).landingV2;
   <div class="problem">
     <div class="problem__col problem__col--heading">
       <h2 class="problem__heading">
-        When you throw <em class="accent">enough agents</em> at a codebase,<br />
-        most marbles miss<br />
-        the holes.
+        <Fragment set:html={section.headingHtml} />
       </h2>
-      <p class="problem__body">
-        The ones that land do so by accident. The ones that don't become tomorrow's technical debt — files nobody owns, branches nobody remembers, tests nobody runs.
-      </p>
+      <p class="problem__body">{section.body}</p>
     </div>
 
-    <div class="problem__col">
-      <span class="problem__symptom-label">Symptom A</span>
-      <p class="problem__symptom-body">
-        Agent sessions diverge. Three attempts, three architectures, zero shared vocabulary. The "merge" is a human, and that human is you.
-      </p>
-    </div>
-
-    <div class="problem__col">
-      <span class="problem__symptom-label">Symptom B</span>
-      <p class="problem__symptom-body">
-        No sense of "done". Features keep getting re-implemented because no agent knows which slots are already filled. Coverage is a vibe, not a number.
-      </p>
-    </div>
+    {section.symptoms.map((symptom) => (
+      <div class="problem__col">
+        <span class="problem__symptom-label">{symptom.label}</span>
+        <p class="problem__symptom-body">{symptom.body}</p>
+      </div>
+    ))}
   </div>
 
   <SectionFooter nextNumber="02" nextTitle={chrome.engineering.title} surface="paper" lang={lang} />
