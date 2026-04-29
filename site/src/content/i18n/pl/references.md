@@ -61,7 +61,7 @@ items:
       - href: "https://www.cprover.org/synthesis"
         label: "Przegląd syntezy prowadzonej kontrprzykładami"
   - citationHtml: "VetCoders (2026). <em>Manifest 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</em>."
-    note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i założycielskiej Definicji Niezrobionego jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.."
+    note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i founderskiej Definition of Undone jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍."
     links:
       - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_PL.md"
         label: "Przeczytaj manifest"

@@ -231,6 +231,11 @@
   --view-inner: calc(var(--view-height) - var(--view-offset));
 }
 
+.brand-dot {
+  color: var(--accent);
+  font-style: normal;
+}
+
 html {
   scroll-behavior: smooth;
   scroll-snap-type: y proximity;

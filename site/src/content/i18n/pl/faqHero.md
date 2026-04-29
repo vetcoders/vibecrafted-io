@@ -6,7 +6,7 @@
 label: "FAQ"
 
 # Main page heading.
-title: "Pytania, które padają na początku."
+title: "Pytania, które padają na początku"
 
 # One-paragraph lead under the title.
 lead: "Tutaj wyjaśniamy, jak działa 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji."

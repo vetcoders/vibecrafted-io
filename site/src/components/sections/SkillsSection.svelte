@@ -22,7 +22,7 @@
 <section id="skills" class="skills-section surface--grid">
   <Reveal tag="div" class="container">
     <div class="section-label">{section.label}</div>
-    <h2 class="section-title">{section.title}</h2>
+    <h2 class="section-title">{section.title}<span class="brand-dot">.</span></h2>
     <p class="section-sub">{section.sub}</p>
 
     <CardStrip

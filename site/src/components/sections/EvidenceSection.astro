@@ -39,7 +39,7 @@ const deckData = {
 <section class="science-view view surface--grid" id="evidence">
     <div class="container">
         <Reveal client:load tag="div" class="science-prose">
-            <h2><Fragment set:html={section.titleHtml} /></h2>
+            <h2><Fragment set:html={section.titleHtml} /><span class="brand-dot">.</span></h2>
             <p>{section.lead}</p>
         </Reveal>
         <EvidenceDeck client:load data={deckData} />

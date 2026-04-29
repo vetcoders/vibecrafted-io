@@ -25,6 +25,7 @@ const section = getTranslations(lang).v2Sections.quickstart;
   <div class="quickstart">
     <h2 class="quickstart__heading">
       <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
     </h2>
 
     <QuickstartCarousel client:load lang={lang} />

@@ -40,7 +40,7 @@ const copyButton = getTranslations(lang).copyButton;
 <section id="get" class="get-section get-section--operations surface--grid">
     <Reveal client:load tag="div" class="container">
         <div class="section-label">{section.label}</div>
-        <h2 class="section-title">{section.title}</h2>
+        <h2 class="section-title">{section.title}<span class="brand-dot">.</span></h2>
         <p class="section-sub">{section.sub}</p>
         <div class="docs-grid docs-grid--operations docs-grid--install-flow docs-grid--install-rows">
             {section.cards.map((card) => (

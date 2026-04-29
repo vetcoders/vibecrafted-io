@@ -24,7 +24,7 @@
   const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
 </script>
 
-<section class="hero" id="hero" aria-label={hero.ariaLabel}>
+<section class={`hero hero--${lang}`} id="hero" aria-label={hero.ariaLabel}>
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__canvas" aria-hidden="true">
@@ -43,9 +43,14 @@
   <div class="hero__overlay" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      {hero.heading.pre}<br />
-      {#if hero.heading.prefix}{hero.heading.prefix} {/if}<em>{hero.heading.emFirst}</em> {hero.heading.mid}<br />
-      <em class="accent">{hero.heading.emLast}</em>
+      <span class="hero__heading-mark">{hero.heading.pre}<span class="hero__heading-dot">.</span></span>
+      <span class="hero__heading-line">
+        {#if hero.heading.prefix}<span>{hero.heading.prefix}</span>{/if}
+        <em class="hero__heading-em-first">{hero.heading.emFirst}</em>
+      </span>
+      <span class="hero__heading-line">
+        {hero.heading.mid} <em class="accent">{hero.heading.emLast}</em>
+      </span>
     </h1>
     <p class="hero__body">
       {hero.body}
@@ -170,6 +175,33 @@
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
     margin: 0 0 32px;
+  }
+
+  .hero__heading-mark,
+  .hero__heading-line {
+    display: block;
+  }
+
+  .hero__heading-mark {
+    width: fit-content;
+    color: var(--fg-on-dark);
+    text-shadow: 0 0 32px rgba(var(--v2-accent-rgb), 0.16);
+  }
+
+  .hero__heading-dot {
+    color: var(--accent);
+  }
+
+  .hero__heading-line {
+    max-width: 13.5ch;
+  }
+
+  .hero--en .hero__heading-line {
+    max-width: 20ch;
+  }
+
+  .hero--en .hero__heading-em-first {
+    font-style: normal;
   }
 
   .hero__heading em {

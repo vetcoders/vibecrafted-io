@@ -97,11 +97,11 @@ export const pl = {
       ariaLabel: "Sekcja główna",
       eyebrow: "RELEASE ENGINE",
       heading: {
-        pre: "Release engine",
-        prefix: "dla",
-        emFirst: "oprogramowania generowanego przez AI,",
-        mid: "które trzeba",
-        emLast: "dowieźć.",
+        pre: "Release Engine",
+        prefix: "dla\u00a0generowanego przez AI,",
+        emFirst: "oprogramowania,",
+        mid: "który",
+        emLast: "dowozi.",
       },
       body: "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
       ctaPrimary: "INSTALUJ",
@@ -202,7 +202,7 @@ export const pl = {
     },
     problem: {
       headingHtml:
-        'Agenci AI pracują szybko.<br />Codebase potrzebuje <em class="accent">silnika release\'u</em><br />albo praca się rozjeżdża.',
+        'Agenci AI pracują szybko<br />Codebase potrzebuje <em class="accent">silnika release\'u</em><br />albo praca się rozjeżdża',
       body: "Wygenerowanie kodu przestało być najtrudniejszą częścią. Trudne jest wiedzieć, co jest prawdą, co można bezpiecznie wypuścić i co tylko udaje, że jest skończone.",
       symptoms: [
         {
@@ -217,10 +217,10 @@ export const pl = {
     },
     framework: {
       headingHtml:
-        'Pięć faz. Sześciu operatorów. Jedna plansza.<br /><em class="accent-2">Tyle struktury, żeby zobaczyć pracę.</em>',
+        'Pięć faz. Sześciu operatorów. Jedna plansza<br /><em class="accent-2">Tyle struktury, żeby zobaczyć pracę</em>',
       subtitle:
         "To nie motywacyjna nakładka na prompty. To mały model operacyjny: co następny agent może zmienić, jaki dowód ma zostawić i kiedy powierzchnia nadal nie jest gotowa.",
-      operatorsHeadingHtml: "Warstwa <em>operatorów.</em>",
+      operatorsHeadingHtml: "Warstwa <em>operatorów</em>",
       operatorsSub:
         "Małe skille z wąskim zadaniem. Pomagają agentowi wejść w repo, zostawić ślad i nie udawać, że jeden pass jest całą prawdą.",
       cta: "Otwórz Playground",
@@ -235,7 +235,7 @@ export const pl = {
     },
     operator: {
       headingHtml:
-        'Zainstaluj <em>command deck.</em><br />Niech praca zostawia <em class="accent-2">ślad.</em>',
+        'Zainstaluj <em>command deck</em><br />Niech praca zostawia <em class="accent-2">ślad</em>',
       installSteps: [
         {
           step: "KROK 01",
@@ -254,7 +254,7 @@ export const pl = {
         },
       ],
       shotHeadingHtml:
-        'Repo dostaje <em class="accent-2">wspólną powierzchnię.</em>',
+        'Repo dostaje <em class="accent-2">wspólną powierzchnię</em>',
       shotBody:
         "Sesja może się skończyć, ale nie musi zniknąć. Następny agent może odziedziczyć raporty, decyzje i otwarte pytania zamiast zimnego promptu.",
       bullets: [
@@ -417,7 +417,7 @@ export const pl = {
       },
     },
     quickstart: {
-      headingHtml: "Pierwsza ścieżka przez <em>command deck.</em>",
+      headingHtml: "Pierwsza ścieżka przez <em>command deck</em>",
       carousel: {
         ariaLabel: "Karuzela kroków szybkiego startu",
         slideAria: "Krok {num}: {title}",
@@ -501,12 +501,12 @@ export const pl = {
       },
     },
     referencesLanding: {
-      headingHtml: "Co <em>czytaliśmy</em>, zanim zbudowaliśmy.",
+      headingHtml: "Co <em>czytaliśmy</em>, zanim zbudowaliśmy",
       subtitle:
         "Framework konwergencji jest syntezą badań o handoffach agentów, gate'ach release i kontraktach runtime. Źródła poniżej — sprawdź przed adopcją.",
     },
     evidenceWild: {
-      headingHtml: 'Vibe hangover <em class="accent">w terenie.</em>',
+      headingHtml: 'Vibe hangover <em class="accent">w terenie</em>',
       subtitle:
         "Kilka field notes z produktów budowanych z agentami i z naszych własnych torów release. Anonimizowane, bo ważniejszy jest wzorzec niż nazwa.",
       patterns: [
@@ -763,7 +763,7 @@ flowchart LR
       },
     },
     evidence: {
-      titleHtml: "Mniej magii.<br />Więcej pracy, którą da się obejrzeć.",
+      titleHtml: "Mniej magii<br />Więcej pracy, którą da się obejrzeć",
       lead: "Słownictwo może być żywe, jeśli system pozostaje inspekowalny: kontekst przed edycją, dowód po runie i powierzchnia release, która mówi, co nadal jest niepewne.",
       revealLabel: "Otwórz notatkę",
       closeLabel: "Zamknij notatkę",
@@ -1368,7 +1368,7 @@ flowchart LR
         },
         {
           citationHtml: "VetCoders (2026). <em>Manifest 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</em>.",
-          note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i założycielskiej Definicji Niezrobionego jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..",
+          note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i founderskiej Definition of Undone jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
           links: [
             {
               href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_PL.md",

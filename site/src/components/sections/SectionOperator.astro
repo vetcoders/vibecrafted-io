@@ -25,6 +25,7 @@ const section = getTranslations(lang).v2Sections.operator;
   <div class="op">
     <h2 class="op__heading">
       <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
     </h2>
 
     <div class="op__install">
@@ -41,6 +42,7 @@ const section = getTranslations(lang).v2Sections.operator;
       <div class="op__shot-left">
         <h3 class="op__shot-heading">
           <Fragment set:html={section.shotHeadingHtml} />
+          <span class="brand-dot">.</span>
         </h3>
         <p class="op__shot-body">{section.shotBody}</p>
 

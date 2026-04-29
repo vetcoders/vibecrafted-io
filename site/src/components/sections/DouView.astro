@@ -7,6 +7,8 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 const t = getTranslations(lang).sections.dou;
+const homeHref = lang === 'pl' ? '/pl/' : '/en/';
+const homeLabel = lang === 'pl' ? 'WRÓĆ NA MAIN PAGE' : 'BACK TO MAIN PAGE';
 
 const trajectoryScale = [0, 25, 50, 75, 100];
 const trajectoryBars = [
@@ -23,11 +25,17 @@ const trajectoryBars = [
     <header class="douview__header">
       <div class="douview__eyebrow-row">
         <span class="douview__eyebrow">DOU</span>
-        <span class="douview__fig">FIG. 09 · DWG VC-009</span>
+        <div class="douview__top-actions">
+          <a class="douview__home" href={homeHref}>
+            <span aria-hidden="true">←</span>
+            {homeLabel}
+          </a>
+          <span class="douview__fig">FIG. 09 · DWG VC-009</span>
+        </div>
       </div>
       <div class="douview__rule" aria-hidden="true"></div>
       <h1 class="douview__title">
-        The <em>Definition</em> of <em class="accent-2">Undone.</em>
+        The <em>Definition</em> of <em class="accent-2">Undone</em><span class="brand-dot">.</span>
       </h1>
     </header>
 
@@ -119,6 +127,34 @@ const trajectoryBars = [
     height: 1px;
     background: var(--rule-dark);
     margin-bottom: 40px;
+  }
+
+  .douview__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .douview__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .douview__home:hover,
+  .douview__home:focus-visible {
+    color: var(--accent);
+    opacity: 1;
+    transform: translateX(-2px);
   }
 
   .douview__title {
@@ -367,6 +403,18 @@ const trajectoryBars = [
 
     .douview__inner {
       padding: 0 24px;
+    }
+
+    .douview__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .douview__top-actions {
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .douview__title {

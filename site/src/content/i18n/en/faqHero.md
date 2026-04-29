@@ -6,7 +6,7 @@
 label: "Answered FAQ"
 
 # Main page heading.
-title: "The questions strangers ask first."
+title: "The questions strangers ask first"
 
 # One-paragraph lead under the title.
 lead: "This page exists so the framework can explain itself without forcing people to reverse-engineer the repo, the shell helpers, or the license before they know whether the system fits."

@@ -5,7 +5,7 @@
 
 # Nagłówek sekcji. Zawiera literalny HTML: <br /> dla łamania linii.
 # Renderowany przez <Fragment set:html>. To nie pattern <Accent>.
-titleHtml: "To nie magia.<br />To rygorystyczna inżynieria."
+titleHtml: "To nie magia<br />To rygorystyczna inżynieria"
 
 # Lead paragraph pod nagłówkiem.
 lead: "Słownictwo jest żywe, bo powstało pod nocną presją. Pod vibem kryje się rygorystyczny model operacyjny dla kontekstu, redukcji wariancji i prawdy o produkcie."

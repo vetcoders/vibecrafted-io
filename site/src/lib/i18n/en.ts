@@ -94,11 +94,11 @@ export const en = {
       ariaLabel: "Hero",
       eyebrow: "RELEASE ENGINE",
       heading: {
-        pre: "Release engine",
+        pre: "Release Engine",
         prefix: "for",
         emFirst: "AI-developed software",
-        mid: "you can actually",
-        emLast: "ship.",
+        mid: "that actually",
+        emLast: "ships.",
       },
       body: "Take the repo your agents already made, find what is still false, and turn it into a release a stranger can install, trust, and use.",
       ctaPrimary: "INSTALL",
@@ -199,7 +199,7 @@ export const en = {
     },
     problem: {
       headingHtml:
-        'AI agents move fast.<br />Your codebase needs a <em class="accent">release engine</em><br />or the work drifts.',
+        'AI agents move fast<br />Your codebase needs a <em class="accent">release engine</em><br />or the work drifts',
       body: "Generated code is not the hard part anymore. The hard part is knowing what is true, what is safe to ship, and what is still quietly pretending to be done.",
       symptoms: [
         {
@@ -214,10 +214,10 @@ export const en = {
     },
     framework: {
       headingHtml:
-        'Five phases. Six operators. One board.<br /><em class="accent-2">Enough structure to see the work.</em>',
+        'Five phases. Six operators. One board<br /><em class="accent-2">Enough structure to see the work</em>',
       subtitle:
         "The framework is not a motivational wrapper around prompts. It is a small operating model for deciding what the next agent is allowed to change, what evidence it owes, and when the surface is still not ready.",
-      operatorsHeadingHtml: "The <em>operator layer.</em>",
+      operatorsHeadingHtml: "The <em>operator layer</em>",
       operatorsSub:
         "Small skills with narrow jobs. They help an agent enter the repo, leave evidence, and avoid pretending one pass is the whole truth.",
       cta: "Open the Playground",
@@ -232,7 +232,7 @@ export const en = {
     },
     operator: {
       headingHtml:
-        'Install the <em>command deck.</em><br />Let the work leave a <em class="accent-2">trail.</em>',
+        'Install the <em>command deck</em><br />Let the work leave a <em class="accent-2">trail</em>',
       installSteps: [
         {
           step: "STEP 01",
@@ -251,7 +251,7 @@ export const en = {
         },
       ],
       shotHeadingHtml:
-        'The repo gets a <em class="accent-2">shared surface.</em>',
+        'The repo gets a <em class="accent-2">shared surface</em>',
       shotBody:
         "A session can end without disappearing. The next agent may inherit reports, decisions, and open questions instead of a cold prompt.",
       bullets: [
@@ -414,7 +414,7 @@ export const en = {
       },
     },
     quickstart: {
-      headingHtml: "A first path through the <em>command deck.</em>",
+      headingHtml: "A first path through the <em>command deck</em>",
       carousel: {
         ariaLabel: "Quickstart steps carousel",
         slideAria: "Step {num}: {title}",
@@ -498,12 +498,12 @@ export const en = {
       },
     },
     referencesLanding: {
-      headingHtml: "What we <em>read</em> before we built.",
+      headingHtml: "What we <em>read</em> before we built",
       subtitle:
         "The convergence framework is the synthesis of research on agent handoffs, release gates, and runtime contracts. Sources below — consult before adopting.",
     },
     evidenceWild: {
-      headingHtml: 'The vibe hangover in the <em class="accent">wild.</em>',
+      headingHtml: 'The vibe hangover in the <em class="accent">wild</em>',
       subtitle:
         "A few field notes from agent-built products and our own release lanes. Anonymized, because the pattern matters more than the name.",
       patterns: [
@@ -760,7 +760,7 @@ flowchart LR
       },
     },
     evidence: {
-      titleHtml: "Less magic.<br />More inspectable work.",
+      titleHtml: "Less magic<br />More inspectable work",
       lead: "The vocabulary can stay vivid, as long as the system remains inspectable: context before edits, evidence after runs, and a release surface that says what is still uncertain.",
       revealLabel: "Open field note",
       closeLabel: "Close note",

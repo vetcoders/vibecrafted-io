@@ -5,7 +5,7 @@
 
 # Section heading. Contains literal HTML: <br /> for line break and &apos; for
 # the apostrophe. Rendered through <Fragment set:html>. Not an <Accent> pattern.
-titleHtml: "This is not magic.<br />It&apos;s rigorous engineering."
+titleHtml: "This is not magic<br />It&apos;s rigorous engineering"
 
 # Lead paragraph below the heading.
 lead: "The vocabulary is vivid because it was forged under midnight pressure. Beneath the vibe sits a rigorous operating model for context, variance reduction, and release truth."
