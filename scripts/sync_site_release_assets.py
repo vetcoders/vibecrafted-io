@@ -177,6 +177,15 @@ def prune_stale_release_artifacts(site_public: Path, archive_name: str) -> None:
     if stale_checksum.exists():
         stale_checksum.unlink()
 
+    # The website ships the signed tarball, not an exploded framework checkout.
+    # If this directory exists, Astro will publish it verbatim from public/.
+    exploded_bundle = site_public / "vibecrafted"
+    if exploded_bundle.exists():
+        if exploded_bundle.is_dir():
+            shutil.rmtree(exploded_bundle)
+        else:
+            exploded_bundle.unlink()
+
 
 def sync_site_release_assets(
     bundle_root: Path = BUNDLE_ROOT,
