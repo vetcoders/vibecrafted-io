@@ -112,7 +112,7 @@ def export_install_manifest(bundle_root: Path, site_src: Path) -> Path:
         "title": manifest.get("title", "Vibecrafted"),
         "version": read_version(bundle_root),
         "persist": bool(manifest.get("persist", False)),
-        "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui",
+        "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
         "phases": [
             {
                 "key": phase["key"],

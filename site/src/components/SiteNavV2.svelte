@@ -22,7 +22,7 @@
     toggleHref = lang === 'pl' ? '/en/' : '/pl/',
     vcHref = 'https://github.com/VetCoders',
     githubHref = 'https://github.com/VetCoders/vibecrafted',
-    installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui',
+    installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash',
   } = $props<Props>();
 
   const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');

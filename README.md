@@ -99,7 +99,7 @@ Non-destructive. Interactive. Transparent. Reversible.
 Prefer the guided browser path when you are onboarding a founder, PM, or less terminal-native operator:
 
 ```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
+curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
 
 The guided path stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
