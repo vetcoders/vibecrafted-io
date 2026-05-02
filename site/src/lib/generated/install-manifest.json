@@ -8,7 +8,7 @@
       "key": "diagnostics",
       "label": "Diagnostics",
       "optional": true,
-      "reason": "We will check your environment for:\n  - Any existing framework installation\n    foundations \u00b7 workflows \u00b7 helpers \u00b7 binaries\n  - Toolchains\n    node \u00b7 python \u00b7 rust\n  - Agents\n    claude-code \u00b7 codex \u00b7 gemini-cli\n  - Additional tools\n    zellji \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide",
+      "reason": "We will check your environment for:\n  - Any existing framework installation\n    foundations \u00b7 workflows \u00b7 helpers \u00b7 binaries\n  - Toolchains\n    node \u00b7 python \u00b7 rust\n  - Agents\n    claude-code \u00b7 codex \u00b7 gemini-cli\n  - Additional tools\n    zellij \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide",
       "reasonLines": [
         "We will check your environment for:",
         "- Any existing framework installation",
@@ -18,7 +18,7 @@
         "- Agents",
         "claude-code \u00b7 codex \u00b7 gemini-cli",
         "- Additional tools",
-        "zellji \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide"
+        "zellij \u00b7 mise \u00b7 starship \u00b7 atuin \u00b7 zoxide"
       ],
       "commands": ["python3 scripts/vetcoders_install.py list --source ."]
     },

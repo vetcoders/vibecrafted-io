@@ -12,6 +12,7 @@
 <p align="center">
   <a href="https://vibecrafted.io/">Website</a> ·
   <a href="docs/QUICK_START.md">Quick Start</a> ·
+  <a href="docs/DOCKER.md">Docker</a> ·
   <a href="docs/runtime/MANIFESTO_EN.md">Manifesto</a> ·
   <a href="docs/FAQ.md">FAQ</a>
 </p>
@@ -125,6 +126,16 @@ Verify:
 ```bash
 make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 ```
+
+Prefer a containerized operator runtime when you want the framework isolated
+from the host toolchain:
+
+```bash
+docker build -t vetcoders/vibecrafted:local .
+docker run --rm -it -v "$PWD:/workspace" vetcoders/vibecrafted:local version
+```
+
+See [Docker Runtime](docs/DOCKER.md).
 
 ---
 

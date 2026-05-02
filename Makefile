@@ -26,8 +26,9 @@ UPSTREAM_ROOT_CANDIDATES := \
 	$(HOME)/Git/VibeCrafted \
 	$(HOME)/Libraxis/vc-runtime/vibecrafted
 DETECTED_UPSTREAM_ROOT := $(firstword $(foreach dir,$(UPSTREAM_ROOT_CANDIDATES),$(if $(wildcard $(dir)/VERSION),$(dir))))
-UPSTREAM_ROOT ?= $(or $(DETECTED_UPSTREAM_ROOT),$(firstword $(UPSTREAM_ROOT_CANDIDATES)))
+UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTREAM_ROOT_CANDIDATES)))
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
+ALLOW_DIRTY_UPSTREAM ?= 0
 BUNDLE_ROOT   := $(CURDIR)/framework
 FRAMEWORK_RUNTIME_TESTS := \
 	framework/tests/tui/test_bundle.py \
@@ -37,7 +38,7 @@ FRAMEWORK_RUNTIME_TESTS := \
 	framework/tests/tui/test_makefile_installer_contract.py \
 	framework/tests/tui/test_release_contract.py
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-preview site-build site-deploy site-deploy-pages site-release bundle-preview bundle-build bundle-sign content-truth
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -67,14 +68,15 @@ help:
 	@printf "\n"
 	@printf "  \033[36m▸\033[0m  make site-dev          \033[2mStart Astro dev server for vibecrafted.io\033[0m\n"
 	@printf "  \033[36m▸\033[0m  make site-preview      \033[2mServe production build locally (Astro preview, :4321)\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-build        \033[2mBuild static site (Astro + Svelte)\033[0m\n"
-	@printf "  \033[36m▸\033[0m  make site-deploy       \033[2mBuild + rsync to Caddy ($(DEPLOY_HOST):$(DEPLOY_ROOT))\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-build        \033[2mBuild static site; reuses existing signed framework assets\033[0m\n"
+	@printf "  \033[36m▸\033[0m  make site-deploy       \033[2mBuild + rsync site only; does not rebuild/sign framework\033[0m\n"
 	@printf "  \033[36m▸\033[0m  make site-deploy-pages \033[2mBuild + sync to local docs/ (GitHub Pages mirror)\033[0m\n"
 	@printf "\n"
 	@printf "  \033[35m●\033[0m  make bundle-preview    \033[2mDiff upstream vs framework/ and project SHA256 (gate, non-interactive)\033[0m\n"
 	@printf "  \033[35m●\033[0m  make bundle-build      \033[2mrsync upstream → framework/, tar framework/vibecrafted-v<VERSION>.tar.gz\033[0m\n"
 	@printf "  \033[35m●\033[0m  make bundle-sign       \033[2mSign tarball + install.sh with ~/.keys/vibecrafted-signing.key\033[0m\n"
-	@printf "  \033[35m◉\033[0m  make site-release      \033[2mFull cycle: bundle-preview → build → sign → sync → site-build → site-deploy\033[0m\n"
+	@printf "  \033[35m◉\033[0m  make site-release      \033[2mRelease mode: rebuild/sign/sync framework, then build + deploy site\033[0m\n"
+	@printf "  \033[35m◇\033[0m  SITE_RELEASE_MODE=1 make site-build \033[2mAssert framework/ is fresh against UPSTREAM_ROOT before building\033[0m\n"
 	@printf "\n"
 	@printf "  \033[31m✕\033[0m  make uninstall     \033[2mRemove skills + helpers\033[0m\n"
 	@printf "  \033[31m↺\033[0m  make restore       \033[2mUndo last install/uninstall\033[0m\n"
@@ -178,7 +180,7 @@ site-dev:
 	@echo "Starting Astro dev server..."
 	@cd site && pnpm run dev --host
 
-site-build:
+site-build: site-release-assets-guard
 	@echo "Installing site deps..."
 	@cd site && pnpm install --frozen-lockfile
 	@echo "Building static site..."
@@ -263,6 +265,39 @@ BUNDLE_RELEASE_EXCLUDES := \
 
 BUNDLE_EXCLUDES := $(BUNDLE_JUNK_EXCLUDES) $(BUNDLE_RELEASE_EXCLUDES)
 
+site-release-assets-guard:
+	@if [ "$(SITE_RELEASE_MODE)" != "1" ]; then \
+		printf "Site asset mode: stable signed framework assets from framework/ v%s. Use make site-release for framework release freshness.\n" "$(BUNDLE_VERSION)"; \
+	else \
+		if [ ! -d "$(UPSTREAM_ROOT)" ]; then \
+			echo "Error: upstream $(UPSTREAM_ROOT) not found." >&2; \
+			exit 2; \
+		fi; \
+		if [ ! -d "$(BUNDLE_ROOT)" ]; then \
+			echo "Error: bundle root $(BUNDLE_ROOT) not found." >&2; \
+			exit 2; \
+		fi; \
+		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || ! diff -rq \
+		      -x '.git' -x '.venv' -x '.pytest_cache' -x '.ruff_cache' \
+		      -x '.mypy_cache' -x '.idea' -x '.DS_Store' -x '__pycache__' \
+		      -x 'node_modules' -x '*.pyc' \
+		      -x '.ai-agents' -x '.ai-context' -x '.claude' \
+		      -x '.vibecrafted' -x '.playwright-mcp' \
+		      -x 'artifacts' -x 'dist' -x 'tmp' \
+		      -x '*.log' -x '*.audit*.md' -x '*.backup' -x '*.out' \
+		      -x 'aicx-dashboard.html' \
+		      -x 'vibecrafted-v*.tar.gz' -x 'vibecrafted-v*.tar.gz.sig' \
+		      -x 'install.sh.sig' -x 'SHA256SUMS' \
+		      -x 'vibecrafted-signing.pub' -x 'channel' \
+		      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
+			echo "Error: SITE_RELEASE_MODE=1 requested, but framework/ is not fresh against $(UPSTREAM_ROOT)." >&2; \
+			echo "       Run make site-release to rebuild/sign/sync/deploy framework assets." >&2; \
+			echo "       For a site-only deploy that intentionally reuses stable signed assets, run make site-build without SITE_RELEASE_MODE." >&2; \
+			exit 4; \
+		fi; \
+		printf "Release asset guard: framework/ v%s is fresh against %s.\n" "$(BUNDLE_VERSION)" "$(UPSTREAM_ROOT)"; \
+	fi
+
 bundle-preview:
 	@if [ ! -d "$(UPSTREAM_ROOT)" ]; then \
 		echo "Error: upstream $(UPSTREAM_ROOT) not found." >&2; \
@@ -304,11 +339,24 @@ bundle-preview:
 	  printf "  Projected SHA256 (install) : %s\n" "$$INSTALL_SHA"
 	@printf "\n  Next: \033[36mmake bundle-build\033[0m  (or \033[36mmake site-release\033[0m for the full cycle)\n\n"
 
-bundle-build:
+bundle-preflight:
 	@if [ ! -d "$(UPSTREAM_ROOT)" ]; then \
 		echo "Error: upstream $(UPSTREAM_ROOT) not found." >&2; \
 		exit 2; \
 	fi
+	@if git -C "$(UPSTREAM_ROOT)" rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+		status="$$(git -C "$(UPSTREAM_ROOT)" status --porcelain --untracked-files=all)"; \
+		if [ -n "$$status" ] && [ "$(ALLOW_DIRTY_UPSTREAM)" != "1" ]; then \
+			echo "Error: upstream $(UPSTREAM_ROOT) has uncommitted or untracked changes." >&2; \
+			echo "       site-release publishes this upstream as the public tarball; release from a clean source tree." >&2; \
+			echo "       To override intentionally, rerun with ALLOW_DIRTY_UPSTREAM=1." >&2; \
+			echo "" >&2; \
+			git -C "$(UPSTREAM_ROOT)" status --short --branch >&2; \
+			exit 3; \
+		fi; \
+	fi
+
+bundle-build: bundle-preflight
 	@echo "Syncing upstream $(UPSTREAM_ROOT) → $(BUNDLE_ROOT)..."
 	@rsync -a --delete $(BUNDLE_EXCLUDES) $(UPSTREAM_ROOT)/ $(BUNDLE_ROOT)/
 	@echo "  ✓ Upstream synced"
@@ -352,11 +400,12 @@ site-release:
 	@echo ""
 	@printf "  \033[1m⚒  Release cycle\033[0m — upstream v$(UPSTREAM_VERSION) → production\n"
 	@echo "  ────────────────────────────────────────"
+	@$(MAKE) --no-print-directory bundle-preflight
 	@$(MAKE) --no-print-directory bundle-preview
 	@$(MAKE) --no-print-directory bundle-build
 	@$(MAKE) --no-print-directory bundle-sign
 	@echo "Syncing release artefacts into site/public/..."
 	@$(PYTHON) scripts/sync_site_release_assets.py
-	@$(MAKE) --no-print-directory site-build
-	@$(MAKE) --no-print-directory site-deploy
+	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-build
+	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-deploy
 	@printf "\n  \033[32m✓\033[0m Release v%s shipped to https://vibecrafted.io\n\n" "$(UPSTREAM_VERSION)"

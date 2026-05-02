@@ -19,9 +19,28 @@ CODEX_STREAM_FILTER = (
 )
 
 
+# Strip ambient env vars that affect spawn-routing decisions before each
+# test script runs. Without this, tests that source common.sh inherit the
+# parent shell's ZELLIJ / VIBECRAFTED_* state — and when pytest itself is
+# launched from inside a marbles-spawned zellij session whose name happens
+# to match the test's _expected_operator_session(run_id), the routing
+# guard in spawn_in_operator_session collapses to in-session pane routing
+# instead of the asserted new-tab path.
+_ENV_SANITIZE = """
+unset ZELLIJ ZELLIJ_PANE_ID ZELLIJ_SESSION_NAME ZELLIJ_TAB_NAME ZELLIJ_CONFIG_DIR
+unset VIBECRAFTED_ZELLIJ_SPAWN_DIRECTION VIBECRAFTED_PANE_SEQ VIBECRAFTED_MARBLES_TAB_NAME
+unset VIBECRAFTED_OPERATOR_SESSION VIBECRAFTED_RUN_ID VIBECRAFTED_RUN_LOCK
+unset VIBECRAFTED_SKILL_CODE VIBECRAFTED_SKILL_NAME VIBECRAFTED_LOOP_NR
+unset VIBECRAFTED_ZELLIJ_CLOSE_AGENT_PANES VIBECRAFTED_ZELLIJ_KEEP_AGENT_PANES VIBECRAFTED_INLINE_STARTUP_WATCH
+unset SPAWN_LOOP_NR SPAWN_META SPAWN_TRANSCRIPT SPAWN_REPORT SPAWN_ROOT
+unset SPAWN_RUN_ID SPAWN_RUN_LOCK SPAWN_AGENT SPAWN_SKILL_CODE SPAWN_SKILL_NAME
+unset SPAWN_PROMPT_ID
+"""
+
+
 def _bash(script: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["bash", "-lc", script],
+        ["bash", "-lc", _ENV_SANITIZE + script],
         check=True,
         cwd=REPO_ROOT,
         capture_output=True,
@@ -121,7 +140,76 @@ def test_runtime_prompt_includes_vc_agents_worker_charter(tmp_path: Path) -> Non
     assert "Do NOT invoke vc-agents" in payload
     assert "do not reinterpret it" in payload
     assert "record the boundary clearly in your report" in payload
-    assert "**COMMIT**: mandatory. One commit when done." in payload
+    assert "**REPORT**: mandatory" in payload
+    assert "**COMMIT**:" in payload
+    assert "NO empty commits" in payload
+    assert "`--allow-empty`" in payload
+    assert "If you have nothing to stage, do not commit" in payload
+
+
+def test_spawn_clean_model_normalizes_placeholders_and_passes_real_values(
+    tmp_path: Path,
+) -> None:
+    # Single source of truth for the placeholder-model filter. Marbles
+    # dispatch sites (marbles_spawn.sh, marbles_next.sh L1 and L2+) all
+    # route through this helper so adding a new placeholder token here
+    # propagates everywhere.
+    out_file = tmp_path / "out.txt"
+    proc = _bash(
+        f'''
+        set -euo pipefail
+        source "{COMMON_SH}"
+        {{
+          printf 'empty=[%s]\n' "$(spawn_clean_model "")"
+          printf 'pending=[%s]\n' "$(spawn_clean_model "pending")"
+          printf 'unknown=[%s]\n' "$(spawn_clean_model "unknown")"
+          printf 'null=[%s]\n' "$(spawn_clean_model "null")"
+          printf 'real=[%s]\n' "$(spawn_clean_model "claude-opus-4-7")"
+          printf 'sonnet=[%s]\n' "$(spawn_clean_model "claude-sonnet-4-6")"
+          printf 'no_arg=[%s]\n' "$(spawn_clean_model)"
+          printf 'mixed=[%s]\n' "$(spawn_clean_model "Pending")"
+        }} > "{out_file}"
+        '''
+    )
+    assert proc.returncode == 0
+    payload = out_file.read_text(encoding="utf-8")
+    assert "empty=[]" in payload
+    assert "pending=[]" in payload
+    assert "unknown=[]" in payload
+    assert "null=[]" in payload
+    assert "no_arg=[]" in payload
+    assert "real=[claude-opus-4-7]" in payload
+    assert "sonnet=[claude-sonnet-4-6]" in payload
+    # Case-sensitive: only lowercase tokens are placeholders. Capitalized
+    # variants pass through so the helper does not silently swallow real
+    # model names that happen to share a prefix.
+    assert "mixed=[Pending]" in payload
+
+
+def test_marbles_dispatch_sites_route_placeholder_filter_through_helper() -> None:
+    # Lock convergence: the three legacy `pending|unknown|null` chains in
+    # marbles_spawn.sh and marbles_next.sh have been collapsed into a single
+    # spawn_clean_model() helper. If a future change reintroduces the
+    # inline chain, this test fires before the regression ships.
+    spawn_text = (
+        REPO_ROOT / "skills" / "vc-agents" / "scripts" / "marbles_spawn.sh"
+    ).read_text(encoding="utf-8")
+    next_text = (
+        REPO_ROOT / "skills" / "vc-agents" / "scripts" / "marbles_next.sh"
+    ).read_text(encoding="utf-8")
+    util_text = (
+        REPO_ROOT / "skills" / "vc-agents" / "scripts" / "lib" / "util.sh"
+    ).read_text(encoding="utf-8")
+
+    # Helper exists in exactly one place.
+    assert "spawn_clean_model()" in util_text
+    assert spawn_text.count('!= "pending"') == 0
+    assert next_text.count('!= "pending"') == 0
+    # Both dispatch sites call the helper.
+    assert 'spawn_clean_model "$ancestor_model"' in spawn_text
+    assert 'spawn_clean_model "$loop_model"' in next_text
+    # No leftover inline `pending|unknown|null` case branches outside the helper.
+    assert next_text.count("pending|unknown|null") == 0
 
 
 def test_research_runtime_prompt_forbids_commits_and_source_mutation(
@@ -146,9 +234,12 @@ def test_research_runtime_prompt_forbids_commits_and_source_mutation(
 
     payload = runtime_file.read_text(encoding="utf-8")
     assert "## Research Safety Contract" in payload
-    assert "**COMMIT**: forbidden" in payload
-    assert "git write operation" in payload
+    assert "**GIT WRITES forbidden**" in payload
+    assert "do not stage, commit, amend" in payload
+    assert "**SOURCE MUTATION**: forbidden" in payload
     assert "Do not edit repo source files" in payload
+    assert "Working tree must be" in payload
+    assert "unchanged at the end of the run" in payload
     assert "**COMMIT**: mandatory. One commit when done." not in payload
 
 
@@ -1380,11 +1471,11 @@ def test_spawn_in_zellij_pane_marbles_tab_suppresses_tab_number_output(
     assert "--tab-id" in calls[1]
     assert "7" in calls[1]
     assert "--stacked" in calls[1]
-    assert "--close-on-exit" not in calls[1]
+    assert "--close-on-exit" in calls[1]
     assert not any("go-to-tab-name" in call for call in calls)
 
 
-def test_spawn_in_zellij_pane_marbles_tab_can_close_agent_panes(
+def test_spawn_in_zellij_pane_marbles_tab_can_keep_agent_panes_for_forensics(
     tmp_path: Path,
 ) -> None:
     run_id = "marb-014520"
@@ -1435,7 +1526,7 @@ def test_spawn_in_zellij_pane_marbles_tab_can_close_agent_panes(
             export VIBECRAFTED_RUN_ID="{run_id}"
             export VIBECRAFTED_OPERATOR_SESSION="{operator_session}"
             export VIBECRAFTED_MARBLES_TAB_NAME="marbles"
-            export VIBECRAFTED_ZELLIJ_CLOSE_AGENT_PANES=1
+            export VIBECRAFTED_ZELLIJ_KEEP_AGENT_PANES=1
             export SPAWN_ROOT="{tmp_path}"
             export SPAWN_LOOP_NR=1
             source "{COMMON_SH}"
@@ -1451,7 +1542,7 @@ def test_spawn_in_zellij_pane_marbles_tab_can_close_agent_panes(
     calls = _split_zellij_calls(capture_file.read_text(encoding="utf-8"))
     assert calls[1][:2] == ["action", "new-pane"]
     assert "--stacked" in calls[1]
-    assert "--close-on-exit" in calls[1]
+    assert "--close-on-exit" not in calls[1]
 
 
 def test_spawn_probe_uses_active_tab_and_restores_focus(tmp_path: Path) -> None:

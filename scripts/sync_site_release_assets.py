@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import shlex
 import shutil
+import hashlib
 from pathlib import Path
 
 try:
@@ -30,23 +31,49 @@ def copy_file(src: Path, dst: Path) -> None:
     shutil.copy2(src, dst)
 
 
-def ensure_checksum_contract(sha_file: Path, archive_name: str) -> None:
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def read_sha256_entries(sha_file: Path) -> dict[str, str]:
     lines = sha_file.read_text(encoding="utf-8").splitlines()
-    required_entries = {
-        archive_name: False,
-        "install.sh": False,
-    }
+    entries: dict[str, str] = {}
 
     for line in lines:
         parts = line.split()
         if len(parts) < 2:
             continue
-        required_entries[parts[-1]] = True
+        entries[parts[-1]] = parts[0]
 
-    missing = [name for name, present in required_entries.items() if not present]
+    return entries
+
+
+def ensure_checksum_contract(
+    bundle_root: Path, sha_file: Path, archive_name: str
+) -> None:
+    entries = read_sha256_entries(sha_file)
+    required_entries = [archive_name, "install.sh"]
+
+    missing = [name for name in required_entries if name not in entries]
     if missing:
         raise RuntimeError(
             f"SHA256SUMS is missing required entries: {', '.join(sorted(missing))}"
+        )
+
+    mismatches: list[str] = []
+    for name in required_entries:
+        actual = sha256_file(bundle_root / name)
+        expected = entries[name]
+        if actual != expected:
+            mismatches.append(f"{name}: expected {expected}, got {actual}")
+
+    if mismatches:
+        raise RuntimeError(
+            "SHA256SUMS does not match release artifacts:\n- " + "\n- ".join(mismatches)
         )
 
 
@@ -213,7 +240,7 @@ def sync_site_release_assets(
             + "\n- ".join(sorted(missing))
         )
 
-    ensure_checksum_contract(bundle_root / "SHA256SUMS", archive_name)
+    ensure_checksum_contract(bundle_root, bundle_root / "SHA256SUMS", archive_name)
 
     for src, dst in required_files.items():
         copy_file(src, dst)
