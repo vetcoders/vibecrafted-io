@@ -9,8 +9,13 @@ SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
 SOURCE   := $(CURDIR)
 BRANCH   ?= main
 VERSION_FILE := VERSION
+AICX_REPO ?= $(abspath $(CURDIR)/../../aicx)
+LOCTREE_REPO ?= $(abspath $(CURDIR)/../../../01_deployed_libraxis_vm/Loctree/Suite/loctree-suite)
+DIST_DIR ?= $(CURDIR)/dist
+PLUGIN_NAME ?= vibecrafted-framework
+VERSION := $(shell cat $(VERSION_FILE) 2>/dev/null || echo "1.5.0")
 
-.PHONY: help vibecrafted gui-install wizard wizard-dev check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle bundle-check foundations foundations-check semgrep version version-show version-bump bump-patch bump-minor bump-major
+.PHONY: help vibecrafted gui-install wizard wizard-dev check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle bundle-check foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean semgrep version version-show version-bump bump-patch bump-minor bump-major
 
 help:
 	@printf "\n"
@@ -34,6 +39,8 @@ help:
 	@printf "  \033[32m◇\033[0m  make list          \033[2mShow bundle + runtime foundations\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle        \033[2mRefresh marketplace plugin bundle\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle-check  \033[2mFail if the committed marketplace bundle drifted from repo truth\033[0m\n"
+	@printf "  \033[32m◇\033[0m  make foundations-release-unsigned \033[2mBuild complete unsigned foundations plugin\033[0m\n"
+	@printf "  \033[32m◇\033[0m  make foundations-release \033[2mBuild complete signed/notarized foundations plugin\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make test          \033[2mRun installer + marketplace pytest gates\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make check         \033[2mRun basic linters on shell scripts\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make version-show  \033[2mShow VERSION and release tag state\033[0m\n"
@@ -145,6 +152,62 @@ bundle-check:
 		echo "Bundle drift detected. Run 'make bundle'."; \
 		exit 1; \
 	fi
+
+foundations-release: foundations-build foundations-pack foundations-verify
+	@echo "✓ Notarized release plugin ready: $(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION).plugin"
+
+foundations-release-unsigned: foundations-build-unsigned foundations-pack-unsigned foundations-verify
+	@echo "✓ Unsigned release plugin ready: $(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION)-unsigned.plugin"
+
+foundations-build:
+	@echo "→ Building aicx + loctree (signed + notarized)"
+	$(MAKE) -C "$(AICX_REPO)" release-bundle KEYS="$(KEYS)" NOTARY_PROFILE="$(NOTARY_PROFILE)"
+	$(MAKE) -C "$(LOCTREE_REPO)" release-bundle
+
+foundations-build-unsigned:
+	@echo "→ Building aicx + loctree (unsigned)"
+	@if $(MAKE) -C "$(AICX_REPO)" -qp 2>/dev/null | grep -q '^release-bundle-only-binaries:'; then \
+		$(MAKE) -C "$(AICX_REPO)" release-bundle-only-binaries; \
+	elif ls "$(AICX_REPO)"/dist/aicx-*-unsigned.tar.gz >/dev/null 2>&1; then \
+		echo "→ aicx lacks release-bundle-only-binaries; using existing unsigned archive in $(AICX_REPO)/dist"; \
+	else \
+		echo "Error: $(AICX_REPO) has no release-bundle-only-binaries target and no dist/aicx-*-unsigned.tar.gz." >&2; \
+		echo "       Phase A must produce that archive before the full unsigned bundle can be packed." >&2; \
+		exit 1; \
+	fi
+	$(MAKE) -C "$(LOCTREE_REPO)" release-bundle-only-binaries
+
+foundations-pack:
+	@mkdir -p "$(DIST_DIR)"
+	$(PYTHON) scripts/build_marketplace_bundle.py \
+		--include-foundation "aicx=$(AICX_REPO)/dist/aicx-*.notarized.tar.gz" \
+		--include-foundation "loctree=$(LOCTREE_REPO)/dist/loctree-*.notarized.zip" \
+		--variant signed \
+		--output "$(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION).plugin"
+	tar -czf "$(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION).tar.gz" -C "$(DIST_DIR)" "$(PLUGIN_NAME)-$(VERSION).plugin"
+	cd "$(DIST_DIR)" && shasum -a 256 \
+		"$(PLUGIN_NAME)-$(VERSION).plugin" \
+		"$(PLUGIN_NAME)-$(VERSION).tar.gz" \
+		> SHA256SUMS
+
+foundations-pack-unsigned:
+	@mkdir -p "$(DIST_DIR)"
+	$(PYTHON) scripts/build_marketplace_bundle.py \
+		--include-foundation "aicx=$(AICX_REPO)/dist/aicx-*-unsigned.tar.gz" \
+		--include-foundation "loctree=$(LOCTREE_REPO)/dist/loctree-*-unsigned.tar.gz" \
+		--variant unsigned \
+		--output "$(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION)-unsigned.plugin"
+	tar -czf "$(DIST_DIR)/$(PLUGIN_NAME)-$(VERSION)-unsigned.tar.gz" -C "$(DIST_DIR)" "$(PLUGIN_NAME)-$(VERSION)-unsigned.plugin"
+	cd "$(DIST_DIR)" && shasum -a 256 \
+		"$(PLUGIN_NAME)-$(VERSION)-unsigned.plugin" \
+		"$(PLUGIN_NAME)-$(VERSION)-unsigned.tar.gz" \
+		> SHA256SUMS-unsigned
+
+foundations-verify:
+	bash distribution/smoke-foundations.sh "$(DIST_DIR)"/$(PLUGIN_NAME)-$(VERSION)*.plugin
+
+foundations-clean:
+	rm -rf "$(DIST_DIR)"
 
 version version-show:
 	@version="$$(sed -n '1p' "$(VERSION_FILE)" 2>/dev/null | tr -d '[:space:]')"; \

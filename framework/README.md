@@ -126,6 +126,25 @@ docker run --rm -it -v "$PWD:/workspace" vetcoders/vibecrafted:local version
 
 See [Docker Runtime](docs/DOCKER.md).
 
+## Building a release
+
+Single command produces the complete signed/notarized plugin:
+
+```bash
+source .env.foundations  # see .env.foundations.example
+make foundations-release
+ls dist/
+```
+
+For a dry-run without Apple secrets:
+
+```bash
+make foundations-release-unsigned
+```
+
+The root `vibecrafted-io` Makefile delegates these targets into this framework
+directory while keeping the final artifacts in the top-level `dist/` directory.
+
 ---
 
 ## Quick Start

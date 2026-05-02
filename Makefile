@@ -30,6 +30,11 @@ UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTRE
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
 ALLOW_DIRTY_UPSTREAM ?= 0
 BUNDLE_ROOT   := $(CURDIR)/framework
+AICX_REPO ?= $(abspath $(CURDIR)/../aicx)
+LOCTREE_REPO ?= $(abspath $(CURDIR)/../../01_deployed_libraxis_vm/Loctree/Suite/loctree-suite)
+DIST_DIR ?= $(CURDIR)/dist
+PLUGIN_NAME ?= vibecrafted-framework
+FRAMEWORK_VERSION := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "1.5.0")
 FRAMEWORK_RUNTIME_TESTS := \
 	framework/tests/tui/test_bundle.py \
 	framework/tests/tui/test_docs_links.py \
@@ -38,7 +43,7 @@ FRAMEWORK_RUNTIME_TESTS := \
 	framework/tests/tui/test_makefile_installer_contract.py \
 	framework/tests/tui/test_release_contract.py
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -60,6 +65,8 @@ help:
 	@printf "  \033[32m◇\033[0m  make list          \033[2mShow bundle + runtime foundations\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make bundle        \033[2mRefresh marketplace plugin bundle\033[0m\n"
 	@printf "  \033[32m◇\033[0m  make content-truth \033[2mRender the canonical docs → site surface truth matrix\033[0m\n"
+	@printf "  \033[32m◇\033[0m  make foundations-release-unsigned \033[2mBuild complete unsigned foundations plugin\033[0m\n"
+	@printf "  \033[32m◇\033[0m  make foundations-release \033[2mBuild complete signed/notarized foundations plugin\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make test          \033[2mRun installer + marketplace pytest gates\033[0m\n"
 	@printf "  \033[32m✓\033[0m  make check         \033[2mRun basic linters on shell scripts\033[0m\n"
 	@printf "\n"
@@ -105,6 +112,61 @@ foundations:
 
 foundations-check:
 	@bash scripts/install-foundations.sh --check
+
+foundations-release:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-release \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)" \
+		DIST_DIR="$(DIST_DIR)" \
+		PLUGIN_NAME="$(PLUGIN_NAME)" \
+		VERSION="$(FRAMEWORK_VERSION)" \
+		KEYS="$(KEYS)" \
+		NOTARY_PROFILE="$(NOTARY_PROFILE)"
+
+foundations-release-unsigned:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-release-unsigned \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)" \
+		DIST_DIR="$(DIST_DIR)" \
+		PLUGIN_NAME="$(PLUGIN_NAME)" \
+		VERSION="$(FRAMEWORK_VERSION)"
+
+foundations-build:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-build \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)" \
+		KEYS="$(KEYS)" \
+		NOTARY_PROFILE="$(NOTARY_PROFILE)"
+
+foundations-build-unsigned:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-build-unsigned \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)"
+
+foundations-pack:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-pack \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)" \
+		DIST_DIR="$(DIST_DIR)" \
+		PLUGIN_NAME="$(PLUGIN_NAME)" \
+		VERSION="$(FRAMEWORK_VERSION)"
+
+foundations-pack-unsigned:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-pack-unsigned \
+		AICX_REPO="$(AICX_REPO)" \
+		LOCTREE_REPO="$(LOCTREE_REPO)" \
+		DIST_DIR="$(DIST_DIR)" \
+		PLUGIN_NAME="$(PLUGIN_NAME)" \
+		VERSION="$(FRAMEWORK_VERSION)"
+
+foundations-verify:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-verify \
+		DIST_DIR="$(DIST_DIR)" \
+		PLUGIN_NAME="$(PLUGIN_NAME)" \
+		VERSION="$(FRAMEWORK_VERSION)"
+
+foundations-clean:
+	@$(MAKE) -C "$(BUNDLE_ROOT)" foundations-clean DIST_DIR="$(DIST_DIR)"
 
 setup-dev: init-hooks
 	@$(PYTHON) $(INSTALLER) install --source "$(SOURCE)" --advanced
@@ -154,7 +216,7 @@ migrate-dry:
 	@bash scripts/migrate_agents_workspace.sh --dry-run
 
 check:
-	@$(PYTHON) scripts/check_shell.py
+	@$(PYTHON) framework/scripts/check_shell.py
 	@echo "Check complete."
 
 init-hooks:

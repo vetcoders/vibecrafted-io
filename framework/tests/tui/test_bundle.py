@@ -1,4 +1,5 @@
 import json
+import tarfile
 import zipfile
 from pathlib import Path
 
@@ -121,6 +122,86 @@ def test_write_bundle_includes_bundled_tool_drop_in_slot(
     assert "tools/bin/prview" in members
     assert "tools/bin/.gitkeep" not in members
     assert "tools/bin/.DS_Store" not in members
+
+
+def test_write_bundle_can_embed_unsigned_foundation_archive(
+    monkeypatch, tmp_path: Path
+) -> None:
+    repo_root = tmp_path / "repo"
+    (repo_root / "docs").mkdir(parents=True)
+    (repo_root / "scripts").mkdir()
+    (repo_root / "skills" / "vc-implement").mkdir(parents=True)
+    (repo_root / "VERSION").write_text("1.5.0\n", encoding="utf-8")
+    (repo_root / "LICENSE").write_text("license\n", encoding="utf-8")
+    (repo_root / "README.md").write_text("readme\n", encoding="utf-8")
+    (repo_root / "docs" / "MARKETPLACE_LISTING.md").write_text(
+        "listing\n", encoding="utf-8"
+    )
+    (repo_root / "install.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+    (repo_root / "install.toml").write_text("", encoding="utf-8")
+    (repo_root / "install-plugin.sh").write_text(
+        "#!/usr/bin/env bash\n", encoding="utf-8"
+    )
+    (repo_root / "scripts" / "vetcoders_install.py").write_text(
+        "print('install')\n", encoding="utf-8"
+    )
+    (repo_root / "skills" / "vc-implement" / "SKILL.md").write_text(
+        "skill\n", encoding="utf-8"
+    )
+
+    foundation_root = tmp_path / "aicx-0.6.3-darwin-arm64"
+    (foundation_root / "bin").mkdir(parents=True)
+    aicx_bin = foundation_root / "bin" / "aicx"
+    aicx_bin.write_text("#!/usr/bin/env bash\necho aicx\n", encoding="utf-8")
+    aicx_bin.chmod(0o755)
+    archive_path = tmp_path / "aicx-0.6.3-darwin-arm64-unsigned.tar.gz"
+    with tarfile.open(archive_path, "w:gz") as archive:
+        archive.add(foundation_root, arcname=foundation_root.name)
+
+    monkeypatch.setattr(bundle, "SUPPORT_DOC_PATHS", ())
+    monkeypatch.setattr(
+        bundle,
+        "discover_bundle_skills",
+        lambda repo: [repo / "skills" / "vc-implement"],
+    )
+    monkeypatch.setattr(bundle, "discover_foundation_skills", lambda _repo: [])
+    monkeypatch.setattr(bundle, "iter_bundled_tool_files", lambda _repo: [])
+    monkeypatch.setattr(
+        bundle,
+        "load_listing_metadata",
+        lambda _repo: bundle.ListingMetadata(
+            description="desc",
+            keywords=("codex",),
+            homepage="https://vibecrafted.io/",
+            repository="https://github.com/VetCoders/vibecrafted",
+            documentation="https://vibecrafted.io/en/quickstart/",
+            faq="https://vibecrafted.io/en/faq/",
+            license="Business Source License 1.1",
+        ),
+    )
+
+    archive_bytes = bundle.build_bundle_bytes(
+        repo_root,
+        [f"aicx={archive_path}"],
+        variant="unsigned",
+    )
+    output_path = tmp_path / "bundle.plugin"
+    output_path.write_bytes(archive_bytes)
+
+    with zipfile.ZipFile(output_path) as archive:
+        members = set(archive.namelist())
+        manifest = json.loads(archive.read("MANIFEST.json"))
+        mode = archive.getinfo("foundations/aicx/bin/aicx").external_attr >> 16
+
+    assert "framework/scripts/vetcoders_install.py" in members
+    assert "framework/skills/vc-implement/SKILL.md" in members
+    assert "foundations/aicx/bin/aicx" in members
+    assert "install.sh" in members
+    assert manifest["framework_version"] == "1.5.0"
+    assert manifest["variant"] == "unsigned"
+    assert manifest["foundations"]["aicx"]["version"] == "0.6.3"
+    assert manifest["foundations"]["aicx"]["signed"] is False
+    assert mode & 0o111
 
 
 def test_framework_playground_uses_vibecrafted_command_deck() -> None:

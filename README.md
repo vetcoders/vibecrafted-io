@@ -112,6 +112,28 @@ Verify:
 make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 ```
 
+## Building a release
+
+The root Makefile can now compose the full framework plugin with bundled
+foundation binaries:
+
+```bash
+source .env.foundations  # see .env.foundations.example
+make foundations-release
+ls dist/
+```
+
+For a local dry run without Apple secrets:
+
+```bash
+make foundations-release-unsigned
+```
+
+The signed path requires notarized aicx and loctree outputs. The unsigned path
+uses `dist/aicx-*-unsigned.tar.gz` and `dist/loctree-*-unsigned.tar.gz` from the
+foundation repos, then verifies the resulting plugin layout with
+`framework/distribution/smoke-foundations.sh`.
+
 ---
 
 ## Quick Start

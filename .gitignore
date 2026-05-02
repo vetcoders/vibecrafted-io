@@ -1,6 +1,7 @@
 .DS_Store
 **/.DS_Store
 .ai-agents/
+.env.foundations
 
 # AI Context
 .ai-context/*
