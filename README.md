@@ -96,23 +96,15 @@ The `` is not decoration. It is the mark.
 
 Non-destructive. Interactive. Transparent. Reversible.
 
-Prefer the guided browser path when you are onboarding a founder, PM, or less terminal-native operator:
-
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
 
-The guided path stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
+The bootstrap stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
 
-Use the direct compact path when you are scripting the install or you already know you want the terminal-only flow:
+Inside a local checkout, `make vibecrafted` opens the terminal-native installer wizard and `make install` stays as the direct non-interactive path.
 
-```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash
-```
-
-Inside a local checkout, `make vibecrafted` now opens the same browser-based guided installer. `make install` stays as the direct non-interactive path.
-
-Prefer the terminal-native fallback? Run `make wizard` to keep the same trust-building cadence directly in the terminal.
+Need the browser surface? Run `make wizard` to keep the same trust-building cadence directly in the browser.
 
 Verify:
 

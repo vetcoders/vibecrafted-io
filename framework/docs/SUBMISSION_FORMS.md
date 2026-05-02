@@ -112,10 +112,7 @@ That means the positioning has to stay sharp:
 - Platform
   macOS, Linux
 
-- Guided install CTA
-  `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
-
-- Direct install CTA
+- Install CTA
   `curl -fsSL https://vibecrafted.io/install.sh | bash`
 
 ## Canonical submission packet
@@ -131,14 +128,14 @@ Prepare these fields once, then reuse them across directories:
 - Product URL
   https://github.com/VetCoders/vibecrafted
 
-- Primary CTA
-  Guided install
+- Install CTA
+  Compact install
 
-- Primary CTA URL
+- Install CTA URL
   https://vibecrafted.io/
 
 - Install method
-  Browser-based guided installer for human onboarding, compact CLI path for automation.
+  Single compact CLI install path for humans and automation, with a local browser wizard available from a checkout.
 
 - Best-fit audience
   Founders and software teams shipping AI-generated or AI-maintained repos into production.
@@ -165,8 +162,7 @@ shows the old direct-only install CTA or the older self-referential promise.
 Every public surface should agree on:
 
 - promise: `Release engine for AI-built software.`
-- primary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
-- secondary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
+- install CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - audience: founders and teams shipping AI-generated repos into production
 
 ## Directory-specific notes
@@ -290,7 +286,7 @@ Use these as the default copy/paste answers when a form asks for the common
 launch fields:
 
 | Field            | Paste-ready answer                                                                                                                                                                                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Product name     | `𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.`                                                                                                                                                                                                                                          |
 | Tagline          | `Release engine for AI-built software.`                                                                                                                                                                                                                 |
 | Secondary line   | `Ship AI-built software without the vibe hangover.`                                                                                                                                                                                                     |
@@ -299,8 +295,7 @@ launch fields:
 | Docs             | `https://vibecrafted.io/en/quickstart/`                                                                                                                                                                                                                 |
 | Category         | `Developer Tools`, `AI Agents`, `Release Engineering`                                                                                                                                                                                                   |
 | Pricing          | `Free for personal use and startups. Enterprise licensing available.`                                                                                                                                                                                   |
-| Primary CTA      | `curl -fsSL https://vibecrafted.io/install.sh                                                                                                                                                                                                           | bash -s -- --gui` |
-| Backup CTA       | `curl -fsSL https://vibecrafted.io/install.sh                                                                                                                                                                                                           | bash`             |
+| Install CTA      | <code>curl -fsSL https://vibecrafted.io/install.sh &#124; bash</code>                                                                                                                                                                                   |
 | 160-char summary | `Vibecrafted hardens AI-generated repos through structural mapping, convergence loops, install audits, and launch-ready packaging.`                                                                                                                     |
 | 300-char summary | `Vibecrafted is the release engine for AI-built software. It takes the repo your agents already produced and drives it through perception, verification, convergence loops, install truth, and launch-readiness work until the product is fit to ship.` |
 

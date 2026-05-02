@@ -2,11 +2,10 @@
 
 Current truth as of 2026-04-10:
 
-- Public front door: browser-guided installer in `scripts/installer_gui.py`
-- Public CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
+- Public front door: compact install one-liner with trust-first prompts
+- Public install CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - Local terminal-native entrypoint: `make vibecrafted`
 - Local browser GUI entrypoint: `make wizard` (alias: `make gui-install`)
-- Automation entrypoint: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - Mutation engine: `scripts/vetcoders_install.py`
 - Operator-grade terminal surface: `scripts/installer/vetcoders_installer/`
 
@@ -86,8 +85,7 @@ Every release surface should agree on these points:
 
 - promise: `Release engine for AI-built software.`
 - supporting line: `Ship AI-built software without the vibe hangover.`
-- primary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
-- secondary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
+- install CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - first verification step after install: `vibecrafted doctor`
 
 ## Explicit Non-Goals

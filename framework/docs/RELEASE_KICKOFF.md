@@ -9,11 +9,10 @@ about what the product is.
 
 - Product: 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.
 - Promise: Release engine for AI-built software.
-- Primary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
-- Secondary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
-- Human front door: browser-guided installer, chosen for TwinSweep-style
-  effortlessness.
-- Automation path: compact CLI installer, still available for scripts and CI.
+- Install CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
+- Human and automation front door: compact CLI installer with trust-first prompts
+  on attended terminals.
+- Browser-guided local surface: `make wizard` remains available from a checkout.
 - Adjacent pattern kept for inspiration, not as the public front door:
   `rmcp-memex`-style wizard/TUI.
 

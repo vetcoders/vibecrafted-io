@@ -97,22 +97,11 @@ The `` is not decoration. It is the mark.
 
 Non-destructive. Interactive. Transparent. Reversible.
 
-Prefer the guided browser path when you are onboarding a founder, PM, or less terminal-native operator:
-
-```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
-```
-
-Both entrypoints use the same trust-first bootstrap: it explains what it will do and asks before proceeding on an attended terminal. Pass `--yes` when you
-want to pre-approve that bootstrap prompt.
-
-The guided path stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
-
-Use the direct compact path when you are scripting the install or you already know you want the terminal-only flow:
-
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
+
+The bootstrap uses the same trust-first install path for humans and automation: it explains what it will do and asks before proceeding on an attended terminal. Pass `--yes` when you want to pre-approve that bootstrap prompt.
 
 The bootstrap prints the snapshot source, staging location, and next installer
 step before it stages or installs anything on your machine.
