@@ -4,8 +4,10 @@ You have an AI-built repo. You want to ship it without the vibe hangover.
 
 ## 1. Install
 
+Browser-guided path for the human kickoff:
+
 ```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash
+curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
 ```
 
 The bootstrap explains what it will do and asks before proceeding on an
@@ -14,6 +16,12 @@ prompt.
 
 This path stages the control plane, bootstraps the foundation layer, and runs
 the compact installer truth used by automation as well.
+
+Compact path for scripting or terminal-only installs:
+
+```bash
+curl -fsSL https://vibecrafted.io/install.sh | bash
+```
 
 Non-destructive. Interactive. Tells you what it does before it does it.
 Asks before touching your shell config. Everything reversible with

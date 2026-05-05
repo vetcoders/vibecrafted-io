@@ -8,8 +8,9 @@ which installer is public, which one is expert-only, and what counts as
 
 ## Decision
 
-- Public human front door: compact install one-liner with trust-first prompts
-- Public install CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
+- Public human front door: browser-guided installer in `scripts/installer_gui.py`
+- Public CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
+- Public compact path: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - Local terminal-native entrypoint: `make vibecrafted`
 - Local browser GUI entrypoint: `make wizard` (alias: `make gui-install`)
 - Mutation engine: `scripts/vetcoders_install.py`

@@ -103,6 +103,5 @@ inline HTML. To ship the live wizard end-to-end:
    bump) still applies — a recycled tarball with the old inline HTML and a
    new filename remains a fake release.
 
-Once the release carries the bundle, `curl …/install.sh | bash` will use the
-single compact install path. The Svelte wizard remains available from a local
-checkout through `make wizard`.
+Once the release carries the bundle, `curl …/install.sh | bash -s -- --gui`
+will land users directly in the Svelte wizard driven by the local API.

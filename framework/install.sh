@@ -14,6 +14,7 @@ Non-interactive runs without `--gui` bypass the browser and call the compact ins
 
 Examples:
   curl -fsSL https://vibecrafted.io/install.sh | bash
+  curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --yes
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --ref develop
   bash install.sh doctor
