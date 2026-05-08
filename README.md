@@ -148,6 +148,16 @@ Type `vibecrafted help` for the command deck, or `vc-` and hit tab once the shel
 
 ---
 
+## Roadmap
+
+Live experimental work that has not yet promoted to top-level skills:
+
+- **`vc-polarize` (Prism → Polarize gate)** — polarization workflow gated on a stable Loctree prism MCP release. The runner code, band-action map, and downstream consumers (vc-operator, aicx Context Corpus) have all landed; the marketplace promotion is held until the upstream `loctree-suite` plugin ships prism in a stable cut. See [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry, surface status table, and references.
+
+Stable workflows (already shipping in the framework): `vc-init`, `vc-scaffold`, `vc-workflow`, `vc-followup`, `vc-marbles`, `vc-prune`, `vc-dou`, `vc-decorate`, `vc-hydrate`, `vc-release`, `vc-implement`, `vc-justdo`, `vc-research`, `vc-review`, `vc-agents`, `vc-delegate`, `vc-partner`.
+
+---
+
 ## For Founders
 
 Free for personal use and for startups. No limits on repos or agents.
