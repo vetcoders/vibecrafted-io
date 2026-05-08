@@ -148,7 +148,8 @@ scaffold -> init -> workflow -> implement -> followup -> marbles -> [POLARIZE] -
 Future operator entry, once runtime support exists:
 
 ```bash
-vibecrafted polarize codex --prompt 'Polarize the marbles operator surface'
+vibecrafted polarize codex --task 'marbles versus polarize skills: polarize them'
+vc-polarize codex --task 'installer public contract'
 vc-polarize claude --file /path/to/prism-pack.md
 vibecrafted polarize gemini --prompt 'Choose one launch thesis after marbles'
 ```
@@ -183,11 +184,11 @@ Not allowed:
 - using stale context packs as current code truth
 - scoring file count instead of authority drift
 
-## Prism Score V0
+## Prism Score
 
-Until Loctree provides a stable scorer, use this as manual rubric.
+Use the stable Loctree scorer to evaluate prism score.
 
-Score each axis from `0` to `3`, total `0..15`.
+Score each axis from `0` to `3`, total `0..15`:
 
 | Axis                | Meaning                                                                                                                       |
 | ------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
@@ -199,10 +200,10 @@ Score each axis from `0` to `3`, total `0..15`.
 
 Bands:
 
-- `0..4`: no corpus entry.
-- `5..8`: local note or Loctree tag.
-- `9..12`: context-corpus entry.
-- `13..15`: canonical doctrine entry plus regression contract.
+- `0..4`: `abort` — stop before agent dispatch and show the prism JSON path.
+- `5..8`: `memo` — emit a local memo and thin context-corpus example only.
+- `9..12`: `pass` — run the full polarize pass with the prism payload injected.
+- `13..15`: `doctrine` — run the full doctrine pass with a regression-contract expectation.
 
 ## Outputs
 
