@@ -3,6 +3,13 @@
 All notable changes to 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
+- Note: `vc-polarize` experimental status remains until next cycle, see [TRACKER.md](../../../../.vibecrafted/inbox/VetCoders/vibecrafted/plans/prism-polarize-gate/TRACKER.md) for trail.
+
 ## 1.2.1 — 2026-04-01
 
 ### Added

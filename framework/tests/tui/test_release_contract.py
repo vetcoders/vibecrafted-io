@@ -31,7 +31,7 @@ def test_quick_start_keeps_public_gui_cta_before_compact_path() -> None:
     assert primary_index < compact_index
 
 
-def test_release_contract_stays_polarized_across_public_surfaces() -> None:
+def test_release_contract_keeps_single_install_cta() -> None:
     errors: list[str] = []
 
     for relative_path, expected_strings in EXPECTED_COPY.items():
