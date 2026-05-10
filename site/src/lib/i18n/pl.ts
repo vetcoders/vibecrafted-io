@@ -203,7 +203,7 @@ export const pl = {
     },
     problem: {
       headingHtml:
-        'Aplikacje po agentach wyglądają na gotowe<br />gdy auth, dane, płatności i deploy nadal są <em class="accent">kruche</em>',
+        'Aplikacje po agentach wyglądają na <em class="accent-2">gotowe</em><br />gdy auth, dane, płatności i deploy nadal są <em class="accent">kruche</em>',
       body: "Generowanie kodu dowozi demo. Prawdziwi użytkownicy, pieniądze, security review i kolejny developer pokazują miejsca, których żaden prompt nie wziął na własność.",
       symptoms: [
         {

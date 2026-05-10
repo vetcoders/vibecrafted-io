@@ -18,7 +18,7 @@
   --v2-paper-soft: #e5ded2;
   --v2-ink-rgb: 23, 22, 21;
   --v2-paper-rgb: 216, 209, 196;
-  --v2-accent-rgb: 207, 111, 78;
+  --v2-accent-rgb: 201, 154, 59;
 
   /* ─── Text on dark ───────────────────────────────────────── */
   --v2-fg-on-dark: #f5f4ef;
@@ -31,16 +31,18 @@
   --v2-fg-on-paper-mute: rgba(23, 22, 21, 0.46);
 
   /* ─── Accents ────────────────────────────────────────────── */
-  /* Rust (--v2-accent): "convergence" concept, CTA borders,
-     active tab underlines, phase numbers. NEVER used on "AI agents". */
-  --v2-accent: #cf6f4e;
-  --v2-copper: var(--v2-accent);
+  /* Amber (--v2-accent): narrative accent — hero italics ("AI-built"),
+     CTA borders, active tab underlines, phase numbers, evidence stats.
+     Aligned with loctree-com `--amber` (#c99a3b) for cross-product coherence. */
+  --v2-accent: #c99a3b;
+  --v2-accent-amber: var(--v2-accent);
+  /* Copper: kept as a discrete token for any surface that still wants the
+     rust narrative band; not aliased to --v2-accent any more. */
+  --v2-copper: #cf6f4e;
   --v2-accent-red: #c0392b;
   /* Teal (--v2-accent-2): DoU / Release / converged states,
      second italic in "vibes/vectors" pattern. */
   --v2-accent-2: #3d7a72;
-  /* Amber: warning + "waiting" state only. */
-  --v2-accent-amber: #c99a3b;
 
   /* ─── Rules (hairlines) ──────────────────────────────────── */
   --v2-rule-dark: rgba(245, 244, 239, 0.12);

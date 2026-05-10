@@ -218,6 +218,10 @@
     font-style: italic;
   }
 
+  .hero__heading-em-last {
+    color: var(--accent-2);
+  }
+
   .hero__body {
     font-family: var(--font-body);
     font-size: clamp(16px, 1.2vw, 20px);
