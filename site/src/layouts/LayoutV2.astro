@@ -16,6 +16,7 @@ import type { Lang } from '../lib/i18n';
 import SiteNavV2 from '../components/SiteNavV2.svelte';
 import SiteFooterV2 from '../components/SiteFooterV2.svelte';
 import SearchShellV2 from '../components/SearchShellV2.svelte';
+import SchemaOrg from '../components/SchemaOrg.astro';
 import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/tokens-v2.css';
 
@@ -148,6 +149,7 @@ const jsonLd = JSON.stringify({
   />
 
   <script is:inline type="application/ld+json" set:html={jsonLd} />
+  <SchemaOrg siteUrl={siteUrl} />
   <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
   <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
   <script is:inline>
