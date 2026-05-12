@@ -35,9 +35,15 @@ const allStudies = (await getCollection('showcase')).sort(
 
 const pageTitle = `${entry.data.title} — Case study`;
 const pageDescription = entry.data.description;
+
+// Plan 17 — Per-study OG card. Slug pattern mirrors `OG_SLUGS` in
+// src/lib/og-renderer.ts: `showcase-<study-id>`. If a study lacks a
+// matching OG entry, fall back to the showcase-index card.
+const ogSlugCandidates = [`showcase-${entry.id}`, 'showcase-index'];
+const ogImagePath = `/og/${ogSlugCandidates[0]}.png`;
 ---
 
-<LayoutV2 title={pageTitle} description={pageDescription} lang="en" hasHero={false}>
+<LayoutV2 title={pageTitle} description={pageDescription} lang="en" hasHero={false} ogImage={ogImagePath}>
   <article class="study">
     <div class="study__inner">
       <header class="study__header">

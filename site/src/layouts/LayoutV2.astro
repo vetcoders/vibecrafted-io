@@ -24,6 +24,10 @@ interface Props {
   title: string;
   description?: string;
   lang?: Lang;
+  /** Path to OG image. Defaults to `/presence/og-image.png` (legacy static).
+   * For Plan 17 dynamic OGs, pass a `/og/<slug>.png` path that matches
+   * an entry in `OG_SLUGS` (src/lib/og-renderer.ts). Dynamic OGs render
+   * at 1200×630 — the og:image:width/height meta below adapts automatically. */
   ogImage?: string;
   ogType?: string;
   /** When true, the page opens with a full-viewport hero that owns its own top
@@ -46,6 +50,14 @@ const {
   hideSearch = false,
   hideFooter = false,
 } = Astro.props as Props;
+
+// Plan 17 — Dynamic OG cards live under `/og/*.png` at 1200×630 (canonical
+// social-card size). Legacy static OG at `/presence/og-image.png` ships at
+// 1536×1024. Detect which family this page uses and emit matching dimensions
+// so Facebook/X/LinkedIn don't have to guess.
+const isDynamicOG = ogImage.startsWith('/og/');
+const ogImageWidth = isDynamicOG ? '1200' : '1536';
+const ogImageHeight = isDynamicOG ? '630' : '1024';
 
 const currentPath = Astro.url.pathname;
 
@@ -104,8 +116,8 @@ const jsonLd = JSON.stringify({
   <meta content={title} property="og:title" />
   <meta content={description} property="og:description" />
   <meta content={ogImageUrl} property="og:image" />
-  <meta content="1536" property="og:image:width" />
-  <meta content="1024" property="og:image:height" />
+  <meta content={ogImageWidth} property="og:image:width" />
+  <meta content={ogImageHeight} property="og:image:height" />
   <meta content="image/png" property="og:image:type" />
   <meta content={description} property="og:image:alt" />
   <meta content={ogType} property="og:type" />
