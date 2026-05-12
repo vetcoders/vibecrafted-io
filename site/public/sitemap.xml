@@ -142,4 +142,22 @@
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
+    <url>
+        <loc>https://vibecrafted.io/newsletter/</loc>
+        <lastmod>2026-05-12</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vibecrafted.io/newsletter/2026-05-12-first-issue/</loc>
+        <lastmod>2026-05-12</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://vibecrafted.io/newsletter/rss.xml</loc>
+        <lastmod>2026-05-12</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.5</priority>
+    </url>
 </urlset>

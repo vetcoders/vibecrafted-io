@@ -1,0 +1,294 @@
+---
+/**
+ * NewsletterSignup.astro — Plan 19 privacy-respecting signup component.
+ *
+ * Static <form> posting directly to Buttondown's public subscribe endpoint
+ * (https://buttondown.com/api/emails/embed-subscribe/<list>). No JavaScript,
+ * no tracking pixel, no analytics callback, no popup. Submission opens
+ * Buttondown's confirmation page in the same tab — user controls the
+ * outcome.
+ *
+ * Brand tokens only: warm ink background, cream-on-ink type, restrained
+ * amber accent (--v2-accent) on the submit button. No gradient. No glow.
+ * No pure #000 (uses --v2-ink → #080807). Reuses the editorial blueprint
+ * patterns from showcase/manifesto (mono eyebrow + hairline rule + serif
+ * tagline + small mono CTA copy).
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no popup / modal / scroll-triggered overlay
+ *   - no tracking pixel / GA / FB pixel / Plausible event tag
+ *   - no marketing speak ("Don't miss out!", "Join 1000+ devs", etc.)
+ *   - no email-gated content reveal
+ *
+ * Buttondown list slug is configurable via `username` prop with the
+ * sensible default "vibecrafted". Operator can override at insertion site
+ * if Buttondown account name differs.
+ *
+ * Variant prop controls visual surface:
+ *   - "footer"  — compact horizontal layout for site footer
+ *   - "inline"  — bordered card for manifesto/showcase mid-prose inserts
+ */
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+  variant?: 'footer' | 'inline';
+  /** Buttondown list slug — default "vibecrafted". */
+  username?: string;
+  class?: string;
+}
+
+const {
+  lang = 'en',
+  variant = 'inline',
+  username = 'vibecrafted',
+  class: className,
+} = Astro.props as Props;
+
+// Inline copy — operator-voice, no marketing fluff. Translations live
+// behind a try/catch so missing i18n keys do not break the build (Plan 19
+// intentionally ships strings inline; future plans can lift into
+// src/lib/i18n/{en,pl}.ts once the surface stabilizes).
+const isPl = lang === 'pl';
+
+const labels = {
+  eyebrow: isPl ? 'NEWSLETTER' : 'NEWSLETTER',
+  lead: isPl
+    ? 'Otrzymuj wiadomości, kiedy vibecrafted dowozi.'
+    : 'Receive updates when vibecrafted ships.',
+  placeholder: isPl ? 'twoj@email.pl' : 'you@example.com',
+  cta: isPl ? 'Zapisz się' : 'Subscribe',
+  privacyNote: isPl
+    ? 'Brak trackerów. Brak popupów. Email lądowa na Buttondown — wypisanie się jednym klikiem.'
+    : 'No trackers. No popups. Buttondown-hosted — one-click unsubscribe.',
+  archiveCta: isPl ? 'Archiwum →' : 'Archive →',
+  archiveHref: '/newsletter/',
+};
+
+const formAction = `https://buttondown.com/api/emails/embed-subscribe/${username}`;
+---
+
+<aside
+  class:list={['newsletter-signup', `newsletter-signup--${variant}`, className]}
+  aria-label={labels.eyebrow}
+>
+  <div class="newsletter-signup__inner">
+    <div class="newsletter-signup__head">
+      <span class="newsletter-signup__eyebrow">{labels.eyebrow}</span>
+      <a class="newsletter-signup__archive" href={labels.archiveHref}>{labels.archiveCta}</a>
+    </div>
+    <div class="newsletter-signup__rule" aria-hidden="true"></div>
+    <p class="newsletter-signup__lead">{labels.lead}</p>
+
+    <form
+      class="newsletter-signup__form"
+      action={formAction}
+      method="post"
+      target="_blank"
+    >
+      <label class="newsletter-signup__field">
+        <span class="newsletter-signup__field-label">Email</span>
+        <input
+          class="newsletter-signup__input"
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+          placeholder={labels.placeholder}
+          aria-label="Email"
+        />
+      </label>
+      <button class="newsletter-signup__submit" type="submit">
+        {labels.cta}
+        <span aria-hidden="true">→</span>
+      </button>
+    </form>
+
+    <p class="newsletter-signup__privacy">{labels.privacyNote}</p>
+  </div>
+</aside>
+
+<style>
+  .newsletter-signup {
+    width: 100%;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-family: var(--v2-font-body, 'Inter', system-ui, sans-serif);
+  }
+
+  .newsletter-signup--inline {
+    max-width: 720px;
+    margin: 48px auto;
+  }
+
+  .newsletter-signup--footer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  .newsletter-signup__inner {
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    border-radius: 2px;
+    padding: 24px 28px 22px;
+    background: rgba(23, 22, 21, 0.45);
+  }
+
+  .newsletter-signup--footer .newsletter-signup__inner {
+    padding: 22px 28px 18px;
+    background: rgba(23, 22, 21, 0.35);
+  }
+
+  .newsletter-signup__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .newsletter-signup__archive {
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .newsletter-signup__archive:hover,
+  .newsletter-signup__archive:focus-visible {
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  .newsletter-signup__rule {
+    height: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    margin-bottom: 18px;
+  }
+
+  .newsletter-signup__lead {
+    margin: 0 0 18px;
+    font-family: var(--v2-font-display, 'Instrument Serif', serif);
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    max-width: 48ch;
+  }
+
+  .newsletter-signup--footer .newsletter-signup__lead {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .newsletter-signup__form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: stretch;
+    margin: 0 0 14px;
+  }
+
+  .newsletter-signup__field {
+    flex: 1 1 240px;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .newsletter-signup__field-label {
+    /* Visually hidden — input has placeholder + aria-label. Kept for
+     * screen readers that prefer explicit label association. */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .newsletter-signup__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    background: rgba(8, 8, 7, 0.6);
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    border-radius: 2px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-family: var(--v2-font-body, 'Inter', system-ui, sans-serif);
+    font-size: 15px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .newsletter-signup__input::placeholder {
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .newsletter-signup__input:focus {
+    outline: none;
+    border-color: var(--v2-accent, #c99a3b);
+    background: rgba(8, 8, 7, 0.85);
+  }
+
+  .newsletter-signup__submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    background: transparent;
+    border: 1px solid var(--v2-accent, #c99a3b);
+    border-radius: 2px;
+    color: var(--v2-accent, #c99a3b);
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .newsletter-signup__submit:hover,
+  .newsletter-signup__submit:focus-visible {
+    background: var(--v2-accent, #c99a3b);
+    color: var(--v2-ink, #080807);
+    outline: none;
+  }
+
+  .newsletter-signup__privacy {
+    margin: 0;
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    max-width: 64ch;
+  }
+
+  @media (max-width: 640px) {
+    .newsletter-signup--footer {
+      padding: 0 20px;
+    }
+
+    .newsletter-signup__inner {
+      padding: 20px 18px 18px;
+    }
+
+    .newsletter-signup__lead {
+      font-size: 19px;
+    }
+
+    .newsletter-signup__form {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .newsletter-signup__submit {
+      justify-content: center;
+    }
+  }
+</style>

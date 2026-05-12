@@ -446,6 +446,19 @@ export const OG_SLUGS: OGSlugDef[] = [
       lang: 'en',
     },
   },
+  // Plan 19 — newsletter archive card. Per-issue OG cards are deferred to
+  // v2 (each issue points at this index card via newsletter/[slug].astro).
+  {
+    slug: 'newsletter-index',
+    card: {
+      title: 'Updates when vibecrafted ships.',
+      subtitle: 'Operator-voice newsletter. One issue per real cut. No marketing, no drip, no popups.',
+      eyebrow: 'Newsletter',
+      fig: 'FIG. 19 · DWG VC-019',
+      accent: 'amber',
+      lang: 'en',
+    },
+  },
 ];
 
 export function findOGSlug(slug: string): OGSlugDef | undefined {

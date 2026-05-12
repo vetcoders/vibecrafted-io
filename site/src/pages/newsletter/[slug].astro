@@ -1,0 +1,535 @@
+---
+/**
+ * newsletter/[slug].astro — Plan 19 per-issue page.
+ *
+ * Static-generated for each entry in the `newsletter` content collection.
+ * Layout mirrors showcase/[slug]: sidebar nav between issues on desktop,
+ * stacked on mobile. Body renders the markdown content.
+ *
+ * Plan 17 OG strategy: per-issue OG card slug pattern is
+ * `newsletter-<issue-id>`. Falls back to `newsletter-index` if the
+ * per-issue slug isn't registered in OG_SLUGS (registry-driven, no
+ * runtime 404 risk).
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack on this route
+ *   - no popup, no scroll-triggered overlay, no tracking pixel
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const issues = await getCollection('newsletter');
+  return issues.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const allIssues = (await getCollection('newsletter')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const pageTitle = `${entry.data.title} — Vibecrafted newsletter`;
+const pageDescription = entry.data.summary;
+
+// Plan 17 — per-issue OG card lookup. The OG endpoint is registry-driven,
+// so even though we point at `/og/newsletter-<id>.png`, if the registry
+// only contains `newsletter-index`, the build-time endpoint emits the
+// fallback and we surface the index card. To stay correct: point at the
+// index card directly until per-issue cards are added to OG_SLUGS.
+const ogImagePath = `/og/newsletter-index.png`;
+---
+
+<LayoutV2
+  title={pageTitle}
+  description={pageDescription}
+  lang="en"
+  hasHero={false}
+  ogImage={ogImagePath}
+  ogType="article"
+  hideNewsletter={true}
+>
+  <article class="issue">
+    <div class="issue__inner">
+      <header class="issue__header">
+        <div class="issue__eyebrow-row">
+          <span class="issue__eyebrow">NEWSLETTER</span>
+          <div class="issue__top-actions">
+            <a class="issue__home" href="/newsletter/">
+              <span aria-hidden="true">←</span>
+              ALL ISSUES
+            </a>
+            <a class="issue__rss" href="/newsletter/rss.xml">
+              RSS <span aria-hidden="true">↗</span>
+            </a>
+            <span class="issue__fig">FIG. 19 · DWG VC-019</span>
+          </div>
+        </div>
+        <div class="issue__rule" aria-hidden="true"></div>
+
+        <h1 class="issue__title">{entry.data.title}</h1>
+
+        <p class="issue__lead">{entry.data.summary}</p>
+
+        <dl class="issue__meta">
+          <div class="issue__meta-row">
+            <dt class="issue__meta-label">Date</dt>
+            <dd class="issue__meta-value">{entry.data.date}</dd>
+          </div>
+          {entry.data.github_link && (
+            <div class="issue__meta-row">
+              <dt class="issue__meta-label">Source</dt>
+              <dd class="issue__meta-value">
+                <a class="issue__meta-link" href={entry.data.github_link} target="_blank" rel="noopener">
+                  GitHub <span aria-hidden="true">↗</span>
+                </a>
+              </dd>
+            </div>
+          )}
+        </dl>
+
+        {entry.data.lesson && (
+          <p class="issue__lesson">
+            <span class="issue__lesson-label">Lesson —</span>
+            <span class="issue__lesson-text">{entry.data.lesson}</span>
+          </p>
+        )}
+      </header>
+
+      <div class="issue__layout">
+        <div class="issue__prose">
+          <Content />
+        </div>
+
+        <aside class="issue__nav" aria-label="Other issues">
+          <div class="issue__nav-heading">Other issues</div>
+          {allIssues.length <= 1 ? (
+            <p class="issue__nav-empty">First issue. More land when cuts close.</p>
+          ) : (
+            <ul class="issue__nav-list">
+              {allIssues.map((other) => {
+                const isCurrent = other.id === entry.id;
+                return (
+                  <li class="issue__nav-item">
+                    <a
+                      class={isCurrent ? 'issue__nav-link is-current' : 'issue__nav-link'}
+                      href={`/newsletter/${other.id}/`}
+                      aria-current={isCurrent ? 'page' : undefined}
+                    >
+                      <span class="issue__nav-link-title">{other.data.title}</span>
+                      <span class="issue__nav-link-date">{other.data.date}</span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </aside>
+      </div>
+
+      <div class="issue__subscribe">
+        <NewsletterSignup variant="inline" lang="en" />
+      </div>
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .issue {
+    width: 100%;
+    background: var(--v2-ink, #080807);
+    color: var(--v2-fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .issue__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .issue__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--v2-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+  }
+
+  .issue__rule {
+    height: 1px;
+    background: var(--v2-rule-dark);
+    margin-bottom: 48px;
+  }
+
+  .issue__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .issue__home,
+  .issue__rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition: color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .issue__home:hover,
+  .issue__home:focus-visible,
+  .issue__rss:hover,
+  .issue__rss:focus-visible {
+    color: var(--v2-accent);
+    opacity: 1;
+  }
+
+  .issue__title {
+    font-family: var(--v2-font-display);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--v2-fg-on-dark);
+    margin: 0 0 24px;
+    max-width: 24ch;
+  }
+
+  .issue__lead {
+    font-family: var(--v2-font-body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--v2-fg-on-dark);
+    max-width: 60ch;
+    margin: 0 0 32px;
+  }
+
+  /* ── Meta ───────────────────────────────────────────────── */
+
+  .issue__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px 32px;
+    margin: 0 0 32px;
+    padding: 22px 24px;
+    border: 1px solid var(--v2-rule-dark);
+    border-radius: 2px;
+    background: rgba(14, 14, 12, 0.5);
+  }
+
+  .issue__meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .issue__meta-label {
+    font-family: var(--v2-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+    margin: 0;
+  }
+
+  .issue__meta-value {
+    font-family: var(--v2-font-body);
+    font-size: 15px;
+    color: var(--v2-fg-on-dark);
+    margin: 0;
+  }
+
+  .issue__meta-link {
+    color: var(--v2-accent);
+    text-decoration: none;
+  }
+
+  .issue__meta-link:hover,
+  .issue__meta-link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* ── Lesson banner ──────────────────────────────────────── */
+
+  .issue__lesson {
+    margin: 0 0 56px;
+    padding: 16px 20px;
+    border-left: 2px solid var(--v2-accent);
+    background: rgba(var(--v2-accent-rgb), 0.05);
+    color: var(--v2-fg-on-dark);
+    font-family: var(--v2-font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+
+  .issue__lesson-label {
+    font-family: var(--v2-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-accent);
+    margin-right: 6px;
+  }
+
+  .issue__lesson-text {
+    font-style: italic;
+  }
+
+  /* ── Layout: prose + sidebar ────────────────────────────── */
+
+  .issue__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .issue__prose {
+    font-family: var(--v2-font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-fg-on-dark);
+    min-width: 0;
+  }
+
+  .issue__prose :global(h2) {
+    font-family: var(--v2-font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.2;
+    color: var(--v2-fg-on-dark);
+    margin: 48px 0 18px;
+  }
+
+  .issue__prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .issue__prose :global(h3) {
+    font-family: var(--v2-font-display);
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--v2-fg-on-dark);
+    margin: 32px 0 12px;
+  }
+
+  .issue__prose :global(p) {
+    margin: 0 0 22px;
+    color: var(--v2-fg-on-dark);
+    max-width: 64ch;
+  }
+
+  .issue__prose :global(p em) {
+    color: var(--v2-fg-on-dark-dim);
+    font-style: italic;
+  }
+
+  .issue__prose :global(p strong) {
+    color: var(--v2-fg-on-dark);
+    font-weight: 600;
+  }
+
+  .issue__prose :global(p code),
+  .issue__prose :global(li code) {
+    font-family: var(--v2-font-mono);
+    font-size: 0.92em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: rgba(var(--v2-accent-rgb), 0.10);
+    color: var(--v2-fg-on-dark);
+  }
+
+  .issue__prose :global(a) {
+    color: var(--v2-accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--v2-accent-rgb), 0.4);
+  }
+
+  .issue__prose :global(a:hover),
+  .issue__prose :global(a:focus-visible) {
+    border-bottom-color: var(--v2-accent);
+  }
+
+  .issue__prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--v2-rule-dark);
+    margin: 40px 0;
+  }
+
+  .issue__prose :global(ul),
+  .issue__prose :global(ol) {
+    margin: 0 0 22px;
+    padding-left: 20px;
+    color: var(--v2-fg-on-dark);
+  }
+
+  .issue__prose :global(li) {
+    margin-bottom: 8px;
+  }
+
+  /* ── Sidebar nav ────────────────────────────────────────── */
+
+  .issue__nav {
+    position: sticky;
+    top: 96px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--v2-rule-dark);
+  }
+
+  .issue__nav-heading {
+    font-family: var(--v2-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+    margin: 0 0 16px;
+  }
+
+  .issue__nav-empty {
+    font-family: var(--v2-font-body);
+    font-size: 14px;
+    color: var(--v2-fg-on-dark-dim);
+    margin: 0;
+  }
+
+  .issue__nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .issue__nav-item {
+    margin: 0;
+  }
+
+  .issue__nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    margin: 0 -12px;
+    text-decoration: none;
+    color: var(--v2-fg-on-dark);
+    border-radius: 2px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .issue__nav-link:hover,
+  .issue__nav-link:focus-visible {
+    background: rgba(var(--v2-accent-rgb), 0.06);
+    color: var(--v2-accent);
+  }
+
+  .issue__nav-link.is-current {
+    background: rgba(var(--v2-accent-rgb), 0.08);
+    color: var(--v2-accent);
+    border-left: 2px solid var(--v2-accent);
+    padding-left: 14px;
+    margin-left: -14px;
+  }
+
+  .issue__nav-link-title {
+    font-family: var(--v2-font-body);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .issue__nav-link-date {
+    font-family: var(--v2-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+  }
+
+  /* ── Subscribe footer ───────────────────────────────────── */
+
+  .issue__subscribe {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--v2-rule-dark);
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 960px) {
+    .issue__layout {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .issue__nav {
+      position: static;
+      order: 2;
+      border-top: 1px solid var(--v2-rule-dark);
+      padding-top: 24px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .issue {
+      padding: 64px 0 88px;
+    }
+
+    .issue__inner {
+      padding: 0 20px;
+    }
+
+    .issue__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .issue__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .issue__rule {
+      margin-bottom: 36px;
+    }
+
+    .issue__meta {
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+      padding: 18px 20px;
+    }
+
+    .issue__prose {
+      font-size: 16px;
+    }
+
+    .issue__subscribe {
+      margin-top: 56px;
+    }
+  }
+</style>

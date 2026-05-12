@@ -62,9 +62,29 @@ const showcase = defineCollection({
   }),
 });
 
+// newsletter collection — Plan 19. Operator-voice updates published when
+// vibecrafted ships. Markdown-first; pushed to Buttondown via the
+// operator-side `scripts/buttondown-sync.sh` helper (env-gated, NOT
+// runtime). Frontmatter mirrors showcase shape so the rendering surface
+// stays familiar (title + date + summary). Optional `lesson` echoes the
+// shipping discipline; optional `github_link` cross-links to the cut that
+// motivated the issue. `summary` is required and feeds both archive cards
+// and RSS <description>.
+const newsletter = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/newsletter" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    summary: z.string(),
+    lesson: z.string().optional(),
+    github_link: z.url().optional(),
+  }),
+});
+
 export const collections = {
   pages,
   i18n,
   manifesto,
   showcase,
+  newsletter,
 };

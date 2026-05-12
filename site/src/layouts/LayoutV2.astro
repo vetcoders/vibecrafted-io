@@ -17,6 +17,7 @@ import SiteNavV2 from '../components/SiteNavV2.svelte';
 import SiteFooterV2 from '../components/SiteFooterV2.svelte';
 import SearchShellV2 from '../components/SearchShellV2.svelte';
 import SchemaOrg from '../components/SchemaOrg.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/tokens-v2.css';
 
@@ -38,6 +39,10 @@ interface Props {
   hideSearch?: boolean;
   /** Full-screen tools can own the ending of the page instead of rendering global footer chrome. */
   hideFooter?: boolean;
+  /** Plan 19 — newsletter signup block above the footer. On by default for
+   *  prose pages; opt out for full-screen interactive surfaces and for the
+   *  newsletter routes themselves (which embed the signup inline). */
+  hideNewsletter?: boolean;
 }
 
 const {
@@ -49,6 +54,7 @@ const {
   hasHero = false,
   hideSearch = false,
   hideFooter = false,
+  hideNewsletter = false,
 } = Astro.props as Props;
 
 // Plan 17 — Dynamic OG cards live under `/og/*.png` at 1200×630 (canonical
@@ -318,6 +324,11 @@ const jsonLd = JSON.stringify({
   <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
     <slot />
   </main>
+  {!hideFooter && !hideNewsletter && (
+    <div class="v2-newsletter-slot">
+      <NewsletterSignup variant="footer" lang={lang} />
+    </div>
+  )}
   {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
   {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
     <SearchShellV2
@@ -419,6 +430,18 @@ const jsonLd = JSON.stringify({
   }
   body.v2-scope .v2-main--subpage {
     padding-top: 72px;
+  }
+
+  /* Plan 19 — newsletter slot above the footer. Lightweight wrapper; the
+   * NewsletterSignup component owns its own max-width and padding. */
+  body.v2-scope .v2-newsletter-slot {
+    padding: 64px 0 16px;
+  }
+
+  @media (max-width: 720px) {
+    body.v2-scope .v2-newsletter-slot {
+      padding: 40px 0 8px;
+    }
   }
 
   body.v2-scope [data-scroll-fade] {
