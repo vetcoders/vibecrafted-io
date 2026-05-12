@@ -41,8 +41,30 @@ const manifesto = defineCollection({
   }),
 });
 
+// showcase collection — Plan 16. Three case studies of vibecrafted discipline
+// in production. Public-source-only per kronika 2026-05-09 doctrine
+// (no PII, no internal topology, no operator file paths, no internal report
+// identity). Renders at `/showcase/` (index) and `/showcase/[slug]/` (per
+// study). Markdown body holds the long-form prose; frontmatter holds the
+// meta surface (title, lesson, plan/agent counts, duration, optional
+// public GitHub link).
+const showcase = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/showcase" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    lesson: z.string(),
+    plan_count: z.number().optional(),
+    agent_count: z.number().optional(),
+    duration: z.string().optional(),
+    description: z.string(),
+    github_link: z.url().optional(),
+  }),
+});
+
 export const collections = {
   pages,
   i18n,
   manifesto,
+  showcase,
 };
