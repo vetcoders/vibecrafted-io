@@ -27,7 +27,22 @@ const i18n = defineCollection({
   }),
 });
 
+// manifesto collection — bilingual operator-voice manifesto rendered at
+// `/manifesto?lang=en|pl`. EN is the canonical source (mirrored from
+// `vibecrafted/docs/THE_VIBE_HANGOVER.md`). PL ships as a stub for v1 until
+// a human-curated translation lands.
+const manifesto = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/manifesto" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    lang: z.enum(["en", "pl"]),
+    status: z.enum(["canonical", "en-only-for-v1"]).optional(),
+  }),
+});
+
 export const collections = {
   pages,
   i18n,
+  manifesto,
 };
