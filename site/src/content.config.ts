@@ -81,10 +81,40 @@ const newsletter = defineCollection({
   }),
 });
 
+// docs collection — Plan 15. Public docs mirror sourced from the sibling
+// repo `../vibecrafted/docs/` via `scripts/sync-docs.sh`. DO NOT edit the
+// generated files in `site/src/content/docs/` directly — the sync script
+// overwrites them on every run. Edit upstream in `../vibecrafted/docs/`,
+// then re-run sync.
+//
+// Frontmatter shape is fixed by the sync script:
+//   title       — display title (canonical H1 of the source doc)
+//   description — single-line summary for nav cards + meta tags
+//   slug        — URL slug (lowercased basename with underscores->dashes)
+//   section     — sidebar nav grouping ("install" | "architecture" |
+//                 "skills" | "faq" | "release" | "other")
+//   lang        — currently "en" only (PL deferred to v2)
+//   syncedAt    — UTC date of last sync (YYYY-MM-DD)
+//   sourcePath  — origin file path (`docs/<NAME>.md` in sibling repo) for
+//                 operator-side debugging
+const docs = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/docs" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    slug: z.string(),
+    section: z.enum(["install", "architecture", "skills", "faq", "release", "other"]),
+    lang: z.enum(["en", "pl"]).default("en"),
+    syncedAt: z.string(),
+    sourcePath: z.string().optional(),
+  }),
+});
+
 export const collections = {
   pages,
   i18n,
   manifesto,
   showcase,
   newsletter,
+  docs,
 };

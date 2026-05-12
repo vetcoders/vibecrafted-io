@@ -459,6 +459,21 @@ export const OG_SLUGS: OGSlugDef[] = [
       lang: 'en',
     },
   },
+  // Plan 15 — shared docs OG card. All `/docs/<slug>/` pages render the same
+  // social card; per-slug cards are deferred to v2 (adds N images to the
+  // prerender budget with minimal payoff — docs traffic is search/direct,
+  // not social).
+  {
+    slug: 'docs-default',
+    card: {
+      title: 'The documentation that ships with vibecrafted.',
+      subtitle: 'Install, architecture, vc-* skills reference, release discipline, and FAQ. Same text the terminal reads.',
+      eyebrow: 'Docs',
+      fig: 'FIG. 15 · DWG VC-015',
+      accent: 'amber',
+      lang: 'en',
+    },
+  },
 ];
 
 export function findOGSlug(slug: string): OGSlugDef | undefined {
