@@ -198,7 +198,7 @@ export const en = {
     },
     problem: {
       headingHtml:
-        'Agent-built apps can look <em class="accent-2">done</em><br />while auth, data, payments, and deploy are still <em class="accent">fragile</em>',
+        'Agent-built apps can look done<br />while auth, data, payments, and deploy are still <em class="accent">fragile</em>',
       body: "Code generation gets you to a demo. Real users, money, security reviews, and the next developer expose the parts no prompt ever owned.",
       symptoms: [
         {

@@ -40,9 +40,12 @@
      rust narrative band; not aliased to --v2-accent any more. */
   --v2-copper: #cf6f4e;
   --v2-accent-red: #c0392b;
-  /* Teal (--v2-accent-2): DoU / Release / converged states,
-     second italic in "vibes/vectors" pattern. */
-  --v2-accent-2: #3d7a72;
+  /* --v2-accent-2 was the mint/teal narrative companion (#3d7a72) for the
+     "vibes/vectors" dual-keyword pattern. Removed from product surface — all
+     existing var(--accent-2) consumers now collapse to the primary amber so
+     the page stays monochrome on narrative italics. The token name is kept
+     as an alias to avoid touching every component / i18n string. */
+  --v2-accent-2: var(--v2-accent);
 
   /* ─── Rules (hairlines) ──────────────────────────────────── */
   --v2-rule-dark: rgba(245, 244, 239, 0.12);
