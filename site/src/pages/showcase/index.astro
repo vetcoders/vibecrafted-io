@@ -1,0 +1,341 @@
+---
+/**
+ * showcase/index.astro — Plan 16 landing for case studies.
+ *
+ * Three case studies of vibecrafted discipline in production:
+ *   1. Loctree LSP roadmap close-out (22 plans, parallel-truth audit)
+ *   2. Vista sealed-environment crypto alignment (F-001 close)
+ *   3. Audit-22 parallel-truth reconciliation (self-validating delivery)
+ *
+ * Public-source-only per kronika 2026-05-09 .github leak doctrine: no PII,
+ * no internal topology, no operator file paths, no internal report identity.
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack on this route
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import { getCollection } from 'astro:content';
+
+const studies = (await getCollection('showcase')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const pageTitle = 'Case studies — Vibecrafted';
+const pageDescription =
+  'Three case studies of vibecrafted discipline in production: Loctree LSP roadmap, Vista sealed environment, and audit-22 parallel-truth reconciliation.';
+---
+
+<LayoutV2 title={pageTitle} description={pageDescription} lang="en" hasHero={false} ogImage="/og/showcase-index.png">
+  <article class="showcase-index">
+    <div class="showcase-index__inner">
+      <header class="showcase-index__header">
+        <div class="showcase-index__eyebrow-row">
+          <span class="showcase-index__eyebrow">CASE STUDIES</span>
+          <div class="showcase-index__top-actions">
+            <a class="showcase-index__home" href="/">
+              <span aria-hidden="true">←</span>
+              BACK TO MAIN
+            </a>
+            <span class="showcase-index__fig">FIG. 16 · DWG VC-016</span>
+          </div>
+        </div>
+        <div class="showcase-index__rule" aria-hidden="true"></div>
+
+        <h1 class="showcase-index__title">
+          Three case studies of vibecrafted discipline in production.
+        </h1>
+        <p class="showcase-index__lead">
+          The framework was built by shipping with it. These are three deliveries
+          where the discipline showed up under pressure — a 22-plan LSP roadmap
+          audited against itself, a pre-launch desktop product whose smoke tests
+          were lying, and an audit cycle that captured its own race condition
+          live during shipping.
+        </p>
+      </header>
+
+      <ol class="showcase-index__list">
+        {studies.map((study, index) => (
+          <li class="showcase-index__item">
+            <a class="showcase-index__card" href={`/showcase/${study.id}/`}>
+              <div class="showcase-index__index-col" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </div>
+              <div class="showcase-index__body-col">
+                <div class="showcase-index__meta">
+                  <span class="showcase-index__meta-date">{study.data.date}</span>
+                  {study.data.duration && (
+                    <span class="showcase-index__meta-sep" aria-hidden="true">·</span>
+                    <span class="showcase-index__meta-duration">{study.data.duration}</span>
+                  )}
+                  {study.data.plan_count && (
+                    <span class="showcase-index__meta-sep" aria-hidden="true">·</span>
+                    <span class="showcase-index__meta-count">{study.data.plan_count} plans</span>
+                  )}
+                  {study.data.agent_count && (
+                    <span class="showcase-index__meta-sep" aria-hidden="true">·</span>
+                    <span class="showcase-index__meta-count">{study.data.agent_count} agents</span>
+                  )}
+                </div>
+                <h2 class="showcase-index__card-title">{study.data.title}</h2>
+                <p class="showcase-index__card-desc">{study.data.description}</p>
+                <p class="showcase-index__card-lesson">
+                  <span class="showcase-index__lesson-label">Lesson —</span>
+                  <span class="showcase-index__lesson-text">{study.data.lesson}</span>
+                </p>
+                <span class="showcase-index__card-cta">
+                  Read the case study <span aria-hidden="true">→</span>
+                </span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .showcase-index {
+    width: 100%;
+    background: var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .showcase-index__inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .showcase-index__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .showcase-index__rule {
+    height: 1px;
+    background: var(--rule-dark);
+    margin-bottom: 56px;
+  }
+
+  .showcase-index__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .showcase-index__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .showcase-index__home:hover,
+  .showcase-index__home:focus-visible {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .showcase-index__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--fg-on-dark);
+    margin: 0 0 28px;
+    max-width: 22ch;
+  }
+
+  .showcase-index__lead {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--fg-on-dark);
+    max-width: 64ch;
+    margin: 0 0 72px;
+  }
+
+  /* ── List ───────────────────────────────────────────────── */
+
+  .showcase-index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .showcase-index__item {
+    border-top: 1px solid var(--rule-dark);
+  }
+
+  .showcase-index__item:last-child {
+    border-bottom: 1px solid var(--rule-dark);
+  }
+
+  .showcase-index__card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 32px;
+    padding: 40px 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+  }
+
+  .showcase-index__card:hover,
+  .showcase-index__card:focus-visible {
+    background: rgba(var(--accent-rgb), 0.03);
+  }
+
+  .showcase-index__index-col {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    color: var(--fg-on-dark-mute);
+    padding-top: 6px;
+  }
+
+  .showcase-index__body-col {
+    min-width: 0;
+  }
+
+  .showcase-index__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-dim);
+    margin: 0 0 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .showcase-index__meta-sep {
+    opacity: 0.5;
+  }
+
+  .showcase-index__card-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(22px, 2.6vw, 30px);
+    line-height: 1.18;
+    color: var(--fg-on-dark);
+    margin: 0 0 14px;
+    max-width: 30ch;
+  }
+
+  .showcase-index__card-desc {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--fg-on-dark);
+    margin: 0 0 18px;
+    max-width: 60ch;
+  }
+
+  .showcase-index__card-lesson {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--fg-on-dark-dim);
+    margin: 0 0 22px;
+    max-width: 58ch;
+  }
+
+  .showcase-index__lesson-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+
+  .showcase-index__lesson-text {
+    font-style: italic;
+  }
+
+  .showcase-index__card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .showcase-index__card:hover .showcase-index__card-cta,
+  .showcase-index__card:focus-visible .showcase-index__card-cta {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .showcase-index {
+      padding: 64px 0 88px;
+    }
+
+    .showcase-index__inner {
+      padding: 0 20px;
+    }
+
+    .showcase-index__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .showcase-index__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .showcase-index__rule {
+      margin-bottom: 40px;
+    }
+
+    .showcase-index__lead {
+      margin-bottom: 48px;
+    }
+
+    .showcase-index__card {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 32px 0;
+    }
+
+    .showcase-index__index-col {
+      padding-top: 0;
+    }
+  }
+</style>

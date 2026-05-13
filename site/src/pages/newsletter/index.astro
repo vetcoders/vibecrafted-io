@@ -1,0 +1,349 @@
+---
+/**
+ * newsletter/index.astro — Plan 19 archive landing.
+ *
+ * Lists every entry in the `newsletter` content collection, sorted by date
+ * descending. Each card shows title + date + 1–2 sentence summary, linking
+ * to the per-issue route. Reuses the editorial blueprint patterns from
+ * showcase/index.astro for visual coherence.
+ *
+ * Includes the privacy-respecting <NewsletterSignup /> component at the
+ * top of the archive (operator-honest: archive readers are the most
+ * qualified signup audience). RSS link surfaced in the eyebrow row.
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack on this route
+ *   - no popup / modal / scroll-triggered overlay
+ *   - no tracking pixel
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { getCollection } from 'astro:content';
+
+const issues = (await getCollection('newsletter')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const pageTitle = 'Newsletter — Vibecrafted';
+const pageDescription =
+  'Operator-voice updates when vibecrafted ships. Markdown-first, no marketing, one issue per real cut.';
+---
+
+<LayoutV2
+  title={pageTitle}
+  description={pageDescription}
+  lang="en"
+  hasHero={false}
+  ogImage="/og/newsletter-index.png"
+  hideNewsletter={true}
+>
+  <article class="newsletter-index">
+    <div class="newsletter-index__inner">
+      <header class="newsletter-index__header">
+        <div class="newsletter-index__eyebrow-row">
+          <span class="newsletter-index__eyebrow">NEWSLETTER</span>
+          <div class="newsletter-index__top-actions">
+            <a class="newsletter-index__home" href="/">
+              <span aria-hidden="true">←</span>
+              BACK TO MAIN
+            </a>
+            <a class="newsletter-index__rss" href="/newsletter/rss.xml">
+              RSS <span aria-hidden="true">↗</span>
+            </a>
+            <span class="newsletter-index__fig">FIG. 19 · DWG VC-019</span>
+          </div>
+        </div>
+        <div class="newsletter-index__rule" aria-hidden="true"></div>
+
+        <h1 class="newsletter-index__title">
+          Updates when vibecrafted ships.
+        </h1>
+        <p class="newsletter-index__lead">
+          One issue per real cut. Operator-voice. Cross-linked to commits and
+          reports so you can verify the work yourself. No drip campaigns, no
+          gated content, no scroll-triggered popups.
+        </p>
+      </header>
+
+      <NewsletterSignup variant="inline" lang="en" />
+
+      {issues.length === 0 ? (
+        <p class="newsletter-index__empty">No issues yet. First one lands when the next cut closes.</p>
+      ) : (
+        <ol class="newsletter-index__list">
+          {issues.map((issue, index) => (
+            <li class="newsletter-index__item">
+              <a class="newsletter-index__card" href={`/newsletter/${issue.id}/`}>
+                <div class="newsletter-index__index-col" aria-hidden="true">
+                  {String(issues.length - index).padStart(2, '0')}
+                </div>
+                <div class="newsletter-index__body-col">
+                  <div class="newsletter-index__meta">
+                    <span class="newsletter-index__meta-date">{issue.data.date}</span>
+                  </div>
+                  <h2 class="newsletter-index__card-title">{issue.data.title}</h2>
+                  <p class="newsletter-index__card-desc">{issue.data.summary}</p>
+                  {issue.data.lesson && (
+                    <p class="newsletter-index__card-lesson">
+                      <span class="newsletter-index__lesson-label">Lesson —</span>
+                      <span class="newsletter-index__lesson-text">{issue.data.lesson}</span>
+                    </p>
+                  )}
+                  <span class="newsletter-index__card-cta">
+                    Read the issue <span aria-hidden="true">→</span>
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .newsletter-index {
+    width: 100%;
+    background: var(--v2-ink, #080807);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    padding: 96px 0 128px;
+  }
+
+  .newsletter-index__inner {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .newsletter-index__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--v2-font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+  }
+
+  .newsletter-index__rule {
+    height: 1px;
+    background: var(--v2-rule-dark);
+    margin-bottom: 56px;
+  }
+
+  .newsletter-index__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .newsletter-index__home,
+  .newsletter-index__rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition: color 0.15s ease, opacity 0.15s ease;
+  }
+
+  .newsletter-index__home:hover,
+  .newsletter-index__home:focus-visible,
+  .newsletter-index__rss:hover,
+  .newsletter-index__rss:focus-visible {
+    color: var(--v2-accent);
+    opacity: 1;
+  }
+
+  .newsletter-index__title {
+    font-family: var(--v2-font-display);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--v2-fg-on-dark);
+    margin: 0 0 28px;
+    max-width: 22ch;
+  }
+
+  .newsletter-index__lead {
+    font-family: var(--v2-font-body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--v2-fg-on-dark);
+    max-width: 64ch;
+    margin: 0 0 56px;
+  }
+
+  .newsletter-index__empty {
+    font-family: var(--v2-font-body);
+    font-size: 15px;
+    color: var(--v2-fg-on-dark-dim);
+    margin: 48px 0 0;
+  }
+
+  /* ── List ───────────────────────────────────────────────── */
+
+  .newsletter-index__list {
+    list-style: none;
+    margin: 56px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .newsletter-index__item {
+    border-top: 1px solid var(--v2-rule-dark);
+  }
+
+  .newsletter-index__item:last-child {
+    border-bottom: 1px solid var(--v2-rule-dark);
+  }
+
+  .newsletter-index__card {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 32px;
+    padding: 40px 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+  }
+
+  .newsletter-index__card:hover,
+  .newsletter-index__card:focus-visible {
+    background: rgba(var(--v2-accent-rgb), 0.03);
+  }
+
+  .newsletter-index__index-col {
+    font-family: var(--v2-font-mono);
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    color: var(--v2-fg-on-dark-mute);
+    padding-top: 6px;
+  }
+
+  .newsletter-index__body-col {
+    min-width: 0;
+  }
+
+  .newsletter-index__meta {
+    font-family: var(--v2-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute);
+    margin: 0 0 14px;
+  }
+
+  .newsletter-index__card-title {
+    font-family: var(--v2-font-display);
+    font-weight: 400;
+    font-size: clamp(22px, 2.6vw, 30px);
+    line-height: 1.18;
+    color: var(--v2-fg-on-dark);
+    margin: 0 0 14px;
+    max-width: 36ch;
+  }
+
+  .newsletter-index__card-desc {
+    font-family: var(--v2-font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--v2-fg-on-dark);
+    margin: 0 0 18px;
+    max-width: 60ch;
+  }
+
+  .newsletter-index__card-lesson {
+    font-family: var(--v2-font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--v2-fg-on-dark-dim);
+    margin: 0 0 22px;
+    max-width: 58ch;
+  }
+
+  .newsletter-index__lesson-label {
+    font-family: var(--v2-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-accent);
+    margin-right: 6px;
+  }
+
+  .newsletter-index__lesson-text {
+    font-style: italic;
+  }
+
+  .newsletter-index__card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--v2-font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-accent);
+  }
+
+  .newsletter-index__card:hover .newsletter-index__card-cta,
+  .newsletter-index__card:focus-visible .newsletter-index__card-cta {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .newsletter-index {
+      padding: 64px 0 88px;
+    }
+
+    .newsletter-index__inner {
+      padding: 0 20px;
+    }
+
+    .newsletter-index__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .newsletter-index__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .newsletter-index__rule {
+      margin-bottom: 40px;
+    }
+
+    .newsletter-index__lead {
+      margin-bottom: 48px;
+    }
+
+    .newsletter-index__card {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 32px 0;
+    }
+
+    .newsletter-index__index-col {
+      padding-top: 0;
+    }
+  }
+</style>

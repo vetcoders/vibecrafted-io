@@ -20,13 +20,16 @@
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",
     "@astrojs/svelte": "^8.0.4",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^6.1.5",
+    "satori": "^0.26.0",
     "sharp": "^0.34.5",
     "svelte": "^5.55.2",
     "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "devDependencies": {
-    "@astrojs/check": "^0.9.8"
+    "@astrojs/check": "^0.9.8",
+    "@types/node": "^25.7.0"
   }
 }

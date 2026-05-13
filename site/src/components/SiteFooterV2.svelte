@@ -30,6 +30,7 @@
     <nav class="v2footer__links" aria-label="Footer navigation">
       <a href={`/${lang}/quickstart/`}>{footer.quickstart}</a>
       <a href={`/${lang}/faq/`}>{footer.faq}</a>
+      <a href="/newsletter/">{lang === 'pl' ? 'Newsletter' : 'Newsletter'}</a>
       <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer" target="_blank">{footer.github}</a>
       <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">{footer.license}</a>
       <a href="https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">{footer.security}</a>

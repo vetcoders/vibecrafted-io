@@ -16,6 +16,8 @@ import type { Lang } from '../lib/i18n';
 import SiteNavV2 from '../components/SiteNavV2.svelte';
 import SiteFooterV2 from '../components/SiteFooterV2.svelte';
 import SearchShellV2 from '../components/SearchShellV2.svelte';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import { getDocsSearchData } from '../lib/search/docs';
 import '../styles/tokens-v2.css';
 
@@ -23,6 +25,10 @@ interface Props {
   title: string;
   description?: string;
   lang?: Lang;
+  /** Path to OG image. Defaults to `/presence/og-image.png` (legacy static).
+   * For Plan 17 dynamic OGs, pass a `/og/<slug>.png` path that matches
+   * an entry in `OG_SLUGS` (src/lib/og-renderer.ts). Dynamic OGs render
+   * at 1200×630 — the og:image:width/height meta below adapts automatically. */
   ogImage?: string;
   ogType?: string;
   /** When true, the page opens with a full-viewport hero that owns its own top
@@ -33,6 +39,10 @@ interface Props {
   hideSearch?: boolean;
   /** Full-screen tools can own the ending of the page instead of rendering global footer chrome. */
   hideFooter?: boolean;
+  /** Plan 19 — newsletter signup block above the footer. On by default for
+   *  prose pages; opt out for full-screen interactive surfaces and for the
+   *  newsletter routes themselves (which embed the signup inline). */
+  hideNewsletter?: boolean;
 }
 
 const {
@@ -44,7 +54,16 @@ const {
   hasHero = false,
   hideSearch = false,
   hideFooter = false,
+  hideNewsletter = false,
 } = Astro.props as Props;
+
+// Plan 17 — Dynamic OG cards live under `/og/*.png` at 1200×630 (canonical
+// social-card size). Legacy static OG at `/presence/og-image.png` ships at
+// 1536×1024. Detect which family this page uses and emit matching dimensions
+// so Facebook/X/LinkedIn don't have to guess.
+const isDynamicOG = ogImage.startsWith('/og/');
+const ogImageWidth = isDynamicOG ? '1200' : '1536';
+const ogImageHeight = isDynamicOG ? '630' : '1024';
 
 const currentPath = Astro.url.pathname;
 
@@ -103,8 +122,8 @@ const jsonLd = JSON.stringify({
   <meta content={title} property="og:title" />
   <meta content={description} property="og:description" />
   <meta content={ogImageUrl} property="og:image" />
-  <meta content="1536" property="og:image:width" />
-  <meta content="1024" property="og:image:height" />
+  <meta content={ogImageWidth} property="og:image:width" />
+  <meta content={ogImageHeight} property="og:image:height" />
   <meta content="image/png" property="og:image:type" />
   <meta content={description} property="og:image:alt" />
   <meta content={ogType} property="og:type" />
@@ -148,6 +167,7 @@ const jsonLd = JSON.stringify({
   />
 
   <script is:inline type="application/ld+json" set:html={jsonLd} />
+  <SchemaOrg siteUrl={siteUrl} />
   <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
   <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
   <script is:inline>
@@ -304,6 +324,11 @@ const jsonLd = JSON.stringify({
   <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
     <slot />
   </main>
+  {!hideFooter && !hideNewsletter && (
+    <div class="v2-newsletter-slot">
+      <NewsletterSignup variant="footer" lang={lang} />
+    </div>
+  )}
   {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
   {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
     <SearchShellV2
@@ -405,6 +430,18 @@ const jsonLd = JSON.stringify({
   }
   body.v2-scope .v2-main--subpage {
     padding-top: 72px;
+  }
+
+  /* Plan 19 — newsletter slot above the footer. Lightweight wrapper; the
+   * NewsletterSignup component owns its own max-width and padding. */
+  body.v2-scope .v2-newsletter-slot {
+    padding: 64px 0 16px;
+  }
+
+  @media (max-width: 720px) {
+    body.v2-scope .v2-newsletter-slot {
+      padding: 40px 0 8px;
+    }
   }
 
   body.v2-scope [data-scroll-fade] {
