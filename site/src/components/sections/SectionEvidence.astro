@@ -1,21 +1,37 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const chrome = getTranslations(lang).landingV2;
-const section = getTranslations(lang).v2Sections.evidenceWild;
+
+const evidenceEntry = await getEntry('i18n', `${lang}/evidence-v2`);
+if (!evidenceEntry) throw new Error(`Missing i18n entry: ${lang}/evidence-v2`);
+const section = evidenceEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+  patterns: Array<{
+    num: string;
+    label: string;
+    headline: string;
+    observation: string;
+    source: string;
+    accent: string;
+  }>;
+};
 ---
 
 <SectionShell
   number="08"
-  title={chrome.evidence.title}
-  centerLabel={chrome.evidence.centerLabel}
+  title={section.title}
+  centerLabel={section.centerLabel}
   figure="08 · DWG VC-008"
   surface="paper"
   seam="to-paper"

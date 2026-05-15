@@ -1,12 +1,34 @@
 <script lang="ts">
-  import { getTranslations, type Lang } from '../../lib/i18n';
+  import type { Lang } from '../../lib/i18n';
   import MarbleCanvasV2 from '../MarbleCanvasV2.svelte';
+
+  interface HeroData {
+    ariaLabel: string;
+    eyebrow: string;
+    heading: {
+      pre: string;
+      prefix: string;
+      emFirst: string;
+      mid: string;
+      emLast: string;
+    };
+    body: string;
+    ctaPrimary: string;
+    ctaSecondary: string;
+    telemetry: {
+      marbles: string;
+      converge: string;
+      live: string;
+    };
+    scroll: string;
+  }
 
   interface Props {
     lang?: Lang;
+    hero: HeroData;
   }
 
-  let { lang = 'en' }: Props = $props();
+  let { lang = 'en', hero }: Props = $props();
 
   let marbleCount = $state(0);
   let convergePct = $state(0);
@@ -18,7 +40,6 @@
 
   const pctLabel = $derived(String(convergePct).padStart(3, '0'));
   const countLabel = $derived(String(marbleCount).padStart(3, '0'));
-  const hero = $derived(getTranslations(lang).landingV2.hero);
   const headingLastWord = $derived(hero.heading.emLast.replace(/\.$/, ''));
   const headingLastDot = $derived(hero.heading.emLast.endsWith('.') ? '.' : '');
 
@@ -55,7 +76,7 @@
       </span>
     </h1>
     <p class="hero__body">
-      {hero.body}
+      {@html hero.body}
     </p>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
@@ -202,14 +223,14 @@
   }
 
   .hero--pl .hero__heading {
-    font-size: clamp(48px, 7.2vw, 94px);
+    font-size: clamp(40px, 6vw, 76px);
   }
 
   .hero--pl .hero__heading-line {
-    max-width: 16ch;
+    max-width: 20ch;
   }
 
-  .hero--en .hero__heading-em-first {
+  .hero__heading-em-first {
     font-style: normal;
     color: var(--accent);
   }
@@ -220,11 +241,16 @@
 
   .hero__body {
     font-family: var(--font-body);
-    font-size: clamp(16px, 1.2vw, 20px);
-    line-height: 1.5;
+    font-size: clamp(14px, 1vw, 17px);
+    line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    max-width: 52ch;
+    max-width: 56ch;
     margin: 0 0 40px;
+  }
+
+  .hero__body em {
+    font-style: normal;
+    color: var(--accent);
   }
 
   /* ── CTAs ───────────────────────────────────────────────── */

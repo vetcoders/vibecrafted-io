@@ -1,22 +1,58 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import QuickstartCarousel from '../QuickstartCarousel.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const chrome = getTranslations(lang).landingV2;
-const section = getTranslations(lang).v2Sections.quickstart;
+
+const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
+type CarouselStep = {
+  num: string;
+  verb: string;
+  accent: string;
+  state: number;
+  pct: string;
+  title: string;
+  body: string;
+  command: string;
+  lands: string[];
+};
+
+type CarouselData = {
+  ariaLabel: string;
+  slideAria: string;
+  landsLabel: string;
+  convergeLabel: string;
+  previousLabel: string;
+  nextLabel: string;
+  dotsLabel: string;
+  goToStep: string;
+  steps: CarouselStep[];
+};
+
+const section = quickstartEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  carousel: CarouselData;
+};
+
+const referencesEntry = await getEntry('i18n', `${lang}/references-v2`);
+if (!referencesEntry) throw new Error(`Missing i18n entry: ${lang}/references-v2`);
+const nextTitle = referencesEntry.data.title as string;
 ---
 
 <SectionShell
   number="06"
-  title={chrome.quickstart.title}
-  centerLabel={chrome.quickstart.centerLabel}
+  title={section.title}
+  centerLabel={section.centerLabel}
   figure="06 · DWG VC-006"
   surface="ink"
   seam="to-ink"
@@ -28,10 +64,10 @@ const section = getTranslations(lang).v2Sections.quickstart;
       <span class="brand-dot">.</span>
     </h2>
 
-    <QuickstartCarousel client:load lang={lang} />
+    <QuickstartCarousel client:load copy={section.carousel} />
   </div>
 
-  <SectionFooter nextNumber="07" nextTitle={chrome.references.title} surface="ink" lang={lang} />
+  <SectionFooter nextNumber="07" nextTitle={nextTitle} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

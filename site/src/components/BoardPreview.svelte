@@ -1,15 +1,4 @@
 <script lang="ts">
-  import { getTranslations, type Lang } from '../lib/i18n';
-
-  interface Props {
-    lang?: Lang;
-    initialTab?: 'board' | 'marbles' | 'dou';
-    dwg?: string;
-    timestamp?: string;
-    meta?: string;
-    class?: string;
-  }
-
   type Tab = 'board' | 'marbles' | 'dou';
 
   interface BoardRow {
@@ -37,8 +26,46 @@
     text: string;
   }
 
+  interface BoardPreviewCopy {
+    dwg: string;
+    timestamp: string;
+    meta: string;
+    metaLeft: string;
+    live: string;
+    tabsAria: string;
+    tabs: { board: string; marbles: string; dou: string };
+    boardHeaders: {
+      n: string;
+      phase: string;
+      marbles: string;
+      coverage: string;
+      state: string;
+    };
+    boardRows: BoardRow[];
+    marblesHeaders: {
+      time: string;
+      op: string;
+      phase: string;
+      marble: string;
+      status: string;
+    };
+    marblesLog: MarbleLogEntry[];
+    douItems: DouItem[];
+    ticksAria: string;
+    caption: string;
+  }
+
+  interface Props {
+    copy: BoardPreviewCopy;
+    initialTab?: 'board' | 'marbles' | 'dou';
+    dwg?: string;
+    timestamp?: string;
+    meta?: string;
+    class?: string;
+  }
+
   let {
-    lang = 'en',
+    copy,
     initialTab = 'board',
     dwg,
     timestamp,
@@ -49,7 +76,6 @@
   // svelte-ignore state_referenced_locally
   let activeTab = $state<Tab>(initialTab);
 
-  const copy = $derived(getTranslations(lang).v2Sections.operator.boardPreview);
   const resolvedDwg = $derived(dwg ?? copy.dwg);
   const resolvedTimestamp = $derived(timestamp ?? copy.timestamp);
   const resolvedMeta = $derived(meta ?? copy.meta);

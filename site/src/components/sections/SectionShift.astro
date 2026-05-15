@@ -1,25 +1,44 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const dict = getTranslations(lang);
-const chrome = dict.landingV2;
-const shift = dict.v2Sections.shift;
+
+type ShiftItem = { number: string; title: string; body: string };
+type ProofItem = { count: string; label: string };
+type ShiftData = {
+  title: string;
+  centerLabel: string;
+  heading: { first: string; firstAccent: string; second: string; secondAccent: string };
+  todayLabel: string;
+  vibecraftedLabel: string;
+  todayItems: ShiftItem[];
+  vibecraftedItems: ShiftItem[];
+  proofItems: ProofItem[];
+};
+
+const shiftEntry = await getEntry('i18n', `${lang}/shift-v2`);
+if (!shiftEntry) throw new Error(`Missing i18n entry: ${lang}/shift-v2`);
+const shift = shiftEntry.data as ShiftData;
 const todayItems = shift.todayItems;
 const vibecraftedItems = shift.vibecraftedItems;
 const proofItems = shift.proofItems;
+
+const frameworkEntry = await getEntry('i18n', `${lang}/framework-v2`);
+if (!frameworkEntry) throw new Error(`Missing i18n entry: ${lang}/framework-v2`);
+const nextTitle = frameworkEntry.data.title as string;
 ---
 
 <SectionShell
   number="03"
-  title={chrome.shift.title}
-  centerLabel={chrome.shift.centerLabel}
+  title={shift.title}
+  centerLabel={shift.centerLabel}
   figure="03 · DWG VC-003"
   surface="ink"
   seam="soft"
@@ -84,7 +103,7 @@ const proofItems = shift.proofItems;
     ))}
   </div>
 
-  <SectionFooter nextNumber="04" nextTitle={chrome.framework.title} surface="ink" lang={lang} />
+  <SectionFooter nextNumber="04" nextTitle={nextTitle} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

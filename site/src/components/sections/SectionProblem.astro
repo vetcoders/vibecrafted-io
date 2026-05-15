@@ -1,21 +1,34 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const chrome = getTranslations(lang).landingV2;
-const section = getTranslations(lang).v2Sections.problem;
+
+const problemEntry = await getEntry('i18n', `${lang}/problem-v2`);
+if (!problemEntry) throw new Error(`Missing i18n entry: ${lang}/problem-v2`);
+const section = problemEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  body: string;
+  symptoms: Array<{ label: string; body: string }>;
+};
+
+const engineeringEntry = await getEntry('i18n', `${lang}/engineering-v2`);
+if (!engineeringEntry) throw new Error(`Missing i18n entry: ${lang}/engineering-v2`);
+const nextTitle = engineeringEntry.data.title as string;
 ---
 
 <SectionShell
   number="01"
-  title={chrome.problem.title}
-  centerLabel={chrome.problem.centerLabel}
+  title={section.title}
+  centerLabel={section.centerLabel}
   figure="01"
   surface="paper"
   seam="to-paper"
@@ -38,7 +51,7 @@ const section = getTranslations(lang).v2Sections.problem;
     ))}
   </div>
 
-  <SectionFooter nextNumber="02" nextTitle={chrome.engineering.title} surface="paper" lang={lang} />
+  <SectionFooter nextNumber="02" nextTitle={nextTitle} surface="paper" lang={lang} />
 </SectionShell>
 
 <style>

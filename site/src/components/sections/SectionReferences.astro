@@ -1,15 +1,27 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props;
-const chrome = getTranslations(lang).landingV2;
-const section = getTranslations(lang).v2Sections.referencesLanding;
+
+const referencesEntry = await getEntry('i18n', `${lang}/references-v2`);
+if (!referencesEntry) throw new Error(`Missing i18n entry: ${lang}/references-v2`);
+const section = referencesEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+};
+
+const evidenceEntry = await getEntry('i18n', `${lang}/evidence-v2`);
+if (!evidenceEntry) throw new Error(`Missing i18n entry: ${lang}/evidence-v2`);
+const nextTitle = evidenceEntry.data.title as string;
 
 interface Reference {
   num: string;
@@ -136,8 +148,8 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
 
 <SectionShell
   number="07"
-  title={chrome.references.title}
-  centerLabel={chrome.references.centerLabel}
+  title={section.title}
+  centerLabel={section.centerLabel}
   figure="07 · DWG VC-007"
   surface="ink"
   seam="soft"
@@ -168,7 +180,7 @@ const references: Reference[] = lang === 'pl' ? references_pl : references_en;
     </div>
   </div>
 
-  <SectionFooter nextNumber="08" nextTitle={chrome.evidence.title} surface="ink" lang={lang} />
+  <SectionFooter nextNumber="08" nextTitle={nextTitle} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

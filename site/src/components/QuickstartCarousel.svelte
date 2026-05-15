@@ -1,16 +1,38 @@
 <script lang="ts">
   import MicroBoard from './MicroBoard.svelte';
-  import { getTranslations, type Lang } from '../lib/i18n';
 
   type BoardAccent = 'default' | 'teal';
 
-  interface Props {
-    lang?: Lang;
+  interface CarouselStep {
+    num: string;
+    verb: string;
+    accent: string;
+    state: number;
+    pct: string;
+    title: string;
+    body: string;
+    command: string;
+    lands: string[];
   }
 
-  let { lang = 'en' }: Props = $props();
+  interface CarouselCopy {
+    ariaLabel: string;
+    slideAria: string;
+    landsLabel: string;
+    convergeLabel: string;
+    previousLabel: string;
+    nextLabel: string;
+    dotsLabel: string;
+    goToStep: string;
+    steps: CarouselStep[];
+  }
 
-  const copy = $derived(getTranslations(lang).v2Sections.quickstart.carousel);
+  interface Props {
+    copy: CarouselCopy;
+  }
+
+  let { copy }: Props = $props();
+
   const steps = $derived(copy.steps);
 
   let activeIndex = $state(0);

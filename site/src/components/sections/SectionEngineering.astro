@@ -1,4 +1,5 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import EngineeringCard from '../EngineeringCard.svelte';
@@ -9,8 +10,17 @@ interface Props {
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const chrome = getTranslations(lang).landingV2;
+// Engineering V2 markdown is chrome-only; axioms body still lives in
+// sections.evidence (V1 dict) so we keep that import.
+const engineeringEntry = await getEntry('i18n', `${lang}/engineering-v2`);
+if (!engineeringEntry) throw new Error(`Missing i18n entry: ${lang}/engineering-v2`);
+const chromeData = engineeringEntry.data as { title: string; centerLabel: string };
+
 const section = getTranslations(lang).sections.evidence;
+
+const shiftEntry = await getEntry('i18n', `${lang}/shift-v2`);
+if (!shiftEntry) throw new Error(`Missing i18n entry: ${lang}/shift-v2`);
+const nextTitle = shiftEntry.data.title as string;
 
 function mapAccent(accent: string): 'default' | 'rust' | 'teal' {
   if (accent === 'copper') return 'rust';
@@ -21,8 +31,8 @@ function mapAccent(accent: string): 'default' | 'rust' | 'teal' {
 
 <SectionShell
   number="02"
-  title={chrome.engineering.title}
-  centerLabel={chrome.engineering.centerLabel}
+  title={chromeData.title}
+  centerLabel={chromeData.centerLabel}
   figure="02 · DWG VC-002"
   surface="ink"
   seam="to-ink"
@@ -50,7 +60,7 @@ function mapAccent(accent: string): 'default' | 'rust' | 'teal' {
     </div>
   </div>
 
-  <SectionFooter nextNumber="03" nextTitle={chrome.shift.title} surface="ink" lang={lang} />
+  <SectionFooter nextNumber="03" nextTitle={nextTitle} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

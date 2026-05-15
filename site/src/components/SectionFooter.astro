@@ -1,5 +1,6 @@
 ---
-import { getTranslations, type Lang } from '../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../lib/i18n';
 
 interface Props {
   nextNumber: string;
@@ -10,7 +11,12 @@ interface Props {
 }
 
 const { nextNumber, nextTitle, surface = 'ink', class: className, lang = 'en' } = Astro.props as Props;
-const label = getTranslations(lang).landingV2.footer.continues
+
+const footerEntry = await getEntry('i18n', `${lang}/footer-v2`);
+if (!footerEntry) throw new Error(`Missing i18n entry: ${lang}/footer-v2`);
+const template = (footerEntry.data as { continues: string }).continues;
+
+const label = template
   .replace('{number}', nextNumber)
   .replace('{title}', nextTitle);
 ---

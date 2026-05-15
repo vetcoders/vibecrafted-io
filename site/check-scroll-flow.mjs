@@ -18,7 +18,10 @@ const verticalScrollSurfaces = {
   'src/components/sections/HeroSection.astro': read('src/components/sections/HeroSection.astro'),
 };
 const frameworkSection = read('src/components/sections/SectionFramework.astro');
-const englishCopy = read('src/lib/i18n/en.ts');
+// Etap B migration: hero copy moved from `src/lib/i18n/en.ts` (landingV2.hero)
+// to the content collection `src/content/i18n/en/hero-v2.md`. Smoke now reads
+// the markdown directly so the assertions stay tied to the canonical source.
+const englishCopy = read('src/content/i18n/en/hero-v2.md');
 const heroSection = verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'];
 
 for (const [file, source] of Object.entries(verticalScrollSurfaces)) {
@@ -64,8 +67,8 @@ assert.match(
 );
 assert.match(
   heroSection,
-  /\.hero--en \.hero__heading-em-first \{[\s\S]*color:\s*var\(--accent\)/,
-  'English hero should accent AI-built, not the final word.',
+  /\.hero__heading-em-first \{[\s\S]*color:\s*var\(--accent\)/,
+  'Hero emFirst (AI-built / w produkt) should keep the gold accent.',
 );
 assert.match(englishCopy, /emFirst:\s*"AI-built"/, 'English hero should say AI-built.');
 assert.doesNotMatch(englishCopy, /AI-developed/, 'English hero should not use ambiguous AI-developed wording.');

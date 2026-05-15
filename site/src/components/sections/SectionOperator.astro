@@ -1,22 +1,76 @@
 ---
+import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import BoardPreview from '../BoardPreview.svelte';
-import { getTranslations, type Lang } from '../../lib/i18n';
+import type { Lang } from '../../lib/i18n';
 
 interface Props {
   lang?: Lang;
 }
 
 const { lang = 'en' } = Astro.props as Props;
-const chrome = getTranslations(lang).landingV2;
-const section = getTranslations(lang).v2Sections.operator;
+
+const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
+const section = operatorEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  installSteps: Array<{ step: string; command: string; note: string }>;
+  shotHeadingHtml: string;
+  shotBody: string;
+  bullets: Array<{ title: string; body: string }>;
+  practicesLabel: string;
+  practices: string[];
+  boardPreview: BoardPreviewData;
+};
+
+type BoardPreviewData = {
+  dwg: string;
+  timestamp: string;
+  meta: string;
+  metaLeft: string;
+  live: string;
+  tabsAria: string;
+  tabs: { board: string; marbles: string; dou: string };
+  boardHeaders: { n: string; phase: string; marbles: string; coverage: string; state: string };
+  boardRows: Array<{
+    num: string;
+    phase: string;
+    marbles: string;
+    coverage: number;
+    pct: string;
+    state: 'converged' | 'active' | 'waiting' | 'blocked';
+    stateLabel: string;
+  }>;
+  marblesHeaders: { time: string; op: string; phase: string; marble: string; status: string };
+  marblesLog: Array<{
+    ts: string;
+    op: string;
+    phase: string;
+    msg: string;
+    status: 'ok' | 'rej';
+  }>;
+  douItems: Array<{
+    num: string;
+    severity: 'warn' | 'block';
+    phase: string;
+    text: string;
+  }>;
+  ticksAria: string;
+  caption: string;
+};
+
+const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
+const nextTitle = quickstartEntry.data.title as string;
 ---
 
 <SectionShell
   number="05"
-  title={chrome.operator.title}
-  centerLabel={chrome.operator.centerLabel}
+  title={section.title}
+  centerLabel={section.centerLabel}
   figure="05 · DWG VC-005"
   surface="paper"
   seam="to-paper"
@@ -57,7 +111,7 @@ const section = getTranslations(lang).v2Sections.operator;
       </div>
 
       <div class="op__shot-right">
-        <BoardPreview client:visible lang={lang} />
+        <BoardPreview client:visible copy={section.boardPreview} />
       </div>
     </div>
 
@@ -69,7 +123,7 @@ const section = getTranslations(lang).v2Sections.operator;
     </div>
   </div>
 
-  <SectionFooter nextNumber="06" nextTitle={chrome.quickstart.title} surface="paper" lang={lang} />
+  <SectionFooter nextNumber="06" nextTitle={nextTitle} surface="paper" lang={lang} />
 </SectionShell>
 
 <style>

@@ -5,7 +5,7 @@ lesson: "Frontier SoTA means a future auditor reading the test cannot construct 
 plan_count: 22
 agent_count: 6
 duration: "6 weeks"
-github_link: "https://github.com/Loctree/loctree-suite"
+github_link: "https://github.com/Loctree/loctree-ast"
 description: "A 22-plan LSP roadmap was declared complete. Six parallel Opus agents and one adversarial codex audit found out what 'complete' actually meant."
 ---
 
@@ -59,13 +59,13 @@ Three things became load-bearing after this audit:
 
 **Two — a contract is not a doc, it's a test.** Both P1s were contract drift. Both contracts were documented. Neither was asserted as code. A documented contract with no test asserting it is a wish, not a contract.
 
-**Three — "complete" is a falsifier-resistance claim.** When you say a roadmap is done, you are not saying every test passes. You are saying: *I have anticipated what a future auditor will probe, and I have made those probes fail to find anything.* That is the SoTA bar. The audit is the proof.
+**Three — "complete" is a falsifier-resistance claim.** When you say a roadmap is done, you are not saying every test passes. You are saying: _I have anticipated what a future auditor will probe, and I have made those probes fail to find anything._ That is the SoTA bar. The audit is the proof.
 
 ## What shipped
 
-- 22 plans landed in `loctree-lsp` with public commits on the Loctree suite.
+- 22 plans landed in `loctree-lsp` with public commits on the `loctree-ast` repository.
 - Master verdict downgraded honestly from `PASS_WITH_GAPS` to `PARTIAL` after parallel-truth reconciliation.
 - Two P1 wire breaks documented with reproduction steps and routed to a meta-marbles iteration for closure.
 - A working pattern for multi-agent audits with adversarial cross-verification, now reusable across the framework.
 
-Public artifacts live in the [Loctree suite repository](https://github.com/Loctree/loctree-suite).
+Public artifacts live in the [`loctree-ast` repository](https://github.com/Loctree/loctree-ast).
