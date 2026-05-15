@@ -16,11 +16,18 @@ DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 # BUNDLE_ROOT in this repo tracks it and holds the signed tarball that
 # later syncs into site/public/ via scripts/sync_site_release_assets.py.
 #
-# Keep the default portable: prefer a sibling/local framework checkout, while
-# still allowing explicit CI/operator overrides:
+# Source of truth for upstream path: `.framework` pointer file at repo root.
+# It carries a relative or absolute path to the upstream checkout (e.g.
+# `../vibecrafted`). The pointer is the first candidate; the rest of the
+# legacy candidates stay as fallback for environments that haven't seeded
+# the pointer yet. Explicit override always wins:
 #   make bundle-build UPSTREAM_ROOT=/path/to/VibeCrafted
 REPO_PARENT := $(abspath $(CURDIR)/..)
+FRAMEWORK_POINTER_FILE := $(CURDIR)/.framework
+FRAMEWORK_POINTER := $(strip $(shell [ -f "$(FRAMEWORK_POINTER_FILE)" ] && cat "$(FRAMEWORK_POINTER_FILE)" 2>/dev/null))
+FRAMEWORK_POINTER_ABS := $(if $(FRAMEWORK_POINTER),$(abspath $(CURDIR)/$(FRAMEWORK_POINTER)))
 UPSTREAM_ROOT_CANDIDATES := \
+	$(FRAMEWORK_POINTER_ABS) \
 	$(REPO_PARENT)/VibeCrafted \
 	$(REPO_PARENT)/vibecrafted \
 	$(HOME)/Git/VibeCrafted \
