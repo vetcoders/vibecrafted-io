@@ -19,6 +19,7 @@ import SearchShellV2 from '../components/SearchShellV2.svelte';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
 import { getDocsSearchData } from '../lib/search/docs';
+import { getLocaleAlternates, getAlternateLocale } from '../lib/seo/hreflang';
 import '../styles/tokens-v2.css';
 
 interface Props {
@@ -90,6 +91,8 @@ const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(
 const canonicalUrl = new URL(canonicalPath || '/', siteUrl).href;
 const ogImageUrl = new URL(ogImage, siteUrl).href;
 const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
+const alternates = getLocaleAlternates(canonicalPath || '/');
+const alternateOgLocale = getAlternateLocale(lang);
 
 const jsonLd = JSON.stringify({
   '@context': 'https://schema.org',
@@ -130,6 +133,7 @@ const jsonLd = JSON.stringify({
   <meta content={canonicalUrl} property="og:url" />
   <meta content="Vibecrafted" property="og:site_name" />
   <meta content={ogLocale} property="og:locale" />
+  {alternates && <meta content={alternateOgLocale} property="og:locale:alternate" />}
   <meta content="summary_large_image" name="twitter:card" />
   <meta content={title} name="twitter:title" />
   <meta content={description} name="twitter:description" />
@@ -156,6 +160,11 @@ const jsonLd = JSON.stringify({
     ].join('; ')}
   />
   <link href={canonicalUrl} rel="canonical" />
+  {alternates && <>
+    <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
+    <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
+    <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
+  </>}
   <link href="/presence/favicon.ico" rel="icon" sizes="32x32" />
   <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png" />
   <link href="/presence/logo-128.png" rel="apple-touch-icon" />

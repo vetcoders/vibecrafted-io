@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import logo32 from '../assets/presence/logo-32.png';
 import { getTranslations } from '../lib/i18n';
+import { getLocaleAlternates, getAlternateLocale } from '../lib/seo/hreflang';
 import '../styles/global.css';
 import '../styles/tokens-v2.css';
 
@@ -15,9 +16,12 @@ interface Props {
 const { title, description, lang = 'en' } = Astro.props;
 
 const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
-const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
+const canonicalUrl = new URL(canonicalPath || '/', siteUrl).href;
 const ogImageUrl = new URL('/presence/og-image.png', siteUrl).href;
 const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
+const alternates = getLocaleAlternates(canonicalPath || '/');
+const alternateOgLocale = getAlternateLocale(lang);
 const dict = getTranslations(lang);
 const navLabels = dict.nav;
 const footer = dict.footer;
@@ -49,6 +53,7 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     <meta content={canonicalUrl} property="og:url">
     <meta content="Vibecrafted" property="og:site_name">
     <meta content={ogLocale} property="og:locale">
+    {alternates && <meta content={alternateOgLocale} property="og:locale:alternate" />}
     <meta content="summary_large_image" name="twitter:card">
     <meta content={title} name="twitter:title">
     <meta content={resolvedDescription} name="twitter:description">
@@ -57,6 +62,11 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     <meta content="index,follow" name="robots">
     <meta content="#0e0e11" name="theme-color">
     <link href={canonicalUrl} rel="canonical">
+    {alternates && <>
+      <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
+      <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
+      <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
+    </>}
     <link href="/presence/favicon.ico" rel="icon" sizes="32x32">
     <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png">
     <link href="/presence/logo-128.png" rel="apple-touch-icon">
