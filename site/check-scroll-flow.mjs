@@ -15,7 +15,6 @@ const verticalScrollSurfaces = {
   'src/styles/global.css': read('src/styles/global.css'),
   'src/components/SectionShell.astro': read('src/components/SectionShell.astro'),
   'src/components/sections/HeroSectionV2.svelte': read('src/components/sections/HeroSectionV2.svelte'),
-  'src/components/sections/HeroSection.astro': read('src/components/sections/HeroSection.astro'),
 };
 const frameworkSection = read('src/components/sections/SectionFramework.astro');
 // Etap B migration: hero copy moved from `src/lib/i18n/en.ts` (landingV2.hero)
