@@ -15,8 +15,6 @@ export interface DocsSearchItem {
 
 export interface DocsSearchData {
   emptyLabel: string;
-  fallbackLabel: string;
-  fallbackLinks: { href: string; label: string }[];
   items: DocsSearchItem[];
   noResultsLabel: string;
   placeholder: string;

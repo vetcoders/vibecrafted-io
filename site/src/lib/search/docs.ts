@@ -22,14 +22,7 @@ export { searchDocs } from "./docs-search";
 // Inline shapes mirroring the i18n collection documents. The collection uses
 // .passthrough() so frontmatter is typed as unknown Record; these inline
 // interfaces describe exactly what docs.ts consumes. Keep aligned with
-// site/src/content/i18n/{en,pl}/{quickstartHero,quickstartSteps,quickstartResources,faqHero,faqContent}.md
-interface QuickstartHeroData {
-  primaryHref: string;
-  primaryLabel: string;
-  secondaryHref: string;
-  secondaryLabel: string;
-}
-
+// site/src/content/i18n/{en,pl}/{quickstartSteps,quickstartResources,faqContent}.md
 type QuickstartStep =
   | {
       kicker: string;
@@ -58,13 +51,6 @@ interface QuickstartResourceCard {
 
 interface QuickstartResourcesData {
   cards: QuickstartResourceCard[];
-}
-
-interface FaqHeroData {
-  primaryHref: string;
-  primaryLabel: string;
-  secondaryHref: string;
-  secondaryLabel: string;
 }
 
 interface FaqItem {
@@ -113,10 +99,8 @@ function toKeywords(...values: string[]) {
 }
 
 function getQuickstartItems(
-  hero: QuickstartHeroData,
   steps: QuickstartStepsData,
   resources: QuickstartResourcesData,
-  lang: Lang,
 ) {
   const stepItems = steps.steps.map((step, index) => ({
     href: `#quickstart-step-${index + 1}`,
@@ -147,24 +131,11 @@ function getQuickstartItems(
   }));
 
   return {
-    fallbackLinks: [
-      { href: hero.primaryHref, label: hero.primaryLabel },
-      { href: hero.secondaryHref, label: hero.secondaryLabel },
-      { href: "#quickstart-steps", label: lang === "pl" ? "Kroki" : "Steps" },
-      {
-        href: "#quickstart-resources",
-        label: lang === "pl" ? "Zasoby" : "Resources",
-      },
-    ],
     items: [...stepItems, ...resourceCards],
   };
 }
 
-function getFaqItems(
-  hero: FaqHeroData,
-  content: FaqContentData,
-  lang: Lang,
-) {
+function getFaqItems(content: FaqContentData) {
   const items = content.groups.flatMap((group, groupIndex) =>
     group.items.map((item, itemIndex) => ({
       href: `#faq-${groupIndex + 1}-${itemIndex + 1}`,
@@ -180,14 +151,6 @@ function getFaqItems(
   );
 
   return {
-    fallbackLinks: [
-      { href: hero.primaryHref, label: hero.primaryLabel },
-      { href: hero.secondaryHref, label: hero.secondaryLabel },
-      {
-        href: "#faq-content",
-        label: lang === "pl" ? "Sekcje FAQ" : "FAQ sections",
-      },
-    ],
     items,
   };
 }
@@ -246,15 +209,10 @@ function prefixItems(
 
 async function loadSection<T>(
   lang: Lang,
-  name:
-    | "quickstartHero"
-    | "quickstartSteps"
-    | "quickstartResources"
-    | "faqHero"
-    | "faqContent",
+  name: "quickstartSteps" | "quickstartResources" | "faqContent",
 ): Promise<T> {
-  // Astro glob loader lowercases entry IDs; file `quickstartHero.md` has id
-  // `quickstarthero`. Match the lookup to the store.
+  // Astro glob loader lowercases entry IDs; file `quickstartSteps.md` has id
+  // `quickstartsteps`. Match the lookup to the store.
   const id = `${lang}/${name.toLowerCase()}`;
   const entry = await getEntry("i18n", id);
   if (!entry) {
@@ -267,31 +225,22 @@ export async function getDocsSearchData(
   lang: Lang,
   sectionName: DocsSearchSection,
 ): Promise<DocsSearchData> {
-  const [quickstartHero, quickstartSteps, quickstartResources, faqHero, faqContent] =
-    await Promise.all([
-      loadSection<QuickstartHeroData>(lang, "quickstartHero"),
-      loadSection<QuickstartStepsData>(lang, "quickstartSteps"),
-      loadSection<QuickstartResourcesData>(lang, "quickstartResources"),
-      loadSection<FaqHeroData>(lang, "faqHero"),
-      loadSection<FaqContentData>(lang, "faqContent"),
-    ]);
+  const [quickstartSteps, quickstartResources, faqContent] = await Promise.all([
+    loadSection<QuickstartStepsData>(lang, "quickstartSteps"),
+    loadSection<QuickstartResourcesData>(lang, "quickstartResources"),
+    loadSection<FaqContentData>(lang, "faqContent"),
+  ]);
 
   const quickstartHref = lang === "pl" ? "/pl/quickstart/" : "/en/quickstart/";
   const faqHref = lang === "pl" ? "/pl/faq/" : "/en/faq/";
-  const quickstart = getQuickstartItems(
-    quickstartHero,
-    quickstartSteps,
-    quickstartResources,
-    lang,
-  );
-  const faq = getFaqItems(faqHero, faqContent, lang);
+  const quickstart = getQuickstartItems(quickstartSteps, quickstartResources);
+  const faq = getFaqItems(faqContent);
   const globalSurfaces = getGlobalSurfaceItems(lang);
 
   const ui =
     lang === "pl"
       ? {
           emptyLabel: "Wpisz pytanie, komendę albo powierzchnię produktu.",
-          fallbackLabel: "Skoki awaryjne",
           noResultsLabel:
             "Brak mocnego trafienia. Skorzystaj z najbliższych wejść poniżej.",
           placeholder:
@@ -305,7 +254,6 @@ export async function getDocsSearchData(
       : {
           emptyLabel:
             "Ask for a command, product surface, or operating question.",
-          fallbackLabel: "Fast paths",
           noResultsLabel:
             "No strong match yet. Use the closest entry points below.",
           placeholder:
@@ -320,15 +268,6 @@ export async function getDocsSearchData(
   if (sectionName === "all") {
     return {
       ...ui,
-      fallbackLinks: [
-        { href: globalSurfaces[0].href, label: globalSurfaces[0].title },
-        { href: globalSurfaces[1].href, label: globalSurfaces[1].title },
-        {
-          href: quickstart.fallbackLinks[0].href,
-          label: quickstart.fallbackLinks[0].label,
-        },
-        { href: faq.fallbackLinks[0].href, label: faq.fallbackLinks[0].label },
-      ],
       items: [
         ...globalSurfaces,
         ...prefixItems(quickstart.items, quickstartHref),
@@ -340,15 +279,12 @@ export async function getDocsSearchData(
   if (sectionName === "quickstart") {
     return {
       ...ui,
-      fallbackLinks: quickstart.fallbackLinks,
       items: quickstart.items,
     };
   }
 
   return {
     ...ui,
-    fallbackLinks: faq.fallbackLinks,
     items: faq.items,
   };
 }
-

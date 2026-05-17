@@ -25,6 +25,14 @@
   }: Props = $props();
 
   const dict = $derived(getTranslations(lang));
+  const shortcutsLabel = $derived(dict.v2Chrome.search.fastPathsLabel);
+  const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');
+  const shortcuts = $derived([
+    { label: dict.v2Chrome.search.fastPaths.framework, href: `${langPrefix}/framework/` },
+    { label: dict.v2Chrome.search.fastPaths.install, href: `${langPrefix}/install/` },
+    { label: dict.v2Chrome.search.fastPaths.quickstart, href: `${langPrefix}/quickstart/` },
+    { label: dict.v2Chrome.search.fastPaths.overview, href: lang === 'pl' ? '/pl/' : '/' },
+  ]);
 
   let query = $state('');
   // svelte-ignore state_referenced_locally
@@ -247,9 +255,9 @@
         <p class="search-shell__hint">
           {hasQuery ? searchData.noResultsLabel : searchData.emptyLabel}
         </p>
-        <div class="search-shell__section-label">{searchData.fallbackLabel}</div>
+        <div class="search-shell__section-label">{shortcutsLabel}</div>
         <div class="search-shell__fast-paths">
-          {#each searchData.fallbackLinks as link}
+          {#each shortcuts as link}
             <a class="search-shell__fast-path" href={link.href}>{link.label}</a>
           {/each}
         </div>
