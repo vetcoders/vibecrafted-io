@@ -18,5 +18,9 @@ export default defineConfig({
     '/framework': '/en/framework/',
     '/install': '/en/install/',
     '/quickstart': '/en/quickstart/',
+    '/presence/faq': '/en/faq/',
+    '/presence/framework': '/en/framework/',
+    '/presence/install': '/en/install/',
+    '/presence/quickstart': '/en/quickstart/',
   },
 });

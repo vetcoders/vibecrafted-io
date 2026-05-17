@@ -35,9 +35,6 @@ const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
 function normalizeCanonicalPath(pathname: string) {
   const normalized = pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
   if (normalized === '/') return '/en/';
-  if (normalized === '/presence/quickstart/') return '/en/quickstart/';
-  if (normalized === '/presence/framework/') return '/en/framework/';
-  if (normalized === '/presence/faq/') return '/en/faq/';
   return normalized;
 }
 
