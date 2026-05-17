@@ -31,8 +31,8 @@
  * hairline rule, title (Instrument Serif), italic subtitle, accent stripe
  * bottom-left, vibecrafted.io wordmark bottom-right.
  */
-import satori from 'satori';
-import { Resvg } from '@resvg/resvg-js';
+import satori from "satori";
+import { Resvg } from "@resvg/resvg-js";
 
 // Vite-canonical font import: `?inline` returns the file content as a
 // base64 data URI string at build time. We strip the prefix and decode
@@ -44,23 +44,23 @@ import { Resvg } from '@resvg/resvg-js';
 // Alternative considered: `?url` resolves to `dist/_astro/<hash>.ttf` at
 // runtime, but the prerender chunk runs BEFORE the asset rearrange step
 // completes, so the URL points at a path that doesn't exist yet.
-import interRegular from '../assets/fonts/Inter-Regular.ttf?inline';
-import interSemiBold from '../assets/fonts/Inter-SemiBold.ttf?inline';
-import instrumentRegular from '../assets/fonts/InstrumentSerif-Regular.ttf?inline';
-import instrumentItalic from '../assets/fonts/InstrumentSerif-Italic.ttf?inline';
-import jbmRegular from '../assets/fonts/JetBrainsMono-Regular.ttf?inline';
+import interRegular from "../assets/fonts/Inter-Regular.ttf?inline";
+import interSemiBold from "../assets/fonts/Inter-SemiBold.ttf?inline";
+import instrumentRegular from "../assets/fonts/InstrumentSerif-Regular.ttf?inline";
+import instrumentItalic from "../assets/fonts/InstrumentSerif-Italic.ttf?inline";
+import jbmRegular from "../assets/fonts/JetBrainsMono-Regular.ttf?inline";
 
 function dataUriToBuffer(uri: string): Buffer {
   // Vite's `?inline` returns `data:<mime>;base64,<payload>`.
-  const commaIdx = uri.indexOf(',');
+  const commaIdx = uri.indexOf(",");
   if (commaIdx < 0) {
-    throw new Error('og-renderer: unexpected inline-asset shape (no comma)');
+    throw new Error("og-renderer: unexpected inline-asset shape (no comma)");
   }
-  return Buffer.from(uri.slice(commaIdx + 1), 'base64');
+  return Buffer.from(uri.slice(commaIdx + 1), "base64");
 }
 
-export type OGAccent = 'amber' | 'teal';
-export type OGLang = 'en' | 'pl';
+export type OGAccent = "amber" | "teal";
+export type OGLang = "en" | "pl";
 
 export interface OGCardInput {
   /** Display title — rendered in Instrument Serif. Wraps naturally. */
@@ -80,13 +80,13 @@ export interface OGCardInput {
 }
 
 const BRAND = {
-  ink: '#080807',
-  fgOnDark: '#f5f4ef',
-  fgOnDarkDim: 'rgba(245, 244, 239, 0.62)',
-  fgOnDarkMute: 'rgba(245, 244, 239, 0.42)',
-  ruleDark: 'rgba(245, 244, 239, 0.12)',
-  accentAmber: '#c99a3b',
-  accentTeal: '#3d7a72',
+  ink: "#080807",
+  fgOnDark: "#f5f4ef",
+  fgOnDarkDim: "rgba(245, 244, 239, 0.62)",
+  fgOnDarkMute: "rgba(245, 244, 239, 0.42)",
+  ruleDark: "rgba(245, 244, 239, 0.12)",
+  accentAmber: "#c99a3b",
+  accentTeal: "#3d7a72",
 } as const;
 
 const ACCENT_HEX: Record<OGAccent, string> = {
@@ -99,11 +99,36 @@ let _fontsCache: Awaited<ReturnType<typeof loadFonts>> | null = null;
 
 async function loadFonts() {
   return [
-    { name: 'Inter', data: dataUriToBuffer(interRegular), weight: 400 as const, style: 'normal' as const },
-    { name: 'Inter', data: dataUriToBuffer(interSemiBold), weight: 600 as const, style: 'normal' as const },
-    { name: 'Instrument Serif', data: dataUriToBuffer(instrumentRegular), weight: 400 as const, style: 'normal' as const },
-    { name: 'Instrument Serif', data: dataUriToBuffer(instrumentItalic), weight: 400 as const, style: 'italic' as const },
-    { name: 'JetBrains Mono', data: dataUriToBuffer(jbmRegular), weight: 400 as const, style: 'normal' as const },
+    {
+      name: "Inter",
+      data: dataUriToBuffer(interRegular),
+      weight: 400 as const,
+      style: "normal" as const,
+    },
+    {
+      name: "Inter",
+      data: dataUriToBuffer(interSemiBold),
+      weight: 600 as const,
+      style: "normal" as const,
+    },
+    {
+      name: "Instrument Serif",
+      data: dataUriToBuffer(instrumentRegular),
+      weight: 400 as const,
+      style: "normal" as const,
+    },
+    {
+      name: "Instrument Serif",
+      data: dataUriToBuffer(instrumentItalic),
+      weight: 400 as const,
+      style: "italic" as const,
+    },
+    {
+      name: "JetBrains Mono",
+      data: dataUriToBuffer(jbmRegular),
+      weight: 400 as const,
+      style: "normal" as const,
+    },
   ];
 }
 
@@ -113,49 +138,49 @@ async function loadFonts() {
  * Using object literals avoids any JSX-compilation requirement in Astro endpoints.
  */
 function buildCardNode(input: OGCardInput) {
-  const accentHex = ACCENT_HEX[input.accent ?? 'amber'];
-  const wordmark = input.wordmark ?? 'VIBECRAFTED.IO';
-  const fig = input.fig ?? '';
+  const accentHex = ACCENT_HEX[input.accent ?? "amber"];
+  const wordmark = input.wordmark ?? "VIBECRAFTED.IO";
+  const fig = input.fig ?? "";
 
   // Editorial blueprint layout, 1200x630 canvas, 64px gutter.
   return {
-    type: 'div',
+    type: "div",
     props: {
       style: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: '1200px',
-        height: '630px',
+        display: "flex",
+        flexDirection: "column",
+        width: "1200px",
+        height: "630px",
         backgroundColor: BRAND.ink,
         color: BRAND.fgOnDark,
-        fontFamily: 'Inter',
-        padding: '56px 64px',
-        position: 'relative',
+        fontFamily: "Inter",
+        padding: "56px 64px",
+        position: "relative",
       },
       children: [
         // ── Top row: eyebrow + fig label ─────────────────────────
         {
-          type: 'div',
+          type: "div",
           props: {
             style: {
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'baseline',
-              width: '100%',
-              fontFamily: 'JetBrains Mono',
-              fontSize: '16px',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              width: "100%",
+              fontFamily: "JetBrains Mono",
+              fontSize: "16px",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
               color: BRAND.fgOnDarkMute,
             },
             children: [
               {
-                type: 'span',
+                type: "span",
                 props: { children: input.eyebrow.toUpperCase() },
               },
               {
-                type: 'span',
+                type: "span",
                 props: { children: fig.toUpperCase() },
               },
             ],
@@ -163,58 +188,58 @@ function buildCardNode(input: OGCardInput) {
         },
         // ── Hairline rule ─────────────────────────────────────────
         {
-          type: 'div',
+          type: "div",
           props: {
             style: {
-              width: '100%',
-              height: '1px',
+              width: "100%",
+              height: "1px",
               backgroundColor: BRAND.ruleDark,
-              marginTop: '20px',
-              marginBottom: '0px',
+              marginTop: "20px",
+              marginBottom: "0px",
             },
           },
         },
         // ── Body: title + italic subtitle ─────────────────────────
         {
-          type: 'div',
+          type: "div",
           props: {
             style: {
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
               flex: 1,
-              justifyContent: 'center',
-              gap: '24px',
-              paddingTop: '32px',
-              paddingBottom: '32px',
+              justifyContent: "center",
+              gap: "24px",
+              paddingTop: "32px",
+              paddingBottom: "32px",
             },
             children: [
               {
-                type: 'div',
+                type: "div",
                 props: {
                   style: {
-                    fontFamily: 'Instrument Serif',
-                    fontSize: '64px',
+                    fontFamily: "Instrument Serif",
+                    fontSize: "64px",
                     lineHeight: 1.08,
-                    letterSpacing: '-0.02em',
+                    letterSpacing: "-0.02em",
                     color: BRAND.fgOnDark,
-                    maxWidth: '960px',
+                    maxWidth: "960px",
                     // satori needs an explicit display
-                    display: 'flex',
+                    display: "flex",
                   },
                   children: input.title,
                 },
               },
               {
-                type: 'div',
+                type: "div",
                 props: {
                   style: {
-                    fontFamily: 'Instrument Serif',
-                    fontStyle: 'italic',
-                    fontSize: '30px',
+                    fontFamily: "Instrument Serif",
+                    fontStyle: "italic",
+                    fontSize: "30px",
                     lineHeight: 1.3,
                     color: BRAND.fgOnDarkDim,
-                    maxWidth: '940px',
-                    display: 'flex',
+                    maxWidth: "940px",
+                    display: "flex",
                   },
                   children: input.subtitle,
                 },
@@ -224,54 +249,54 @@ function buildCardNode(input: OGCardInput) {
         },
         // ── Bottom row: accent stripe + wordmark ─────────────────
         {
-          type: 'div',
+          type: "div",
           props: {
             style: {
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%',
-              marginTop: '0px',
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              marginTop: "0px",
             },
             children: [
               // Accent stripe — bottom-left, signals page family
               {
-                type: 'div',
+                type: "div",
                 props: {
                   style: {
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: '16px',
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "16px",
                   },
                   children: [
                     {
-                      type: 'div',
+                      type: "div",
                       props: {
                         style: {
-                          width: '48px',
-                          height: '2px',
+                          width: "48px",
+                          height: "2px",
                           backgroundColor: accentHex,
                         },
                       },
                     },
                     {
-                      type: 'span',
+                      type: "span",
                       props: {
                         style: {
-                          fontFamily: 'JetBrains Mono',
-                          fontSize: '14px',
-                          letterSpacing: '0.16em',
-                          textTransform: 'uppercase',
+                          fontFamily: "JetBrains Mono",
+                          fontSize: "14px",
+                          letterSpacing: "0.16em",
+                          textTransform: "uppercase",
                           color: accentHex,
                         },
                         children:
-                          input.accent === 'teal'
-                            ? 'MANIFESTO'
-                            : input.eyebrow.toUpperCase() === 'CASE STUDY'
-                              ? 'SHOWCASE'
-                              : 'RELEASE ENGINE',
+                          input.accent === "teal"
+                            ? "MANIFESTO"
+                            : input.eyebrow.toUpperCase() === "CASE STUDY"
+                              ? "SHOWCASE"
+                              : "RELEASE ENGINE",
                       },
                     },
                   ],
@@ -279,13 +304,13 @@ function buildCardNode(input: OGCardInput) {
               },
               // Wordmark — bottom-right
               {
-                type: 'span',
+                type: "span",
                 props: {
                   style: {
-                    fontFamily: 'JetBrains Mono',
-                    fontSize: '14px',
-                    letterSpacing: '0.22em',
-                    textTransform: 'uppercase',
+                    fontFamily: "JetBrains Mono",
+                    fontSize: "14px",
+                    letterSpacing: "0.22em",
+                    textTransform: "uppercase",
                     color: BRAND.fgOnDarkMute,
                   },
                   children: wordmark,
@@ -309,14 +334,17 @@ export async function renderOGCard(input: OGCardInput): Promise<Buffer> {
     _fontsCache = await loadFonts();
   }
 
-  const svg = await satori(buildCardNode(input) as Parameters<typeof satori>[0], {
-    width: 1200,
-    height: 630,
-    fonts: _fontsCache,
-  });
+  const svg = await satori(
+    buildCardNode(input) as Parameters<typeof satori>[0],
+    {
+      width: 1200,
+      height: 630,
+      fonts: _fontsCache,
+    },
+  );
 
   const resvg = new Resvg(svg, {
-    fitTo: { mode: 'width', value: 1200 },
+    fitTo: { mode: "width", value: 1200 },
     background: BRAND.ink,
     font: {
       // Disable system-font fallback so any missing glyph fails loudly
@@ -334,7 +362,7 @@ export async function renderOGCard(input: OGCardInput): Promise<Buffer> {
  * and with the per-page `ogImage` overrides in each route.
  *
  * Slugs follow page-level identity (one OG per indexable surface):
- *   - landing                       → /
+ *   - landing-en | landing-pl       → /en/ | /pl/  (root / redirects to /en/)
  *   - manifesto-en | manifesto-pl   → /manifesto/?lang=en|pl
  *   - showcase-index                → /showcase/
  *   - showcase-<study-slug>         → /showcase/<study-slug>/
@@ -348,115 +376,110 @@ export interface OGSlugDef {
 
 export const OG_SLUGS: OGSlugDef[] = [
   {
-    slug: 'landing',
+    slug: "landing-pl",
     card: {
-      title: 'Release engine for AI-built software.',
-      subtitle: 'Discipline for shipping what AI agents wrote.',
-      eyebrow: 'Vibecrafted',
-      fig: 'FIG. 01 · DWG VC-001',
-      accent: 'amber',
-      lang: 'en',
+      title: "Silnik wydawniczy dla oprogramowania pisanego z AI.",
+      subtitle: "Dyscyplina dowożenia tego, co napisały agenty.",
+      eyebrow: "Vibecrafted",
+      fig: "FIG. 01 · DWG VC-001",
+      accent: "amber",
+      lang: "pl",
     },
   },
   {
-    slug: 'landing-pl',
+    slug: "landing-en",
     card: {
-      title: 'Silnik wydawniczy dla oprogramowania pisanego z AI.',
-      subtitle: 'Dyscyplina dowożenia tego, co napisały agenty.',
-      eyebrow: 'Vibecrafted',
-      fig: 'FIG. 01 · DWG VC-001',
-      accent: 'amber',
-      lang: 'pl',
+      title: "Release engine for AI-built software.",
+      subtitle: "Discipline for shipping what AI agents wrote.",
+      eyebrow: "Vibecrafted",
+      fig: "FIG. 01 · DWG VC-001",
+      accent: "amber",
+      lang: "en",
     },
   },
   {
-    slug: 'landing-en',
+    slug: "manifesto-en",
     card: {
-      title: 'Release engine for AI-built software.',
-      subtitle: 'Discipline for shipping what AI agents wrote.',
-      eyebrow: 'Vibecrafted',
-      fig: 'FIG. 01 · DWG VC-001',
-      accent: 'amber',
-      lang: 'en',
+      title: "The Vibe Hangover.",
+      subtitle:
+        "Six months of fixing vibe-coded SaaS products. The same four things are broken every single time.",
+      eyebrow: "Manifesto",
+      fig: "FIG. 14 · DWG VC-014",
+      accent: "teal",
+      lang: "en",
     },
   },
   {
-    slug: 'manifesto-en',
+    slug: "manifesto-pl",
     card: {
-      title: 'The Vibe Hangover.',
-      subtitle: 'Six months of fixing vibe-coded SaaS products. The same four things are broken every single time.',
-      eyebrow: 'Manifesto',
-      fig: 'FIG. 14 · DWG VC-014',
-      accent: 'teal',
-      lang: 'en',
+      title: "Kac po vibe-codingu.",
+      subtitle:
+        "Sześć miesięcy naprawiania vibe-codowanych SaaS-ów. Cztery te same rzeczy są zepsute za każdym razem.",
+      eyebrow: "Manifest",
+      fig: "FIG. 14 · DWG VC-014",
+      accent: "teal",
+      lang: "pl",
     },
   },
   {
-    slug: 'manifesto-pl',
+    slug: "showcase-index",
     card: {
-      title: 'Kac po vibe-codingu.',
-      subtitle: 'Sześć miesięcy naprawiania vibe-codowanych SaaS-ów. Cztery te same rzeczy są zepsute za każdym razem.',
-      eyebrow: 'Manifest',
-      fig: 'FIG. 14 · DWG VC-014',
-      accent: 'teal',
-      lang: 'pl',
+      title: "Three case studies of vibecrafted discipline in production.",
+      subtitle: "The framework was built by shipping with it.",
+      eyebrow: "Case studies",
+      fig: "FIG. 16 · DWG VC-016",
+      accent: "amber",
+      lang: "en",
     },
   },
   {
-    slug: 'showcase-index',
+    slug: "showcase-loctree-lsp-roadmap",
     card: {
-      title: 'Three case studies of vibecrafted discipline in production.',
-      subtitle: 'The framework was built by shipping with it.',
-      eyebrow: 'Case studies',
-      fig: 'FIG. 16 · DWG VC-016',
-      accent: 'amber',
-      lang: 'en',
+      title: "Loctree LSP — 22 plans, one falsifier-resistant verdict.",
+      subtitle:
+        'Six parallel Opus agents and one adversarial codex audit found out what "complete" actually meant.',
+      eyebrow: "Case study",
+      fig: "FIG. 16 · DWG VC-016",
+      accent: "amber",
+      lang: "en",
     },
   },
   {
-    slug: 'showcase-loctree-lsp-roadmap',
+    slug: "showcase-vista-sealed-env",
     card: {
-      title: 'Loctree LSP — 22 plans, one falsifier-resistant verdict.',
-      subtitle: 'Six parallel Opus agents and one adversarial codex audit found out what "complete" actually meant.',
-      eyebrow: 'Case study',
-      fig: 'FIG. 16 · DWG VC-016',
-      accent: 'amber',
-      lang: 'en',
+      title: "Vista — sealed environment, honest smoke.",
+      subtitle:
+        "Pre-launch crypto alignment cycle that closed when the smoke tests stopped lying.",
+      eyebrow: "Case study",
+      fig: "FIG. 16 · DWG VC-016",
+      accent: "amber",
+      lang: "en",
     },
   },
   {
-    slug: 'showcase-vista-sealed-env',
+    slug: "showcase-audit-22-parallel-truth",
     card: {
-      title: 'Vista — sealed environment, honest smoke.',
-      subtitle: 'Pre-launch crypto alignment cycle that closed when the smoke tests stopped lying.',
-      eyebrow: 'Case study',
-      fig: 'FIG. 16 · DWG VC-016',
-      accent: 'amber',
-      lang: 'en',
-    },
-  },
-  {
-    slug: 'showcase-audit-22-parallel-truth',
-    card: {
-      title: 'Audit-22 — parallel-truth reconciliation, captured live.',
-      subtitle: 'An audit cycle that caught its own race condition during shipping. Self-validating delivery.',
-      eyebrow: 'Case study',
-      fig: 'FIG. 16 · DWG VC-016',
-      accent: 'amber',
-      lang: 'en',
+      title: "Audit-22 — parallel-truth reconciliation, captured live.",
+      subtitle:
+        "An audit cycle that caught its own race condition during shipping. Self-validating delivery.",
+      eyebrow: "Case study",
+      fig: "FIG. 16 · DWG VC-016",
+      accent: "amber",
+      lang: "en",
     },
   },
   // Plan 19 — newsletter archive card. Per-issue OG cards are deferred to
   // v2 (each issue points at this index card via newsletter/[slug].astro).
   {
-    slug: 'newsletter-index',
+    slug: "newsletter-index",
     card: {
-      title: 'Updates when vibecrafted ships.',
-      subtitle: 'Operator-voice newsletter. One issue per real cut. No marketing, no drip, no popups.',
-      eyebrow: 'Newsletter',
-      fig: 'FIG. 19 · DWG VC-019',
-      accent: 'amber',
-      lang: 'en',
+      title: "Updates when vibecrafted ships.",
+      subtitle:
+        "Operator-voice newsletter. One issue per real cut. No marketing, no drip, no popups.",
+      eyebrow: "Newsletter",
+      fig: "FIG. 19 · DWG VC-019",
+      accent: "amber",
+      lang: "en",
     },
   },
   // Plan 15 — shared docs OG card. All `/docs/<slug>/` pages render the same
@@ -464,14 +487,15 @@ export const OG_SLUGS: OGSlugDef[] = [
   // prerender budget with minimal payoff — docs traffic is search/direct,
   // not social).
   {
-    slug: 'docs-default',
+    slug: "docs-default",
     card: {
-      title: 'The documentation that ships with vibecrafted.',
-      subtitle: 'Install, architecture, vc-* skills reference, release discipline, and FAQ. Same text the terminal reads.',
-      eyebrow: 'Docs',
-      fig: 'FIG. 15 · DWG VC-015',
-      accent: 'amber',
-      lang: 'en',
+      title: "The documentation that ships with vibecrafted.",
+      subtitle:
+        "Install, architecture, vc-* skills reference, release discipline, and FAQ. Same text the terminal reads.",
+      eyebrow: "Docs",
+      fig: "FIG. 15 · DWG VC-015",
+      accent: "amber",
+      lang: "en",
     },
   },
 ];

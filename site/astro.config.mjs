@@ -13,6 +13,7 @@ export default defineConfig({
   site: 'https://vibecrafted.io',
   integrations: [svelte({ preprocess: vitePreprocess() }), mdx()],
   redirects: {
+    '/': '/en/',
     '/dou': '/en/dou/',
     '/faq': '/en/faq/',
     '/framework': '/en/framework/',

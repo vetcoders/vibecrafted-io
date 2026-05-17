@@ -42,7 +42,6 @@ const distDir = path.join(here, 'dist');
 assert.ok(existsSync(distDir), 'site/dist is missing. Run `pnpm build` before this smoke.');
 
 const pages = [
-  ['dist/index.html', 'SearchShellV2', 'searchDataAll', 'Guided installer', 'Closest matches'],
   ['dist/en/index.html', 'SearchShellV2', 'searchDataQuickstart', 'Guided installer', 'Closest matches'],
   ['dist/pl/index.html', 'SearchShellV2', 'searchDataFaq', 'Prowadzony instalator', 'Najbliższe trafienia'],
 ];
@@ -53,6 +52,23 @@ for (const [file, ...needles] of pages) {
     assert.ok(html.includes(needle), `${file} does not include expected V2 search payload: ${needle}`);
   }
 }
+
+const rootRedirect = read('dist/index.html');
+assert.match(
+  rootRedirect,
+  /<title>Redirecting/i,
+  'dist/index.html must be a static redirect stub (no parallel-truth content at /).',
+);
+assert.match(
+  rootRedirect,
+  /url=\/en\/?(["'])/i,
+  'dist/index.html must redirect to the canonical /en/ home.',
+);
+assert.doesNotMatch(
+  rootRedirect,
+  /SearchShellV2/,
+  'dist/index.html must not ship the V2 search payload — only /en/ and /pl/ are canonical homes.',
+);
 
 const builtText = walkFiles(distDir, (file) => /\.(html|js)$/.test(file))
   .map((file) => readFileSync(file, 'utf8'))

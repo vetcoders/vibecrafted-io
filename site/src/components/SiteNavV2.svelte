@@ -26,7 +26,7 @@
   } = $props<Props>();
 
   const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');
-  const homeHref = $derived(lang === 'pl' ? '/pl/' : '/');
+  const homeHref = $derived(lang === 'pl' ? '/pl/' : '/en/');
 
   // Anchor map — hrefs are absolute paths to landing + hash so clicking from
   // a subpage navigates back to landing and then scrolls to the anchor.
