@@ -197,7 +197,7 @@ flowchart LR
         },
         {
           title: "Wypuść",
-          body: "Zaudytuj powierzchnię produktu z DoU, wypoleruj z Decorate i zapakuj z Hydrate przed finalnym Release.",
+          body: "Przeaudytuj powierzchnię produktu przez DoU, wypoleruj przez Decorate i zapakuj przez Hydrate przed finalnym Release.",
         },
       ],
     },
