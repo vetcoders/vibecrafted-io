@@ -15,7 +15,7 @@
 steps:
   - kicker: "Krok 1"
     title: "Zainstaluj 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. lokalnie"
-    body: "Użyj publicznej ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code> i trzyma ten sam install truth co automatyzacja. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo."
+    body: "Użyj publicznej ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code> i trzyma ten sam stan instalacji co automatyzacja. Jeśli wolisz instalator z przeglądarki, użyj <code>make vibecrafted</code> w repo."
     command: "curl -fsSL https://vibecrafted.io/install.sh | bash"
     note: "Bezpośredniej ścieżki <code>| bash</code> używaj tylko wtedy, gdy celowo wybierasz compact automation zamiast guided kickoffu."
 

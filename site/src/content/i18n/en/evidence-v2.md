@@ -13,7 +13,7 @@ centerLabel: "FROM THE WILD · PATTERNS OBSERVED"
 
 # Heading carries an inline <em class="accent">. One string for {@html ...}.
 headingHtml: 'The vibe hangover in the <em class="accent">wild</em>'
-subtitle: "A few field notes from agent-built products and our own release lanes. Anonymized, because the pattern matters more than the name."
+subtitle: "A few field notes from the wild — from agent-built products and our own release lanes. Anonymized, because the pattern says more than the name."
 
 # Four anonymized field notes — each card is one observed failure pattern.
 # `accent` switches the card's color treatment (rust/amber/red).

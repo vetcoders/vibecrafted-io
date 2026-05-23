@@ -12,14 +12,19 @@ title: "PROBLEM"
 centerLabel: "OBSERWACJE 2024–2026"
 
 # Treść sekcji z v2Sections.problem.
-# headingHtml zachowuje inline <em class="accent-2"> oraz <em class="accent"> i <br />.
-headingHtml: 'Aplikacje po agentach wyglądają na <em class="accent-2">gotowe</em><br />gdy auth, dane, płatności i deploy nadal są <em class="accent">kruche</em>'
-body: "Generowanie kodu dowozi demo. Prawdziwi użytkownicy, pieniądze, security review i kolejny developer pokazują miejsca, których żaden prompt nie wziął na własność."
+# headingHtml: false-precision contrast — "kompletne" (twarda obietnica) vs "kruche"
+# (rzeczywistość). Druga linia to moment ujawnienia: "Po pierwszym użytkowniku często
+# okazuje się, że..." — kontekstowy moment, nie suche stwierdzenie.
+# Trzy accenty: "kompletne" (accent-2), "auth" (accent-2 wyróżnik), "kruche" (accent).
+headingHtml: 'Aplikacje po agentach wyglądają na <em class="accent-2">kompletne</em>.<br />Po pierwszym użytkowniku często okazuje się, że <em class="accent-2">auth</em>, dane, płatności i deploy są wciąż <em class="accent">kruche</em>.'
+body: "Demo dowieziesz prawie zawsze. Prawda najczęściej wychodzi przy pierwszej instalacji na innym OS, pierwszym Stripe webhook'u, pierwszym security review albo nowym koledze w zespole — to oni pokazują, czego żaden prompt nie wziął na siebie."
 
 # Pary objawów (label + body). Renderowane jako lista 2 obserwacji pod heroem sekcji.
+# Krótkie zdania z rytmem zamiast jednego long sentence. Polish idioms ("żyją gdzie popadnie",
+# "się wywala") zamiast literal-translated phrasing.
 symptoms:
   - label: "Security review"
-    body: "Aplikacja działa, ale auth ma tylko admin/user, tokeny żyją w złym miejscu i nikt nie umie pokazać, kto może dotknąć których danych."
+    body: "Aplikacja działa. Auth ma dwie role: admin i user. Tokeny żyją gdzie popadnie. Nikt nie wie, kto ma dostęp do czego."
   - label: "Ścieżka pieniędzy"
-    body: "Stripe działa, aż przestaje. Webhook crashuje raz, nie ma retry, a klient znajduje brakującą usługę szybciej niż system."
+    body: "Stripe działa. Dopóki nie przestanie. Webhook się wywala raz, retry nie ma, a klient zauważa brakującą usługę szybciej niż system."
 ---

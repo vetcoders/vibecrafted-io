@@ -35,7 +35,7 @@ bullets:
   - title: "Stan ma miejsce."
     body: "Artefakty żyją pod $VIBECRAFTED_ROOT/. Nie w pamięci taba, który akurat był otwarty."
   - title: "Runy zostawiają dowód."
-    body: "Każdy run agenta może nieść prompt, raport, metadane i decyzję, którą miał wesprzeć."
+    body: "Każdy run agenta zostawia prompt, raport, metadane i decyzję, którą miał uzasadnić."
   - title: "Undone zostaje widoczne."
     body: "DoU i marbles trzymają nierozwiązane kawałki na planszy, aż ktoś zdecyduje, co znaczą."
 

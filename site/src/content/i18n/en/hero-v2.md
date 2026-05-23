@@ -10,7 +10,10 @@
 ariaLabel: "Hero"
 
 # Eyebrow above H1 — caps, mono, brand term. "Release engine" is treated as
-# the product noun for the framework category.
+# the product noun for the framework category. Pinned across EN surface
+# (SchemaOrg, OG cards, meta description, docs, newsletter, smoke check).
+# PL hero uses a different axis ("Rygor procesu / Repo po agentach → produkt")
+# per Mikserka decision — that is language-specific, not a global rebrand.
 eyebrow: "RELEASE ENGINE"
 
 # Heading split — the component assembles the pieces into 3 lines:
@@ -24,10 +27,11 @@ heading:
   mid: "software people can"
   emLast: "trust."
 
-# Lead body — first paragraph under the hero. Supports inline <em> for gold
-# accent on key phrases. Used to surface the failure modes ("fragile auth",
-# "scary deploys") that motivate the framework.
-body: "The vibe hangover is what comes after the demo: fragile auth, unclear data, missed webhooks, scary deploys. Vibecrafted finds those seams and turns the repo into a release a stranger can install, trust, and use."
+# Lead body — first paragraph under the hero. Opens with "The vibe hangover
+# is what comes after the demo:" (smoke check pins this phrase as the EN
+# anchor before the page introduces more vocabulary). Inline <em> marks
+# anchor phrases for the gold accent.
+body: "The vibe hangover is what comes after the demo: fragile auth, unclear onboarding, missed webhooks, no install path, <em>scary deploys</em>. Those are the seams a stranger trips on. Vibecrafted finds them and carries the repo to a release a stranger can install, understand, and use."
 
 # CTA pair — primary solid INSTALL, ghost READ THE DOCS.
 # Hrefs are computed in the component via lang ('/en/install/', '/en/quickstart/').

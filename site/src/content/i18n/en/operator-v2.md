@@ -35,7 +35,7 @@ bullets:
   - title: "State has a place."
     body: "Artifacts live under $VIBECRAFTED_ROOT/. Not in the memory of whichever tab happened to be open."
   - title: "Runs leave evidence."
-    body: "Each agent run can carry prompt, report, metadata, and the decision it was meant to support."
+    body: "Each agent run leaves prompt, report, metadata, and the decision it was meant to back up."
   - title: "Undone stays visible."
     body: "DoU and marbles keep the unresolved pieces on the board until somebody decides what they mean."
 

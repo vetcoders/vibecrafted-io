@@ -30,7 +30,7 @@ todayItems:
     body: "The next session may inherit a diff, but not the reason behind it. The repo has changes; the work has no memory."
   - number: "02"
     title: "Retry becomes the method."
-    body: "A compile pass starts to feel like proof. It is useful signal, just not enough to know whether the product is safe."
+    body: "A green build starts to feel like proof. It is useful signal, but not enough to know whether the product is safe."
   - number: "03"
     title: "Done stays blurry."
     body: "Artifacts collect in comments, branches, notes, and screenshots. A future agent can see pieces, but not the shape."

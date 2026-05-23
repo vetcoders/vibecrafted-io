@@ -318,6 +318,7 @@ BUNDLE_JUNK_EXCLUDES := \
 	--exclude=artifacts \
 	--exclude=dist \
 	--exclude=tmp \
+	--exclude=plans \
 	--exclude='*.log' \
 	--exclude='*.audit*.md' \
 	--exclude='*.backup' \
@@ -352,7 +353,7 @@ site-release-assets-guard:
 		      -x 'node_modules' -x '*.pyc' \
 		      -x '.ai-agents' -x '.ai-context' -x '.claude' \
 		      -x '.vibecrafted' -x '.playwright-mcp' \
-		      -x 'artifacts' -x 'dist' -x 'tmp' \
+		      -x 'artifacts' -x 'dist' -x 'tmp' -x 'plans' \
 		      -x '*.log' -x '*.audit*.md' -x '*.backup' -x '*.out' \
 		      -x 'aicx-dashboard.html' \
 		      -x 'vibecrafted-v*.tar.gz' -x 'vibecrafted-v*.tar.gz.sig' \
