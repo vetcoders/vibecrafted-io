@@ -36,6 +36,38 @@ const ctas = {
   back: hero.primaryLabel,
   framework: hero.secondaryLabel,
 };
+
+// Localized eyebrow + section labels (V2 page chrome). Brand convention:
+// caps + mono, but copy in the user's language.
+const chromeByLang: Record<Lang, {
+  quickStart: string;
+  stepsEyebrow: string;
+  stepsFig: string;
+  resourcesEyebrow: string;
+  resourcesFig: string;
+  copy: string;
+  copied: string;
+}> = {
+  en: {
+    quickStart: 'QUICK START',
+    stepsEyebrow: 'STEPS · 06 STAGES',
+    stepsFig: 'INSTALL → SHIP',
+    resourcesEyebrow: 'FOUNDATIONS · CANONICAL SOURCES',
+    resourcesFig: 'PREREQ → SURFACE',
+    copy: 'COPY',
+    copied: '✓ COPIED',
+  },
+  pl: {
+    quickStart: 'SZYBKI START',
+    stepsEyebrow: 'KROKI · 06 ETAPÓW',
+    stepsFig: 'INSTALACJA → WYDANIE',
+    resourcesEyebrow: 'FUNDAMENTY · ŹRÓDŁA KANONICZNE',
+    resourcesFig: 'WYMAGANIA → POWIERZCHNIA',
+    copy: 'KOPIUJ',
+    copied: '✓ SKOPIOWANE',
+  },
+};
+const chrome = chromeByLang[lang];
 ---
 
 <section class="qspage" id="quickstart">
@@ -44,7 +76,7 @@ const ctas = {
     {/* ── Hero block ───────────────────────────────────────── */}
     <header class="qspage__hero">
       <div class="qspage__eyebrow-row">
-        <span class="qspage__eyebrow">QUICK START</span>
+        <span class="qspage__eyebrow">{chrome.quickStart}</span>
         <span class="qspage__fig">FIG. 09 · DWG VC-009</span>
       </div>
       <div class="qspage__rule" aria-hidden="true"></div>
@@ -72,8 +104,8 @@ const ctas = {
     {/* ── Steps block ──────────────────────────────────────── */}
     <section class="qspage__steps-block" aria-label="Steps">
       <div class="qspage__section-eyebrow-row">
-        <span class="qspage__section-eyebrow">STEPS · 06 STAGES</span>
-        <span class="qspage__section-fig">INSTALL → SHIP</span>
+        <span class="qspage__section-eyebrow">{chrome.stepsEyebrow}</span>
+        <span class="qspage__section-fig">{chrome.stepsFig}</span>
       </div>
       <div class="qspage__rule" aria-hidden="true"></div>
 
@@ -105,8 +137,8 @@ const ctas = {
                         client:load
                         textToCopy={cmd}
                         class="qspage__copy"
-                        defaultLabel="COPY"
-                        copiedLabel="✓ COPIED"
+                        defaultLabel={chrome.copy}
+                        copiedLabel={chrome.copied}
                       />
                     </div>
                   ))}
@@ -123,8 +155,8 @@ const ctas = {
     {/* ── Resources block ──────────────────────────────────── */}
     <section class="qspage__resources" aria-label="Resources">
       <div class="qspage__section-eyebrow-row">
-        <span class="qspage__section-eyebrow">FOUNDATIONS · CANONICAL SOURCES</span>
-        <span class="qspage__section-fig">PREREQ → SURFACE</span>
+        <span class="qspage__section-eyebrow">{chrome.resourcesEyebrow}</span>
+        <span class="qspage__section-fig">{chrome.resourcesFig}</span>
       </div>
       <div class="qspage__rule" aria-hidden="true"></div>
 

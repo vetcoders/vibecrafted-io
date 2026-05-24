@@ -131,7 +131,9 @@ const nextTitle = frameworkEntry.data.title as string;
     display: grid;
     grid-template-columns: 1fr 1px 1fr;
     gap: 56px;
-    align-items: start;
+    /* Editorial doctrine (Maciej 2026-05-23): kolumny równej wysokości.   */
+    /* todayItems vs vibecraftedItems should sit at the same height.       */
+    align-items: stretch;
     position: relative;
   }
 

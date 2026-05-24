@@ -10,6 +10,14 @@ const t = getTranslations(lang).sections.dou;
 const homeHref = lang === 'pl' ? '/pl/' : '/';
 const homeLabel = lang === 'pl' ? 'WRÓĆ DO STRONY GŁÓWNEJ' : 'BACK TO MAIN';
 
+// Title rendered with V2 brand grammar (Instrument Serif italic + accent colors).
+// Localized — EN: "The Definition of Undone." / PL: "Definicja niezrobionego."
+const titleByLang: Record<Lang, { pre: string; em1: string; mid: string; em2: string; tail: string }> = {
+  en: { pre: 'The ', em1: 'Definition', mid: ' of ', em2: 'Undone', tail: '' },
+  pl: { pre: '', em1: 'Definicja', mid: ' ', em2: 'niezrobionego', tail: '' },
+};
+const heroTitle = titleByLang[lang];
+
 const trajectoryScale = [0, 25, 50, 75, 100];
 const trajectoryBars = [
   { label: t.bars[0], score: 15, accent: 'copper' },
@@ -35,7 +43,7 @@ const trajectoryBars = [
       </div>
       <div class="douview__rule" aria-hidden="true"></div>
       <h1 class="douview__title">
-        The <em>Definition</em> of <em class="accent-2">Undone</em><span class="brand-dot">.</span>
+        {heroTitle.pre}<em>{heroTitle.em1}</em>{heroTitle.mid}<em class="accent-2">{heroTitle.em2}</em>{heroTitle.tail}<span class="brand-dot">.</span>
       </h1>
     </header>
 
@@ -181,7 +189,8 @@ const trajectoryBars = [
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     gap: 64px;
-    align-items: start;
+    /* Editorial doctrine (Maciej 2026-05-23): kolumny równej wysokości. */
+    align-items: stretch;
   }
 
   /* ── Left column ────────────────────────────────────────── */

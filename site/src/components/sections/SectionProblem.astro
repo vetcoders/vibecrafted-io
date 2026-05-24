@@ -59,7 +59,16 @@ const nextTitle = engineeringEntry.data.title as string;
     display: grid;
     grid-template-columns: 1.4fr 1fr 1fr;
     gap: 56px;
-    align-items: start;
+    align-items: stretch;
+  }
+
+  .problem__col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .problem__col--heading {
+    /* Heading column sets row height; symptom columns stretch to match. */
   }
 
   .problem__heading {

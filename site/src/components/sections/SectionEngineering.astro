@@ -96,7 +96,8 @@ function mapAccent(accent: string): 'default' | 'rust' | 'teal' {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    align-items: start;
+    /* Editorial doctrine (Maciej 2026-05-23): aksjomaty cards same height. */
+    align-items: stretch;
   }
 
   @media (max-width: 900px) {
