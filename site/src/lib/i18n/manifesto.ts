@@ -25,18 +25,19 @@ export interface ManifestoContent {
 }
 
 /**
- * Load + render a manifesto entry for the requested language. Falls back to
- * `en` if the requested entry is missing so build never breaks on a stale
- * lang switch.
+ * Load + render a manifesto entry for the requested language. If the requested
+ * entry is missing, serve the EN canonical entry instead so build never breaks
+ * on a stale lang switch.
  */
-export async function getManifestoContent(lang: Lang): Promise<ManifestoContent> {
+export async function getManifestoContent(
+  lang: Lang,
+): Promise<ManifestoContent> {
   const entry =
-    (await getEntry("manifesto", lang)) ??
-    (await getEntry("manifesto", "en"));
+    (await getEntry("manifesto", lang)) ?? (await getEntry("manifesto", "en"));
 
   if (!entry) {
     throw new Error(
-      `Manifesto content entry not found for lang="${lang}" (and "en" fallback also missing)`,
+      `Manifesto content entry not found for lang="${lang}" (and the EN canonical entry is also missing)`,
     );
   }
 

@@ -79,16 +79,16 @@ export const pl = {
   v2Pages: {
     landing: {
       title:
-        "vibecrafted. — Release engine dla oprogramowania generowanego przez AI.",
+        "vibecrafted. — Runtime, który zmienia kod po agentach AI w produkt.",
       description:
-        "Doprowadza repo po agentach do wydania, które obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
+        "Doprowadza repo po agentach do produktu, który obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
     },
     faq: {
       title: "vibecrafted. · FAQ",
       description: "Najczęstsze pytania dotyczące Vibecrafted.",
     },
     dou: {
-      title: "Vibecrafted. · DoU — The Definition of Undone",
+      title: "Vibecrafted. · DoU — Definicja niezrobionego",
       description:
         "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
     },
@@ -105,10 +105,10 @@ export const pl = {
   sections: {
     hero: {
       frameworkTitleHtml:
-        'Release <span class="manifesto-title__framework-accent">engine</span> dla oprogramowania generowanego przez AI',
-      lead: "Doprowadź repo po agentach do wydania, które obca osoba może zainstalować, zrozumieć i użyć.",
+        'Runtime, który zmienia <span class="manifesto-title__framework-accent">kod po agentach AI</span> w produkt',
+      lead: "Doprowadź repo po agentach do produktu, który obca osoba może zainstalować, zrozumieć i użyć.",
       quoteHtml:
-        "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do wydania, któremu można zaufać.",
+        "Weź repo po agentach. Odsiej vibe od prawdy i doprowadź je do produktu, któremu można zaufać.",
       evidence: "Dowody",
       quickstart: "Otwórz szybki start",
       quickstartHref: "/pl/quickstart/",
@@ -308,7 +308,7 @@ flowchart LR
     },
     evidence: {
       titleHtml: "Mniej magii<br />Więcej pracy, którą da się obejrzeć",
-      lead: "Słownictwo może być żywe, jeśli system pozostaje inspekowalny: kontekst przed edycją, dowód po runie i powierzchnia release, która mówi, co nadal jest niepewne.",
+      lead: "Słownictwo żyje tylko wtedy, kiedy system zostaje inspekowalny: kontekst przed edycją, dowód po runie i powierzchnia release, która sama mówi, co nadal jest niepewne.",
       revealLabel: "Otwórz notatkę",
       closeLabel: "Zamknij notatkę",
       detailsLabel: "Konsekwencja operacyjna",
@@ -317,10 +317,10 @@ flowchart LR
           number: "01",
           accent: "steel",
           title: "Kontekst wzbogacony AST",
-          body: "Modele psują się szybciej, kiedy piszą w repo na ślepo. Mapy strukturalne dają sesji punkty orientacyjne, zanim zacznie edytować.",
+          body: "Modele dryfują, kiedy piszą w repo na ślepo. Mapy strukturalne dają sesji punkty orientacyjne, zanim agent ruszy plik.",
           details: [
-            "Loctree i pokrewne mapy strukturalne zamieniają repo w teren nawigacyjny jeszcze zanim zacznie się edycja.",
-            "Agent pracuje na nazwanych plikach, blast radiusie i topologii symboli zamiast dryfować w mgle grepów.",
+            "Loctree i pokrewne mapy zamieniają repo w teren nawigacyjny przed pierwszą edycją.",
+            "Agent pracuje na nazwanych plikach, blast radiusie i topologii symboli — zamiast dryfować w mgle grepów.",
             "To obniża fałszywą pewność: jeśli struktura kłóci się z promptem, wygrywa struktura.",
           ],
         },
@@ -328,10 +328,10 @@ flowchart LR
           number: "02",
           accent: "copper",
           title: "Stochastyczna konwergencja",
-          body: "Generowanie kodu jest szumne. Pętla Marbles daje temu szumowi miejsce: małe pętle, kontrprzykłady i widoczną pracę nierozwiązaną.",
+          body: "Każde generowanie kodu to szum. Pętla Marbles przerabia ten szum: małe pętle, kontrprzykłady i widoczna praca nierozwiązana.",
           details: [
             "Jedno odpalenie nie jest dowodem. Pętla stale tnie najbardziej ryzykowne kłamstwo, aż runtime zacznie zgadzać się z obietnicą.",
-            "Wczesne pętle usuwają fałsze strukturalne; późniejsze ściskają chropowatość do spokojniejszego i bardziej powtarzalnego kształtu produktu.",
+            "Wczesne pętle wycinają fałsze strukturalne. Późniejsze ściskają chropowatość do powtarzalnego kształtu produktu.",
             "Celem nie jest „ładny output”, tylko stan, w którym problemy P0/P1/P2 zbiegają do zera.",
           ],
         },
@@ -339,7 +339,7 @@ flowchart LR
           number: "03",
           accent: "patina",
           title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙",
-          body: "Ustrukturyzowana współpraca człowieka i AI. Rzemiosło jest w handoffie: ludzie trzymają scope, smak i decyzje nieodwracalne; agenci robią fieldwork z dowodem przyczepionym do pracy.",
+          body: "Rzemieślnicza współpraca człowieka i AI. Rzemiosło jest w handoffie: ludzie trzymają scope, smak i decyzje nieodwracalne; agenci robią fieldwork z dowodem przyczepionym do pracy.",
           details: [
             "Ludzie nie ścigają się z modelem na szybkość pisania; biorą odpowiedzialność za scope, truth checki i nieodwracalne decyzje.",
             "Agenci dostają przestrzeń do głębokiego fieldworku, ale gates, artefakty review i dowód z runtime trzymają finalny kształt w ryzach.",
@@ -413,7 +413,7 @@ flowchart LR
           phase: "Faza 1 · Twórz",
           phaseClass: "build",
           descHtml:
-            "Parowanie executive. Tryb wspólnego mózgu do strategicznego debugowania i triażu architektonicznego z delegowanym fieldworkiem.",
+            "Wspólny mózg z dystansem. Tryb partnerski dla strategicznego debugowania i triażu architektonicznego — z fieldworkiem zdelegowanym do agentów.",
           tags: ["partner", "strategia", "ownership"],
           triggerHtml: '"Partner mode" · "Idziemy razem" · "You drive"',
         },
@@ -460,7 +460,7 @@ flowchart LR
           phase: "Faza 1 · Twórz",
           phaseClass: "build",
           descHtml:
-            "Bezlitosne czyszczenie. Definiuje stożek runtime i wycina martwy kod, eksperymenty i bliznowatą tkankę bez litości.",
+            "Bezlitosne czyszczenie. Definiuje runtime cone i wycina martwy kod, porzucone eksperymenty i bliznowatą tkankę bez litości.",
           tags: ["prune", "clean", "runtime cone"],
           triggerHtml: '"Prune repo" · "Strip dead code" · "Wyczyść repo"',
         },
@@ -517,8 +517,8 @@ flowchart LR
       label: "DoU",
       title: "Definicja niezrobionego",
       quote:
-        "Agenci AI często potrafią sprawić, że rzecz działa. Nie sprawiają automatycznie, że da się ją znaleźć, zainstalować, zaufać jej albo za nią zapłacić.",
-      lead: "Problem rzadko dotyczy samej jakości kodu. Chodzi o przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+        "Agenci AI często sprawiają, że rzecz działa. Nie sprawiają jednak, że można ją znaleźć, zainstalować, zaufać jej albo za nią zapłacić.",
+      lead: "Problem rzadko leży w samej jakości kodu. Leży w przestrzeni między działającym systemem a produktem, który ludzie z zewnątrz mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
       diagnosticLabel: "Diagnostyka założyciela:",
       checklist: [
         { kind: "check", text: "Testy przechodzą" },

@@ -12,19 +12,20 @@ title: "PROBLEM"
 centerLabel: "OBSERWACJE 2024–2026"
 
 # Treść sekcji z v2Sections.problem.
-# headingHtml: false-precision contrast — "kompletne" (twarda obietnica) vs "kruche"
-# (rzeczywistość). Druga linia to moment ujawnienia: "Po pierwszym użytkowniku często
-# okazuje się, że..." — kontekstowy moment, nie suche stwierdzenie.
-# Trzy accenty: "kompletne" (accent-2), "auth" (accent-2 wyróżnik), "kruche" (accent).
-headingHtml: 'Aplikacje po agentach wyglądają na <em class="accent-2">kompletne</em>.<br />Po pierwszym użytkowniku często okazuje się, że <em class="accent-2">auth</em>, dane, płatności i deploy są wciąż <em class="accent">kruche</em>.'
-body: "Demo dowieziesz prawie zawsze. Prawda najczęściej wychodzi przy pierwszej instalacji na innym OS, pierwszym Stripe webhook'u, pierwszym security review albo nowym koledze w zespole — to oni pokazują, czego żaden prompt nie wziął na siebie."
+# headingHtml: short statement (2 zdania) — false-precision "kompletne" vs "kruche".
+# Storytelling moment "Po pierwszym użytkowniku..." przeniesiony do body.
+# Nadmiar contentu z heading rozłożony w body + symptoms (editorial layout: column 1
+# narzuca wysokość, kolumny prawe wypełniają do tej wysokości; trzecia OK krótsza).
+headingHtml: 'Aplikacje po agentach wyglądają na <em class="accent-2">kompletne</em>.<br />Auth, dane, płatności i deploy są wciąż <em class="accent">kruche</em>'
+body: "Po pierwszym użytkowniku często okazuje się, że demo to nie produkt. Prawda wychodzi przy pierwszej instalacji na innym OS, pierwszym Stripe webhook'u, pierwszym security review albo nowym koledze w zespole — to oni pokazują, czego żaden prompt nie wziął na siebie."
 
-# Pary objawów (label + body). Renderowane jako lista 2 obserwacji pod heroem sekcji.
-# Krótkie zdania z rytmem zamiast jednego long sentence. Polish idioms ("żyją gdzie popadnie",
-# "się wywala") zamiast literal-translated phrasing.
+# Pary objawów (label + body). Renderowane jako 2 kolumny pod heroem sekcji.
+# Bodies rozszerzone editorial-grade — wyrównanie do heading column height.
+# Krótkie zdania z rytmem + konkret scen ("siedem profili w prod", "Discord support
+# nie dashboard") zamiast abstrakcyjnych stwierdzeń.
 symptoms:
   - label: "Security review"
-    body: "Aplikacja działa. Auth ma dwie role: admin i user. Tokeny żyją gdzie popadnie. Nikt nie wie, kto ma dostęp do czego."
+    body: "Aplikacja działa. Auth ma dwie role: admin i user — ale w prod chodzi siedem profili, których nikt nie zmapował. Tokeny żyją gdzie popadnie: czasem w localStorage, czasem w cookie HTTP-only, czasem w obu naraz. Pierwsza rzecz na audycie: nikt nie wie, kto ma dostęp do czego. Druga: kiedy ktoś wyleci z zespołu, klucze zostają."
   - label: "Ścieżka pieniędzy"
-    body: "Stripe działa. Dopóki nie przestanie. Webhook się wywala raz, retry nie ma, a klient zauważa brakującą usługę szybciej niż system."
+    body: "Stripe działa. Dopóki nie przestanie. Webhook się wywala raz — nie ma retry, nie ma dead letter queue, nie ma alertu. Klient zauważa brakującą usługę szybciej niż system. Founder dowiaduje się z Discorda support, nie z dashboardu."
 ---

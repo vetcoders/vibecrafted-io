@@ -312,7 +312,7 @@ flowchart LR
           number: "01",
           accent: "steel",
           title: "AST-Augmented Context",
-          body: "Models get worse when they write into a repo blind. Structural maps give the session landmarks before it starts editing.",
+          body: "Models drift when they write into a repo blind. Structural maps give the session landmarks before the agent touches a file.",
           details: [
             "Loctree and adjacent structural maps turn the repo into navigable terrain before edits start.",
             "The agent works against named files, blast radius, and symbol topology instead of drifting through grep haze.",
