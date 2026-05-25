@@ -398,6 +398,30 @@ export const OG_SLUGS: OGSlugDef[] = [
     },
   },
   {
+    slug: "aicx-en",
+    card: {
+      title: "aicx — repo-local intention memory for coding agents.",
+      subtitle:
+        "Decisions, tasks, outcomes, and source chunks before the next agent touches the repo.",
+      eyebrow: "AICX",
+      fig: "FIG. 23 · DWG VC-023",
+      accent: "amber",
+      lang: "en",
+    },
+  },
+  {
+    slug: "aicx-pl",
+    card: {
+      title: "aicx — lokalna pamięć intencji dla agentów.",
+      subtitle:
+        "Decyzje, zadania, wyniki i source-chunki zanim kolejny agent dotknie repo.",
+      eyebrow: "AICX",
+      fig: "FIG. 23 · DWG VC-023",
+      accent: "amber",
+      lang: "pl",
+    },
+  },
+  {
     slug: "manifesto-en",
     card: {
       title: "The Vibe Hangover.",

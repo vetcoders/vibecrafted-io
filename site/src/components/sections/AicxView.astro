@@ -1,0 +1,590 @@
+---
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+type Copy = {
+  eyebrow: string;
+  title: string;
+  accent: string;
+  lead: string;
+  primaryCta: string;
+  secondaryCta: string;
+  proofTitle: string;
+  proofItems: string[];
+  stepsTitle: string;
+  steps: Array<{ label: string; title: string; body: string }>;
+  compareTitle: string;
+  compareRows: Array<{ label: string; aicx: string; aictx: string }>;
+  installTitle: string;
+  installLead: string;
+  releaseNote: string;
+  useCasesTitle: string;
+  useCases: string[];
+};
+
+const copyByLang: Record<Lang, Copy> = {
+  en: {
+    eyebrow: 'AICX',
+    title: 'Intention memory for coding agents',
+    accent: 'that stays repo-local.',
+    lead:
+      'aicx is the Vibecrafted continuity runtime: it extracts decisions, tasks, outcomes, and source chunks from agent sessions so the next agent starts from evidence instead of mythology.',
+    primaryCta: 'Install the CLI',
+    secondaryCta: 'Open the source',
+    proofTitle: 'What becomes visible',
+    proofItems: [
+      'Operator intent, not just chat transcript',
+      'Decision and outcome trails tied to source chunks',
+      'Project-scoped search for agents before they edit',
+      'A clean boundary between memory-derived claims and live repo truth',
+    ],
+    stepsTitle: 'First five minutes',
+    steps: [
+      {
+        label: '01',
+        title: 'Install',
+        body: 'Use the public Rust package today; the 0.9.x runtime release is the next publication cut.',
+      },
+      {
+        label: '02',
+        title: 'Index',
+        body: 'Run a project-local index so sessions become searchable decisions, tasks, and outcomes.',
+      },
+      {
+        label: '03',
+        title: 'Steer',
+        body: 'Ask aicx for the previous intent before running a new implementation or review pass.',
+      },
+    ],
+    compareTitle: 'If you searched for aictx',
+    compareRows: [
+      {
+        label: 'Owner',
+        aicx: 'VetCoders / Vibecrafted runtime',
+        aictx: 'Separate Python package and website',
+      },
+      {
+        label: 'Contract',
+        aicx: 'Repo-local continuity for agent work with explicit evidence chunks',
+        aictx: 'Not part of the VetCoders runtime contract',
+      },
+      {
+        label: 'Use with',
+        aicx: 'Loctree structural maps, Vibecrafted skills, operator reports',
+        aictx: 'Unknown to this runtime',
+      },
+    ],
+    installTitle: 'Try the public package',
+    installLead: 'The public crate gives strangers a real entry point while the local 0.9.x release catches up.',
+    releaseNote:
+      'Hydration status: public page added; crates.io 0.9.x publication remains the next operator-owned release step.',
+    useCasesTitle: 'Use it when',
+    useCases: [
+      'A repo has many agent sessions and the current truth is scattered across reports.',
+      'A worker needs the previous operator decision before touching code.',
+      'A review must cite source chunks instead of trusting a fuzzy memory recap.',
+    ],
+  },
+  pl: {
+    eyebrow: 'AICX',
+    title: 'Pamięć intencji dla agentów kodujących',
+    accent: 'trzymana lokalnie przy repo.',
+    lead:
+      'aicx to warstwa ciągłości w Vibecrafted: wyciąga decyzje, zadania, wyniki i source-chunki z sesji agentów, żeby kolejny agent zaczynał od dowodów, a nie od legendy.',
+    primaryCta: 'Zainstaluj CLI',
+    secondaryCta: 'Otwórz źródło',
+    proofTitle: 'Co staje się widoczne',
+    proofItems: [
+      'Intencja operatora, nie tylko zapis rozmowy',
+      'Ślad decyzji i wyników podpięty do source-chunków',
+      'Projektowe wyszukiwanie dla agentów przed edycją',
+      'Granica między pamięcią a żywą prawdą repo',
+    ],
+    stepsTitle: 'Pierwsze pięć minut',
+    steps: [
+      {
+        label: '01',
+        title: 'Instalacja',
+        body: 'Użyj publicznej paczki Rust już teraz; release runtime 0.9.x jest następnym cięciem publikacyjnym.',
+      },
+      {
+        label: '02',
+        title: 'Indeks',
+        body: 'Zbuduj indeks dla projektu, żeby sesje były widoczne jako decyzje, zadania i wyniki.',
+      },
+      {
+        label: '03',
+        title: 'Sterowanie',
+        body: 'Zapytaj aicx o poprzednią intencję zanim ruszysz z nową implementacją albo review.',
+      },
+    ],
+    compareTitle: 'Jeśli trafiłeś na aictx',
+    compareRows: [
+      {
+        label: 'Właściciel',
+        aicx: 'VetCoders / runtime Vibecrafted',
+        aictx: 'Osobna paczka Python i osobna strona',
+      },
+      {
+        label: 'Kontrakt',
+        aicx: 'Ciągłość agentów lokalnie przy repo, z jawnymi source-chunkami',
+        aictx: 'Nie jest częścią kontraktu runtime VetCoders',
+      },
+      {
+        label: 'Pracuje z',
+        aicx: 'Mapami Loctree, skillami Vibecrafted i raportami operatora',
+        aictx: 'Poza tym runtime',
+      },
+    ],
+    installTitle: 'Spróbuj publicznej paczki',
+    installLead: 'Publiczny crate daje obcemu użytkownikowi realne wejście, zanim lokalny release 0.9.x dogoni repo.',
+    releaseNote:
+      'Status Hydrate: publiczna strona dodana; publikacja crates.io 0.9.x zostaje kolejnym release krokiem operatora.',
+    useCasesTitle: 'Użyj, gdy',
+    useCases: [
+      'Repo ma wiele sesji agentów, a prawda leży w rozproszonych raportach.',
+      'Worker musi znać poprzednią decyzję operatora przed dotknięciem kodu.',
+      'Review ma cytować source-chunki, a nie wierzyć w mgliste streszczenie.',
+    ],
+  },
+};
+
+const { lang = 'en' } = Astro.props as Props;
+const t = copyByLang[lang];
+const installHref = lang === 'pl' ? '/pl/install/' : '/en/install/';
+const sourceHref = 'https://github.com/VetCoders/aicx';
+const cargoCommand = 'cargo install aicx';
+---
+
+<section class="aicx" id="aicx">
+  <div class="aicx__inner">
+    <header class="aicx__hero">
+      <p class="aicx__eyebrow">{t.eyebrow}</p>
+      <h1>{t.title} <em>{t.accent}</em></h1>
+      <p class="aicx__lead">{t.lead}</p>
+      <div class="aicx__actions">
+        <a class="aicx__button aicx__button--primary" href={installHref}>{t.primaryCta}</a>
+        <a class="aicx__button" href={sourceHref} rel="noopener noreferrer" target="_blank">{t.secondaryCta}</a>
+      </div>
+    </header>
+
+    <aside class="aicx__terminal" aria-label="aicx install and usage preview">
+      <div class="aicx__terminal-top">
+        <span>aicx</span>
+        <span>repo-local memory</span>
+      </div>
+      <pre><code>$ {cargoCommand}
+$ aicx index --project vibecrafted
+$ aicx intents --project vibecrafted --kind decision</code></pre>
+    </aside>
+
+    <section class="aicx__proof" aria-labelledby="aicx-proof-title">
+      <h2 id="aicx-proof-title">{t.proofTitle}</h2>
+      <ul>
+        {t.proofItems.map((item) => (
+          <li>
+            <span aria-hidden="true">+</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="aicx__steps" aria-labelledby="aicx-steps-title">
+      <h2 id="aicx-steps-title">{t.stepsTitle}</h2>
+      <div class="aicx__step-grid">
+        {t.steps.map((step) => (
+          <article class="aicx__step">
+            <span>{step.label}</span>
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="aicx__compare" aria-labelledby="aicx-compare-title">
+      <h2 id="aicx-compare-title">{t.compareTitle}</h2>
+      <div class="aicx__compare-table" role="table">
+        <div class="aicx__compare-row aicx__compare-row--head" role="row">
+          <span role="columnheader">Axis</span>
+          <span role="columnheader">aicx</span>
+          <span role="columnheader">aictx</span>
+        </div>
+        {t.compareRows.map((row) => (
+          <div class="aicx__compare-row" role="row">
+            <span role="cell">{row.label}</span>
+            <span role="cell">{row.aicx}</span>
+            <span role="cell">{row.aictx}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="aicx__install" aria-labelledby="aicx-install-title">
+      <div>
+        <h2 id="aicx-install-title">{t.installTitle}</h2>
+        <p>{t.installLead}</p>
+      </div>
+      <code>{cargoCommand}</code>
+      <p class="aicx__note">{t.releaseNote}</p>
+    </section>
+
+    <section class="aicx__uses" aria-labelledby="aicx-uses-title">
+      <h2 id="aicx-uses-title">{t.useCasesTitle}</h2>
+      <div class="aicx__uses-grid">
+        {t.useCases.map((item) => <p>{item}</p>)}
+      </div>
+    </section>
+  </div>
+</section>
+
+<style>
+  .aicx {
+    width: 100%;
+    min-height: 100vh;
+    background:
+      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.06), transparent 360px),
+      var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .aicx__inner {
+    max-width: var(--v2-max-width);
+    margin: 0 auto;
+    padding: 0 var(--v2-section-padding-x);
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.76fr);
+    gap: 48px;
+  }
+
+  .aicx__hero,
+  .aicx__proof,
+  .aicx__steps,
+  .aicx__compare,
+  .aicx__install,
+  .aicx__uses {
+    min-width: 0;
+  }
+
+  .aicx__hero {
+    padding: 56px 0 24px;
+  }
+
+  .aicx__eyebrow,
+  .aicx__terminal-top,
+  .aicx__button,
+  .aicx__compare-row--head,
+  .aicx__step > span,
+  .aicx__note {
+    font-family: var(--font-mono);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .aicx__eyebrow {
+    margin: 0 0 22px;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .aicx h1 {
+    margin: 0;
+    max-width: 11ch;
+    font-family: var(--font-display);
+    font-size: clamp(52px, 8vw, 116px);
+    font-weight: 400;
+    line-height: 0.98;
+  }
+
+  .aicx h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .aicx__lead {
+    max-width: 62ch;
+    margin: 34px 0 0;
+    color: var(--fg-on-dark-dim);
+    font-size: 18px;
+    line-height: 1.72;
+  }
+
+  .aicx__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 34px;
+  }
+
+  .aicx__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 1px solid rgba(var(--accent-rgb), 0.68);
+    border-radius: var(--v2-radius);
+    padding: 12px 18px;
+    color: var(--accent);
+    font-size: 11px;
+  }
+
+  .aicx__button--primary {
+    background: var(--accent);
+    color: var(--ink);
+  }
+
+  .aicx__terminal {
+    align-self: start;
+    margin-top: 72px;
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
+    background: rgba(23, 22, 21, 0.84);
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+  }
+
+  .aicx__terminal-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid var(--rule-dark);
+    padding: 14px 18px;
+    color: var(--fg-on-dark-mute);
+    font-size: 10px;
+  }
+
+  .aicx__terminal pre {
+    margin: 0;
+    padding: 28px 22px 32px;
+    overflow-x: auto;
+  }
+
+  .aicx__terminal code,
+  .aicx__install code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--paper-soft);
+  }
+
+  .aicx__proof,
+  .aicx__steps,
+  .aicx__compare,
+  .aicx__install,
+  .aicx__uses {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--rule-dark);
+    padding-top: 44px;
+  }
+
+  .aicx h2 {
+    margin: 0 0 22px;
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3vw, 48px);
+    font-weight: 400;
+    line-height: 1.08;
+  }
+
+  .aicx__proof ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .aicx__proof li,
+  .aicx__step,
+  .aicx__uses p {
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
+    background: rgba(var(--v2-paper-rgb), 0.045);
+  }
+
+  .aicx__proof li {
+    min-height: 126px;
+    padding: 20px;
+    color: var(--fg-on-dark-dim);
+    line-height: 1.55;
+  }
+
+  .aicx__proof li span {
+    display: block;
+    margin-bottom: 18px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  .aicx__step-grid,
+  .aicx__uses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .aicx__step {
+    min-height: 190px;
+    padding: 24px;
+  }
+
+  .aicx__step > span {
+    display: inline-block;
+    color: var(--accent);
+    font-size: 10px;
+    margin-bottom: 26px;
+  }
+
+  .aicx__step h3 {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 400;
+  }
+
+  .aicx__step p,
+  .aicx__install p,
+  .aicx__uses p {
+    margin: 0;
+    color: var(--fg-on-dark-dim);
+    line-height: 1.62;
+  }
+
+  .aicx__compare-table {
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
+    overflow: hidden;
+  }
+
+  .aicx__compare-row {
+    display: grid;
+    grid-template-columns: 0.52fr 1fr 0.9fr;
+    gap: 0;
+    border-top: 1px solid var(--rule-dark);
+  }
+
+  .aicx__compare-row:first-child {
+    border-top: 0;
+  }
+
+  .aicx__compare-row span {
+    padding: 18px;
+    border-left: 1px solid var(--rule-dark);
+    color: var(--fg-on-dark-dim);
+    line-height: 1.5;
+  }
+
+  .aicx__compare-row span:first-child {
+    border-left: 0;
+    color: var(--fg-on-dark);
+  }
+
+  .aicx__compare-row--head span {
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  .aicx__install {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .aicx__install h2 {
+    margin-bottom: 12px;
+  }
+
+  .aicx__install code {
+    display: block;
+    border: 1px solid rgba(var(--accent-rgb), 0.58);
+    border-radius: var(--v2-radius);
+    padding: 15px 18px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .aicx__note {
+    grid-column: 1 / -1;
+    max-width: 98ch;
+    font-size: 10px;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .aicx__uses p {
+    min-height: 126px;
+    padding: 22px;
+  }
+
+  @media (max-width: 960px) {
+    .aicx__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .aicx__terminal {
+      margin-top: 0;
+    }
+
+    .aicx__proof ul,
+    .aicx__step-grid,
+    .aicx__uses-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .aicx__install {
+      grid-template-columns: 1fr;
+    }
+
+    .aicx__install code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .aicx {
+      padding: 72px 0 96px;
+    }
+
+    .aicx__hero {
+      padding-top: 32px;
+    }
+
+    .aicx h1 {
+      max-width: 12ch;
+      font-size: clamp(46px, 14vw, 72px);
+    }
+
+    .aicx__lead {
+      font-size: 16px;
+    }
+
+    .aicx__compare-row,
+    .aicx__compare-row--head {
+      grid-template-columns: 1fr;
+    }
+
+    .aicx__compare-row--head {
+      display: none;
+    }
+
+    .aicx__compare-row span {
+      border-left: 0;
+      border-top: 1px solid var(--rule-dark);
+    }
+
+    .aicx__compare-row span:first-child {
+      border-top: 0;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+  }
+</style>

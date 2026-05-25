@@ -89,6 +89,24 @@
         <priority>0.7</priority>
     </url>
     <url>
+        <loc>https://vibecrafted.io/en/aicx/</loc>
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/aicx/" />
+        <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/aicx/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/aicx/" />
+        <lastmod>2026-05-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://vibecrafted.io/pl/aicx/</loc>
+        <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/aicx/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/aicx/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/aicx/" />
+        <lastmod>2026-05-25</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
         <loc>https://vibecrafted.io/en/install/</loc>
         <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/install/" />
         <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/install/" />

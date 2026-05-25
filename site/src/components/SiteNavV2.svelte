@@ -33,6 +33,7 @@
   const anchors = $derived([
     { label: 'ABOUT', href: `${langPrefix}/#about` },
     { label: 'RUNTIME', href: `${langPrefix}/#framework` },
+    { label: 'AICX', href: `${langPrefix}/aicx/`, isPage: true, pageMatch: `${langPrefix}/aicx/` },
     { label: 'MARBLES', href: `${langPrefix}/#operator` },
     { label: 'PLAYGROUND', href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
     { label: 'DoU', href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },

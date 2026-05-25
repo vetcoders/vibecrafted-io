@@ -21,6 +21,7 @@ const ROUTE_PAIRS: Record<string, string> = {
   "/en/framework/": "/pl/framework/",
   "/en/install/": "/pl/install/",
   "/en/dou/": "/pl/dou/",
+  "/en/aicx/": "/pl/aicx/",
 };
 
 const REVERSE_PAIRS: Record<string, string> = Object.fromEntries(
