@@ -117,7 +117,8 @@
     isolation: isolate;
     width: 100%;
     height: 100vh;
-    min-height: 720px;
+    height: 100svh;
+    min-height: 560px;
     background:
       radial-gradient(circle at 50% 24%, rgba(var(--v2-paper-rgb), 0.045), transparent 36rem),
       linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 48%),
@@ -186,13 +187,15 @@
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin-bottom: 40px;
+    margin-bottom: 28px;
   }
 
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(50px, 8vw, 100px);
+    /* Cap by width AND viewport height: a 4-line EN heading must never grow
+       past the fold and clip under the fixed nav. */
+    font-size: min(clamp(46px, 7vw, 92px), 10.5vh);
     line-height: 1.02;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
@@ -223,7 +226,7 @@
   }
 
   .hero--pl .hero__heading {
-    font-size: clamp(40px, 6vw, 76px);
+    font-size: min(clamp(38px, 5.5vw, 72px), 9.5vh);
   }
 
   .hero--pl .hero__heading-line {
@@ -428,6 +431,26 @@
     .hero__scroll {
       display: none;
     }
+  }
+
+  /* Short viewports — the heading already self-caps via the vh term above;
+     here we only tighten surrounding spacing + the bottom anchor so the block
+     clears the fixed nav. */
+  @media (min-width: 901px) and (max-height: 860px) {
+    .hero__overlay { bottom: clamp(44px, 6vh, 96px); }
+    .hero__telemetry { bottom: clamp(44px, 6vh, 96px); }
+    .hero__eyebrow { margin-bottom: 18px; }
+    .hero__heading { margin-bottom: 20px; }
+    .hero__body { margin-bottom: 22px; }
+  }
+
+  @media (min-width: 901px) and (max-height: 680px) {
+    .hero__overlay { bottom: 40px; }
+    .hero__telemetry { bottom: 40px; }
+    .hero__eyebrow { margin-bottom: 12px; }
+    .hero__heading { margin-bottom: 14px; }
+    .hero__body { margin-bottom: 16px; max-width: 52ch; }
+    .hero__scroll { display: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
