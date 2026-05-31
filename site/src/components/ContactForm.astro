@@ -115,7 +115,7 @@ const labels = {
   const OK = { en: "Sent. We'll reply if it's a fit.", pl: 'Wysłane. Odezwiemy się, jeśli to pasuje.' };
   const ERR = { en: 'Could not send. Try email instead.', pl: 'Nie udało się wysłać. Spróbuj mejlem.' };
 
-  function langOf(el: Element): 'en' | 'pl' {
+  function currentLang(): 'en' | 'pl' {
     return document.body?.dataset?.lang === 'pl' ? 'pl' : 'en';
   }
 
@@ -130,7 +130,7 @@ const labels = {
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const lang = langOf(form);
+        const lang = currentLang();
         const data = Object.fromEntries(new FormData(form).entries());
 
         if (button) button.disabled = true;
