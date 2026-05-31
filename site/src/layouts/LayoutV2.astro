@@ -18,6 +18,7 @@ import SiteFooterV2 from '../components/SiteFooterV2.svelte';
 import SearchShellV2 from '../components/SearchShellV2.svelte';
 import SchemaOrg from '../components/SchemaOrg.astro';
 import NewsletterSignup from '../components/NewsletterSignup.astro';
+import ContactForm from '../components/ContactForm.astro';
 import { getDocsSearchData } from '../lib/search/docs';
 import { getLocaleAlternates, getAlternateLocale } from '../lib/seo/hreflang';
 import '../styles/tokens-v2.css';
@@ -44,6 +45,9 @@ interface Props {
    *  prose pages; opt out for full-screen interactive surfaces and for the
    *  newsletter routes themselves (which embed the signup inline). */
   hideNewsletter?: boolean;
+  /** Contact form block above the footer. On by default for prose pages; opt
+   *  out for full-screen interactive surfaces. */
+  hideContact?: boolean;
 }
 
 const {
@@ -56,6 +60,7 @@ const {
   hideSearch = false,
   hideFooter = false,
   hideNewsletter = false,
+  hideContact = false,
 } = Astro.props as Props;
 
 // Plan 17 — Dynamic OG cards live under `/og/*.png` at 1200×630 (canonical
@@ -151,7 +156,7 @@ const jsonLd = JSON.stringify({
       "style-src-attr 'unsafe-inline'",
       "img-src 'self' data:",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://plausible.io",
+      "connect-src 'self' https://plausible.io https://contact.libraxis.ai",
       "frame-src 'none'",
       "worker-src 'self'",
       "manifest-src 'self'",
@@ -338,6 +343,11 @@ const jsonLd = JSON.stringify({
       <NewsletterSignup variant="footer" lang={lang} />
     </div>
   )}
+  {!hideFooter && !hideContact && (
+    <div class="v2-contact-slot">
+      <ContactForm variant="footer" lang={lang} />
+    </div>
+  )}
   {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
   {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
     <SearchShellV2
@@ -447,9 +457,17 @@ const jsonLd = JSON.stringify({
     padding: 64px 0 16px;
   }
 
+  /* Contact form slot — sits between newsletter and footer. */
+  body.v2-scope .v2-contact-slot {
+    padding: 16px 0 16px;
+  }
+
   @media (max-width: 720px) {
     body.v2-scope .v2-newsletter-slot {
       padding: 40px 0 8px;
+    }
+    body.v2-scope .v2-contact-slot {
+      padding: 8px 0 8px;
     }
   }
 

@@ -1,0 +1,382 @@
+---
+/**
+ * ContactForm.astro — fleet contact form, posting to contact-relay.
+ *
+ * Sibling to NewsletterSignup.astro: same editorial blueprint (mono eyebrow +
+ * hairline rule + serif lead + small mono CTA), same brand tokens, same
+ * anti-aesthetic gates (no popup, no tracking pixel, no marketing speak).
+ *
+ * Difference: this submits JSON cross-origin to the relay via fetch (a static
+ * site has no server of its own). The relay decides the destination from the
+ * hidden `site` key — the form never names a recipient. A `company` honeypot
+ * traps bots. An always-visible mailto is the no-JS / fallback path.
+ *
+ * Relay contract: POST {site,email,subject,message} → 200 {success:true}.
+ * The relay origin must be allow-listed in the LayoutV2 CSP `connect-src`.
+ */
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+  variant?: 'footer' | 'inline';
+  /** contact-relay endpoint. */
+  relayUrl?: string;
+  /** Route key registered in the relay's CONTACT_ROUTES. */
+  site?: string;
+  /** Visible fallback / no-JS address. */
+  email?: string;
+  class?: string;
+}
+
+const {
+  lang = 'en',
+  variant = 'inline',
+  relayUrl = 'https://contact.libraxis.ai/api/contact',
+  site = 'vibecrafted',
+  email = 'hello@vibecrafted.io',
+  class: className,
+} = Astro.props as Props;
+
+const isPl = lang === 'pl';
+
+const labels = {
+  eyebrow: isPl ? 'KONTAKT' : 'CONTACT',
+  lead: isPl
+    ? 'Masz konkretny problem z dowiezieniem AI-owego softu do produkcji? Napisz, co próbujesz wdrożyć.'
+    : 'Stuck shipping AI-built software? Tell us what you are trying to get to production.',
+  email: isPl ? 'Twój e-mail' : 'Your email',
+  subject: isPl ? 'Temat' : 'Subject',
+  message: isPl ? 'Wiadomość' : 'Message',
+  cta: isPl ? 'Wyślij' : 'Send',
+  sending: isPl ? 'Wysyłanie…' : 'Sending…',
+  ok: isPl ? 'Wysłane. Odezwiemy się, jeśli to pasuje.' : "Sent. We'll reply if it's a fit.",
+  err: isPl ? 'Nie udało się wysłać. Spróbuj mejlem.' : 'Could not send. Try email instead.',
+  privacyPre: isPl ? 'Bez trackerów. Trafia wprost do skrzynki. Wolisz mejla? ' : 'No trackers. Goes straight to our inbox. Prefer email? ',
+};
+---
+
+<aside
+  class:list={['contact-form', `contact-form--${variant}`, className]}
+  aria-label={labels.eyebrow}
+>
+  <div class="contact-form__inner">
+    <div class="contact-form__head">
+      <span class="contact-form__eyebrow">{labels.eyebrow}</span>
+    </div>
+    <div class="contact-form__rule" aria-hidden="true"></div>
+    <p class="contact-form__lead">{labels.lead}</p>
+
+    <form
+      class="contact-form__form"
+      data-contact-relay
+      action={relayUrl}
+      method="post"
+      novalidate
+    >
+      <input type="hidden" name="site" value={site} />
+      <!-- Honeypot: off-screen, not tabbable, hidden from AT. Bots fill it. -->
+      <div class="contact-form__hp" aria-hidden="true">
+        <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <div class="contact-form__row">
+        <label class="contact-form__field">
+          <span class="contact-form__field-label">{labels.email}</span>
+          <input class="contact-form__input" type="email" name="email" autocomplete="email" required placeholder={labels.email} aria-label={labels.email} />
+        </label>
+        <label class="contact-form__field">
+          <span class="contact-form__field-label">{labels.subject}</span>
+          <input class="contact-form__input" type="text" name="subject" required placeholder={labels.subject} aria-label={labels.subject} />
+        </label>
+      </div>
+
+      <label class="contact-form__field">
+        <span class="contact-form__field-label">{labels.message}</span>
+        <textarea class="contact-form__input contact-form__textarea" name="message" rows="4" required placeholder={labels.message} aria-label={labels.message}></textarea>
+      </label>
+
+      <div class="contact-form__actions">
+        <button class="contact-form__submit" type="submit">
+          {labels.cta}
+          <span aria-hidden="true">→</span>
+        </button>
+        <p class="contact-form__status" role="status" aria-live="polite" data-contact-status></p>
+      </div>
+    </form>
+
+    <p class="contact-form__privacy">
+      {labels.privacyPre}<a class="contact-form__mail" href={`mailto:${email}`}>{email}</a>
+    </p>
+  </div>
+</aside>
+
+<script>
+  const SENDING = { en: 'Sending…', pl: 'Wysyłanie…' };
+  const OK = { en: "Sent. We'll reply if it's a fit.", pl: 'Wysłane. Odezwiemy się, jeśli to pasuje.' };
+  const ERR = { en: 'Could not send. Try email instead.', pl: 'Nie udało się wysłać. Spróbuj mejlem.' };
+
+  function langOf(el: Element): 'en' | 'pl' {
+    return document.body?.dataset?.lang === 'pl' ? 'pl' : 'en';
+  }
+
+  function bindContactForms() {
+    document.querySelectorAll<HTMLFormElement>('form[data-contact-relay]').forEach((form) => {
+      if (form.dataset.bound) return;
+      form.dataset.bound = '1';
+
+      const status = form.querySelector<HTMLElement>('[data-contact-status]');
+      const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const url = form.getAttribute('action') || '';
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const lang = langOf(form);
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        if (button) button.disabled = true;
+        if (status) status.textContent = SENDING[lang];
+
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (res.ok) {
+            form.reset();
+            if (status) status.textContent = OK[lang];
+          } else if (status) {
+            status.textContent = ERR[lang];
+          }
+        } catch {
+          if (status) status.textContent = ERR[lang];
+        } finally {
+          if (button) button.disabled = false;
+        }
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', bindContactForms);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindContactForms, { once: true });
+  } else {
+    bindContactForms();
+  }
+</script>
+
+<style>
+  .contact-form {
+    width: 100%;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-family: var(--v2-font-body, 'Inter', system-ui, sans-serif);
+  }
+
+  .contact-form--inline {
+    max-width: 720px;
+    margin: 48px auto;
+  }
+
+  .contact-form--footer {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  .contact-form__inner {
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    border-radius: 2px;
+    padding: 24px 28px 22px;
+    background: rgba(23, 22, 21, 0.45);
+  }
+
+  .contact-form--footer .contact-form__inner {
+    padding: 22px 28px 18px;
+    background: rgba(23, 22, 21, 0.35);
+  }
+
+  .contact-form__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .contact-form__rule {
+    height: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    margin-bottom: 18px;
+  }
+
+  .contact-form__lead {
+    margin: 0 0 18px;
+    font-family: var(--v2-font-display, 'Instrument Serif', serif);
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    max-width: 52ch;
+  }
+
+  .contact-form--footer .contact-form__lead {
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .contact-form__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contact-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 0 14px;
+  }
+
+  .contact-form__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .contact-form__row .contact-form__field {
+    flex: 1 1 220px;
+    min-width: 180px;
+  }
+
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .contact-form__field-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .contact-form__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    background: rgba(8, 8, 7, 0.6);
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    border-radius: 2px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-family: var(--v2-font-body, 'Inter', system-ui, sans-serif);
+    font-size: 15px;
+    line-height: 1.4;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .contact-form__textarea {
+    resize: vertical;
+    min-height: 96px;
+  }
+
+  .contact-form__input::placeholder {
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .contact-form__input:focus {
+    outline: none;
+    border-color: var(--v2-accent, #c99a3b);
+    background: rgba(8, 8, 7, 0.85);
+  }
+
+  .contact-form__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .contact-form__submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    background: transparent;
+    border: 1px solid var(--v2-accent, #c99a3b);
+    border-radius: 2px;
+    color: var(--v2-accent, #c99a3b);
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .contact-form__submit:hover,
+  .contact-form__submit:focus-visible {
+    background: var(--v2-accent, #c99a3b);
+    color: var(--v2-ink, #080807);
+    outline: none;
+  }
+
+  .contact-form__submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .contact-form__status {
+    margin: 0;
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.62));
+  }
+
+  .contact-form__privacy {
+    margin: 0;
+    font-family: var(--v2-font-mono, 'JetBrains Mono', monospace);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    max-width: 64ch;
+  }
+
+  .contact-form__mail {
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.62));
+    border-bottom: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .contact-form__mail:hover,
+  .contact-form__mail:focus-visible {
+    color: var(--v2-accent, #c99a3b);
+    border-bottom-color: var(--v2-accent, #c99a3b);
+  }
+
+  @media (max-width: 640px) {
+    .contact-form--footer {
+      padding: 0 20px;
+    }
+
+    .contact-form__inner {
+      padding: 20px 18px 18px;
+    }
+
+    .contact-form__lead {
+      font-size: 19px;
+    }
+  }
+</style>
