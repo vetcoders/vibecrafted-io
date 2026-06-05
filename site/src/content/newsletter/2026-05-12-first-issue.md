@@ -16,7 +16,7 @@ This list is the operator log for that work. When a cut closes — a plan, a rel
 
 Two veterinarians who started coding through AI partnership in late 2024. By early 2026 we had shipped enough vibe-coded SaaS rescues to recognise the same four things broken in every codebase. Vibecrafted is what we wrote down so the next operator does not have to learn it on someone else's production.
 
-The framework was built by shipping with it. Three case studies — Loctree LSP, Vista sealed environment, audit-22 parallel-truth — are public at [/showcase](https://vibecrafted.io/showcase/). The reasoning is laid out in [the manifesto](https://vibecrafted.io/manifesto/). The install path is one line: `curl -fsSL https://loct.io/install.sh | sh`.
+The framework was built by shipping with it. Three case studies — Loctree LSP, Vista sealed environment, audit-22 parallel-truth — are public at [/showcase](https://vibecrafted.io/showcase/). The reasoning is laid out in [the manifesto](https://vibecrafted.io/manifesto/). The install path is one line: `curl -fsSL https://vibecrafted.io/install.sh | bash`.
 
 ## What to expect
 

@@ -3,21 +3,24 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF_USAGE'
-Usage: install.sh [--gui] [--yes] [--ref <branch>] [--archive-url <url> | --archive-file <path>] [--tools-dir <dir>] [make-target]
+Usage: install.sh [--gui] [--yes] [--runtime <horse>] [--ref <branch>] [--archive-url <url> | --archive-file <path>] [--tools-dir <dir>] [make-target]
 
 Bootstrap a local 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. source snapshot into $VIBECRAFTED_ROOT/.vibecrafted/tools and then
 run a local staged install path from that copy.
 
 Use `--gui` when you want the browser-based guided installer.
 Use `--yes` to skip the attended bootstrap confirmation prompt.
+Use `--runtime <horse>` to install and activate a lab runtime: wezterm, vc-apprt, locterm, microsandbox, or none.
 Non-interactive runs without `--gui` bypass the browser and call the compact installer directly.
 
 Examples:
   curl -fsSL https://vibecrafted.io/install.sh | bash
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --yes
+  curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --runtime wezterm
   curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --ref develop
   bash install.sh doctor
+  bash install.sh --runtime locterm
   bash install.sh --archive-file /tmp/vibecrafted.tar.gz vibecrafted
 EOF_USAGE
 }
@@ -269,6 +272,7 @@ tools_dir="$default_tools_dir"
 target="vibecrafted"
 use_gui=0
 auto_yes=0
+runtime="none"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -277,6 +281,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     --yes|-y)
       auto_yes=1
+      ;;
+    --runtime)
+      shift
+      [[ $# -gt 0 ]] || die "Missing value for --runtime"
+      runtime="$1"
       ;;
     --ref)
       shift
@@ -323,6 +332,17 @@ if [[ "$use_gui" == "1" && "$target" != "vibecrafted" ]]; then
   die "--gui can only be used with the default vibecrafted install target"
 fi
 
+case "$runtime" in
+  none|wezterm|vc-apprt|locterm|microsandbox)
+    ;;
+  vc_apprt|vc-)
+    runtime="vc-apprt"
+    ;;
+  *)
+    die "Unknown runtime horse: $runtime (expected wezterm, vc-apprt, locterm, microsandbox, none)"
+    ;;
+esac
+
 if [[ -z "$archive_url" && -z "$archive_file" ]]; then
   # Resolve latest version from the channel manifest instead of hard-pinning.
   channel_url="https://vibecrafted.io/channel/${ref}.json"
@@ -354,6 +374,23 @@ if [[ "$PLATFORM_OS" == "unsupported" ]]; then
   info "native Windows support."
   die "Unsupported platform: $(uname -s). Re-run inside WSL2."
 fi
+
+case "$runtime:$PLATFORM_OS" in
+  none:*|wezterm:macos|wezterm:linux|wezterm:wsl|vc-apprt:macos|vc-apprt:linux|locterm:macos|microsandbox:macos|microsandbox:linux)
+    ;;
+  locterm:*)
+    die "locterm is macOS-only, try --runtime wezterm or --runtime microsandbox"
+    ;;
+  vc-apprt:*)
+    die "vc-apprt supports macOS and Linux only, try --runtime wezterm"
+    ;;
+  microsandbox:*)
+    die "microsandbox requires macOS HVF or Linux KVM, try --runtime wezterm"
+    ;;
+  *)
+    die "Unsupported platform '$PLATFORM_OS' for runtime '$runtime'"
+    ;;
+esac
 
 # Pre-flight tool check — on missing tools, emit a copy-pasteable install
 # hint for the detected platform (Plan 03). Cross-platform tar/make/python3
@@ -430,15 +467,14 @@ verify_signature() {
 }
 
 if [[ -n "$archive_file" ]]; then
-  info "Unpacking local archive: $archive_file"
+  info "Staging source: local archive"
   extract_tarball "$archive_file" "$extract_root"
 else
-  info "Downloading 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. snapshot: $archive_url"
+  info "Staging source: download snapshot"
   local_archive="$tmpdir/$(basename "$archive_url")"
   curl -fsSL "$archive_url" -o "$local_archive"
 
   base_url="${archive_url%/*}"
-  info "Verifying integrity..."
   verify_signature "$local_archive" "$base_url"
 
   extract_tarball "$local_archive" "$extract_root"
@@ -463,11 +499,6 @@ rm -rf "$staged_dir"
 mv "$incoming_dir" "$staged_dir"
 ln -sfn "$staged_dir" "$current_link"
 
-info "Staged bootstrap source:"
-info "  $staged_dir"
-info "Current control plane:"
-info "  $current_link"
-
 # Read canonical VERSION file from the staged source tree for the post-install banner.
 # The repo ships VERSION at the root; fall back to 'unknown' if absent (e.g. custom tarballs).
 _installed_version=""
@@ -491,6 +522,27 @@ post_install_banner() {
   info "---------------------------------------------------------------"
 }
 
+bootstrap_log="$vibecrafted_home/bootstrap.log"
+
+write_bootstrap_log_header() {
+  mkdir -p "$(dirname "$bootstrap_log")"
+  {
+    printf 'vibecrafted bootstrap\n'
+    printf 'version: %s\n' "$_installed_version"
+    printf 'staged: %s\n' "$staged_dir"
+    printf 'current: %s\n' "$current_link"
+    printf '\n'
+  } > "$bootstrap_log"
+}
+
+compact_bootstrap_banner() {
+  printf '\n'
+  info "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bootstrap"
+  info "  Staged      vibecrafted $_installed_version"
+  info "  Control     $current_link"
+  info "  Log         $bootstrap_log"
+}
+
 if [[ "$target" == "vibecrafted" && "$use_gui" == "1" ]]; then
   gui_installer="$current_link/scripts/installer_gui.py"
   [[ -f "$gui_installer" ]] || die "Guided installer not found: $gui_installer"
@@ -498,35 +550,24 @@ if [[ "$target" == "vibecrafted" && "$use_gui" == "1" ]]; then
   info "Launching guided installer UI:"
   info "  python3 $gui_installer --source $current_link"
   printf '\n'
+  export VIBECRAFTED_RUNTIME="$runtime"
   exec python3 "$gui_installer" --source "$current_link"
 fi
 
 if [[ "$target" == "vibecrafted" ]] && ! is_interactive_session; then
-  installer="$current_link/scripts/vetcoders_install.py"
-  [[ -f "$installer" ]] || die "Installer not found: $installer"
-  info "Non-interactive bootstrap detected:"
-  info "  bypassing the browser UI and running compact installer"
-
-  # Install foundations (loctree, aicx) from GH releases before the main installer.
-  foundations_script="$current_link/scripts/install-foundations.sh"
-  if [[ -x "$foundations_script" ]] || [[ -f "$foundations_script" ]]; then
-    info "Installing foundations..."
-    bash "$foundations_script" || info "  [warn] Foundation install had issues (non-fatal)"
-  fi
-
-  # Ensure foundations and tools installed by install-foundations.sh are visible.
-  for _p in "${vibecrafted_home}/bin" "${vibecrafted_home}/tools/node/bin" "$HOME/.cargo/bin"; do
+  # Non-TTY public installs use the same automation lane as local source
+  # installs. Keep the old bootstrap/staging work above, then hand off to the
+  # manifest-owned installer so stdout remains compact and the detail lands in
+  # the installer log.
+  for _p in "${vibecrafted_home}/bin" "${vibecrafted_home}/tools/node/bin" "$HOME/.cargo/bin" "$HOME/.local/bin"; do
     case ":${PATH}:" in
       *":${_p}:"*) ;;
       *) [[ -d "$_p" ]] && export PATH="${_p}:${PATH}" ;;
     esac
   done
 
-  post_install_banner
-  info "Launching installer:"
-  info "  python3 $installer install --source $current_link --with-shell --compact --non-interactive"
-  printf '\n'
-  exec python3 "$installer" install --source "$current_link" --with-shell --compact --non-interactive
+  export VIBECRAFTED_RUNTIME="$runtime"
+  exec make --no-print-directory -C "$current_link" install-auto RUNTIME="$runtime"
 fi
 
 # Interactive terminal session: default target is the built-in
@@ -554,6 +595,7 @@ if [[ "$target" == "vibecrafted" ]]; then
     curl -LsSf https://astral.sh/uv/install.sh | sh \
       || die "Failed to bootstrap uv"
     # shellcheck disable=SC1090
+    # shellcheck disable=SC1091
     [[ -f "$HOME/.local/bin/env" ]] && source "$HOME/.local/bin/env"
     export PATH="$HOME/.local/bin:$PATH"
   fi
@@ -562,6 +604,7 @@ if [[ "$target" == "vibecrafted" ]]; then
   info "Running built-in installer:"
   info "  uv run --project $installer_dir vetcoders-installer $manifest"
   printf '\n'
+  export VIBECRAFTED_RUNTIME="$runtime"
   exec uv run --project "$installer_dir" --quiet vetcoders-installer "$manifest"
 fi
 
