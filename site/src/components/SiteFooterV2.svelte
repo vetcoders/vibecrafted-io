@@ -25,6 +25,25 @@
     </div>
 
     <p class="v2footer__byline">{footer.byline}</p>
+
+    <a
+      class="v2footer__vetcoders"
+      href="https://vetcoders.io"
+      rel="noopener noreferrer"
+      target="_blank"
+      aria-label="VetCoders — AI in service of the animal"
+    >
+      <img
+        src="/vetcoders-message.png"
+        alt=""
+        aria-hidden="true"
+        class="v2footer__vetcoders-mark"
+        width="78"
+        height="22"
+      />
+      <span>vetcoders.io</span>
+    </a>
+
     <p class="v2footer__tagline">{footer.tagline}</p>
 
     <nav class="v2footer__links" aria-label="Footer navigation">
@@ -138,6 +157,41 @@
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
     margin: 0;
+  }
+
+  /* VetCoders signature — the AI <-> animal line-art (Creation of Adam, human
+     hand to dog paw) by a vetcoders.io link. White line-art on the dark footer;
+     faint at rest, brightens on hover. The one spark is the point. */
+  .v2footer__vetcoders {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: -2px 0 2px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    text-decoration: none;
+    transition: color 0.18s ease;
+  }
+
+  .v2footer__vetcoders-mark {
+    height: 22px;
+    width: auto;
+    opacity: 0.5;
+    transition: opacity 0.18s ease;
+  }
+
+  .v2footer__vetcoders:hover,
+  .v2footer__vetcoders:focus-visible {
+    color: var(--fg-on-dark);
+    outline: none;
+  }
+
+  .v2footer__vetcoders:hover .v2footer__vetcoders-mark,
+  .v2footer__vetcoders:focus-visible .v2footer__vetcoders-mark {
+    opacity: 0.92;
   }
 
   @media (max-width: 720px) {
