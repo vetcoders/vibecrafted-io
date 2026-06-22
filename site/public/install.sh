@@ -5,7 +5,7 @@ usage() {
   cat <<'EOF_USAGE'
 Usage: install.sh [--gui] [--yes] [--runtime <horse>] [--ref <branch>] [--archive-url <url> | --archive-file <path>] [--tools-dir <dir>] [make-target]
 
-Bootstrap a local 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. source snapshot into $VIBECRAFTED_ROOT/.vibecrafted/tools and then
+Bootstrap a local 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. source snapshot into $HOME/.local/share/vibecrafted/tools and then
 run a local staged install path from that copy.
 
 Use `--gui` when you want the browser-based guided installer.
@@ -32,6 +32,15 @@ die() {
 
 info() {
   printf '%s\n' "$*"
+}
+
+# Output discipline: the default view is calm storytelling (≤10 lines total,
+# ≤2 per install section). Detail lines are gated — VERBOSE=1 restores the
+# full bazaar, nothing is lost.
+vinfo() {
+  if [[ "${VERBOSE:-0}" == "1" ]]; then
+    printf '%s\n' "$*"
+  fi
 }
 
 # -----------------------------------------------------------------------------
@@ -191,6 +200,75 @@ default_vibecrafted_home() {
   printf '%s\n' "$HOME/.vibecrafted"
 }
 
+default_vibecrafted_runtime_home() {
+  if [[ -n "${VIBECRAFTED_RUNTIME_HOME:-}" ]]; then
+    printf '%s\n' "$VIBECRAFTED_RUNTIME_HOME"
+    return
+  fi
+  if [[ -n "${XDG_DATA_HOME:-}" ]]; then
+    printf '%s\n' "$XDG_DATA_HOME/vibecrafted"
+    return
+  fi
+  printf '%s\n' "$HOME/.local/share/vibecrafted"
+}
+
+canonical_vibecrafted_home() {
+  printf '%s\n' "$HOME/.vibecrafted"
+}
+
+canonical_vibecrafted_runtime_home() {
+  printf '%s\n' "$HOME/.local/share/vibecrafted"
+}
+
+canonical_vibecrafted_launcher_bin() {
+  printf '%s\n' "$HOME/.local/bin"
+}
+
+pause_runtime_contract_failure() {
+  if ! is_interactive_session; then
+    return
+  fi
+  printf '  → fix: vibecrafted doctor --fix-launchers\n' >&2
+  printf 'Press Enter to continue, or Ctrl-C to abort: '
+  read -r _ || true
+}
+
+enforce_runtime_root_contract() {
+  local expected_store expected_runtime expected_launcher
+  local resolved_store resolved_runtime resolved_launcher
+  local failed=0
+
+  expected_store="$(canonical_vibecrafted_home)"
+  expected_runtime="$(canonical_vibecrafted_runtime_home)"
+  expected_launcher="$(canonical_vibecrafted_launcher_bin)"
+
+  resolved_store="$(default_vibecrafted_home)"
+  resolved_runtime="$(default_vibecrafted_runtime_home)"
+  resolved_launcher="${VIBECRAFTED_LAUNCHER_BIN:-$expected_launcher}"
+
+  if [[ "$resolved_store" != "$expected_store" ]]; then
+    printf '✗ store root drift: %s ≠ %s\n' "$resolved_store" "$expected_store" >&2
+    failed=1
+  fi
+
+  if [[ "$resolved_runtime" != "$expected_runtime" ]]; then
+    printf '✗ runtime root drift: %s ≠ %s\n' "$resolved_runtime" "$expected_runtime" >&2
+    failed=1
+  fi
+
+  if [[ "$resolved_launcher" != "$expected_launcher" ]]; then
+    printf '✗ launcher root drift: %s ≠ %s\n' "$resolved_launcher" "$expected_launcher" >&2
+    failed=1
+  fi
+
+  if [[ "$failed" == "1" ]]; then
+    pause_runtime_contract_failure
+    return 1
+  fi
+
+  return 0
+}
+
 sanitize_ref() {
   printf '%s' "$1" | tr '/:@ ' '----' | tr -cd '[:alnum:]._-' 
 }
@@ -221,27 +299,22 @@ prompt_attended_consent() {
   has_attended_tty || return 0
 
   if [[ -n "$archive_file" ]]; then
-    source_description="unpack local archive: $archive_file"
+    source_description="unpack"
   else
-    source_description="download snapshot: $archive_url"
+    source_description="download"
   fi
   next_step="$(bootstrap_next_step)"
 
   {
     printf '\n'
-    printf 'This bootstrap will:\n'
-    printf '  • %s\n' "$source_description"
-    printf '  • stage the control plane under %s\n' "$staged_dir"
-    printf '  • refresh the current symlink at %s\n' "$current_link"
-    printf '  • %s\n' "$next_step"
-    printf '\n'
-    printf 'Nothing will be staged or installed until you say yes.\n'
+    printf '⚒ 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. → %s\n' "$staged_dir"
+    printf '  %s · stage · %s\n' "$source_description" "$next_step"
   } > /dev/tty
 
   while true; do
     printf 'Proceed? [y/N] ' > /dev/tty
     if ! IFS= read -r response < /dev/tty; then
-      printf '\nBootstrap cancelled: no confirmation received.\n' > /dev/tty
+      printf '\nCancelled.\n' > /dev/tty
       exit 1
     fi
     case "$response" in
@@ -250,7 +323,7 @@ prompt_attended_consent() {
         return 0
         ;;
       ""|[nN]|[nN][oO])
-        printf '\nCancelled. Nothing was staged or installed.\n' > /dev/tty
+        printf '\nCancelled.\n' > /dev/tty
         exit 0
         ;;
       *)
@@ -262,7 +335,9 @@ prompt_attended_consent() {
 
 vibecrafted_home="$(default_vibecrafted_home)"
 export VIBECRAFTED_HOME="$vibecrafted_home"
-default_tools_dir="${VIBECRAFTED_TOOLS_HOME:-$vibecrafted_home/tools}"
+vibecrafted_runtime_home="$(default_vibecrafted_runtime_home)"
+export VIBECRAFTED_RUNTIME_HOME="$vibecrafted_runtime_home"
+default_tools_dir="${VIBECRAFTED_TOOLS_HOME:-$vibecrafted_runtime_home/tools}"
 default_ref="${VIBECRAFTED_REF:-main}"
 
 ref="$default_ref"
@@ -343,6 +418,8 @@ case "$runtime" in
     ;;
 esac
 
+enforce_runtime_root_contract || exit 1
+
 if [[ -z "$archive_url" && -z "$archive_file" ]]; then
   # Resolve latest version from the channel manifest instead of hard-pinning.
   channel_url="https://vibecrafted.io/channel/${ref}.json"
@@ -353,11 +430,11 @@ if [[ -z "$archive_url" && -z "$archive_file" ]]; then
   fi
   if [[ -n "$resolved_url" ]]; then
     archive_url="$resolved_url"
-    info "Resolved from channel ($ref): $archive_url"
+    vinfo "Resolved from channel ($ref): $archive_url"
   else
     # Fallback: source snapshot for pre-channel / pre-deploy kickoffs.
     archive_url="https://github.com/VetCoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
-    info "[note] Channel manifest not available — using GitHub source snapshot for ${ref}"
+    vinfo "[note] Channel manifest not available — using GitHub source snapshot for ${ref}"
   fi
 fi
 
@@ -407,6 +484,7 @@ preflight_require() {
 preflight_require tar
 preflight_require make
 preflight_require python3
+export VIBECRAFTED_TOOLS_HOME="$tools_dir"
 if [[ -z "$archive_file" ]]; then
   preflight_require curl
 else
@@ -453,11 +531,11 @@ verify_signature() {
   if [[ -n "$expected" && "$actual" != "$expected" ]]; then
     die "SHA256 mismatch for $(basename "$file"): expected $expected, got $actual"
   fi
-  [[ -n "$expected" ]] && info "  SHA256 ✓"
+  [[ -n "$expected" ]] && vinfo "  SHA256 ✓"
 
   if curl -fsSL "${base_url}/$(basename "$sig_file")" -o "$sig_file" 2>/dev/null; then
     if openssl dgst -sha256 -verify "$pub_file" -signature "$sig_file" "$file" >/dev/null 2>&1; then
-      info "  Signature ✓  (Maciej Gad / MW223P3NPX)"
+      vinfo "  Signature ✓  (Maciej Gad / MW223P3NPX)"
     else
       die "Signature verification FAILED for $(basename "$file")"
     fi
@@ -467,10 +545,12 @@ verify_signature() {
 }
 
 if [[ -n "$archive_file" ]]; then
-  info "Staging source: local archive"
+  info "Unpacking the local snapshot…"
+  vinfo "  archive: $archive_file"
   extract_tarball "$archive_file" "$extract_root"
 else
-  info "Staging source: download snapshot"
+  info "Fetching vibecrafted ($ref)…"
+  vinfo "  source: $archive_url"
   local_archive="$tmpdir/$(basename "$archive_url")"
   curl -fsSL "$archive_url" -o "$local_archive"
 
@@ -507,49 +587,29 @@ if [[ -f "$staged_dir/VERSION" ]]; then
 fi
 [[ -n "$_installed_version" ]] || _installed_version="unknown"
 
+# Section truth line: what just became true, in one calm line.
+info "✓ Staged vibecrafted $_installed_version → $current_link"
+
 post_install_banner() {
+  # The default view already told the staging truth in one line; the full
+  # banner is detail and lives behind VERBOSE=1.
+  [[ "${VERBOSE:-0}" == "1" ]] || return 0
   printf '\n'
   info "---------------------------------------------------------------"
   info " Staged: vibecrafted $_installed_version"
   info " Channel:   tarball"
-  info ""
-  info " The archive has been extracted and symlinked."
-  info " Shell integration runs next — if the step below fails,"
-  info " re-run the install command."
   info ""
   info " Update:  vibecrafted update"
   info " Health:  vibecrafted doctor"
   info "---------------------------------------------------------------"
 }
 
-bootstrap_log="$vibecrafted_home/bootstrap.log"
-
-write_bootstrap_log_header() {
-  mkdir -p "$(dirname "$bootstrap_log")"
-  {
-    printf 'vibecrafted bootstrap\n'
-    printf 'version: %s\n' "$_installed_version"
-    printf 'staged: %s\n' "$staged_dir"
-    printf 'current: %s\n' "$current_link"
-    printf '\n'
-  } > "$bootstrap_log"
-}
-
-compact_bootstrap_banner() {
-  printf '\n'
-  info "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bootstrap"
-  info "  Staged      vibecrafted $_installed_version"
-  info "  Control     $current_link"
-  info "  Log         $bootstrap_log"
-}
-
 if [[ "$target" == "vibecrafted" && "$use_gui" == "1" ]]; then
   gui_installer="$current_link/scripts/installer_gui.py"
   [[ -f "$gui_installer" ]] || die "Guided installer not found: $gui_installer"
   post_install_banner
-  info "Launching guided installer UI:"
-  info "  python3 $gui_installer --source $current_link"
-  printf '\n'
+  info "▸ Launching the guided installer (browser UI)…"
+  vinfo "  python3 $gui_installer --source $current_link"
   export VIBECRAFTED_RUNTIME="$runtime"
   exec python3 "$gui_installer" --source "$current_link"
 fi
@@ -559,7 +619,7 @@ if [[ "$target" == "vibecrafted" ]] && ! is_interactive_session; then
   # installs. Keep the old bootstrap/staging work above, then hand off to the
   # manifest-owned installer so stdout remains compact and the detail lands in
   # the installer log.
-  for _p in "${vibecrafted_home}/bin" "${vibecrafted_home}/tools/node/bin" "$HOME/.cargo/bin" "$HOME/.local/bin"; do
+  for _p in "$HOME/.local/bin" "${tools_dir}/node/bin"; do
     case ":${PATH}:" in
       *":${_p}:"*) ;;
       *) [[ -d "$_p" ]] && export PATH="${_p}:${PATH}" ;;
@@ -583,7 +643,7 @@ if [[ "$target" == "vibecrafted" ]]; then
 
   # Make sure user-local binaries (cargo, .local) are visible to the installer's
   # subprocesses — otherwise tools installed outside PATH won't be detected.
-  for _p in "${vibecrafted_home}/bin" "${vibecrafted_home}/tools/node/bin" "$HOME/.cargo/bin" "$HOME/.local/bin"; do
+  for _p in "$HOME/.local/bin" "${tools_dir}/node/bin"; do
     case ":${PATH}:" in
       *":${_p}:"*) ;;
       *) [[ -d "$_p" ]] && export PATH="${_p}:${PATH}" ;;
@@ -601,16 +661,14 @@ if [[ "$target" == "vibecrafted" ]]; then
   fi
 
   post_install_banner
-  info "Running built-in installer:"
-  info "  uv run --project $installer_dir vetcoders-installer $manifest"
-  printf '\n'
+  info "▸ Opening the 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. installer…"
+  vinfo "  uv run --project $installer_dir vetcoders-installer $manifest"
   export VIBECRAFTED_RUNTIME="$runtime"
   exec uv run --project "$installer_dir" --quiet vetcoders-installer "$manifest"
 fi
 
 post_install_banner
-info "Launching local make target:"
-info "  make --no-print-directory -C $current_link $target"
-printf '\n'
+info "▸ Running make ${target}…"
+vinfo "  make --no-print-directory -C $current_link $target"
 
 exec make --no-print-directory -C "$current_link" "$target"

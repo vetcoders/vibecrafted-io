@@ -1,6 +1,6 @@
 {
   "title": "\u2692 Vibecrafted.",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "persist": true,
   "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
   "phases": [
@@ -20,7 +20,7 @@
       "key": "diagnostics",
       "label": "Diagnostics and plan",
       "optional": true,
-      "reason": "We will inspect the current machine before changing files.\n\nRequired decision:\n  Set your artifacts storage location.\n  REASON: \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. keeps the persistent artifacts on developer's hard disks\n  for past session context retrieval. We make this location explicit so reports,\n  transcripts, and run state can be inspected, moved, backed up, or deleted.\n  Default: ${VIBECRAFTED_HOME:-$HOME/.vibecrafted}/artifacts\n\nInstaller options live in one place:\n  runtime horse \u00b7 shell helpers \u00b7 skill views \u00b7 dry-run or automation mode",
+      "reason": "We will inspect the current machine before changing files.\n\nRequired decision:\n  Set your artifacts storage location.\n  REASON: \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. keeps the persistent artifacts on developer's hard disks\n  for past session context retrieval. We make this location explicit so reports,\n  transcripts, and run state can be inspected, moved, backed up, or deleted.\n  Default: ${VIBECRAFTED_HOME:-$HOME/.vibecrafted}/artifacts\n\nInstaller options live in one place:\n  runtime horse \u00b7 skill views \u00b7 Python tools \u00b7 dry-run or automation mode",
       "reasonLines": [
         "We will inspect the current machine before changing files.",
         "Required decision:",
@@ -30,7 +30,7 @@
         "transcripts, and run state can be inspected, moved, backed up, or deleted.",
         "Default: ${VIBECRAFTED_HOME:-$HOME/.vibecrafted}/artifacts",
         "Installer options live in one place:",
-        "runtime horse \u00b7 shell helpers \u00b7 skill views \u00b7 dry-run or automation mode"
+        "runtime horse \u00b7 skill views \u00b7 Python tools \u00b7 dry-run or automation mode"
       ],
       "commands": ["python3 scripts/vetcoders_install.py list --source ."]
     },
@@ -38,16 +38,19 @@
       "key": "installation",
       "label": "Installation",
       "optional": false,
-      "reason": "We will install:\n  - foundations: loctree, aicx, prview, screenscribe when needed\n  - frontier agent configuration\n  - shared skills, shell helpers, launchers, and mirrored agent views\n  - the selected runtime horse when RUNTIME=... is provided",
+      "reason": "We will install:\n  - validate product foundations: loctree and aicx stay product-managed\n  - install or validate framework-owned support tools when needed\n  - frontier agent configuration\n  - shared skills, launchers, and mirrored agent views\n  - the selected runtime horse when RUNTIME=... is provided\n  - the Python CLI and MCP packages through uv tool install\n  - the Rust app/server binaries (voc, vc-admin, vc-server) as real files in ~/.local/bin",
       "reasonLines": [
         "We will install:",
-        "- foundations: loctree, aicx, prview, screenscribe when needed",
+        "- validate product foundations: loctree and aicx stay product-managed",
+        "- install or validate framework-owned support tools when needed",
         "- frontier agent configuration",
-        "- shared skills, shell helpers, launchers, and mirrored agent views",
-        "- the selected runtime horse when RUNTIME=... is provided"
+        "- shared skills, launchers, and mirrored agent views",
+        "- the selected runtime horse when RUNTIME=... is provided",
+        "- the Python CLI and MCP packages through uv tool install",
+        "- the Rust app/server binaries (voc, vc-admin, vc-server) as real files in ~/.local/bin"
       ],
       "commands": [
-        "bash -e -c 'bash scripts/install-foundations.sh\nbash skills/vc-agents/scripts/install-frontier-config.sh --source \".\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\npython3 scripts/vetcoders_install.py install --source \".\" --with-shell --compact --non-interactive --mirror\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\n'"
+        "bash -e -c 'bash scripts/install-foundations.sh\nbash runtime/scripts/install-frontier-config.sh --source \".\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\npython3 scripts/vetcoders_install.py install --source \".\" --compact --non-interactive --mirror\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\nmake --no-print-directory install-python-tools\nmake --no-print-directory install-app-binaries\nmake --no-print-directory install-server\n'"
       ]
     },
     {
