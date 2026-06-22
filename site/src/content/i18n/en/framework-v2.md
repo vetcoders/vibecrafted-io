@@ -13,10 +13,10 @@ centerLabel: "SCAFFOLD → RELEASE"
 
 # Heading carries inline HTML (<br />, <em class="accent-2">). One string so
 # the component can render it via {@html ...}.
-headingHtml: 'Not a rewrite. A stabilization sprint<br /><em class="accent-2">Find the weak seams, then close them</em>'
+headingHtml: 'Not a rewrite. A cadence.<br /><em class="accent-2">Every write earns a read</em>'
 
 # Subtitle under the heading — the pitch for the framework as a discipline.
-subtitle: "Vibecrafted keeps the momentum from AI-built software and adds the missing release discipline: map the repo, assign the next cut, verify runtime truth, and leave evidence for the next session."
+subtitle: "Eleven stages alternate Read and Write. Every write — implement, marbles, polarize — is immediately falsified by a read — review, audit, DoU. Marbles raises entropy to fill the cracks; Polarize cuts it back to one truth. The baton passes agent to agent, so nothing ships unchecked."
 
 # Operators block — heading + sub above the six-operator row.
 operatorsHeadingHtml: "How the <em>pass</em> runs"

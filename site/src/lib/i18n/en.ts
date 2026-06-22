@@ -104,15 +104,15 @@ export const en = {
       sub: "A small operating model for shaping agent work, reducing drift, and preparing a release surface people can inspect.",
       hero: {
         stages: [
-          { name: "Scaffold", subtitle: "prepare the surface" },
-          { name: "Craft", subtitle: "shape with agents" },
+          { name: "Scaffold", subtitle: "read · map before the cut" },
+          { name: "Implement", subtitle: "write · agents deliver" },
+          { name: "Review", subtitle: "read · falsify the write" },
           {
-            name: "Convergence",
-            subtitle: "collapse unresolveds",
+            name: "Converge",
+            subtitle: "write · marbles ⬆ polarize ⬇",
             kind: "core" as const,
           },
-          { name: "DoU", subtitle: "find what is still undone" },
-          { name: "Release", subtitle: "ship for strangers" },
+          { name: "Release", subtitle: "write · ship for strangers" },
         ],
       },
       controls: {
@@ -153,23 +153,27 @@ export const en = {
   }
 } }%%
 flowchart LR
-    A["Scaffold"] --> B["Init"]
-    B --> C["Workflow"]
-    C --> D["Follow-up"]
-    D --> E{{"Marbles Loop"}}
-    E --> F["DoU"]
-    F --> G["Decorate"]
-    G --> H["Hydrate"]
-    H --> I["Release"]
+    S["Scaffold · R"] --> I["Implement · W"]
+    I --> RV["Review · R"]
+    RV --> WF["Workflow · W"]
+    WF --> FU["Follow-up · R"]
+    FU --> MA{{"Marbles · W ⬆"}}
+    MA --> AU["Audit · R"]
+    AU --> PO{{"Polarize · W ⬇"}}
+    PO --> DU["DoU · R"]
+    DU --> HY["Hydrate · W"]
+    HY --> RE["Release · W"]
 
-    classDef stage fill:#0d1728,stroke:#31415d,color:#f3efe7,stroke-width:1.3px;
-    classDef core fill:#1a1110,stroke:#d8894b,color:#ffd9bd,stroke-width:2.2px;
-    class A,B,C,D,F,G,H,I stage;
-    class E core;`,
+    classDef read fill:#0d1728,stroke:#3b6ea5,color:#dbe7f3,stroke-width:1.3px;
+    classDef write fill:#1a1410,stroke:#d8894b,color:#ffd9bd,stroke-width:1.6px;
+    classDef core fill:#1a1110,stroke:#e2935a,color:#ffd9bd,stroke-width:2.4px;
+    class S,RV,FU,AU,DU read;
+    class I,WF,HY,RE write;
+    class MA,PO core;`,
       mermaidModal: {
         open: "Expand full pipeline",
         close: "Close pipeline diagram",
-        title: "Full pipeline — Scaffold → Marbles → Release",
+        title: "vc-ship cadence — Read ↔ Write, eleven beats",
       },
       notes: [
         {
