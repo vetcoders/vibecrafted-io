@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shlex
 import shutil
 import hashlib
@@ -20,6 +21,11 @@ SITE_SRC = REPO_ROOT / "site" / "src"
 
 def read_version(bundle_root: Path) -> str:
     return (bundle_root / "VERSION").read_text(encoding="utf-8").strip()
+
+
+def _release_mode() -> bool:
+    """Release builds rebuild the framework bundle; content builds reuse it."""
+    return os.environ.get("SITE_RELEASE_MODE") == "1"
 
 
 def release_archive_name(version: str) -> str:
@@ -105,6 +111,25 @@ def _render_phase_commands(cmd: list[str]) -> list[str]:
 
 def export_install_manifest(bundle_root: Path, site_src: Path) -> Path:
     source_manifest = bundle_root / "install.toml"
+    if not source_manifest.exists():
+        # Content build (no framework bundle on disk): reuse the committed
+        # install-manifest.json. A release run regenerates it from the bundle.
+        reused = site_src / "lib" / "generated" / "install-manifest.json"
+        if _release_mode():
+            raise FileNotFoundError(
+                f"SITE_RELEASE_MODE=1 but no framework bundle at {bundle_root} "
+                "(install.toml missing) -- run `make bundle-build` first."
+            )
+        if not reused.exists():
+            raise FileNotFoundError(
+                f"No {source_manifest} and no committed install-manifest.json "
+                "to reuse -- run `make bundle-build` first."
+            )
+        print(
+            "[manifest] framework bundle absent; reusing committed "
+            "install-manifest.json (content build)."
+        )
+        return reused
     manifest = tomllib.loads(source_manifest.read_text(encoding="utf-8"))
     diagnostics = manifest.get("diagnostics", {})
 
@@ -219,6 +244,39 @@ def sync_site_release_assets(
     site_public: Path = SITE_PUBLIC,
     site_src: Path = SITE_SRC,
 ) -> dict[str, str]:
+    # Ship/content decoupling: a real release builds + signs the framework bundle
+    # (make bundle-build + bundle-sign, or SITE_RELEASE_MODE=1) and syncs it here.
+    # A content build has no bundle on disk (framework/ is gitignored, built from
+    # the ../vibecrafted upstream) and reuses the release assets already committed
+    # under site/public/. Only a release run -- or a missing public surface --
+    # needs the bundle present.
+    if not (bundle_root / "VERSION").exists():
+        if _release_mode():
+            raise FileNotFoundError(
+                f"SITE_RELEASE_MODE=1 but no framework bundle at {bundle_root} -- "
+                "run `make bundle-build && make bundle-sign` first."
+            )
+        public_version = site_public / "VERSION"
+        if not public_version.exists():
+            raise FileNotFoundError(
+                f"No framework bundle at {bundle_root} and no committed site/public "
+                "release assets to reuse -- run `make bundle-build` (+ sign) first."
+            )
+        print(
+            f"[sync] framework bundle absent ({bundle_root}); reusing committed "
+            "site/public release assets (content build, not a release). Run "
+            "`make site-release` for a fresh signed release."
+        )
+        return {
+            "version": public_version.read_text(encoding="utf-8").strip(),
+            "archive": "",
+            "bundle_dir": str(bundle_root),
+            "public_dir": str(site_public),
+            "manifest_json": str(
+                site_src / "lib" / "generated" / "install-manifest.json"
+            ),
+            "reused": "1",
+        }
     version = read_version(bundle_root)
     archive_name = release_archive_name(version)
 
