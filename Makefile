@@ -293,53 +293,59 @@ UPSTREAM_VERSION := $(shell cat $(UPSTREAM_ROOT)/VERSION 2>/dev/null || echo "0.
 BUNDLE_VERSION   := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "0.0.0")
 BUNDLE_ARCHIVE   := vibecrafted-v$(UPSTREAM_VERSION).tar.gz
 
-# Excludes shared by rsync and tar. Two classes:
+# Exclude names are the source of truth for rsync, tar, and freshness diffs.
+# Two classes:
 #   • junk we never ship (VCS, venvs, caches, IDE, OS noise)
 #   • release artefacts born in framework/ that upstream does not track —
 #     signing.pub (manual), SHA256SUMS (bundle-build), channel/ (sync
 #     script), tarballs + sigs (this pipeline). These must survive
 #     `rsync --delete upstream → framework/`.
-BUNDLE_JUNK_EXCLUDES := \
-	--exclude=.git \
-	--exclude=.venv \
-	--exclude=.pytest_cache \
-	--exclude=.ruff_cache \
-	--exclude=.mypy_cache \
-	--exclude=.idea \
-	--exclude=.DS_Store \
-	--exclude=__pycache__ \
-	--exclude=node_modules \
-	--exclude=target \
-	--exclude=build \
-	--exclude=.build \
-	--exclude=DerivedData \
-	--exclude=.swiftpm \
-	--exclude='*.app' \
-	--exclude='*.pyc' \
-	--exclude=.ai-agents \
-	--exclude=.ai-context \
-	--exclude=.claude \
-	--exclude=.vibecrafted \
-	--exclude=.playwright-mcp \
-	--exclude=artifacts \
-	--exclude=dist \
-	--exclude=tmp \
-	--exclude=plans \
-	--exclude='*.log' \
-	--exclude='*.audit*.md' \
-	--exclude='*.backup' \
-	--exclude='*.out' \
-	--exclude=aicx-dashboard.html
+BUNDLE_JUNK_EXCLUDE_NAMES := \
+	.git \
+	.venv \
+	.pytest_cache \
+	.ruff_cache \
+	.mypy_cache \
+	.idea \
+	.DS_Store \
+	__pycache__ \
+	node_modules \
+	target \
+	build \
+	.build \
+	DerivedData \
+	.swiftpm \
+	'*.app' \
+	'*.pyc' \
+	.ai-agents \
+	.ai-context \
+	.claude \
+	.vibecrafted \
+	.playwright-mcp \
+	artifacts \
+	dist \
+	tmp \
+	plans \
+	'*.log' \
+	'*.audit*.md' \
+	'*.backup' \
+	'*.out' \
+	aicx-dashboard.html
 
-BUNDLE_RELEASE_EXCLUDES := \
-	--exclude='vibecrafted-v*.tar.gz' \
-	--exclude='vibecrafted-v*.tar.gz.sig' \
-	--exclude='install.sh.sig' \
-	--exclude='SHA256SUMS' \
-	--exclude='vibecrafted-signing.pub' \
-	--exclude='channel/'
+BUNDLE_RELEASE_EXCLUDE_NAMES := \
+	'vibecrafted-v*.tar.gz' \
+	'vibecrafted-v*.tar.gz.sig' \
+	'install.sh.sig' \
+	'SHA256SUMS' \
+	'vibecrafted-signing.pub' \
+	channel
 
-BUNDLE_EXCLUDES := $(BUNDLE_JUNK_EXCLUDES) $(BUNDLE_RELEASE_EXCLUDES)
+BUNDLE_EXCLUDE_NAMES := $(BUNDLE_JUNK_EXCLUDE_NAMES) $(BUNDLE_RELEASE_EXCLUDE_NAMES)
+BUNDLE_JUNK_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_JUNK_EXCLUDE_NAMES))
+BUNDLE_RELEASE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_RELEASE_EXCLUDE_NAMES))
+BUNDLE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_EXCLUDE_NAMES))
+BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES := skills runtime
+BUNDLE_DIFF_EXCLUDES := $(addprefix -x ,$(BUNDLE_EXCLUDE_NAMES) $(BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES))
 
 site-release-assets-guard:
 	@if [ "$(SITE_RELEASE_MODE)" != "1" ]; then \
@@ -354,17 +360,7 @@ site-release-assets-guard:
 			exit 2; \
 		fi; \
 		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || ! diff -rq \
-		      -x '.git' -x '.venv' -x '.pytest_cache' -x '.ruff_cache' \
-		      -x '.mypy_cache' -x '.idea' -x '.DS_Store' -x '__pycache__' \
-		      -x 'node_modules' -x '*.pyc' \
-		      -x '.ai-agents' -x '.ai-context' -x '.claude' \
-		      -x '.vibecrafted' -x '.playwright-mcp' \
-		      -x 'artifacts' -x 'dist' -x 'tmp' -x 'plans' \
-		      -x '*.log' -x '*.audit*.md' -x '*.backup' -x '*.out' \
-		      -x 'aicx-dashboard.html' \
-		      -x 'vibecrafted-v*.tar.gz' -x 'vibecrafted-v*.tar.gz.sig' \
-		      -x 'install.sh.sig' -x 'SHA256SUMS' \
-		      -x 'vibecrafted-signing.pub' -x 'channel' \
+		      $(BUNDLE_DIFF_EXCLUDES) \
 		      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
 			echo "Error: SITE_RELEASE_MODE=1 requested, but framework/ is not fresh against $(UPSTREAM_ROOT)." >&2; \
 			echo "       Run make site-release to rebuild/sign/sync/deploy framework assets." >&2; \
@@ -385,17 +381,7 @@ bundle-preview:
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" ] && \
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE).sig" ] && \
 	    diff -rq \
-	      -x '.git' -x '.venv' -x '.pytest_cache' -x '.ruff_cache' \
-	      -x '.mypy_cache' -x '.idea' -x '.DS_Store' -x '__pycache__' \
-	      -x 'node_modules' -x '*.pyc' \
-	      -x '.ai-agents' -x '.ai-context' -x '.claude' \
-	      -x '.vibecrafted' -x '.playwright-mcp' \
-	      -x 'artifacts' -x 'dist' -x 'tmp' \
-	      -x '*.log' -x '*.audit*.md' -x '*.backup' -x '*.out' \
-	      -x 'aicx-dashboard.html' \
-	      -x 'vibecrafted-v*.tar.gz' -x 'vibecrafted-v*.tar.gz.sig' \
-	      -x 'install.sh.sig' -x 'SHA256SUMS' \
-	      -x 'vibecrafted-signing.pub' -x 'channel' \
+	      $(BUNDLE_DIFF_EXCLUDES) \
 	      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
 		printf "  \033[32m✓\033[0m Nothing to bundle — upstream and framework/ are already aligned.\n"; \
 		printf "    (tarball present, VERSION matched, file trees identical)\n\n"; \
