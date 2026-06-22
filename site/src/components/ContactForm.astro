@@ -6,13 +6,14 @@
  * hairline rule + serif lead + small mono CTA), same brand tokens, same
  * anti-aesthetic gates (no popup, no tracking pixel, no marketing speak).
  *
- * Difference: this submits JSON cross-origin to the relay via fetch (a static
- * site has no server of its own). The relay decides the destination from the
- * hidden `site` key — the form never names a recipient. A `company` honeypot
- * traps bots. An always-visible mailto is the no-JS / fallback path.
+ * Difference: this submits JSON to a SAME-ORIGIN `/api/contact` endpoint via
+ * fetch. The static site is served by Caddy on libraxis-vm, which reverse-proxies
+ * `/api/contact` to a small mailer service (see `../../../contact-relay/`). The
+ * hidden `site` key tags the destination; a `company` honeypot traps bots. An
+ * always-visible mailto is the no-JS / fallback path.
  *
  * Relay contract: POST {site,email,subject,message} → 200 {success:true}.
- * The relay origin must be allow-listed in the LayoutV2 CSP `connect-src`.
+ * Same-origin → CSP `connect-src 'self'` covers it; no external host needed.
  */
 import type { Lang } from '../lib/i18n';
 
@@ -31,7 +32,7 @@ interface Props {
 const {
   lang = 'en',
   variant = 'inline',
-  relayUrl = 'https://contact.libraxis.ai/api/contact',
+  relayUrl = '/api/contact',
   site = 'vibecrafted',
   email = 'hello@vibecrafted.io',
   class: className,
