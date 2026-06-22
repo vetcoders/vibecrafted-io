@@ -109,15 +109,15 @@ export const pl = {
       sub: "Mały model operacyjny do kształtowania pracy agentów, redukowania dryfu i przygotowania release surface, którą da się obejrzeć.",
       hero: {
         stages: [
-          { name: "Scaffold", subtitle: "przygotuj powierzchnię" },
-          { name: "Craft", subtitle: "kształtuj z agentami" },
+          { name: "Scaffold", subtitle: "read · mapa przed cięciem" },
+          { name: "Implement", subtitle: "write · agenci dowożą" },
+          { name: "Review", subtitle: "read · podważ zapis" },
           {
-            name: "Convergence",
-            subtitle: "domknij nierozwiązane",
+            name: "Konwergencja",
+            subtitle: "write · marbles ⬆ polarize ⬇",
             kind: "core" as const,
           },
-          { name: "DoU", subtitle: "znajdź to, co nadal niedokończone" },
-          { name: "Release", subtitle: "wypuść dla obcych użytkowników" },
+          { name: "Release", subtitle: "write · wypuść dla obcych" },
         ],
       },
       controls: {
@@ -158,23 +158,27 @@ export const pl = {
   }
 } }%%
 flowchart LR
-    A["Scaffold"] --> B["Init"]
-    B --> C["Workflow"]
-    C --> D["Follow-up"]
-    D --> E{{"Pętla Marbles"}}
-    E --> F["DoU"]
-    F --> G["Decorate"]
-    G --> H["Hydrate"]
-    H --> I["Release"]
+    S["Scaffold · R"] --> I["Implement · W"]
+    I --> RV["Review · R"]
+    RV --> WF["Workflow · W"]
+    WF --> FU["Follow-up · R"]
+    FU --> MA{{"Marbles · W ⬆"}}
+    MA --> AU["Audit · R"]
+    AU --> PO{{"Polarize · W ⬇"}}
+    PO --> DU["DoU · R"]
+    DU --> HY["Hydrate · W"]
+    HY --> RE["Release · W"]
 
-    classDef stage fill:#0d1728,stroke:#31415d,color:#f3efe7,stroke-width:1.3px;
-    classDef core fill:#1a1110,stroke:#d8894b,color:#ffd9bd,stroke-width:2.2px;
-    class A,B,C,D,F,G,H,I stage;
-    class E core;`,
+    classDef read fill:#0d1728,stroke:#3b6ea5,color:#dbe7f3,stroke-width:1.3px;
+    classDef write fill:#1a1410,stroke:#d8894b,color:#ffd9bd,stroke-width:1.6px;
+    classDef core fill:#1a1110,stroke:#e2935a,color:#ffd9bd,stroke-width:2.4px;
+    class S,RV,FU,AU,DU read;
+    class I,WF,HY,RE write;
+    class MA,PO core;`,
       mermaidModal: {
         open: "Rozwiń pełny pipeline",
         close: "Zamknij diagram pipeline'u",
-        title: "Pełny pipeline — Scaffold → Marbles → Release",
+        title: "kadencja vc-ship — Read ↔ Write, 11 taktów",
       },
       notes: [
         {

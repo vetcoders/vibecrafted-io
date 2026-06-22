@@ -13,8 +13,8 @@ centerLabel: "SCAFFOLD → RELEASE"
 
 # Treść sekcji z v2Sections.framework.
 # headingHtml zachowuje inline <em class="accent-2"> i <br />.
-headingHtml: 'Nie rewrite. Sprint stabilizacji<br /><em class="accent-2">Znajdź słabe szwy i je domknij</em>'
-subtitle: "Vibecrafted zostawia momentum z kodu pisanego przez AI i dokłada brakującą dyscyplinę release: mapę repo, następne cięcie, prawdę runtime i dowód dla kolejnej sesji."
+headingHtml: 'Nie rewrite. Kadencja.<br /><em class="accent-2">Każdy zapis broni się odczytem</em>'
+subtitle: "Jedenaście etapów na przemian Read i Write. Każdy zapis — implement, marbles, polarize — jest natychmiast falsyfikowany przez odczyt — review, audit, DoU. Marbles podnosi entropię, żeby zasypać szpary; Polarize ścina ją do jednej prawdy. Każdy etap biegnie swój odcinek i podaje pałeczkę sztafetową następnemu, więc nic nie wychodzi niesprawdzone."
 
 # Heading bloku operatorów — zachowuje inline <em>.
 operatorsHeadingHtml: "Jak działa <em>pass</em>"

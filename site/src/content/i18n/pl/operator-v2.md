@@ -9,10 +9,10 @@
 
 # Chrome z landingV2.operator
 title: "OPERATOR"
-centerLabel: "INSTALUJ · URUCHOM · OBSERWUJ"
+centerLabel: "INSTALUJ · PODAJ PAŁECZKĘ · OBSERWUJ"
 
 # Heading sekcji — zachowuje inline <em class="accent-2"> i <br />.
-headingHtml: 'Zainstaluj lokalnie<br />Niech każdy run zostawia <em class="accent-2">ślad</em>'
+headingHtml: 'Zainstaluj raz. Potem <em class="accent-2">podaj pałeczkę</em>'
 
 # 3 kroki instalacji — każdy ma step label, komendę i notkę.
 installSteps:
@@ -28,7 +28,7 @@ installSteps:
 
 # Heading bloku z screenshotem planszy — zachowuje inline <em class="accent-2">.
 shotHeadingHtml: 'Repo dostaje <em class="accent-2">wspólną powierzchnię</em>'
-shotBody: "Sesja może się skończyć, ale nie musi zniknąć. Następny agent może odziedziczyć raporty, decyzje i otwarte pytania zamiast zimnego promptu."
+shotBody: "Sesja może się skończyć, ale nie musi zniknąć. Operator jest agentem: prowadzi sztafetę, a każdy odcinek podaje pałeczkę następnemu zawodnikowi — następny agent dziedziczy raporty, decyzje i otwarte pytania, nie zimny prompt. Ty zostajesz founderem — scope, gust, trudne przejścia, czucie projektu — sam nigdy nie biegniesz odcinków."
 
 # Bullety obok board preview.
 bullets:
@@ -40,7 +40,7 @@ bullets:
     body: "DoU i marbles trzymają nierozwiązane kawałki na planszy, aż ktoś zdecyduje, co znaczą."
 
 # Nawyki operatora — label + 4 hasła w stylu bannera.
-practicesLabel: "NAWYKI OPERATORA"
+practicesLabel: "JAK TRZYMA SZTAFETA"
 practices:
   - "JEDNO REPO, JEDNA POWIERZCHNIA"
   - "KONTRAKT PRZED PROMPTEM"
