@@ -309,6 +309,12 @@ BUNDLE_JUNK_EXCLUDES := \
 	--exclude=.DS_Store \
 	--exclude=__pycache__ \
 	--exclude=node_modules \
+	--exclude=target \
+	--exclude=build \
+	--exclude=.build \
+	--exclude=DerivedData \
+	--exclude=.swiftpm \
+	--exclude='*.app' \
 	--exclude='*.pyc' \
 	--exclude=.ai-agents \
 	--exclude=.ai-context \
@@ -465,6 +471,11 @@ bundle-sign:
 		-out $(BUNDLE_ROOT)/install.sh.sig \
 		$(BUNDLE_ROOT)/install.sh
 	@echo "  ✓ Signature: $(BUNDLE_ROOT)/install.sh.sig"
+	@echo "Publishing public key..."
+	@PUB="$(patsubst %.key,%.pub,$(SIGNING_KEY))"; \
+	  if [ -f "$$PUB" ]; then cp "$$PUB" "$(BUNDLE_ROOT)/vibecrafted-signing.pub"; \
+	  else openssl pkey -in "$(SIGNING_KEY)" -pubout -out "$(BUNDLE_ROOT)/vibecrafted-signing.pub"; fi
+	@echo "  ✓ Public key: $(BUNDLE_ROOT)/vibecrafted-signing.pub"
 
 site-release:
 	@echo ""
