@@ -12,7 +12,7 @@ title: "THE OPERATOR"
 centerLabel: "INSTALL · HAND OFF · OBSERVE"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
-headingHtml: 'Install once. Then <em class="accent-2">hand off the baton</em>'
+headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
 
 # Three install steps — terminal-shaped cards.
 installSteps:
@@ -28,7 +28,7 @@ installSteps:
 
 # Secondary heading for the "shared surface" half of the section.
 shotHeadingHtml: 'The repo gets a <em class="accent-2">shared surface</em>'
-shotBody: "A session can end without disappearing. The operator is an agent — it runs the relay, passes the baton agent to agent, and leaves reports, decisions, and open questions for the next one, not a cold prompt. You stay the founder: set scope and taste, approve the hard transitions, feel the project — you do not babysit the run."
+shotBody: "A session can end without disappearing. The operator is an agent: it runs the relay, and each leg hands the baton to the next runner — the next agent inherits reports, decisions, and open questions, not a cold prompt. You stay the founder — scope, taste, the hard transitions, the feel of the project — you never run the legs yourself."
 
 # Three bullets describing what the shared surface gives you.
 bullets:
