@@ -428,12 +428,12 @@ bundle-preflight:
 
 bundle-build: bundle-preflight
 	@echo "Syncing upstream $(UPSTREAM_ROOT) → $(BUNDLE_ROOT)..."
-	@rsync -a --delete $(BUNDLE_EXCLUDES) $(UPSTREAM_ROOT)/ $(BUNDLE_ROOT)/
+	@rsync -a --delete --force --copy-dirlinks $(BUNDLE_EXCLUDES) $(UPSTREAM_ROOT)/ $(BUNDLE_ROOT)/
 	@echo "  ✓ Upstream synced"
 	@echo "Building tarball: $(BUNDLE_ARCHIVE)..."
 	@TMP_DIR=$$(mktemp -d -t vc-bundle-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
-	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
+	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
 	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
