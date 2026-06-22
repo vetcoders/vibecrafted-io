@@ -9,10 +9,10 @@
 
 # Section chrome from landingV2.operator
 title: "THE OPERATOR"
-centerLabel: "INSTALL · RUN · OBSERVE"
+centerLabel: "INSTALL · HAND OFF · OBSERVE"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
-headingHtml: 'Install it locally<br />Let every run leave a <em class="accent-2">trail</em>'
+headingHtml: 'Install once. Then <em class="accent-2">hand off the baton</em>'
 
 # Three install steps — terminal-shaped cards.
 installSteps:
@@ -28,7 +28,7 @@ installSteps:
 
 # Secondary heading for the "shared surface" half of the section.
 shotHeadingHtml: 'The repo gets a <em class="accent-2">shared surface</em>'
-shotBody: "A session can end without disappearing. The next agent may inherit reports, decisions, and open questions instead of a cold prompt."
+shotBody: "A session can end without disappearing. The operator is an agent — it runs the relay, passes the baton agent to agent, and leaves reports, decisions, and open questions for the next one, not a cold prompt. You stay the founder: set scope and taste, approve the hard transitions, feel the project — you do not babysit the run."
 
 # Three bullets describing what the shared surface gives you.
 bullets:
@@ -40,7 +40,7 @@ bullets:
     body: "DoU and marbles keep the unresolved pieces on the board until somebody decides what they mean."
 
 # Operator habits — caps-locked tape running across the section.
-practicesLabel: "OPERATOR HABITS"
+practicesLabel: "HOW THE RELAY HOLDS"
 practices:
   - "ONE REPO, ONE SURFACE"
   - "CONTRACT BEFORE PROMPT"
