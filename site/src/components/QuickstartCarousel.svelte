@@ -42,7 +42,39 @@
   const SPEED_PX_PER_SEC = 26; // "bardzo powoli" — tune here.
 
   let trackEl: HTMLDivElement | undefined = $state();
-  let held = $state(false); // pointer/touch is on the tape → hand-scroll mode
+  let hovering = $state(false);
+  let dragging = $state(false);
+  let dragLastX = 0;
+  // Auto-drift pauses whenever the pointer is on the tape or mid hand-drag.
+  const held = $derived(hovering || dragging);
+
+  function onEnter() {
+    hovering = true;
+  }
+  function onLeave() {
+    hovering = false;
+  }
+  function onDown(event: PointerEvent) {
+    // Mouse: hijack into drag-to-scroll AND suppress the native text selection a
+    // drag would otherwise start. Touch/pen scroll natively via overflow-x.
+    if (event.pointerType !== 'mouse') return;
+    dragging = true;
+    dragLastX = event.clientX;
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+    event.preventDefault();
+  }
+  function onMove(event: PointerEvent) {
+    if (!dragging || !trackEl) return;
+    const dx = event.clientX - dragLastX;
+    dragLastX = event.clientX;
+    trackEl.scrollLeft -= dx;
+    event.preventDefault();
+  }
+  function onUp(event: PointerEvent) {
+    if (!dragging) return;
+    dragging = false;
+    (event.currentTarget as HTMLElement).releasePointerCapture?.(event.pointerId);
+  }
 
   $effect(() => {
     const el = trackEl;
@@ -133,8 +165,12 @@
   role="region"
   aria-label={copy.ariaLabel}
   bind:this={trackEl}
-  onpointerenter={() => (held = true)}
-  onpointerleave={() => (held = false)}
+  onpointerenter={onEnter}
+  onpointerleave={onLeave}
+  onpointerdown={onDown}
+  onpointermove={onMove}
+  onpointerup={onUp}
+  onpointercancel={onUp}
 >
   {#each steps as step}{@render slide(step, false)}{/each}
   {#each steps as step}{@render slide(step, true)}{/each}
@@ -156,6 +192,9 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     overscroll-behavior-x: contain;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: pan-x;
     cursor: grab;
     /* film-leader edge fade */
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
