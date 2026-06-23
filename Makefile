@@ -37,8 +37,10 @@ UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTRE
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
 ALLOW_DIRTY_UPSTREAM ?= 0
 BUNDLE_ROOT   := $(CURDIR)/framework
-AICX_REPO ?= $(abspath $(CURDIR)/../aicx)
-LOCTREE_REPO ?= $(abspath $(CURDIR)/../../01_deployed_libraxis_vm/Loctree/Suite/loctree-suite)
+VCFRAME_REPO ?= $(abspath $(UPSTREAM_ROOT)/../vc-frame)
+AICX_REPO ?= $(abspath $(UPSTREAM_ROOT)/../aicx)
+LOCTREE_REPO ?= $(abspath $(UPSTREAM_ROOT)/../loctree-suite)
+LOCTREE_MCP_REPO ?= $(LOCTREE_REPO)/loctree-mcp
 DIST_DIR ?= $(CURDIR)/dist
 PLUGIN_NAME ?= vibecrafted-framework
 FRAMEWORK_VERSION := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "1.5.0")
@@ -49,6 +51,64 @@ FRAMEWORK_RUNTIME_TESTS := \
 	framework/tests/tui/test_installer_gui.py \
 	framework/tests/tui/test_makefile_installer_contract.py \
 	framework/tests/tui/test_release_contract.py
+
+HOST_UNAME_S := $(shell uname -s)
+HOST_UNAME_M := $(shell uname -m)
+HOST_VENDOR_OS := $(if $(filter Darwin,$(HOST_UNAME_S)),darwin,$(if $(filter Linux,$(HOST_UNAME_S)),linux,$(shell uname -s | tr '[:upper:]' '[:lower:]')))
+HOST_VENDOR_ARCH := $(if $(filter arm64 aarch64,$(HOST_UNAME_M)),arm64,$(if $(filter x86_64,$(HOST_UNAME_M)),x64,$(HOST_UNAME_M)))
+HOST_VENDOR_PLATFORM := $(HOST_VENDOR_OS)-$(HOST_VENDOR_ARCH)
+FOUNDATION_VENDOR_BINARIES := vc-frame loctree-mcp loct aicx aicx-mcp
+FOUNDATION_VENDOR_SPECS := \
+	vc-frame:$(VCFRAME_REPO):vc-frame \
+	loctree-mcp:$(LOCTREE_MCP_REPO):loctree-mcp \
+	loct:$(LOCTREE_REPO):loct \
+	aicx:$(AICX_REPO):aicx \
+	aicx-mcp:$(AICX_REPO):aicx-mcp
+
+define VENDOR_FOUNDATION_BINARIES
+dest_root="$(1)"; \
+platform="$(HOST_VENDOR_PLATFORM)"; \
+vendor_dir="$$dest_root/bin/vendor/$$platform"; \
+echo "Vendoring foundation binaries for $$platform -> $$vendor_dir"; \
+mkdir -p "$$vendor_dir"; \
+for spec in $(FOUNDATION_VENDOR_SPECS); do \
+	bin="$${spec%%:*}"; \
+	rest="$${spec#*:}"; \
+	repo="$${rest%:*}"; \
+	cargo_bin="$${rest##*:}"; \
+	if [ ! -d "$$repo" ]; then \
+		echo "[vendor] WARN: $$bin source repo missing: $$repo; skipping"; \
+		continue; \
+	fi; \
+	src="$$repo/target/release/$$bin"; \
+	workspace_src="$$(cd "$$repo/.." >/dev/null 2>&1 && pwd)/target/release/$$bin"; \
+	if [ ! -x "$$src" ] && [ -x "$$workspace_src" ]; then \
+		src="$$workspace_src"; \
+	fi; \
+	if [ ! -x "$$src" ]; then \
+		echo "[vendor] $$bin missing at $$src; running cargo build --release --bin $$cargo_bin in $$repo"; \
+		if ! cargo build --release --bin "$$cargo_bin" --manifest-path "$$repo/Cargo.toml"; then \
+			echo "[vendor] WARN: build failed for $$bin from $$repo; skipping"; \
+			continue; \
+		fi; \
+		if [ ! -x "$$src" ] && [ -x "$$workspace_src" ]; then \
+			src="$$workspace_src"; \
+		fi; \
+	fi; \
+	if [ -x "$$src" ]; then \
+		cp "$$src" "$$vendor_dir/$$bin"; \
+		chmod +x "$$vendor_dir/$$bin"; \
+		echo "[vendor] copied $$bin"; \
+	else \
+		echo "[vendor] WARN: $$bin still missing after build: $$src; skipping"; \
+	fi; \
+done; \
+for bin in $(FOUNDATION_VENDOR_BINARIES); do \
+	if [ ! -x "$$vendor_dir/$$bin" ]; then \
+		echo "[vendor] WARN: staged $$bin absent from $$vendor_dir"; \
+	fi; \
+done
+endef
 
 .PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
 
@@ -391,6 +451,7 @@ bundle-preview:
 	@TMP_DIR=$$(mktemp -d -t vc-preview-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ >/dev/null && \
+	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
 	  tar -czf $$TMP_DIR/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted 2>/dev/null && \
 	  if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
@@ -421,16 +482,20 @@ bundle-preflight:
 bundle-build: bundle-preflight
 	@echo "Syncing upstream $(UPSTREAM_ROOT) → $(BUNDLE_ROOT)..."
 	@rsync -a --delete --force --copy-dirlinks $(BUNDLE_EXCLUDES) $(UPSTREAM_ROOT)/ $(BUNDLE_ROOT)/
+	@$(call VENDOR_FOUNDATION_BINARIES,$(BUNDLE_ROOT))
 	@echo "  ✓ Upstream synced"
 	@echo "Building tarball: $(BUNDLE_ARCHIVE)..."
 	@TMP_DIR=$$(mktemp -d -t vc-bundle-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
+	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
 	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
 	  INSTALL_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/install.sh | cut -d' ' -f1) && \
+	  TAR_BYTES=$$(wc -c < $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | tr -d ' ') && \
+	  printf "  Archive size: %s bytes\n" "$$TAR_BYTES" && \
 	  printf "%s  %s\n%s  %s\n" \
 	    "$$TAR_SHA" "$(BUNDLE_ARCHIVE)" \
 	    "$$INSTALL_SHA" "install.sh" \
