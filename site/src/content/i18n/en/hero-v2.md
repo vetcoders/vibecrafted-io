@@ -21,8 +21,8 @@ eyebrow: "RELEASE ENGINE"
 #   <line 2>  "{prefix} *{emFirst}*"  (emFirst = gold primary accent + roman)
 #   <line 3>  "{mid} *{emLast}*"      (emLast = italic secondary accent)
 heading:
-  pre: "Turn agent-built repos"
-  prefix: "into"
+  pre: "Every write earns a read"
+  prefix: ""
   emFirst: "AI-built"
   mid: "software people can"
   emLast: "trust."
@@ -31,7 +31,7 @@ heading:
 # is what comes after the demo:" (smoke check pins this phrase as the EN
 # anchor before the page introduces more vocabulary). Inline <em> marks
 # anchor phrases for the gold accent.
-body: "The vibe hangover is what comes after the demo: fragile auth, unclear onboarding, missed webhooks, no install path, <em>scary deploys</em>. Those are the seams a stranger trips on. Vibecrafted finds them and carries the repo to a release a stranger can install, understand, and use."
+body: "The vibe hangover is what comes after the demo: fragile auth, no install path, <em>scary deploys</em>. A <em>read/write cadence</em> of phase rigor changes how AI software is generated — and carries the repo to a release a stranger can install, trust, and use."
 
 # CTA pair — primary solid INSTALL, ghost READ THE DOCS.
 # Hrefs are computed in the component via lang ('/en/install/', '/en/quickstart/').
