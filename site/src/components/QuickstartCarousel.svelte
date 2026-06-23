@@ -20,8 +20,6 @@
     slideAria: string;
     landsLabel: string;
     convergeLabel: string;
-    // Legacy carousel labels (prev/next/dots/counter) are unused by the film-tape
-    // marquee but kept optional for copy compatibility.
     previousLabel?: string;
     nextLabel?: string;
     dotsLabel?: string;
@@ -37,11 +35,54 @@
 
   const steps = $derived(copy.steps);
 
-  // Film-tape speed. The marquee shifts the track by exactly one set (-50%) over
-  // this duration, so seconds-per-card stays constant regardless of step count.
-  // "bardzo powoli" — a card drifts past roughly every SECONDS_PER_CARD seconds.
-  const SECONDS_PER_CARD = 12;
-  const marqueeDuration = $derived(`${Math.max(steps.length, 1) * SECONDS_PER_CARD}s`);
+  // Film tape: drifts on its own, slowly, but is also a real horizontal-scroll
+  // surface — grab it (hover / drag / wheel / trackpad) and it pauses so you can
+  // scroll by hand; release and it resumes drifting. Three identical passes make
+  // the loop seamless in BOTH directions.
+  const SPEED_PX_PER_SEC = 26; // "bardzo powoli" — tune here.
+
+  let trackEl: HTMLDivElement | undefined = $state();
+  let held = $state(false); // pointer/touch is on the tape → hand-scroll mode
+
+  $effect(() => {
+    const el = trackEl;
+    if (!el) return;
+
+    const reduce =
+      typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Start in the middle pass so there is a full set of room to hand-scroll
+    // either way before the seamless wrap kicks in.
+    const center = () => {
+      const oneSet = el.scrollWidth / 3;
+      if (oneSet > 0) el.scrollLeft = oneSet;
+    };
+    center();
+    const ro = new ResizeObserver(center);
+    ro.observe(el);
+
+    let raf = 0;
+    let last = 0;
+    const frame = (t: number) => {
+      const oneSet = el.scrollWidth / 3;
+      if (oneSet > 0) {
+        if (last && !held && !reduce) {
+          el.scrollLeft += (SPEED_PX_PER_SEC * (t - last)) / 1000;
+        }
+        // Seamless wrap, both directions (covers auto AND hand-scroll).
+        if (el.scrollLeft >= oneSet * 2) el.scrollLeft -= oneSet;
+        else if (el.scrollLeft <= oneSet * 0.5) el.scrollLeft += oneSet;
+      }
+      last = t;
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  });
 
   function boardAccent(accent: string): BoardAccent {
     return accent === 'teal' ? 'teal' : 'default';
@@ -86,53 +127,47 @@
   </article>
 {/snippet}
 
-<!-- Film tape: a slow, infinite, self-scrolling reel. Two identical passes make
-     the -50% loop seamless; the second pass is decorative (aria-hidden). -->
-<div class="qcar" role="region" aria-label={copy.ariaLabel}>
-  <div class="qcar__viewport">
-    <div class="qcar__track" style={`--qcar-dur: ${marqueeDuration}`}>
-      {#each steps as step}{@render slide(step, false)}{/each}
-      {#each steps as step}{@render slide(step, true)}{/each}
-    </div>
-  </div>
+<!-- Full-bleed film reel: auto-drifts slowly; grab to hand-scroll horizontally. -->
+<div
+  class="qcar"
+  role="region"
+  aria-label={copy.ariaLabel}
+  bind:this={trackEl}
+  onpointerenter={() => (held = true)}
+  onpointerleave={() => (held = false)}
+>
+  {#each steps as step}{@render slide(step, false)}{/each}
+  {#each steps as step}{@render slide(step, true)}{/each}
+  {#each steps as step}{@render slide(step, true)}{/each}
 </div>
 
 <style>
+  /* Full-bleed: break out of the section's centered max-width to span the viewport. */
   .qcar {
-    width: 100%;
-  }
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
 
-  /* ── Viewport: clips the reel, fades both edges like film leader ───────── */
-
-  .qcar__viewport {
-    overflow: hidden;
-    padding: 4px 0 12px;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  }
-
-  /* ── Track: the reel itself, drifting left forever ─────────────────────── */
-
-  .qcar__track {
     display: flex;
-    width: max-content;
-    animation: qcar-marquee var(--qcar-dur, 72s) linear infinite;
-    will-change: transform;
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px max(24px, calc(50vw - var(--v2-max-width) / 2)) 16px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+    /* film-leader edge fade */
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
   }
 
-  /* Pause to let a reader catch a frame. */
-  .qcar__viewport:hover .qcar__track,
-  .qcar__viewport:focus-within .qcar__track {
-    animation-play-state: paused;
+  .qcar:active {
+    cursor: grabbing;
   }
 
-  @keyframes qcar-marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
+  .qcar::-webkit-scrollbar {
+    display: none;
   }
 
   /* ── Slide (frame) ─────────────────────────────────────────────────────── */
@@ -140,8 +175,6 @@
   .qcar__slide {
     flex: 0 0 auto;
     width: clamp(280px, 28vw, 360px);
-    /* Each frame owns its trailing gap so the two passes are equal-width and
-       -50% lands on a seamless seam (do NOT use flex `gap` here). */
     margin-right: 16px;
     border: 1px solid var(--rule-dark);
     border-radius: 2px;
@@ -255,32 +288,18 @@
     color: var(--accent-2);
   }
 
-  /* ── Responsive ────────────────────────────────────────────────────────── */
-
   @media (max-width: 720px) {
+    .qcar {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
     .qcar__slide {
       width: calc(100vw - 80px);
       margin-right: 12px;
       padding: 24px 20px 20px;
     }
-
     .qcar__title {
       font-size: 20px;
-    }
-  }
-
-  /* Respect reduced-motion: stop the reel, let the user scroll the frames. */
-  @media (prefers-reduced-motion: reduce) {
-    .qcar__track {
-      animation: none;
-    }
-    .qcar__viewport {
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-    .qcar__viewport::-webkit-scrollbar {
-      display: none;
     }
   }
 </style>
