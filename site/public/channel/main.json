@@ -1,8 +1,8 @@
 {
   "channel": "main",
-  "version": "3.2.0",
-  "archive_url": "https://vibecrafted.io/vibecrafted-v3.2.0.tar.gz",
-  "signature_url": "https://vibecrafted.io/vibecrafted-v3.2.0.tar.gz.sig",
+  "version": "3.4.0",
+  "archive_url": "https://vibecrafted.io/vibecrafted-v3.4.0.tar.gz",
+  "signature_url": "https://vibecrafted.io/vibecrafted-v3.4.0.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
   "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub"
 }
