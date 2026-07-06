@@ -26,6 +26,10 @@ still provides the prompt and history defaults.
 
 None of this is required. `vibecrafted` works without any of it.
 
+This page is about terminal frontier config. Model-tier doctrine lives in
+[Model Casting and Cache Economics](./economics.md): frontier-tier there means
+judgment seats, while worker-tier cuts handle repetition under a sharp brief.
+
 ---
 
 ## Quick Setup
