@@ -539,7 +539,7 @@ flowchart LR
               questionHtml:
                 "Co jeśli potrzebuję szerszego modelu komercyjnego?",
               answerHtml:
-                "Jeśli potrzebujesz szerszych uprawnień komercyjnych, skontaktuj się z VetCoders. Przeczytaj warunki licencji i ustal właściwą ścieżkę.",
+                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. VetCoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
             },
           ],
         },

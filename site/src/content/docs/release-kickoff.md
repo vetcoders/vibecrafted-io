@@ -69,7 +69,7 @@ about what the product is.
    that mirror before launch if any derived file still advertises the old
    direct-only install path or the older self-referential promise. The
    homepage, quickstart, FAQ, `install.sh`, and README must all match the
-   release-engine narrative and the guided installer CTA.
+   orchestration-runtime positioning and the guided installer CTA.
    Because `vibecrafted-io` is a separate git root, treat its build/deploy pass
    as a separate lane from this repo commit. Minimum rebuild command:
 

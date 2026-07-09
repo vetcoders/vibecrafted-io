@@ -533,7 +533,7 @@ flowchart LR
             {
               questionHtml: "What if I need a broader commercial arrangement?",
               answerHtml:
-                "The license points to VetCoders for alternative licensing arrangements. Read the repo license for the exact terms and contact route before you commit to a broader rollout.",
+                "Use the contact form on this site (or the address in the repo license) and describe your team size and intended use. VetCoders reads every message and replies with the alternative licensing terms that fit — the LICENSE file stays the source of truth for what needs an arrangement. There is no self-serve pricing page yet; the contact route is the commercial path.",
             },
           ],
         },

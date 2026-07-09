@@ -10,6 +10,8 @@ github_link: "https://github.com/VetCoders/vibecrafted"
 
 Vibecrafted is a release engine for software written with AI agents. Not a framework you bolt on. Not a thesis. A discipline for getting AI-built code from "looks done in the repo" to "shipped, secure, and findable in the world." That is the whole product.
 
+_Editorial note (2026-07): this issue is a dated archive. The positioning has since sharpened — Vibecrafted is an orchestration method and runtime for CLI coding agents. The current definition lives on the [homepage](https://vibecrafted.io/en/)._
+
 This list is the operator log for that work. When a cut closes — a plan, a release, a case study — the issue lands here first. No drip campaigns. No "limited-time offers." No FOMO bait. We send when the work is real.
 
 ## Who builds this
