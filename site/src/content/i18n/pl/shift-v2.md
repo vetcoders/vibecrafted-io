@@ -18,7 +18,7 @@ heading:
   first: "Większość sesji AI zostawia"
   firstAccent: "fragmenty."
   second: "Vibecrafted nadaje pracy"
-  secondAccent: "współrzędne."
+  secondAccent: "współrzędne"
 
 # Labelki nad dwiema kolumnami porównania.
 todayLabel: "Bez planszy"

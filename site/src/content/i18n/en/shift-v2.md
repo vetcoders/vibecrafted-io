@@ -17,7 +17,7 @@ heading:
   first: "Most AI coding sessions leave"
   firstAccent: "fragments."
   second: "Vibecrafted gives the work"
-  secondAccent: "coordinates."
+  secondAccent: "coordinates"
 
 # Column labels above the two comparison stacks.
 todayLabel: "Without a board"

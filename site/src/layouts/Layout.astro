@@ -113,16 +113,19 @@ const [searchDataAll, searchDataQuickstart, searchDataFaq] = await Promise.all([
   getDocsSearchData(lang, 'faq'),
 ]);
 
+// V1 landing ids (#skills/#pipeline/#dou) no longer exist — the landing is V2.
+// This legacy layout only serves the 404 page, so anchors point at the V2
+// section ids (about/framework/marbles) and the DoU subpage.
 const sectionLinks = {
-  pipeline: isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`,
-  skills: isHomePage ? '#skills' : `${navPaths.home}#skills`,
-  marbles: isHomePage ? '#marbles' : `${navPaths.home}#marbles`,
-  dou: isHomePage ? '#dou' : `${navPaths.home}#dou`,
+  pipeline: `${navPaths.home}#framework`,
+  skills: `${navPaths.home}#about`,
+  marbles: `${navPaths.home}#marbles`,
+  dou: isPl ? '/pl/dou/' : '/en/dou/',
   get: '#get',
 };
 
-const aboutHref = isHomePage ? '#skills' : `${navPaths.home}#skills`;
-const runtimeHref = isHomePage ? '#pipeline' : `${navPaths.home}#pipeline`;
+const aboutHref = sectionLinks.skills;
+const runtimeHref = sectionLinks.pipeline;
 const vcHref = 'https://github.com/VetCoders';
 
 const footerLinks = [

@@ -37,7 +37,7 @@
     { ...(navLabels.v2Anchors.about as AnchorCopy), href: `${langPrefix}/#about` },
     { ...(navLabels.v2Anchors.runtime as AnchorCopy), href: `${langPrefix}/#framework` },
     { ...(navLabels.v2Anchors.aicx as AnchorCopy), href: `${langPrefix}/aicx/`, isPage: true, pageMatch: `${langPrefix}/aicx/` },
-    { ...(navLabels.v2Anchors.marbles as AnchorCopy), href: `${langPrefix}/#operator` },
+    { ...(navLabels.v2Anchors.marbles as AnchorCopy), href: `${langPrefix}/#marbles` },
     { ...(navLabels.v2Anchors.playground as AnchorCopy), href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
     { ...(navLabels.v2Anchors.dou as AnchorCopy), href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },
     { ...(navLabels.v2Anchors.faq as AnchorCopy), href: `${langPrefix}/faq/`, isPage: true, pageMatch: `${langPrefix}/faq/` },
@@ -240,7 +240,7 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    padding: 22px 48px;
+    padding: 14px 48px;
     gap: 24px;
     color: var(--fg-on-dark);
     background: rgba(23, 22, 21, 0.9);
@@ -286,9 +286,7 @@
 
   .v2nav__anchor {
     display: inline-flex;
-    flex-direction: column;
     align-items: center;
-    gap: 3px;
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 400;
@@ -312,6 +310,40 @@
     letter-spacing: 0.12em;
     color: rgba(var(--v2-paper-rgb), 0.44);
     white-space: nowrap;
+  }
+
+  /* Desktop center anchors: the grounding sublabel rides in a tooltip below
+   * the single-line label (vc-dock idiom — opacity+translate slide on
+   * hover/focus-visible, pointer-events none). It stays in the DOM/a11y tree
+   * as part of the link text; only its paint is deferred to hover. The mobile
+   * disclosure keeps its inline sublabels — no hover on touch. */
+  .v2nav__anchors .v2nav__anchor-sub {
+    position: absolute;
+    top: calc(100% + 9px);
+    left: 50%;
+    transform: translate(-50%, -4px);
+    opacity: 0;
+    pointer-events: none;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(var(--v2-paper-rgb), 0.82);
+    background: rgba(23, 22, 21, 0.94);
+    border: 1px solid rgba(var(--v2-paper-rgb), 0.18);
+    border-radius: 2px;
+    padding: 5px 9px;
+    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.65);
+    transition:
+      opacity 0.14s ease,
+      transform 0.14s ease;
+    z-index: 101;
+  }
+
+  .v2nav__anchors .v2nav__anchor:hover .v2nav__anchor-sub,
+  .v2nav__anchors .v2nav__anchor:focus-visible .v2nav__anchor-sub {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    color: rgba(var(--v2-paper-rgb), 0.82);
   }
 
   .v2nav__anchor:hover,
@@ -588,6 +620,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .v2nav__anchor::after,
+    .v2nav__anchors .v2nav__anchor-sub,
     .v2nav__dropdown,
     .v2nav__install,
     .v2nav__dropdown-copy {

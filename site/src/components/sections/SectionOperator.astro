@@ -92,7 +92,9 @@ const nextTitle = quickstartEntry.data.title as string;
       ))}
     </div>
 
-    <div class="op__shot">
+    {/* #marbles — nav MARBLES anchor lands on the board preview (BOARD /
+        MARBLES / DOU tabs), the convergence story, not the install steps. */}
+    <div class="op__shot" id="marbles">
       <div class="op__shot-left">
         <h3 class="op__shot-heading">
           <Fragment set:html={section.shotHeadingHtml} />
@@ -296,8 +298,10 @@ const nextTitle = quickstartEntry.data.title as string;
   }
 
   @media (max-width: 980px) {
+    /* minmax(0, …) — a plain 1fr track grows to the nowrap install command's
+     * min-content and drags the whole section past the viewport on phones. */
     .op__install {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .op__install-col {
@@ -310,8 +314,13 @@ const nextTitle = quickstartEntry.data.title as string;
     }
 
     .op__shot {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 40px;
+    }
+
+    .op__shot-left,
+    .op__shot-right {
+      min-width: 0;
     }
 
     .op__practices {
