@@ -39,7 +39,9 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const allDocs = await getCollection('docs');
 
-const pageTitle = `${entry.data.title} — Docs`;
+// <title> must carry the searchable ASCII brand; the styled glyph brand
+// (𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.) stays in the visible h1 only.
+const pageTitle = `${entry.data.title.replace(/𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍\./gu, 'Vibecrafted')} — Docs`;
 const pageDescription = entry.data.description;
 
 // Plan 17 — single shared OG card for docs pages. Per-slug OG cards are

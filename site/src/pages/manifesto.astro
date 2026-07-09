@@ -63,7 +63,9 @@ const labels = {
 // Page meta uses EN as the canonical default; the visible language is
 // swapped client-side by the query toggle. PL crawlers reach `?lang=pl`
 // via the toggle anchor and see the PL panel rendered.
-const pageTitle = frontmatterEn.title;
+// <title> must carry the searchable ASCII brand; the styled glyph brand
+// (𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.) stays in the visible article heading only.
+const pageTitle = frontmatterEn.title.replace(/𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍\./gu, 'Vibecrafted');
 const pageDescription = frontmatterEn.description;
 const isPlStub = frontmatterPl.status === 'en-only-for-v1';
 ---

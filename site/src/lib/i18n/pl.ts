@@ -87,16 +87,17 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "vibecrafted. — Runtime orkiestracji agentów CLI.",
+      title: "Vibecrafted — Runtime orkiestracji agentów CLI.",
       description:
         "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write przydziela każdemu etapowi najtańszy model, jaki go udźwignie — a przez /vc-ship jeden frontier model dowozi cały projekt od A do Z.",
     },
     faq: {
-      title: "vibecrafted. · FAQ",
-      description: "Najczęstsze pytania dotyczące Vibecrafted.",
+      title: "Vibecrafted · FAQ",
+      description:
+        "Pytania, które obcy zadają jako pierwsze o silnik wydań Vibecrafted.",
     },
     dou: {
-      title: "Vibecrafted. · DoU — Definicja niezrobionego",
+      title: "Vibecrafted · DoU — Definicja niezrobionego",
       description:
         "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
     },
