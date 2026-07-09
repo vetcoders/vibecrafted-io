@@ -1,6 +1,6 @@
 # Vibecrafted
 
-> Release engine for AI-built software. Discipline for shipping what AI agents wrote: planning, parallel-truth audits, marble loops, definition-of-undone gates, and brand-grade public surface.
+> Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle that assigns each stage the cheapest model capable of it — and one command, /vc-ship, that lets a frontier model deliver a whole project A to Z.
 
 Canonical URL: https://vibecrafted.io
 Install (one-line): curl -fsSL https://vibecrafted.io/install.sh | bash
@@ -9,7 +9,7 @@ Sibling brand (structural perception engine): https://loctree.com
 Authors: VetCoders — Maciej Gad (@Szowesgad) + Monika Szymańska (@m-szymanska). Two veterinarians who built the framework by shipping with it.
 License: vibecrafted framework — see GitHub repo. Skills under same license.
 Stack: Astro 6 + Svelte 5 + MDX. i18n: English / Polish. Hosted at vibecrafted.io.
-Version: 2.0.0 (release tarball at /vibecrafted-v2.0.0.tar.gz, signed; SHA256SUMS adjacent).
+Version: 3.4.0 (release tarball at /vibecrafted-v3.4.0.tar.gz, signed; SHA256SUMS adjacent).
 
 ## Primary entry points
 

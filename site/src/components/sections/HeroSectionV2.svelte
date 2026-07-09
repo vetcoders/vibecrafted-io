@@ -90,7 +90,7 @@
     </div>
   </div>
 
-  <div class="hero__telemetry" aria-hidden="true" data-scroll-fade>
+  <div class="hero__telemetry" data-scroll-fade>
     <span class="hero__tele-legend">{hero.telemetryLegend}</span>
     <span class="hero__tele-row">
       <span class="hero__tele-label">{hero.telemetry.marbles}</span>
@@ -109,7 +109,7 @@
     </span>
   </div>
 
-  <p class="hero__canvas-caption" aria-hidden="true" data-scroll-fade>
+  <p class="hero__canvas-caption" data-scroll-fade>
     {hero.canvasCaption}
   </p>
 
