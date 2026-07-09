@@ -115,24 +115,34 @@
     };
   }
 
-  function createSprite(radius: number, paletteIdx: number, patternType: string, seed: number): HTMLCanvasElement {
+  // Depth layers: 0 = far (smaller, darker, softened), 1 = mid, 2 = near (crisp).
+  // Visual-only — physics keeps one uniform radius so seating stays exact.
+  const LAYER_SCALE = [0.92, 1, 1.05] as const;
+
+  function createSprite(
+    radius: number,
+    paletteIdx: number,
+    patternType: string,
+    seed: number,
+    layer = 1,
+    pixelScale = 1,
+    soften = true
+  ): HTMLCanvasElement {
     const pad = 4;
     const s = (radius * 2 + pad) * 2;
     const oc = document.createElement('canvas');
-    oc.width = s;
-    oc.height = s;
+    oc.width = Math.max(1, Math.round(s * pixelScale));
+    oc.height = oc.width;
     const g = oc.getContext('2d')!;
-    const cx = s / 2, cy = s / 2, r = radius;
+    g.setTransform(pixelScale, 0, 0, pixelScale, 0, 0);
+    const cx = s / 2, cy = s / 2, r = radius * LAYER_SCALE[layer];
     const pal = pickPalette(paletteIdx);
     const base = hexToRgb(pal.base);
     const accent = hexToRgb(pal.accent);
     const rng = mulberry32(seed);
 
-    // Shadow
-    g.beginPath();
-    g.ellipse(cx + r * 0.05, cy + r * 0.82, r * 0.6, r * 0.18, 0, 0, Math.PI * 2);
-    g.fillStyle = 'rgba(0,0,0,0.22)';
-    g.fill();
+    // No baked shadow: the contact shadow lives on the board plane in
+    // renderScene, so it never lifts off with an airborne marble.
 
     // Base sphere gradient
     g.save();
@@ -234,15 +244,8 @@
     g.fillStyle = rfl;
     g.fillRect(0, 0, s, s);
 
-    // Top specular highlight
-    const hl = g.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.02, cx - r * 0.15, cy - r * 0.2, r * 0.5);
-    hl.addColorStop(0, 'rgba(255,255,255,0.98)');
-    hl.addColorStop(0.12, 'rgba(255,255,255,0.72)');
-    hl.addColorStop(0.34, 'rgba(255,255,255,0.24)');
-    hl.addColorStop(0.62, 'rgba(255,255,255,0.08)');
-    hl.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = hl;
-    g.fillRect(0, 0, s, s);
+    // Top highlights are drawn at render time, fixed to the light source.
+    // The sprite itself rotates underneath them so rolling does not read as sliding.
 
     // Edge darkening rim
     const rim = g.createRadialGradient(cx, cy, r * 0.75, cx, cy, r);
@@ -253,6 +256,26 @@
     g.fillRect(0, 0, s, s);
 
     g.restore();
+
+    if (layer === 0) {
+      // Far layer: bake softness (downscale-upscale) and a depth tint ONCE at
+      // sprite creation — never a per-frame canvas filter.
+      if (soften) {
+        const tmp = document.createElement('canvas');
+        tmp.width = Math.max(1, Math.round(s / 2));
+        tmp.height = tmp.width;
+        const tg = tmp.getContext('2d')!;
+        tg.drawImage(oc, 0, 0, tmp.width, tmp.height);
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        g.clearRect(0, 0, oc.width, oc.height);
+        g.drawImage(tmp, 0, 0, oc.width, oc.height);
+      }
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.globalCompositeOperation = 'source-atop';
+      g.fillStyle = 'rgba(10,14,20,0.18)';
+      g.fillRect(0, 0, oc.width, oc.height);
+      g.globalCompositeOperation = 'source-over';
+    }
     return oc;
   }
 
@@ -260,7 +283,7 @@
   // BOARD GEOMETRY
   // ═══════════════════════════════════════════════════════════════════
 
-  interface Slot { x: number; y: number; assigned: boolean }
+  interface Slot { x: number; y: number; assigned: boolean; layer: number }
 
   function hexGridInCircle(cx: number, cy: number, R: number, mr: number): Slot[] {
     const pos: Slot[] = [];
@@ -273,7 +296,7 @@
         const px = x + off;
         const dx = px - cx, dy = y - cy;
         if (Math.sqrt(dx * dx + dy * dy) + mr * 0.85 <= R) {
-          pos.push({ x: px, y, assigned: false });
+          pos.push({ x: px, y, assigned: false, layer: 1 });
         }
       }
       row++;
@@ -375,7 +398,7 @@
           const progress = (y - topY) / h;
           const rowW = progress * base;
           for (let x = cx - rowW / 2; x <= cx + rowW / 2; x += sp) {
-            pos.push({ x, y, assigned: false });
+            pos.push({ x, y, assigned: false, layer: 1 });
           }
         }
         return pos;
@@ -448,14 +471,15 @@
     const STEP_MS = 1000 / 120;
     const DT = STEP_MS / 1000;
     const MAX_FRAME_MS = 200;     // clamp accumulated time on tab-switch resume
-    const GRAVITY_Z = 1500;       // px/s² toward the board plane
-    const RESTITUTION_Z = 0.35;   // one or two visible bounces, then contact
-    const BOUNCE_MIN_VZ = 55;     // px/s — below this a bounce dies to rest
-    const ROLL_DAMPING = 0.984;   // per-step Verlet damping while on the board
-    const AIR_DAMPING = 0.997;    // per-step damping while airborne
+    const ROLL_RESISTANCE = 34;   // px/s² — constant tabletop rolling drag
+    const COLLISION_RESTITUTION = 0.5; // glass on felt: audible in motion, visually calm
+    const SEATED_SPRING = 58;     // s⁻² pull a bumped seated marble back into its pocket
+    const SEATED_DAMPING = 0.78;  // per-step damping for tiny seated yields
+    const POINTER_REACH = 72;     // px screen-space hover acknowledgement radius
+    const POINTER_PUSH = 16;      // s⁻² subtle repulsion, capped by pocket spring
     const WELL_REACH = 3.2;       // pocket potential-well radius, in marble radii
-    const WELL_SPRING = 30;       // s⁻² spring toward the pocket inside the well
-    const FAR_BIAS = 4;           // s⁻² gentle pull toward the pocket outside it
+    const WELL_SPRING = 22;       // s⁻² spring toward the pocket inside the well
+    const FAR_BIAS = 1.7;         // s⁻² gentle pull toward the pocket outside it
     const SEAT_DIST = 1.6;        // px — seating snap distance
     const SEAT_SPEED = 10;        // px/s — seating max planar speed
     const SEED_FILL = 0.72;       // initial settled coverage of the board
@@ -464,6 +488,9 @@
     const RETIRE_MS = 1300;       // retirement fade+shrink duration
     const STALL_SOFT_S = 6;       // a live marble older than this slips past collisions
     const STALL_HARD_S = 10;      // and this force-seats it — the scene must go calm
+    const PERSPECTIVE_Y = 0.84;   // tabletop foreshortening, applied only in render space
+    const PARALLAX_MAX = [4, 5.5, 7]; // px upward shift per depth layer at full scroll
+    const GLINT_MS = 1100;        // specular glint sweep duration
 
     // Mutable sim state
     let width = 0, height = 0;
@@ -471,8 +498,11 @@
     let marbles: Marble[] = [];
     let marbleRadius = 12;
     const board = { x: 0, y: 0, radius: 0 };
-    const boardLayer = document.createElement('canvas');
-    const boardLayerCtx = boardLayer.getContext('2d')!;
+    const tableLane = { left: 0, right: 0, top: 0, bottom: 0 };
+    // One groove layer per depth band so scroll parallax shifts each band
+    // together with its marbles — seated marbles never detach from pockets.
+    const boardBands = [0, 1, 2].map(() => document.createElement('canvas'));
+    const boardBandCtxs = boardBands.map((c) => c.getContext('2d')!);
     let shapeIndex = 0;
     let rafId = 0;
     let readyFrameId = 0;
@@ -492,16 +522,25 @@
     let degraded = false;
     let slowStreak = 0;
     const frameSamples: number[] = [];
+    // Perspective & life state (L2): parallax, glint, ambient low-power loop
+    let shadowSprite: HTMLCanvasElement | null = null;
+    let parallaxP = 0;
+    let parallaxTarget = 0;
+    let ambientRafId = 0;
+    let glint: { m: Marble; start: number } | null = null;
+    let glintTimer: ReturnType<typeof window.setTimeout> | 0 = 0;
+    const pointer = { x: -9999, y: -9999, active: false };
 
     interface Marble {
       x: number; y: number;     // position on the board plane
       px: number; py: number;   // previous position (Verlet)
-      z: number; vz: number;    // height above the board
       pocket: Slot;
       phase: 'live' | 'seated' | 'retiring';
       retireT: number;
       ageS: number;
       seq: number;
+      layer: number;
+      rollAngle: number;
       sprite: HTMLCanvasElement;
     }
 
@@ -509,36 +548,68 @@
       return min + Math.random() * (max - min);
     }
 
-    function pickNextShapeIndex(current: number): number {
-      if (SHAPES.length <= 1) return current;
-      let next = current;
-      while (next === current) next = Math.floor(Math.random() * SHAPES.length);
-      return next;
+    function slotLayer(slot: Slot): number {
+      const ny = (slot.y - board.y) / (board.radius || 1);
+      return ny < -0.3 ? 0 : ny > 0.34 ? 2 : 1;
+    }
+
+    function createShadowSprite(r: number): HTMLCanvasElement {
+      const w = Math.max(2, Math.ceil(r * 3.6));
+      const h = Math.max(2, Math.ceil(r * 1.8));
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const g = c.getContext('2d')!;
+      g.translate(w / 2, h / 2);
+      g.scale(1, h / w);
+      const grad = g.createRadialGradient(0, 0, 0, 0, 0, w / 2);
+      grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+      grad.addColorStop(0.55, 'rgba(0,0,0,0.26)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad;
+      g.beginPath();
+      g.arc(0, 0, w / 2, 0, Math.PI * 2);
+      g.fill();
+      return c;
     }
 
     function renderBoardLayer(): void {
-      boardLayer.width = width * dpr;
-      boardLayer.height = height * dpr;
-      boardLayerCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      boardLayerCtx.clearRect(0, 0, width, height);
+      for (let b = 0; b < 3; b++) {
+        boardBands[b].width = width * dpr;
+        boardBands[b].height = height * dpr;
+        boardBandCtxs[b].setTransform(dpr, 0, 0, dpr, 0, 0);
+        boardBandCtxs[b].clearRect(0, 0, width, height);
+      }
+      // The tint/stroke circle is monolithic — it lives on the mid band.
+      const midCtx = boardBandCtxs[1];
+
+      for (const bandCtx of boardBandCtxs) {
+        bandCtx.save();
+        bandCtx.translate(0, board.y);
+        bandCtx.scale(1, PERSPECTIVE_Y);
+        bandCtx.translate(0, -board.y);
+      }
 
       if (boardTint) {
-        boardLayerCtx.beginPath();
-        boardLayerCtx.arc(board.x, board.y, board.radius + marbleRadius * 1.4, 0, Math.PI * 2);
-        boardLayerCtx.fillStyle = boardTint;
-        boardLayerCtx.fill();
+        midCtx.beginPath();
+        midCtx.arc(board.x, board.y, board.radius + marbleRadius * 1.4, 0, Math.PI * 2);
+        midCtx.fillStyle = boardTint;
+        midCtx.fill();
       }
 
       if (boardStroke) {
-        boardLayerCtx.beginPath();
-        boardLayerCtx.arc(board.x, board.y, board.radius + marbleRadius * 1.4, 0, Math.PI * 2);
-        boardLayerCtx.strokeStyle = boardStroke;
-        boardLayerCtx.lineWidth = 1;
-        boardLayerCtx.stroke();
+        midCtx.beginPath();
+        midCtx.arc(board.x, board.y, board.radius + marbleRadius * 1.4, 0, Math.PI * 2);
+        midCtx.strokeStyle = boardStroke;
+        midCtx.lineWidth = 1;
+        midCtx.stroke();
       }
 
-      if (!drawGrooves) return;
-      for (const slot of slots) drawGroove(boardLayerCtx, slot.x, slot.y, marbleRadius, grooveColor);
+      if (drawGrooves) {
+        for (const slot of slots) drawGroove(boardBandCtxs[slot.layer], slot.x, slot.y, marbleRadius, grooveColor);
+      }
+
+      for (const bandCtx of boardBandCtxs) bandCtx.restore();
     }
 
     function seatedCount(): number {
@@ -557,8 +628,12 @@
     function buildBoard(): void {
       const shapeDef = SHAPES[shapeIndex % SHAPES.length];
       slots = shapeDef.build(board.x, board.y, board.radius, marbleRadius);
-      for (const s of slots) s.assigned = false;
+      for (const s of slots) {
+        s.assigned = false;
+        s.layer = slotLayer(s);
+      }
       marbles = [];
+      shadowSprite = createShadowSprite(marbleRadius);
       renderBoardLayer();
       updateCounters();
     }
@@ -568,56 +643,132 @@
       return {
         x: slot.x, y: slot.y,
         px: slot.x, py: slot.y,
-        z: 0, vz: 0,
         pocket: slot,
         phase: 'seated',
         retireT: 0,
         ageS: 0,
         seq: marbleSeq++,
-        sprite: createSprite(marbleRadius, paletteIdx, PATTERNS[paletteIdx % PATTERNS.length], seed),
+        layer: slot.layer,
+        rollAngle: rand(0, Math.PI * 2),
+        sprite: createSprite(marbleRadius, paletteIdx, PATTERNS[paletteIdx % PATTERNS.length], seed, slot.layer, dpr, !degraded),
       };
     }
 
-    function renderScene(): void {
+    function layerOffsetY(layer: number): number {
+      return -PARALLAX_MAX[layer] * parallaxP;
+    }
+
+    function projectY(y: number, layer: number): number {
+      return board.y + (y - board.y) * PERSPECTIVE_Y + layerOffsetY(layer);
+    }
+
+    function easeParallax(): void {
+      const diff = parallaxTarget - parallaxP;
+      if (Math.abs(diff) < 0.002) {
+        parallaxP = parallaxTarget;
+        return;
+      }
+      parallaxP += diff * 0.06;
+    }
+
+    function drawGlint(now: number): void {
+      if (!glint) return;
+      const m = glint.m;
+      const t = (now - glint.start) / GLINT_MS;
+      if (t >= 1 || t < 0 || m.phase !== 'seated') {
+        glint = null;
+        scheduleGlint();
+        return;
+      }
+      const r = marbleRadius * LAYER_SCALE[m.layer];
+      const gy = projectY(m.y, m.layer);
+      const alpha = Math.sin(Math.PI * t) * 0.45;
+      const sweep = (t * 2 - 1) * r * 1.3;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(m.x, gy, r * 0.98, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.translate(m.x, gy);
+      ctx.rotate(-0.6);
+      const lg = ctx.createLinearGradient(sweep - r * 0.4, 0, sweep + r * 0.4, 0);
+      lg.addColorStop(0, 'rgba(255,255,255,0)');
+      lg.addColorStop(0.5, `rgba(255,255,255,${alpha.toFixed(3)})`);
+      lg.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(-r * 1.6, -r * 1.6, r * 3.2, r * 3.2);
+      ctx.restore();
+    }
+
+    function drawFixedHighlight(x: number, y: number, r: number, alpha = 1): void {
+      const hl = ctx.createRadialGradient(
+        x - r * 0.28,
+        y - r * 0.32,
+        r * 0.02,
+        x - r * 0.15,
+        y - r * 0.2,
+        r * 0.5
+      );
+      hl.addColorStop(0, `rgba(255,255,255,${(0.95 * alpha).toFixed(3)})`);
+      hl.addColorStop(0.12, `rgba(255,255,255,${(0.66 * alpha).toFixed(3)})`);
+      hl.addColorStop(0.34, `rgba(255,255,255,${(0.22 * alpha).toFixed(3)})`);
+      hl.addColorStop(0.62, `rgba(255,255,255,${(0.08 * alpha).toFixed(3)})`);
+      hl.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = hl;
+      ctx.beginPath();
+      ctx.arc(x, y, r * 0.98, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function renderScene(now = performance.now()): void {
       if (!width || !height) return;
 
       ctx.clearRect(0, 0, width, height);
-      if (boardLayer.width && boardLayer.height) {
-        ctx.drawImage(boardLayer, 0, 0, width, height);
+      for (let b = 0; b < 3; b++) {
+        if (boardBands[b].width && boardBands[b].height) {
+          ctx.drawImage(boardBands[b], 0, layerOffsetY(b), width, height);
+        }
       }
 
       const renderList = marbles.slice().sort((a, b) => a.y - b.y);
+
+      // Contact shadows first — every marble is glued to the table plane.
+      if (shadowSprite) {
+        for (const m of renderList) {
+          const retireScale = m.phase === 'retiring' ? 1 - m.retireT * 0.45 : 1;
+          const mAlpha = m.phase === 'retiring' ? Math.max(0, 1 - m.retireT) : 1;
+          const sScale = LAYER_SCALE[m.layer] * retireScale;
+          const sw = shadowSprite.width * sScale;
+          const sh = shadowSprite.height * sScale;
+          const gy = projectY(m.y, m.layer);
+          ctx.globalAlpha = mAlpha * 0.26 * (m.layer === 0 ? 0.72 : 1);
+          ctx.drawImage(
+            shadowSprite,
+            m.x + marbleRadius * 0.2 - sw / 2,
+            gy + marbleRadius * 0.5 - sh / 2,
+            sw,
+            sh
+          );
+        }
+      }
+
       for (const m of renderList) {
-        const speed = m.phase === 'live' ? Math.hypot(m.x - m.px, m.y - m.py) / DT : 0;
-        const hover = m.z || 0;
         const retireScale = m.phase === 'retiring' ? 1 - m.retireT * 0.45 : 1;
         const mAlpha = m.phase === 'retiring' ? Math.max(0, 1 - m.retireT) : 1;
-
-        if (hover > 0 || speed > 12) {
-          // Contact shadow detaches and softens with height — the depth cue
-          const shadowScale = Math.max(0.4, 1 - hover / 180);
-          ctx.globalAlpha = mAlpha * Math.max(0.05, 0.4 - hover / 250);
-          ctx.beginPath();
-          ctx.ellipse(
-            m.x,
-            m.y + marbleRadius * 0.6 + hover * 0.15,
-            marbleRadius * 0.8 * shadowScale,
-            marbleRadius * 0.4 * shadowScale,
-            0,
-            0,
-            Math.PI * 2
-          );
-          ctx.fillStyle = 'rgba(0,0,0,1)';
-          ctx.fill();
-        }
-
         ctx.globalAlpha = mAlpha;
-        const dw = m.sprite.width * retireScale;
-        const dh = m.sprite.height * retireScale;
-        ctx.drawImage(m.sprite, m.x - dw / 2, m.y - hover - dh / 2, dw, dh);
+        const dw = (m.sprite.width / dpr) * retireScale;
+        const dh = (m.sprite.height / dpr) * retireScale;
+        const breath = m.phase === 'seated' ? Math.sin(now * 0.0011 + m.seq * 1.7) * 0.24 : 0;
+        const gy = projectY(m.y + breath, m.layer);
+        ctx.save();
+        ctx.translate(m.x, gy);
+        ctx.rotate(m.rollAngle);
+        ctx.drawImage(m.sprite, -dw / 2, -dh / 2, dw, dh);
+        ctx.restore();
+        drawFixedHighlight(m.x, gy, marbleRadius * LAYER_SCALE[m.layer] * retireScale, mAlpha);
       }
 
       ctx.globalAlpha = 1;
+      drawGlint(now);
       updateCounters();
     }
 
@@ -662,73 +813,118 @@
       }
     }
 
-    function recomposeStatic(): void {
-      shapeIndex = pickNextShapeIndex(shapeIndex);
-      buildBoard();
-      renderStaticBoard();
-      scheduleReducedMotionCycle();
-    }
-
-    function scheduleReducedMotionCycle(delay = 14000 + Math.random() * 8000): void {
+    function scheduleReducedMotionCycle(): void {
       clearReducedMotionCycle();
-      if (disposed || !reducedMotion || !width || !height) return;
-      reducedMotionTimer = window.setTimeout(() => {
-        reducedMotionTimer = 0;
-        if (!disposed && reducedMotion) {
-          recomposeStatic();
-        }
-      }, delay);
     }
 
     // ── Physics core: Verlet integration + collisions + pocket seating ──
 
+    function velocity(m: Marble): { vx: number; vy: number } {
+      return {
+        vx: (m.x - m.px) / DT,
+        vy: (m.y - m.py) / DT,
+      };
+    }
+
+    function advanceVerlet(m: Marble, ax: number, ay: number, resistance = ROLL_RESISTANCE): void {
+      const oldX = m.x;
+      const oldY = m.y;
+      let { vx, vy } = velocity(m);
+      const speed = Math.hypot(vx, vy);
+      if (speed > 0.001) {
+        const nextSpeed = Math.max(0, speed - resistance * DT);
+        const k = nextSpeed / speed;
+        vx *= k;
+        vy *= k;
+      }
+      m.px = m.x;
+      m.py = m.y;
+      m.x += vx * DT + ax * DT * DT;
+      m.y += vy * DT + ay * DT * DT;
+      const traveled = Math.hypot(m.x - oldX, m.y - oldY);
+      if (traveled > 0.001) m.rollAngle += traveled / Math.max(1, marbleRadius);
+    }
+
+    function pointerForceFor(m: Marble): { ax: number; ay: number } {
+      if (!pointer.active) return { ax: 0, ay: 0 };
+      const sy = projectY(m.y, m.layer);
+      const dx = m.x - pointer.x;
+      const dy = sy - pointer.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= 0.001 || dist > POINTER_REACH) return { ax: 0, ay: 0 };
+      const t = 1 - dist / POINTER_REACH;
+      const power = POINTER_PUSH * t * t;
+      return {
+        ax: (dx / dist) * power,
+        ay: (dy / dist) * power / PERSPECTIVE_Y,
+      };
+    }
+
+    function stepSeated(m: Marble): void {
+      const pointerForce = pointerForceFor(m);
+      const ax = (m.pocket.x - m.x) * SEATED_SPRING + pointerForce.ax;
+      const ay = (m.pocket.y - m.y) * SEATED_SPRING + pointerForce.ay;
+      const oldX = m.x;
+      const oldY = m.y;
+      let { vx, vy } = velocity(m);
+      vx *= SEATED_DAMPING;
+      vy *= SEATED_DAMPING;
+      m.px = m.x;
+      m.py = m.y;
+      m.x += vx * DT + ax * DT * DT;
+      m.y += vy * DT + ay * DT * DT;
+      const offset = Math.hypot(m.x - m.pocket.x, m.y - m.pocket.y);
+      if (offset > 4.5) {
+        const ux = (m.x - m.pocket.x) / offset;
+        const uy = (m.y - m.pocket.y) / offset;
+        m.x = m.pocket.x + ux * 4.5;
+        m.y = m.pocket.y + uy * 4.5;
+      }
+      const moved = Math.hypot(m.x - oldX, m.y - oldY);
+      if (moved > 0.001) m.rollAngle += moved / Math.max(1, marbleRadius);
+      const nextSpeed = Math.hypot(m.x - m.px, m.y - m.py) / DT;
+      if (!pointer.active && offset < 0.04 && nextSpeed < 0.12) {
+        m.x = m.pocket.x;
+        m.y = m.pocket.y;
+        m.px = m.x;
+        m.py = m.y;
+      }
+    }
+
     function physicsStep(): void {
       for (const m of marbles) {
-        if (m.phase === 'seated') continue;
         if (m.phase === 'retiring') {
           m.retireT = Math.min(1, m.retireT + STEP_MS / RETIRE_MS);
           continue;
         }
+        if (m.phase === 'seated') {
+          stepSeated(m);
+          continue;
+        }
         m.ageS += DT;
 
-        // Vertical: gravity + damped bounce (entropy up)
-        m.vz -= GRAVITY_Z * DT;
-        m.z += m.vz * DT;
-        if (m.z <= 0) {
-          m.z = 0;
-          if (Math.abs(m.vz) > BOUNCE_MIN_VZ) {
-            m.vz = -m.vz * RESTITUTION_Z;
-            // Impact scatter: a touch of planar energy so the bounce reads as real
-            m.px += rand(-0.35, 0.35);
-            m.py += rand(-0.35, 0.35);
-          } else {
-            m.vz = 0;
-          }
-        }
-        const airborne = m.z > 0.5;
-
-        // Planar Verlet with the claimed pocket as a potential well (entropy down)
         const dx = m.pocket.x - m.x;
         const dy = m.pocket.y - m.y;
         const dist = Math.hypot(dx, dy);
-        let ax = 0, ay = 0;
-        if (!airborne && dist > 0.0001) {
+        let ax = 0;
+        let ay = 0;
+        if (dist > 0.0001) {
+          const tx = dx / dist;
+          const ty = dy / dist;
           const k = dist < marbleRadius * WELL_REACH ? WELL_SPRING : FAR_BIAS;
-          ax = dx * k;
-          ay = dy * k;
+          ax += dx * k;
+          ay += dy * k;
+          if (dist > marbleRadius * 3 && m.ageS < STALL_SOFT_S) {
+            const weave = Math.sin(m.ageS * 2.35 + m.seq * 0.77) * 8;
+            ax += -ty * weave;
+            ay += tx * weave;
+          }
         }
-        let damp = airborne ? AIR_DAMPING : ROLL_DAMPING;
-        if (!airborne && dist < marbleRadius) damp *= 0.94; // well bottom kills oscillation
-        const nx = m.x + (m.x - m.px) * damp + ax * DT * DT;
-        const ny = m.y + (m.y - m.py) * damp + ay * DT * DT;
-        m.px = m.x;
-        m.py = m.y;
-        m.x = nx;
-        m.y = ny;
+        advanceVerlet(m, ax, ay);
       }
 
       resolveCollisions();
-      constrainToBoard();
+      constrainToTableLane();
       settleAndSweep();
     }
 
@@ -737,14 +933,12 @@
       const minD2 = minD * minD;
       for (let i = 0; i < marbles.length; i++) {
         const a = marbles[i];
-        if (a.phase !== 'live') continue;
-        if (a.ageS > STALL_SOFT_S) continue; // stalled marble slips into its pocket
-        for (let j = 0; j < marbles.length; j++) {
-          if (j === i) continue;
+        if (a.phase === 'retiring') continue;
+        for (let j = i + 1; j < marbles.length; j++) {
           const b = marbles[j];
           if (b.phase === 'retiring') continue;
-          if (b.phase === 'live' && j < i) continue; // live pair already resolved
-          if (Math.abs(a.z - b.z) > marbleRadius * 1.1) continue; // flies over
+          if (a.phase === 'seated' && b.phase === 'seated') continue;
+          if ((a.phase === 'live' && a.ageS > STALL_SOFT_S) || (b.phase === 'live' && b.ageS > STALL_SOFT_S)) continue;
           const dx = a.x - b.x;
           const dy = a.y - b.y;
           const d2 = dx * dx + dy * dy;
@@ -753,49 +947,78 @@
           const push = minD - d;
           const ux = dx / d;
           const uy = dy / d;
-          if (b.phase === 'seated') {
-            // Seated marbles are static bodies — the mover takes the full correction
-            a.x += ux * push;
-            a.y += uy * push;
-          } else {
-            a.x += ux * push * 0.5;
-            a.y += uy * push * 0.5;
-            b.x -= ux * push * 0.5;
-            b.y -= uy * push * 0.5;
+          const invA = a.phase === 'seated' ? 0.22 : 1;
+          const invB = b.phase === 'seated' ? 0.22 : 1;
+          const totalInv = invA + invB;
+          a.x += ux * push * (invA / totalInv);
+          a.y += uy * push * (invA / totalInv);
+          b.x -= ux * push * (invB / totalInv);
+          b.y -= uy * push * (invB / totalInv);
+
+          const avx = a.x - a.px;
+          const avy = a.y - a.py;
+          const bvx = b.x - b.px;
+          const bvy = b.y - b.py;
+          const rel = (avx - bvx) * ux + (avy - bvy) * uy;
+          if (rel < 0) {
+            const impulse = (-(1 + COLLISION_RESTITUTION) * rel) / totalInv;
+            const ia = impulse * invA;
+            const ib = impulse * invB;
+            a.px -= ux * ia;
+            a.py -= uy * ia;
+            b.px += ux * ib;
+            b.py += uy * ib;
           }
         }
       }
     }
 
-    function constrainToBoard(): void {
-      // Motion stays inside the board circle — it never leaks toward the copy column
-      const maxR = board.radius - marbleRadius * 0.4;
+    function clampAxis(value: number, previous: number, min: number, max: number): { value: number; previous: number } {
+      const v = value - previous;
+      if (value < min) {
+        const k = v < 0 ? COLLISION_RESTITUTION : 1;
+        return { value: min, previous: min - Math.abs(v) * k };
+      }
+      if (value > max) {
+        const k = v > 0 ? COLLISION_RESTITUTION : 1;
+        return { value: max, previous: max + Math.abs(v) * k };
+      }
+      return { value, previous };
+    }
+
+    function bounceInLane(m: Marble): void {
+      const x = clampAxis(m.x, m.px, tableLane.left, tableLane.right);
+      m.x = x.value;
+      m.px = x.previous;
+      const y = clampAxis(m.y, m.py, tableLane.top, tableLane.bottom);
+      m.y = y.value;
+      m.py = y.previous;
+    }
+
+    function constrainToTableLane(): void {
       for (const m of marbles) {
         if (m.phase !== 'live') continue;
-        const dx = m.x - board.x;
-        const dy = m.y - board.y;
-        const d = Math.hypot(dx, dy);
-        if (d > maxR) {
-          m.x = board.x + (dx / d) * maxR;
-          m.y = board.y + (dy / d) * maxR;
-        }
+        bounceInLane(m);
       }
+    }
+
+    function seatMarble(m: Marble): void {
+      m.x = m.pocket.x;
+      m.y = m.pocket.y;
+      m.px = m.x;
+      m.py = m.y;
+      m.layer = m.pocket.layer;
+      m.phase = 'seated';
     }
 
     function settleAndSweep(): void {
       for (const m of marbles) {
-        if (m.phase !== 'live' || m.z > 0) continue;
+        if (m.phase !== 'live') continue;
         const dist = Math.hypot(m.pocket.x - m.x, m.pocket.y - m.y);
         const speed = Math.hypot(m.x - m.px, m.y - m.py) / DT;
         const forced = m.ageS > STALL_HARD_S;
-        if (forced || (dist < SEAT_DIST && speed < SEAT_SPEED && Math.abs(m.vz) < 1)) {
-          m.x = m.pocket.x;
-          m.y = m.pocket.y;
-          m.px = m.x;
-          m.py = m.y;
-          m.z = 0;
-          m.vz = 0;
-          m.phase = 'seated';
+        if (forced || (dist < SEAT_DIST && speed < SEAT_SPEED)) {
+          seatMarble(m);
         }
       }
       for (let i = marbles.length - 1; i >= 0; i--) {
@@ -809,62 +1032,74 @@
 
     // ── Arrival lifecycle: one marble every 20-40 s finds a pocket ──
 
-    function maybeRetireForFill(): void {
-      if (!slots.length) return;
+    function maybeRetireForFill(): boolean {
+      if (!slots.length) return false;
       const cap = Math.floor(slots.length * (degraded ? DEGRADED_FILL : RETIRE_FILL));
-      const seated = marbles.filter((m) => m.phase === 'seated');
-      if (seated.length < cap) return;
-      let oldest: Marble | null = null;
-      for (const m of seated) if (!oldest || m.seq < oldest.seq) oldest = m;
-      if (oldest) oldest.phase = 'retiring';
+      let seated = marbles.filter((m) => m.phase === 'seated');
+      let retired = false;
+      while (seated.length >= cap && seated.length) {
+        let oldest: Marble | null = null;
+        for (const m of seated) if (!oldest || m.seq < oldest.seq) oldest = m;
+        if (!oldest) break;
+        oldest.phase = 'retiring';
+        retired = true;
+        seated = seated.filter((m) => m !== oldest);
+      }
+      return retired;
     }
 
     function spawnArrival(): void {
-      maybeRetireForFill();
+      if (marbles.some((m) => m.phase === 'live' || m.phase === 'retiring')) return;
+      if (maybeRetireForFill()) {
+        updateCounters();
+        startLoop();
+        return;
+      }
       const empty = slots.filter((s) => !s.assigned);
       if (!empty.length) return;
-      const slot = empty[Math.floor(Math.random() * empty.length)];
+      const arrivalPool = empty.filter((s) => s.x < board.x - board.radius * 0.05);
+      const pocketPool = arrivalPool.length ? arrivalPool : empty;
+      const slot = pocketPool[Math.floor(Math.random() * pocketPool.length)];
       slot.assigned = true;
 
-      // Drop in just off the pocket mouth — close enough to roll in past at
-      // most one seated neighbour, never across the packed board.
-      const angle = Math.random() * Math.PI * 2;
-      const spread = marbleRadius * rand(0.4, 1.6) * Math.min(spawnScale, 2);
-      let sx = slot.x + Math.cos(angle) * spread;
-      let sy = slot.y + Math.sin(angle) * spread;
-      const bdx = sx - board.x;
-      const bdy = sy - board.y;
-      const bd = Math.hypot(bdx, bdy);
-      const maxR = board.radius - marbleRadius;
-      if (bd > maxR) {
-        sx = board.x + (bdx / bd) * maxR;
-        sy = board.y + (bdy / bd) * maxR;
-      }
+      // Roll in from the tabletop edge, outside the board. The lane is kept
+      // to the right side of the hero, so arrivals never pass under the copy.
+      let sx = tableLane.right + marbleRadius * rand(1.2, 2.4);
+      let sy = Math.min(tableLane.bottom, Math.max(tableLane.top, slot.y + rand(-board.radius * 0.28, board.radius * 0.28)));
 
-      const driftA = Math.random() * Math.PI * 2;
-      const drift = rand(6, 26) * DT; // initial planar velocity, px per step
+      const dx = slot.x - sx;
+      const dy = slot.y - sy;
+      const dist = Math.max(1, Math.hypot(dx, dy));
+      const speed = rand(96, 142) * Math.max(0.85, Math.min(spawnScale, 1.15));
+      const tangent = rand(-42, 42);
+      const vx = (dx / dist) * speed + (-dy / dist) * tangent;
+      const vy = (dy / dist) * speed + (dx / dist) * tangent;
       marbles.push({
         x: sx, y: sy,
-        px: sx - Math.cos(driftA) * drift,
-        py: sy - Math.sin(driftA) * drift,
-        z: rand(240, 360), vz: 0,
+        px: sx - vx * DT,
+        py: sy - vy * DT,
         pocket: slot,
         phase: 'live',
         retireT: 0,
         ageS: 0,
         seq: marbleSeq++,
+        layer: slot.layer,
+        rollAngle: rand(0, Math.PI * 2),
         sprite: createSprite(
           marbleRadius,
           marbleSeq,
           PATTERNS[Math.floor(Math.random() * PATTERNS.length)],
-          Math.floor(Math.random() * 99999)
+          Math.floor(Math.random() * 99999),
+          slot.layer,
+          dpr,
+          !degraded
         ),
       });
       updateCounters();
     }
 
     function nextArrivalDelayMs(): number {
-      if (firstArrivalPending) return rand(2500, 5000);
+      if (firstArrivalPending) return rand(4500, 8000);
       return degraded ? rand(34000, 68000) : rand(20000, 40000);
     }
 
@@ -887,10 +1122,108 @@
       }, nextArrivalDelayMs());
     }
 
+    // ── Life at rest: glint + scroll parallax on a low-power ambient loop ──
+    // Runs ONLY while a glint plays or parallax eases; physics stays asleep.
+
+    function ambientNeeded(): boolean {
+      return glint !== null || Math.abs(parallaxTarget - parallaxP) > 0.002;
+    }
+
+    function ambientFrame(now: number): void {
+      ambientRafId = 0;
+      if (disposed || reducedMotion || !canvasVisible || !pageVisible || rafId) return;
+      easeParallax();
+      renderScene(now);
+      if (ambientNeeded()) ambientRafId = requestAnimationFrame(ambientFrame);
+    }
+
+    function startAmbient(): void {
+      if (ambientRafId || rafId || disposed || reducedMotion || !canvasVisible || !pageVisible) return;
+      if (!ambientNeeded()) return;
+      ambientRafId = requestAnimationFrame(ambientFrame);
+    }
+
+    function stopAmbient(): void {
+      if (!ambientRafId) return;
+      cancelAnimationFrame(ambientRafId);
+      ambientRafId = 0;
+    }
+
+    function clearGlint(): void {
+      if (glintTimer) {
+        window.clearTimeout(glintTimer);
+        glintTimer = 0;
+      }
+      glint = null;
+    }
+
+    function scheduleGlint(): void {
+      if (glintTimer) {
+        window.clearTimeout(glintTimer);
+        glintTimer = 0;
+      }
+      if (disposed || reducedMotion || !canvasVisible || !pageVisible) return;
+      glintTimer = window.setTimeout(() => {
+        glintTimer = 0;
+        const seated = marbles.filter((m) => m.phase === 'seated');
+        if (seated.length) {
+          glint = { m: seated[Math.floor(Math.random() * seated.length)], start: performance.now() };
+          startAmbient();
+        } else {
+          scheduleGlint();
+        }
+      }, rand(10000, 20000));
+    }
+
+    const onScroll = (): void => {
+      // Parallax binds to SCROLL only — never the pointer. Degraded mode
+      // freezes it at zero.
+      if (reducedMotion || degraded) return;
+      parallaxTarget = Math.min(1, Math.max(0, window.scrollY / Math.max(1, window.innerHeight * 0.9)));
+      startAmbient();
+    };
+
+    const onPointerMove = (event: PointerEvent): void => {
+      if (reducedMotion || !canvasVisible || !pageVisible) return;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      const screenTop = board.y + (tableLane.top - board.y) * PERSPECTIVE_Y;
+      const screenBottom = board.y + (tableLane.bottom - board.y) * PERSPECTIVE_Y;
+      pointer.active =
+        event.clientX >= tableLane.left - POINTER_REACH &&
+        event.clientX <= tableLane.right + POINTER_REACH &&
+        event.clientY >= screenTop - POINTER_REACH &&
+        event.clientY <= screenBottom + POINTER_REACH;
+      if (!pointer.active || rafId) return;
+      for (const m of marbles) {
+        if (m.phase !== 'seated') continue;
+        const sx = m.x;
+        const sy = projectY(m.y, m.layer);
+        const dx = sx - event.clientX;
+        const dy = sy - event.clientY;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 0.001 && dist < POINTER_REACH) {
+          const nudge = Math.min(1.6, (1 - dist / POINTER_REACH) * 2.2);
+          m.x += (dx / dist) * nudge;
+          m.y += (dy / dist) * nudge / PERSPECTIVE_Y;
+        }
+      }
+      startLoop();
+    };
+
+    const onPointerLeave = (): void => {
+      pointer.active = false;
+    };
+
     // ── Frame loop: fixed-timestep accumulator, idle power-down ──
 
     function sceneActive(): boolean {
-      return marbles.some((m) => m.phase !== 'seated');
+      return marbles.some((m) => {
+        if (m.phase !== 'seated') return true;
+        const offset = Math.hypot(m.x - m.pocket.x, m.y - m.pocket.y);
+        const speed = Math.hypot(m.x - m.px, m.y - m.py) / DT;
+        return offset > 0.08 || speed > 0.18;
+      });
     }
 
     function recordFrame(frameMs: number): void {
@@ -901,7 +1234,9 @@
         slowStreak++;
         if (slowStreak >= 90) {
           degraded = true;
+          parallaxTarget = 0;
           maybeRetireForFill();
+          scheduleArrival();
         }
       } else {
         slowStreak = 0;
@@ -918,13 +1253,15 @@
         physicsStep();
         accumMs -= STEP_MS;
       }
-      renderScene();
+      easeParallax();
+      renderScene(now);
       recordFrame(frameMs);
       if (sceneActive()) {
         rafId = requestAnimationFrame(tick);
       } else {
         // Board settled: physics sleeps until the next arrival timer wakes it
         accumMs = 0;
+        startAmbient();
       }
     }
 
@@ -947,7 +1284,11 @@
 
       if (reducedMotion) {
         stopLoop();
+        stopAmbient();
         clearArrival();
+        clearGlint();
+        parallaxP = 0;
+        parallaxTarget = 0;
         if (canvasVisible && pageVisible) {
           scheduleReducedMotionCycle();
         } else {
@@ -960,9 +1301,13 @@
       if (canvasVisible && pageVisible) {
         startLoop();
         if (!arrivalTimer) scheduleArrival();
+        if (!glintTimer && !glint) scheduleGlint();
+        startAmbient();
       } else {
         stopLoop();
+        stopAmbient();
         clearArrival();
+        clearGlint();
       }
     }
 
@@ -974,10 +1319,17 @@
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      board.x = width / 2 + width * boardOffsetX;
+      const rawRadius = Math.min(width, height) * boardScale;
+      board.radius = width >= 901 ? Math.min(rawRadius, width * 0.155, height * 0.31) : rawRadius;
+      const requestedX = width / 2 + width * boardOffsetX;
+      const safeX = width >= 901 ? width * 0.82 : requestedX;
+      board.x = Math.min(width - board.radius - 32, Math.max(requestedX, safeX));
       board.y = height / 2 + height * boardOffsetY;
-      board.radius = Math.min(width, height) * boardScale;
       marbleRadius = Math.max(10, board.radius * 0.08);
+      tableLane.left = Math.max(board.x - board.radius - marbleRadius * 2.4, width >= 901 ? width * 0.58 : 0);
+      tableLane.right = width - marbleRadius * 1.2;
+      tableLane.top = Math.max(36, board.y - board.radius * 1.25);
+      tableLane.bottom = Math.min(height - 34, board.y + board.radius * 1.25);
       if (reducedMotion) {
         buildBoard();
         renderStaticBoard();
@@ -1050,26 +1402,52 @@
           const n = xs.length;
           const avg = n ? xs.reduce((s, v) => s + v, 0) / n : 0;
           const p95 = n ? xs[Math.min(n - 1, Math.floor(n * 0.95))] : 0;
-          return { n, avg, p95, degraded, marbles: marbles.length };
+          return {
+            n, avg, p95, degraded,
+            marbles: marbles.length,
+            seated: seatedCount(),
+            slots: slots.length,
+            parallax: parallaxP,
+          };
+        },
+        // Degradation-path levers for tuning sessions — probe is opt-in only
+        forceDegrade: () => {
+          degraded = true;
+          parallaxTarget = 0;
+          maybeRetireForFill();
+          startLoop();
+        },
+        spawnNow: () => {
+          spawnArrival();
+          startLoop();
         },
       };
     }
 
     ensureCanvasReady();
     window.addEventListener('resize', onWindowResize);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerleave', onPointerLeave);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    onScroll(); // reload mid-page starts with the right parallax target
 
     // Cleanup on unmount
     return () => {
       disposed = true;
       stopLoop();
+      stopAmbient();
       if (readyFrameId) cancelAnimationFrame(readyFrameId);
       if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
       clearArrival();
+      clearGlint();
       clearReducedMotionCycle();
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
       window.removeEventListener('resize', onWindowResize);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerleave', onPointerLeave);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       motionQuery.removeEventListener('change', handleMotionChange);
     };
