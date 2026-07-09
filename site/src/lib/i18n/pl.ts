@@ -30,6 +30,15 @@ export const pl = {
     closeMenu: "Zamknij menu",
     navPrimary: "Nawigacja główna",
     navFooter: "Nawigacja stopki",
+    v2Anchors: {
+      about: { label: "O NAS", sub: "Co to jest" },
+      runtime: { label: "RUNTIME", sub: "Cykl pracy" },
+      aicx: { label: "AICX", sub: "Pamięć" },
+      marbles: { label: "MARBLES", sub: "Konwergencja" },
+      playground: { label: "PLAYGROUND", sub: "Wypróbuj" },
+      dou: { label: "DoU", sub: "Audyt gotowości" },
+      faq: { label: "FAQ", sub: "Pytania" },
+    },
   },
   footer: {
     ariaLabel: "Stopka strony",
@@ -92,6 +101,28 @@ export const pl = {
       description:
         "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
     },
+  },
+  v2Hero: {
+    ariaLabel: "Sekcja główna",
+    eyebrow: "RUNTIME ORKIESTRACJI AGENTÓW CLI",
+    heading: {
+      pre: "Orkiestruj agentów CLI",
+      prefix: "Płać stawki frontier",
+      emFirst: "tylko",
+      mid: "tam, gdzie pracuje",
+      emLast: "osąd.",
+    },
+    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini), oparta na 11-etapowym cyklu read/write, która każdemu etapowi przydziela najtańszy model, jaki go udźwignie — a gdy chcesz, jeden frontier model przez `/vc-ship` dowozi cały projekt od A do Z.",
+    ctaPrimary: "INSTALUJ",
+    ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
+    telemetry: {
+      marbles: "CHECKI",
+      converge: "GOTOWE",
+      live: "LIVE",
+    },
+    telemetryLegend: "Sygnał z pętli: checki, gotowość, live build.",
+    canvasCaption: "Każda kulka = jeden zweryfikowany write.",
+    scroll: "SCROLL",
   },
   copyButton: {
     default: "Kopiuj",

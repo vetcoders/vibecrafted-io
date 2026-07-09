@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Lang } from '../lib/i18n';
+  import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
     /** Current page language — used to render PL/EN toggle. */
@@ -25,19 +25,22 @@
     installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash',
   } = $props<Props>();
 
+  type AnchorCopy = { label: string; sub: string };
+
   const langPrefix = $derived(lang === 'pl' ? '/pl' : '/en');
   const homeHref = $derived(lang === 'pl' ? '/pl/' : '/en/');
+  const navLabels = $derived(getTranslations(lang).nav);
 
   // Anchor map — hrefs are absolute paths to landing + hash so clicking from
   // a subpage navigates back to landing and then scrolls to the anchor.
   const anchors = $derived([
-    { label: 'ABOUT', href: `${langPrefix}/#about` },
-    { label: 'RUNTIME', href: `${langPrefix}/#framework` },
-    { label: 'AICX', href: `${langPrefix}/aicx/`, isPage: true, pageMatch: `${langPrefix}/aicx/` },
-    { label: 'MARBLES', href: `${langPrefix}/#operator` },
-    { label: 'PLAYGROUND', href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
-    { label: 'DoU', href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },
-    { label: 'FAQ', href: `${langPrefix}/faq/`, isPage: true, pageMatch: `${langPrefix}/faq/` },
+    { ...(navLabels.v2Anchors.about as AnchorCopy), href: `${langPrefix}/#about` },
+    { ...(navLabels.v2Anchors.runtime as AnchorCopy), href: `${langPrefix}/#framework` },
+    { ...(navLabels.v2Anchors.aicx as AnchorCopy), href: `${langPrefix}/aicx/`, isPage: true, pageMatch: `${langPrefix}/aicx/` },
+    { ...(navLabels.v2Anchors.marbles as AnchorCopy), href: `${langPrefix}/#operator` },
+    { ...(navLabels.v2Anchors.playground as AnchorCopy), href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
+    { ...(navLabels.v2Anchors.dou as AnchorCopy), href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },
+    { ...(navLabels.v2Anchors.faq as AnchorCopy), href: `${langPrefix}/faq/`, isPage: true, pageMatch: `${langPrefix}/faq/` },
   ]);
 
   function isActive(anchor: { isPage?: boolean; pageMatch?: string }): boolean {
@@ -117,7 +120,7 @@
   const toggleHreflang = $derived(lang === 'pl' ? 'en' : 'pl');
 </script>
 
-<nav class="v2nav" aria-label="Primary">
+<nav class="v2nav" aria-label={navLabels.navPrimary}>
   <a class="v2nav__brand" href={homeHref}>
     <span class="v2nav__brand-word">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍</span><span class="v2nav__brand-dot" aria-hidden="true">.</span>
   </a>
@@ -128,7 +131,10 @@
         class={['v2nav__anchor', isActive(a) && 'v2nav__anchor--active']}
         href={a.href}
         aria-current={isActive(a) ? 'page' : undefined}
-      >{a.label}</a>
+      >
+        <span class="v2nav__anchor-label">{a.label}</span>
+        <span class="v2nav__anchor-sub">{a.sub}</span>
+      </a>
     {/each}
   </div>
 
@@ -247,10 +253,14 @@
   .v2nav__anchors {
     justify-self: center;
     display: flex;
-    gap: 32px;
+    gap: clamp(14px, 2vw, 28px);
   }
 
   .v2nav__anchor {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 400;
@@ -259,12 +269,32 @@
     color: var(--fg-on-dark-mute);
     padding: 8px 0;
     position: relative;
+    line-height: 1.1;
+    text-align: center;
     transition: color 0.15s ease;
+  }
+
+  .v2nav__anchor-label {
+    display: block;
+  }
+
+  .v2nav__anchor-sub {
+    display: block;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    color: rgba(var(--v2-paper-rgb), 0.44);
+    white-space: nowrap;
   }
 
   .v2nav__anchor:hover,
   .v2nav__anchor:focus-visible {
     color: var(--fg-on-dark);
+  }
+
+  .v2nav__anchor:hover .v2nav__anchor-sub,
+  .v2nav__anchor:focus-visible .v2nav__anchor-sub,
+  .v2nav__anchor--active .v2nav__anchor-sub {
+    color: rgba(var(--v2-paper-rgb), 0.74);
   }
 
   .v2nav__anchor::after {

@@ -17,10 +17,7 @@ const verticalScrollSurfaces = {
   'src/components/sections/HeroSectionV2.svelte': read('src/components/sections/HeroSectionV2.svelte'),
 };
 const frameworkSection = read('src/components/sections/SectionFramework.astro');
-// Etap B migration: hero copy moved from `src/lib/i18n/en.ts` (landingV2.hero)
-// to the content collection `src/content/i18n/en/hero-v2.md`. Smoke now reads
-// the markdown directly so the assertions stay tied to the canonical source.
-const englishCopy = read('src/content/i18n/en/hero-v2.md');
+const englishCopy = read('src/lib/i18n/en.ts');
 const heroSection = verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'];
 
 for (const [file, source] of Object.entries(verticalScrollSurfaces)) {
@@ -67,14 +64,22 @@ assert.match(
 assert.match(
   heroSection,
   /\.hero__heading-em-first \{[\s\S]*color:\s*var\(--accent\)/,
-  'Hero emFirst (AI-built / w produkt) should keep the gold accent.',
+  'Hero emFirst should keep the gold accent.',
 );
-assert.match(englishCopy, /emFirst:\s*"AI-built"/, 'English hero should say AI-built.');
-assert.doesNotMatch(englishCopy, /AI-developed/, 'English hero should not use ambiguous AI-developed wording.');
 assert.match(
   englishCopy,
-  /The vibe hangover is what comes after the demo:/,
-  'English hero should explain vibe hangover before the page introduces more vocabulary.',
+  /pre:\s*"Orchestrate CLI coding agents"/,
+  'English hero should lead with the CLI coding agent category.',
+);
+assert.match(
+  englishCopy,
+  /Vibecrafted is an orchestration method and runtime for CLI coding agents/,
+  'English hero should include the strict Vibecrafted definition.',
+);
+assert.match(
+  englishCopy,
+  /cheapest model capable of it/,
+  'English hero should explain the stage-model casting cost engine.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, AI-built accent, and plain-language vibe hangover framing are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, definition-first hero, and model-casting cost engine are intact.');

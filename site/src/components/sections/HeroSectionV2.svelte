@@ -20,6 +20,8 @@
       converge: string;
       live: string;
     };
+    telemetryLegend: string;
+    canvasCaption: string;
     scroll: string;
   }
 
@@ -89,6 +91,7 @@
   </div>
 
   <div class="hero__telemetry" aria-hidden="true" data-scroll-fade>
+    <span class="hero__tele-legend">{hero.telemetryLegend}</span>
     <span class="hero__tele-row">
       <span class="hero__tele-label">{hero.telemetry.marbles}</span>
       <span class="hero__tele-dot">·</span>
@@ -105,6 +108,10 @@
       <span class="hero__tele-value">DWG VC-001</span>
     </span>
   </div>
+
+  <p class="hero__canvas-caption" aria-hidden="true" data-scroll-fade>
+    {hero.canvasCaption}
+  </p>
 
   <div class="hero__scroll" aria-hidden="true">
     {hero.scroll} <span class="hero__scroll-arrow">↓</span>
@@ -334,6 +341,17 @@
     text-align: right;
   }
 
+  .hero__tele-legend {
+    display: block;
+    max-width: 28ch;
+    margin-bottom: 10px;
+    margin-left: auto;
+    line-height: 1.45;
+    letter-spacing: 0.08em;
+    text-transform: none;
+    color: var(--fg-on-dark-dim);
+  }
+
   .hero__tele-row {
     display: inline-flex;
     align-items: center;
@@ -357,6 +375,22 @@
 
   .hero__tele-row--live .hero__tele-value {
     color: var(--accent);
+  }
+
+  .hero__canvas-caption {
+    position: absolute;
+    right: clamp(32px, 4vw, 72px);
+    top: clamp(112px, 14vh, 168px);
+    z-index: 3;
+    max-width: 30ch;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.45;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-align: right;
+    color: var(--fg-on-dark-mute);
   }
 
   /* ── Scroll hint ─────────────────────────────────────────── */
@@ -426,6 +460,16 @@
 
     .hero__tele-row {
       justify-content: flex-start;
+    }
+
+    .hero__tele-legend {
+      flex-basis: 100%;
+      max-width: 38ch;
+      margin: 0 0 2px;
+    }
+
+    .hero__canvas-caption {
+      display: none;
     }
 
     .hero__scroll {

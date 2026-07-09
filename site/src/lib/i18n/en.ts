@@ -29,6 +29,15 @@ export const en = {
     closeMenu: "Close menu",
     navPrimary: "Primary navigation",
     navFooter: "Footer navigation",
+    v2Anchors: {
+      about: { label: "ABOUT", sub: "What it is" },
+      runtime: { label: "RUNTIME", sub: "Lifecycle" },
+      aicx: { label: "AICX", sub: "Memory" },
+      marbles: { label: "MARBLES", sub: "Convergence" },
+      playground: { label: "PLAYGROUND", sub: "Try it" },
+      dou: { label: "DoU", sub: "Readiness audit" },
+      faq: { label: "FAQ", sub: "Questions" },
+    },
   },
   footer: {
     ariaLabel: "Site footer",
@@ -87,6 +96,28 @@ export const en = {
       description:
         "The space between a working system and a product that strangers can discover, install, trust, and buy.",
     },
+  },
+  v2Hero: {
+    ariaLabel: "Hero",
+    eyebrow: "ORCHESTRATION RUNTIME FOR CLI CODING AGENTS",
+    heading: {
+      pre: "Orchestrate CLI coding agents",
+      prefix: "Pay frontier prices",
+      emFirst: "only",
+      mid: "where judgment",
+      emLast: "lives.",
+    },
+    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini), built around an 11-stage read/write lifecycle, that assigns each stage the cheapest model capable of it — and, when you want, lets one frontier model drive `/vc-ship`: a whole project delivered A to Z.",
+    ctaPrimary: "INSTALL",
+    ctaSecondary: "READ THE DOCS",
+    telemetry: {
+      marbles: "CHECKS",
+      converge: "READY",
+      live: "LIVE",
+    },
+    telemetryLegend: "Run-loop signal: checks, readiness, live build.",
+    canvasCaption: "Each marble = one verified write.",
+    scroll: "SCROLL",
   },
   copyButton: {
     default: "Copy",
