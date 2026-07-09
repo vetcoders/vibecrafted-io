@@ -83,8 +83,9 @@ export const en = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Release engine for AI-built software.",
-      description: "Ship AI-built software without the vibe hangover.",
+      title: "Vibecrafted — Orchestration runtime for CLI coding agents.",
+      description:
+        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle assigns each stage the cheapest model capable of it — and one frontier model can drive /vc-ship, a whole project A to Z.",
     },
     faq: {
       title: "Vibecrafted · FAQ",

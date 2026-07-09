@@ -50,6 +50,9 @@
   }
 
   let dropdownOpen = $state(false);
+  // Mobile disclosure — the center anchors are display:none under 900px, so
+  // without this panel a phone visitor has no route to the section pages.
+  let mobileOpen = $state(false);
   let copied = $state(false);
   let copyTimer: ReturnType<typeof setTimeout> | null = null;
   let openTimer: ReturnType<typeof setTimeout> | null = null;
@@ -199,6 +202,31 @@
         <path d="M12 0C5.373 0 0 5.373 0 12a12.01 12.01 0 0 0 8.208 11.387c.6.112.82-.262.82-.577 0-.285-.01-1.04-.016-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.388-1.333-1.758-1.333-1.758-1.09-.744.082-.729.082-.729 1.205.085 1.839 1.237 1.839 1.237 1.07 1.833 2.807 1.304 3.492.998.108-.776.419-1.305.762-1.605-2.665-.304-5.467-1.332-5.467-5.93 0-1.31.467-2.382 1.236-3.222-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.48 11.48 0 0 1 3.003-.404c1.02.005 2.047.138 3.005.404 2.291-1.552 3.297-1.23 3.297-1.23.655 1.652.243 2.873.12 3.176.77.84 1.234 1.912 1.234 3.222 0 4.61-2.807 5.624-5.479 5.921.43.372.814 1.102.814 2.222 0 1.606-.014 2.898-.014 3.293 0 .318.217.694.825.576A12.012 12.012 0 0 0 24 12c0-6.627-5.373-12-12-12z"/>
       </svg>
     </a>
+
+    <button
+      type="button"
+      class="v2nav__menu-btn"
+      aria-expanded={mobileOpen}
+      aria-controls="v2nav-mobile"
+      aria-label={mobileOpen ? navLabels.closeMenu : navLabels.menu}
+      onclick={() => { mobileOpen = !mobileOpen; }}
+    >
+      {mobileOpen ? '✕' : '☰'}
+    </button>
+  </div>
+
+  <div id="v2nav-mobile" class={['v2nav__mobile', mobileOpen && 'v2nav__mobile--open']}>
+    {#each anchors as a}
+      <a
+        class={['v2nav__mobile-anchor', isActive(a) && 'v2nav__anchor--active']}
+        href={a.href}
+        aria-current={isActive(a) ? 'page' : undefined}
+        onclick={() => { mobileOpen = false; }}
+      >
+        <span class="v2nav__anchor-label">{a.label}</span>
+        <span class="v2nav__anchor-sub">{a.sub}</span>
+      </a>
+    {/each}
   </div>
 </nav>
 
@@ -476,6 +504,62 @@
     color: var(--fg-on-dark);
   }
 
+  /* ── Mobile disclosure panel ─────────────────────────────── */
+
+  .v2nav__menu-btn {
+    display: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    line-height: 1;
+    padding: 6px 2px;
+    cursor: pointer;
+  }
+
+  .v2nav__mobile {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 6px 24px 14px;
+    /* Solid paint — a translucent panel lets the hero headline bleed through the rows. */
+    background: rgb(23, 22, 21);
+    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.11);
+  }
+
+  .v2nav__mobile-anchor {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.07);
+  }
+
+  .v2nav__mobile-anchor .v2nav__anchor-sub {
+    font-size: 10px;
+  }
+
+  .v2nav__mobile-anchor:last-child {
+    border-bottom: none;
+  }
+
+  .v2nav__mobile-anchor:hover,
+  .v2nav__mobile-anchor:focus-visible,
+  .v2nav__mobile-anchor.v2nav__anchor--active {
+    color: var(--fg-on-dark);
+  }
+
   /* ── Responsive ──────────────────────────────────────────── */
 
   @media (max-width: 900px) {
@@ -491,6 +575,14 @@
 
     .v2nav__right {
       gap: 14px;
+    }
+
+    .v2nav__menu-btn {
+      display: inline-flex;
+    }
+
+    .v2nav__mobile--open {
+      display: flex;
     }
   }
 

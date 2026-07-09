@@ -296,7 +296,7 @@ function buildCardNode(input: OGCardInput) {
                             ? "MANIFESTO"
                             : input.eyebrow.toUpperCase() === "CASE STUDY"
                               ? "SHOWCASE"
-                              : "RELEASE ENGINE",
+                              : "ORCHESTRATION RUNTIME",
                       },
                     },
                   ],
@@ -378,8 +378,8 @@ export const OG_SLUGS: OGSlugDef[] = [
   {
     slug: "landing-pl",
     card: {
-      title: "Silnik wydawniczy dla oprogramowania pisanego z AI.",
-      subtitle: "Dyscyplina dowożenia tego, co napisały agenty.",
+      title: "Runtime orkiestracji agentów CLI.",
+      subtitle: "Płać stawki frontier tylko tam, gdzie pracuje osąd.",
       eyebrow: "Vibecrafted",
       fig: "FIG. 01 · DWG VC-001",
       accent: "amber",
@@ -389,8 +389,8 @@ export const OG_SLUGS: OGSlugDef[] = [
   {
     slug: "landing-en",
     card: {
-      title: "Release engine for AI-built software.",
-      subtitle: "Discipline for shipping what AI agents wrote.",
+      title: "Orchestration runtime for CLI coding agents.",
+      subtitle: "Pay frontier prices only where judgment lives.",
       eyebrow: "Vibecrafted",
       fig: "FIG. 01 · DWG VC-001",
       accent: "amber",

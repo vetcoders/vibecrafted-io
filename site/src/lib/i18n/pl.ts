@@ -87,10 +87,9 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title:
-        "vibecrafted. — Runtime, który zmienia kod po agentach AI w produkt.",
+      title: "vibecrafted. — Runtime orkiestracji agentów CLI.",
       description:
-        "Doprowadza repo po agentach do produktu, który obca osoba może zainstalować, zrozumieć i bezpiecznie użyć.",
+        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write przydziela każdemu etapowi najtańszy model, jaki go udźwignie — a przez /vc-ship jeden frontier model dowozi cały projekt od A do Z.",
     },
     faq: {
       title: "vibecrafted. · FAQ",
