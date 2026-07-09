@@ -108,7 +108,7 @@ export const en = {
       mid: "where judgment",
       emLast: "lives.",
     },
-    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini), built around an 11-stage read/write lifecycle, that assigns each stage the cheapest model capable of it — and, when you want, lets one frontier model drive `/vc-ship`: a whole project delivered A to Z.",
+    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini), built around an 11-stage read/write lifecycle, that assigns each stage the cheapest model capable of it — and, when you want, lets one frontier model drive <code>/vc-ship</code>: a whole project delivered A to Z.",
     ctaPrimary: "INSTALL",
     ctaSecondary: "READ THE DOCS",
     telemetry: {

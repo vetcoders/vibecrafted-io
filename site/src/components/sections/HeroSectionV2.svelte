@@ -263,6 +263,12 @@
     color: var(--accent);
   }
 
+  .hero__body :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--accent);
+  }
+
   /* ── CTAs ───────────────────────────────────────────────── */
 
   .hero__ctas {

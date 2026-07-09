@@ -111,7 +111,7 @@ export const pl = {
       mid: "tam, gdzie pracuje",
       emLast: "osąd.",
     },
-    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini), oparta na 11-etapowym cyklu read/write, która każdemu etapowi przydziela najtańszy model, jaki go udźwignie — a gdy chcesz, jeden frontier model przez `/vc-ship` dowozi cały projekt od A do Z.",
+    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini), oparta na 11-etapowym cyklu read/write, która każdemu etapowi przydziela najtańszy model, jaki go udźwignie — a gdy chcesz, jeden frontier model przez <code>/vc-ship</code> dowozi cały projekt od A do Z.",
     ctaPrimary: "INSTALUJ",
     ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
     telemetry: {
@@ -500,6 +500,11 @@ flowchart LR
                 "Kiedy używać <code>vc-justdo</code> zamiast ręcznych faz?",
               answerHtml:
                 "Użyj <code>vc-justdo</code>, gdy zadanie jest jasne i chcesz, żeby agent przeszedł przez nie od początku do końca. Ręczne fazy wybierz wtedy, gdy chcesz bliżej pilnować kierunku, decyzji technicznych albo architektury.",
+            },
+            {
+              questionHtml: "Czy mogę uruchomić 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. w CI/CD?",
+              answerHtml:
+                "Tak. Bezpośrednia ścieżka instalacji jest nieinteraktywna, a skille takie jak review, followup i release są wprost pomyślane jako powtarzalne bramki jakości albo pakowania.",
             },
             {
               questionHtml:
