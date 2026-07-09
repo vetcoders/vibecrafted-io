@@ -19,9 +19,10 @@ judgment that downstream work will inherit. The cache does not matter
 everywhere either. It matters where the same prefix returns, round after round,
 because the system is converging on a verdict.
 
-This is not thrift for its own sake. It is architecture. Put intelligence in the
-seat that decides. Put cheap repetition in the seats that execute. Then keep the
-repeated prefix tight enough that the cache is an instrument, not a tax.
+This is not thrift. It is casting. Put frontier judgment in the seat that
+decides. Put robust workers in the seats that execute. The savings are a
+consequence of casting wisely — never the criterion. Then keep the repeated
+prefix tight enough that the cache is an instrument, not a tax.
 
 ## Model casting
 

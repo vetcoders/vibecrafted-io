@@ -18,6 +18,7 @@ const verticalScrollSurfaces = {
 };
 const frameworkSection = read('src/components/sections/SectionFramework.astro');
 const englishCopy = read('src/lib/i18n/en.ts');
+const polishCopy = read('src/lib/i18n/pl.ts');
 const heroSection = verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'];
 
 for (const [file, source] of Object.entries(verticalScrollSurfaces)) {
@@ -51,20 +52,15 @@ assert.match(
   /class="framework__op-card"[\s\S]*href=\{playgroundHref\}/,
   'Operator tiles should be real links, not inert button-looking cards.',
 );
-assert.doesNotMatch(
-  heroSection,
-  /hero\.heading\.mid\}\s*<em class="accent">/,
-  'Hero title must not color the final word; the brand dot owns the accent.',
-);
 assert.match(
   heroSection,
-  /hero__heading-em-last[\s\S]*hero__heading-dot/,
+  /hero__heading-accent[\s\S]*hero__heading-dot/,
   'Hero final punctuation should stay a separate brand-dot accent.',
 );
-assert.match(
+assert.doesNotMatch(
   heroSection,
-  /\.hero__heading-em-first \{[\s\S]*color:\s*var\(--accent\)/,
-  'Hero emFirst should keep the gold accent.',
+  /\.hero__heading-accent \{[\s\S]*color:\s*var\(--accent\)/,
+  'Hero accent word must not be colored; the brand dot owns the accent.',
 );
 assert.match(
   englishCopy,
@@ -73,13 +69,43 @@ assert.match(
 );
 assert.match(
   englishCopy,
+  /accent:\s*"Wisely\."/,
+  'English hero should close on the wise-casting accent beat.',
+);
+assert.match(
+  polishCopy,
+  /pre:\s*"Orkiestruj agentów CLI"/,
+  'Polish hero should lead with the CLI coding agent category.',
+);
+assert.match(
+  polishCopy,
+  /accent:\s*"Mądrze\."/,
+  'Polish hero should close on the wise-casting accent beat.',
+);
+assert.match(
+  englishCopy,
   /Vibecrafted is an orchestration method and runtime for CLI coding agents/,
   'English hero should include the strict Vibecrafted definition.',
 );
 assert.match(
   englishCopy,
-  /cheapest model capable of it/,
-  'English hero should explain the stage-model casting cost engine.',
+  /smart model casting/,
+  'English hero should cast the engine as wise model casting, not price.',
+);
+assert.match(
+  polishCopy,
+  /mądra obsada modeli/,
+  'Polish hero should cast the engine as wise model casting, not price.',
+);
+assert.doesNotMatch(
+  englishCopy,
+  /cheapest|cheaper|frontier price/i,
+  'English copy must not sell the rejected price axis.',
+);
+assert.doesNotMatch(
+  polishCopy,
+  /najtańsz|stawki frontier/i,
+  'Polish copy must not sell the rejected price axis.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, definition-first hero, and model-casting cost engine are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, definition-first hero, and wise model casting are intact.');

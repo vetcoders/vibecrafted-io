@@ -89,7 +89,7 @@ export const pl = {
     landing: {
       title: "Vibecrafted — Runtime orkiestracji agentów CLI.",
       description:
-        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write przydziela każdemu etapowi najtańszy model, jaki go udźwignie — a przez /vc-ship jeden frontier model dowozi cały projekt od A do Z.",
+        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write, mądra obsada modeli i /vc-ship — cały projekt dowieziony od A do Z.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -107,12 +107,9 @@ export const pl = {
     eyebrow: "RUNTIME ORKIESTRACJI AGENTÓW CLI",
     heading: {
       pre: "Orkiestruj agentów CLI",
-      prefix: "Płać stawki frontier",
-      emFirst: "tylko",
-      mid: "tam, gdzie pracuje",
-      emLast: "osąd.",
+      accent: "Mądrze.",
     },
-    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini), oparta na 11-etapowym cyklu read/write, która każdemu etapowi przydziela najtańszy model, jaki go udźwignie — a gdy chcesz, jeden frontier model przez <code>/vc-ship</code> dowozi cały projekt od A do Z.",
+    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write, mądra obsada modeli i <code>/vc-ship</code> — cały projekt dowieziony od A do Z.",
     ctaPrimary: "INSTALUJ",
     ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
     telemetry: {

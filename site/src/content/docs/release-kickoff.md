@@ -18,7 +18,7 @@ about what the product is.
 ## One-line truth
 
 - Product: 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.
-- Promise: Orchestration runtime for CLI coding agents — pay frontier prices only where judgment lives.
+- Promise: Orchestration runtime for CLI coding agents — wise model casting: frontier judgment where judgment lives, robust workers where the work repeats.
 - Primary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui`
 - Secondary CTA: `curl -fsSL https://vibecrafted.io/install.sh | bash`
 - Human front door: browser-guided installer, chosen for TwinSweep-style

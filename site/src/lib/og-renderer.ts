@@ -379,7 +379,8 @@ export const OG_SLUGS: OGSlugDef[] = [
     slug: "landing-pl",
     card: {
       title: "Runtime orkiestracji agentów CLI.",
-      subtitle: "Płać stawki frontier tylko tam, gdzie pracuje osąd.",
+      subtitle:
+        "Orkiestruj agentów CLI. Mądrze. Każdy etap obsadzony modelem, który jest do niego stworzony.",
       eyebrow: "Vibecrafted",
       fig: "FIG. 01 · DWG VC-001",
       accent: "amber",
@@ -390,7 +391,8 @@ export const OG_SLUGS: OGSlugDef[] = [
     slug: "landing-en",
     card: {
       title: "Orchestration runtime for CLI coding agents.",
-      subtitle: "Pay frontier prices only where judgment lives.",
+      subtitle:
+        "Orchestrate CLI coding agents. Wisely. Each stage cast to the model built for it.",
       eyebrow: "Vibecrafted",
       fig: "FIG. 01 · DWG VC-001",
       accent: "amber",

@@ -1,6 +1,6 @@
 # Vibecrafted
 
-> Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle that assigns each stage the cheapest model capable of it — and one command, /vc-ship, that lets a frontier model deliver a whole project A to Z.
+> Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting — each stage cast to the model built for it — and one command, /vc-ship, that delivers a whole project A to Z.
 
 Canonical URL: https://vibecrafted.io
 Install (one-line): curl -fsSL https://vibecrafted.io/install.sh | bash

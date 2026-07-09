@@ -85,7 +85,7 @@ export const en = {
     landing: {
       title: "Vibecrafted — Orchestration runtime for CLI coding agents.",
       description:
-        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle assigns each stage the cheapest model capable of it — and one frontier model can drive /vc-ship, a whole project A to Z.",
+        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and /vc-ship — a whole project delivered A to Z.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -103,12 +103,9 @@ export const en = {
     eyebrow: "ORCHESTRATION RUNTIME FOR CLI CODING AGENTS",
     heading: {
       pre: "Orchestrate CLI coding agents",
-      prefix: "Pay frontier prices",
-      emFirst: "only",
-      mid: "where judgment",
-      emLast: "lives.",
+      accent: "Wisely.",
     },
-    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini), built around an 11-stage read/write lifecycle, that assigns each stage the cheapest model capable of it — and, when you want, lets one frontier model drive <code>/vc-ship</code>: a whole project delivered A to Z.",
+    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and <code>/vc-ship</code> — a whole project delivered A to Z.",
     ctaPrimary: "INSTALL",
     ctaSecondary: "READ THE DOCS",
     telemetry: {

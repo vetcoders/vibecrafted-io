@@ -7,10 +7,7 @@
     eyebrow: string;
     heading: {
       pre: string;
-      prefix: string;
-      emFirst: string;
-      mid: string;
-      emLast: string;
+      accent: string;
     };
     body: string;
     ctaPrimary: string;
@@ -42,8 +39,8 @@
 
   const pctLabel = $derived(String(convergePct).padStart(3, '0'));
   const countLabel = $derived(String(marbleCount).padStart(3, '0'));
-  const headingLastWord = $derived(hero.heading.emLast.replace(/\.$/, ''));
-  const headingLastDot = $derived(hero.heading.emLast.endsWith('.') ? '.' : '');
+  const headingAccentWord = $derived(hero.heading.accent.replace(/\.$/, ''));
+  const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
   const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
@@ -70,11 +67,7 @@
     <h1 class="hero__heading">
       <span class="hero__heading-mark">{hero.heading.pre}<span class="hero__heading-dot">.</span></span>
       <span class="hero__heading-line">
-        {#if hero.heading.prefix}<span>{hero.heading.prefix}</span>{/if}
-        <em class="hero__heading-em-first">{hero.heading.emFirst}</em>
-      </span>
-      <span class="hero__heading-line">
-        {hero.heading.mid} <em class="hero__heading-em-last">{headingLastWord}</em><span class="hero__heading-dot">{headingLastDot}</span>
+        <em class="hero__heading-accent">{headingAccentWord}</em><span class="hero__heading-dot">{headingAccentDot}</span>
       </span>
     </h1>
     <p class="hero__body">
@@ -240,11 +233,6 @@
     max-width: 20ch;
   }
 
-  .hero__heading-em-first {
-    font-style: normal;
-    color: var(--accent);
-  }
-
   .hero__heading em {
     font-style: italic;
   }
@@ -254,7 +242,7 @@
     font-size: clamp(14px, 1vw, 17px);
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    max-width: 56ch;
+    max-width: 66ch;
     margin: 0 0 40px;
   }
 
