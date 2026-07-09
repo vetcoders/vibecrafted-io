@@ -444,7 +444,28 @@
     const DPR_CAP = isSafari ? 1.5 : 2;
     const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, DPR_CAP));
 
-    // Mutable physics state
+    // ── Physics constants — fixed 120 Hz steps; units: CSS px, seconds ──
+    const STEP_MS = 1000 / 120;
+    const DT = STEP_MS / 1000;
+    const MAX_FRAME_MS = 200;     // clamp accumulated time on tab-switch resume
+    const GRAVITY_Z = 1500;       // px/s² toward the board plane
+    const RESTITUTION_Z = 0.35;   // one or two visible bounces, then contact
+    const BOUNCE_MIN_VZ = 55;     // px/s — below this a bounce dies to rest
+    const ROLL_DAMPING = 0.984;   // per-step Verlet damping while on the board
+    const AIR_DAMPING = 0.997;    // per-step damping while airborne
+    const WELL_REACH = 3.2;       // pocket potential-well radius, in marble radii
+    const WELL_SPRING = 30;       // s⁻² spring toward the pocket inside the well
+    const FAR_BIAS = 4;           // s⁻² gentle pull toward the pocket outside it
+    const SEAT_DIST = 1.6;        // px — seating snap distance
+    const SEAT_SPEED = 10;        // px/s — seating max planar speed
+    const SEED_FILL = 0.72;       // initial settled coverage of the board
+    const RETIRE_FILL = 0.85;     // above this fill, arrivals retire the oldest marble
+    const DEGRADED_FILL = 0.62;   // population cap once the frame budget degrades
+    const RETIRE_MS = 1300;       // retirement fade+shrink duration
+    const STALL_SOFT_S = 6;       // a live marble older than this slips past collisions
+    const STALL_HARD_S = 10;      // and this force-seats it — the scene must go calm
+
+    // Mutable sim state
     let width = 0, height = 0;
     let slots: Slot[] = [];
     let marbles: Marble[] = [];
@@ -452,17 +473,10 @@
     const board = { x: 0, y: 0, radius: 0 };
     const boardLayer = document.createElement('canvas');
     const boardLayerCtx = boardLayer.getContext('2d')!;
-    let currentLoop = 0;
-    let targetLoops = 3;
-    let targetCoverage = 1;
-    let lastAt = performance.now();
-    let loopTimer = 700 + Math.random() * 300;
-    let morphing = false;
-    let fadeOutAlpha = 1;
     let shapeIndex = 0;
     let rafId = 0;
     let readyFrameId = 0;
-    let morphInterval: ReturnType<typeof window.setInterval> | 0 = 0;
+    let arrivalTimer: ReturnType<typeof window.setTimeout> | 0 = 0;
     let reducedMotionTimer: ReturnType<typeof window.setTimeout> | 0 = 0;
     let disposed = false;
     let canvasVisible = true;
@@ -470,14 +484,24 @@
     let resizeFrameId = 0;
     let resizeObserver: ResizeObserver | undefined;
     let intersectionObserver: IntersectionObserver | undefined;
+    let lastAt = 0;
+    let accumMs = 0;
+    let marbleSeq = 0;
+    let firstArrivalPending = true;
+    // Frame-budget guard: degradation is one-way per session (no oscillating quality)
+    let degraded = false;
+    let slowStreak = 0;
+    const frameSamples: number[] = [];
 
     interface Marble {
-      x: number; y: number;
-      vx: number; vy: number;
-      z: number; vz: number;
-      target: Slot;
-      settled: boolean;
-      chaosLevel: number;
+      x: number; y: number;     // position on the board plane
+      px: number; py: number;   // previous position (Verlet)
+      z: number; vz: number;    // height above the board
+      pocket: Slot;
+      phase: 'live' | 'seated' | 'retiring';
+      retireT: number;
+      ageS: number;
+      seq: number;
       sprite: HTMLCanvasElement;
     }
 
@@ -517,9 +541,15 @@
       for (const slot of slots) drawGroove(boardLayerCtx, slot.x, slot.y, marbleRadius, grooveColor);
     }
 
+    function seatedCount(): number {
+      let n = 0;
+      for (const m of marbles) if (m.phase === 'seated') n++;
+      return n;
+    }
+
     function updateCounters(): void {
       marbleCount = marbles.length;
-      const pct = slots.length ? Math.round(displayCoverageRatio() * 100) : 0;
+      const pct = slots.length ? Math.round((seatedCount() / slots.length) * 100) : 0;
       coveragePct = pct + '%';
       onStats?.(marbles.length, pct);
     }
@@ -529,11 +559,23 @@
       slots = shapeDef.build(board.x, board.y, board.radius, marbleRadius);
       for (const s of slots) s.assigned = false;
       marbles = [];
-      currentLoop = 0;
-      targetLoops = 3 + Math.floor(Math.random() * 5);
-      targetCoverage = 1 + rand(0, 0.10);
       renderBoardLayer();
       updateCounters();
+    }
+
+    function makeSeatedMarble(slot: Slot, paletteIdx: number, seed: number): Marble {
+      slot.assigned = true;
+      return {
+        x: slot.x, y: slot.y,
+        px: slot.x, py: slot.y,
+        z: 0, vz: 0,
+        pocket: slot,
+        phase: 'seated',
+        retireT: 0,
+        ageS: 0,
+        seq: marbleSeq++,
+        sprite: createSprite(marbleRadius, paletteIdx, PATTERNS[paletteIdx % PATTERNS.length], seed),
+      };
     }
 
     function renderScene(): void {
@@ -544,15 +586,15 @@
         ctx.drawImage(boardLayer, 0, 0, width, height);
       }
 
-      const conv = convergenceRatio();
       const renderList = marbles.slice().sort((a, b) => a.y - b.y);
       for (const m of renderList) {
-        const speed = Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+        const speed = m.phase === 'live' ? Math.hypot(m.x - m.px, m.y - m.py) / DT : 0;
         const hover = m.z || 0;
-        let mAlpha = m.settled ? 0.7 + conv * 0.3 : 0.5 + Math.min(speed * 0.03, 0.4);
-        mAlpha *= fadeOutAlpha;
+        const retireScale = m.phase === 'retiring' ? 1 - m.retireT * 0.45 : 1;
+        const mAlpha = m.phase === 'retiring' ? Math.max(0, 1 - m.retireT) : 1;
 
-        if (hover > 0 || speed > 0.5) {
+        if (hover > 0 || speed > 12) {
+          // Contact shadow detaches and softens with height — the depth cue
           const shadowScale = Math.max(0.4, 1 - hover / 180);
           ctx.globalAlpha = mAlpha * Math.max(0.05, 0.4 - hover / 250);
           ctx.beginPath();
@@ -570,7 +612,9 @@
         }
 
         ctx.globalAlpha = mAlpha;
-        ctx.drawImage(m.sprite, m.x - m.sprite.width / 2, m.y - hover - m.sprite.height / 2);
+        const dw = m.sprite.width * retireScale;
+        const dh = m.sprite.height * retireScale;
+        ctx.drawImage(m.sprite, m.x - dw / 2, m.y - hover - dh / 2, dw, dh);
       }
 
       ctx.globalAlpha = 1;
@@ -592,26 +636,24 @@
       const settledTarget = Math.min(slots.length, Math.max(14, Math.round(slots.length * 0.84)));
       const settledSlots = shuffleArr(slots.slice()).slice(0, settledTarget);
       settledSlots.forEach((slot, index) => {
-        slot.assigned = true;
-        marbles.push({
-          x: slot.x,
-          y: slot.y,
-          vx: 0,
-          vy: 0,
-          z: 0,
-          vz: 0,
-          target: slot,
-          settled: true,
-          chaosLevel: 0,
-          sprite: createSprite(marbleRadius, index, PATTERNS[index % PATTERNS.length], 9000 + index),
-        });
+        marbles.push(makeSeatedMarble(slot, index, 9000 + index));
       });
-      currentLoop = targetLoops;
-      targetCoverage = 1;
-      morphing = false;
-      fadeOutAlpha = 1;
       renderScene();
     }
+
+    function seedComposition(): void {
+      for (const slot of slots) slot.assigned = false;
+      marbles = [];
+
+      const target = Math.min(slots.length, Math.max(12, Math.round(slots.length * SEED_FILL)));
+      const seededSlots = shuffleArr(slots.slice()).slice(0, target);
+      seededSlots.forEach((slot, index) => {
+        marbles.push(makeSeatedMarble(slot, index, Math.floor(Math.random() * 99999)));
+      });
+      renderScene();
+    }
+
+    // ── Reduced-motion path: static seeded compositions, slow recompose ──
 
     function clearReducedMotionCycle(): void {
       if (reducedMotionTimer) {
@@ -620,245 +662,277 @@
       }
     }
 
-    function scheduleReducedMotionCycle(delay = 3200 + Math.random() * 1200): void {
+    function recomposeStatic(): void {
+      shapeIndex = pickNextShapeIndex(shapeIndex);
+      buildBoard();
+      renderStaticBoard();
+      scheduleReducedMotionCycle();
+    }
+
+    function scheduleReducedMotionCycle(delay = 14000 + Math.random() * 8000): void {
       clearReducedMotionCycle();
       if (disposed || !reducedMotion || !width || !height) return;
       reducedMotionTimer = window.setTimeout(() => {
         reducedMotionTimer = 0;
         if (!disposed && reducedMotion) {
-          startMorph();
+          recomposeStatic();
         }
       }, delay);
     }
 
-    function resizeCanvas(): boolean {
-      const rect = (canvas.parentElement ?? canvas).getBoundingClientRect();
-      if (!rect.width || !rect.height) return false;
-      width = rect.width;
-      height = rect.height;
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      board.x = width / 2 + width * boardOffsetX;
-      board.y = height / 2 + height * boardOffsetY;
-      board.radius = Math.min(width, height) * boardScale;
-      marbleRadius = Math.max(10, board.radius * 0.08);
-      buildBoard();
-      loopTimer = 900 + Math.random() * 500;
-      if (reducedMotion) {
-        renderStaticBoard();
-        scheduleReducedMotionCycle();
-      } else {
-        clearReducedMotionCycle();
-        renderScene();
-      }
-      return true;
-    }
+    // ── Physics core: Verlet integration + collisions + pocket seating ──
 
-    function settledCount(): number {
-      let n = 0;
-      for (const m of marbles) if (m.settled) n++;
-      return n;
-    }
+    function physicsStep(): void {
+      for (const m of marbles) {
+        if (m.phase === 'seated') continue;
+        if (m.phase === 'retiring') {
+          m.retireT = Math.min(1, m.retireT + STEP_MS / RETIRE_MS);
+          continue;
+        }
+        m.ageS += DT;
 
-    function convergenceRatio(): number {
-      return slots.length ? settledCount() / slots.length : 0;
-    }
-
-    function displayCoverageRatio(): number {
-      const settled = convergenceRatio();
-      if (!slots.length) return 0;
-      const overshootProgress = Math.max(0, settled - 0.92) / 0.08;
-      const overshoot = (targetCoverage - 1) * Math.min(1, overshootProgress);
-      return Math.min(targetCoverage, settled + overshoot);
-    }
-
-    function allMarblesSettled(): boolean {
-      return marbles.every(m => m.settled);
-    }
-
-    function startMorph(): void {
-      if (morphing) return;
-
-      if (reducedMotion) {
-        shapeIndex = pickNextShapeIndex(shapeIndex);
-        buildBoard();
-        renderStaticBoard();
-        scheduleReducedMotionCycle();
-        return;
-      }
-
-      morphing = true;
-      fadeOutAlpha = 1;
-      clearReducedMotionCycle();
-      if (morphInterval) window.clearInterval(morphInterval);
-      morphInterval = window.setInterval(() => {
-        fadeOutAlpha -= reducedMotion ? 0.01 : 0.015;
-        renderScene();
-        if (fadeOutAlpha <= 0) {
-          window.clearInterval(morphInterval);
-          morphInterval = 0;
-          fadeOutAlpha = 1;
-          shapeIndex = pickNextShapeIndex(shapeIndex);
-          morphing = false;
-          buildBoard();
-          if (reducedMotion) {
-            renderStaticBoard();
-            scheduleReducedMotionCycle();
+        // Vertical: gravity + damped bounce (entropy up)
+        m.vz -= GRAVITY_Z * DT;
+        m.z += m.vz * DT;
+        if (m.z <= 0) {
+          m.z = 0;
+          if (Math.abs(m.vz) > BOUNCE_MIN_VZ) {
+            m.vz = -m.vz * RESTITUTION_Z;
+            // Impact scatter: a touch of planar energy so the bounce reads as real
+            m.px += rand(-0.35, 0.35);
+            m.py += rand(-0.35, 0.35);
+          } else {
+            m.vz = 0;
           }
         }
-      }, 16);
+        const airborne = m.z > 0.5;
+
+        // Planar Verlet with the claimed pocket as a potential well (entropy down)
+        const dx = m.pocket.x - m.x;
+        const dy = m.pocket.y - m.y;
+        const dist = Math.hypot(dx, dy);
+        let ax = 0, ay = 0;
+        if (!airborne && dist > 0.0001) {
+          const k = dist < marbleRadius * WELL_REACH ? WELL_SPRING : FAR_BIAS;
+          ax = dx * k;
+          ay = dy * k;
+        }
+        let damp = airborne ? AIR_DAMPING : ROLL_DAMPING;
+        if (!airborne && dist < marbleRadius) damp *= 0.94; // well bottom kills oscillation
+        const nx = m.x + (m.x - m.px) * damp + ax * DT * DT;
+        const ny = m.y + (m.y - m.py) * damp + ay * DT * DT;
+        m.px = m.x;
+        m.py = m.y;
+        m.x = nx;
+        m.y = ny;
+      }
+
+      resolveCollisions();
+      constrainToBoard();
+      settleAndSweep();
     }
 
-    function throwWave(): void {
-      if (morphing) return;
-      const unassigned = slots.filter(s => !s.assigned);
-      if (!unassigned.length) return;
-
-      const nextLoop = currentLoop + 1;
-      const remainingLoops = Math.max(1, targetLoops - currentLoop);
-      const reserveForLater = Math.max(0, remainingLoops - 1);
-      const baseline = Math.ceil(unassigned.length / remainingLoops);
-      const variance = rand(0.82, 1.18);
-      const pacingBias = nextLoop <= 2 ? 1.1 : rand(0.92, 1.06);
-      let toThrow = Math.max(1, Math.round(baseline * variance * pacingBias));
-
-      if (remainingLoops > 1) {
-        toThrow = Math.min(toThrow, Math.max(1, unassigned.length - reserveForLater));
-      } else {
-        toThrow = unassigned.length;
-      }
-
-      currentLoop = nextLoop;
-      const progress = 1 - unassigned.length / slots.length;
-      shuffleArr(unassigned);
-      const chaosLevel = 1 - progress * 0.8;
-
-      for (let i = 0; i < toThrow; i++) {
-        const slot = unassigned[i];
-        slot.assigned = true;
-        const spawnSpread = board.radius * (1.2 + chaosLevel * 0.8) * spawnScale;
-        const angle = Math.random() * Math.PI * 2;
-        const mSeed = Math.floor(Math.random() * 99999);
-        const mPattern = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
-        const mPalIdx = marbles.length;
-        marbles.push({
-          x: board.x + Math.cos(angle) * spawnSpread,
-          y: board.y + Math.sin(angle) * spawnSpread - board.radius * chaosLevel * 0.5,
-          vx: (Math.random() - 0.5) * 7 * chaosLevel,
-          vy: (Math.random() - 0.5) * 5 * chaosLevel + 2,
-          z: 24 + Math.random() * 60 + chaosLevel * 54,
-          vz: (Math.random() - 0.2) * 4,
-          target: slot,
-          settled: false,
-          chaosLevel,
-          sprite: createSprite(marbleRadius, mPalIdx, mPattern, mSeed),
-        });
-      }
-
-      // Early waves: dislodge a settled marble to keep motion alive
-      if (progress < 0.6 && marbles.length > 3 && currentLoop < targetLoops) {
-        const dislodgeChance = (1 - progress) * 0.03;
-        for (let j = marbles.length - 1; j >= 0; j--) {
-          const m = marbles[j];
-          if (m.settled && Math.random() < dislodgeChance) {
-            m.settled = false;
-            m.target.assigned = false;
-            const kickAngle = Math.random() * Math.PI * 2;
-            m.vx = Math.cos(kickAngle) * (6 + Math.random() * 8);
-            m.vy = Math.sin(kickAngle) * (6 + Math.random() * 8) - 4;
-            m.z = 2 + Math.random() * 10;
-            m.vz = 6 + Math.random() * 8;
-            const empties = slots.filter(s => !s.assigned);
-            if (empties.length > 0) {
-              const newSlot = empties[Math.floor(Math.random() * empties.length)];
-              newSlot.assigned = true;
-              m.target = newSlot;
-            } else {
-              m.target.assigned = true;
-              m.settled = true;
-            }
-            break;
+    function resolveCollisions(): void {
+      const minD = marbleRadius * 2;
+      const minD2 = minD * minD;
+      for (let i = 0; i < marbles.length; i++) {
+        const a = marbles[i];
+        if (a.phase !== 'live') continue;
+        if (a.ageS > STALL_SOFT_S) continue; // stalled marble slips into its pocket
+        for (let j = 0; j < marbles.length; j++) {
+          if (j === i) continue;
+          const b = marbles[j];
+          if (b.phase === 'retiring') continue;
+          if (b.phase === 'live' && j < i) continue; // live pair already resolved
+          if (Math.abs(a.z - b.z) > marbleRadius * 1.1) continue; // flies over
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 >= minD2 || d2 === 0) continue;
+          const d = Math.sqrt(d2);
+          const push = minD - d;
+          const ux = dx / d;
+          const uy = dy / d;
+          if (b.phase === 'seated') {
+            // Seated marbles are static bodies — the mover takes the full correction
+            a.x += ux * push;
+            a.y += uy * push;
+          } else {
+            a.x += ux * push * 0.5;
+            a.y += uy * push * 0.5;
+            b.x -= ux * push * 0.5;
+            b.y -= uy * push * 0.5;
           }
         }
       }
+    }
+
+    function constrainToBoard(): void {
+      // Motion stays inside the board circle — it never leaks toward the copy column
+      const maxR = board.radius - marbleRadius * 0.4;
+      for (const m of marbles) {
+        if (m.phase !== 'live') continue;
+        const dx = m.x - board.x;
+        const dy = m.y - board.y;
+        const d = Math.hypot(dx, dy);
+        if (d > maxR) {
+          m.x = board.x + (dx / d) * maxR;
+          m.y = board.y + (dy / d) * maxR;
+        }
+      }
+    }
+
+    function settleAndSweep(): void {
+      for (const m of marbles) {
+        if (m.phase !== 'live' || m.z > 0) continue;
+        const dist = Math.hypot(m.pocket.x - m.x, m.pocket.y - m.y);
+        const speed = Math.hypot(m.x - m.px, m.y - m.py) / DT;
+        const forced = m.ageS > STALL_HARD_S;
+        if (forced || (dist < SEAT_DIST && speed < SEAT_SPEED && Math.abs(m.vz) < 1)) {
+          m.x = m.pocket.x;
+          m.y = m.pocket.y;
+          m.px = m.x;
+          m.py = m.y;
+          m.z = 0;
+          m.vz = 0;
+          m.phase = 'seated';
+        }
+      }
+      for (let i = marbles.length - 1; i >= 0; i--) {
+        const m = marbles[i];
+        if (m.phase === 'retiring' && m.retireT >= 1) {
+          m.pocket.assigned = false;
+          marbles.splice(i, 1);
+        }
+      }
+    }
+
+    // ── Arrival lifecycle: one marble every 20-40 s finds a pocket ──
+
+    function maybeRetireForFill(): void {
+      if (!slots.length) return;
+      const cap = Math.floor(slots.length * (degraded ? DEGRADED_FILL : RETIRE_FILL));
+      const seated = marbles.filter((m) => m.phase === 'seated');
+      if (seated.length < cap) return;
+      let oldest: Marble | null = null;
+      for (const m of seated) if (!oldest || m.seq < oldest.seq) oldest = m;
+      if (oldest) oldest.phase = 'retiring';
+    }
+
+    function spawnArrival(): void {
+      maybeRetireForFill();
+      const empty = slots.filter((s) => !s.assigned);
+      if (!empty.length) return;
+      const slot = empty[Math.floor(Math.random() * empty.length)];
+      slot.assigned = true;
+
+      // Drop in just off the pocket mouth — close enough to roll in past at
+      // most one seated neighbour, never across the packed board.
+      const angle = Math.random() * Math.PI * 2;
+      const spread = marbleRadius * rand(0.4, 1.6) * Math.min(spawnScale, 2);
+      let sx = slot.x + Math.cos(angle) * spread;
+      let sy = slot.y + Math.sin(angle) * spread;
+      const bdx = sx - board.x;
+      const bdy = sy - board.y;
+      const bd = Math.hypot(bdx, bdy);
+      const maxR = board.radius - marbleRadius;
+      if (bd > maxR) {
+        sx = board.x + (bdx / bd) * maxR;
+        sy = board.y + (bdy / bd) * maxR;
+      }
+
+      const driftA = Math.random() * Math.PI * 2;
+      const drift = rand(6, 26) * DT; // initial planar velocity, px per step
+      marbles.push({
+        x: sx, y: sy,
+        px: sx - Math.cos(driftA) * drift,
+        py: sy - Math.sin(driftA) * drift,
+        z: rand(240, 360), vz: 0,
+        pocket: slot,
+        phase: 'live',
+        retireT: 0,
+        ageS: 0,
+        seq: marbleSeq++,
+        sprite: createSprite(
+          marbleRadius,
+          marbleSeq,
+          PATTERNS[Math.floor(Math.random() * PATTERNS.length)],
+          Math.floor(Math.random() * 99999)
+        ),
+      });
       updateCounters();
+    }
+
+    function nextArrivalDelayMs(): number {
+      if (firstArrivalPending) return rand(2500, 5000);
+      return degraded ? rand(34000, 68000) : rand(20000, 40000);
+    }
+
+    function clearArrival(): void {
+      if (arrivalTimer) {
+        window.clearTimeout(arrivalTimer);
+        arrivalTimer = 0;
+      }
+    }
+
+    function scheduleArrival(): void {
+      clearArrival();
+      if (disposed || reducedMotion || !canvasVisible || !pageVisible || !slots.length) return;
+      arrivalTimer = window.setTimeout(() => {
+        arrivalTimer = 0;
+        firstArrivalPending = false;
+        spawnArrival();
+        startLoop();
+        scheduleArrival();
+      }, nextArrivalDelayMs());
+    }
+
+    // ── Frame loop: fixed-timestep accumulator, idle power-down ──
+
+    function sceneActive(): boolean {
+      return marbles.some((m) => m.phase !== 'seated');
+    }
+
+    function recordFrame(frameMs: number): void {
+      frameSamples.push(frameMs);
+      if (frameSamples.length > 600) frameSamples.shift();
+      if (degraded) return;
+      if (frameMs > 20) {
+        slowStreak++;
+        if (slowStreak >= 90) {
+          degraded = true;
+          maybeRetireForFill();
+        }
+      } else {
+        slowStreak = 0;
+      }
     }
 
     function tick(now: number): void {
       if (disposed) return;
-
-      const dt = Math.min(32, now - lastAt);
+      rafId = 0;
+      const frameMs = Math.min(now - lastAt, MAX_FRAME_MS);
       lastAt = now;
-
-      // Remove off-screen marbles
-      marbles = marbles.filter(m => {
-        if (m.settled) return true;
-        const inBounds = m.x > -100 && m.x < width + 100 && m.y > -300 && m.y < height + 100;
-        if (!inBounds && m.target) m.target.assigned = false;
-        return inBounds;
-      });
-
-      const conv = convergenceRatio();
-
-      // Physics step
-      for (const m of marbles) {
-        if (m.settled) continue;
-        const dx = m.target.x - m.x;
-        const dy = m.target.y - m.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        m.vz -= 0.55;
-        m.z += m.vz;
-        if (m.z < 0) {
-          m.z = 0;
-          m.vz = Math.abs(m.vz) > 2.0 ? -m.vz * 0.38 : 0;
-        }
-        const inAir = m.z > 0;
-
-        const mChaos = (m.chaosLevel || 0.5) * (1 - conv * 0.8);
-        const jitter = dist > marbleRadius * 2.4 ? (Math.random() - 0.5) * 1.4 * mChaos : 0;
-        const attract = (0.010 + conv * 0.014) * (inAir ? 0.25 : 1.0);
-        m.vx += dx * attract + jitter;
-        m.vy += dy * attract + jitter;
-
-        if (dist < marbleRadius * 0.9) {
-          m.vx *= 0.82;
-          m.vy *= 0.82;
-        }
-
-        let friction = 0.87 + conv * 0.05;
-        if (inAir) friction = 0.97;
-        m.vx *= friction;
-        m.vy *= friction;
-        m.x += m.vx;
-        m.y += m.vy;
-
-        if (dist < 2.0 && Math.abs(m.vx) < 0.8 && Math.abs(m.vy) < 0.8 && m.z <= 0) {
-          m.settled = true;
-          m.x = m.target.x;
-          m.y = m.target.y;
-        }
-      }
-
-      // Shape completion → morph
-      if (!morphing && convergenceRatio() >= 1 && currentLoop >= targetLoops && allMarblesSettled()) {
-        startMorph();
-      } else {
-        loopTimer -= dt;
-        if (loopTimer <= 0) {
-          throwWave();
-          loopTimer = 2300 + Math.random() * 1600;
-        }
+      accumMs += frameMs;
+      while (accumMs >= STEP_MS) {
+        physicsStep();
+        accumMs -= STEP_MS;
       }
       renderScene();
-      rafId = requestAnimationFrame(tick);
+      recordFrame(frameMs);
+      if (sceneActive()) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        // Board settled: physics sleeps until the next arrival timer wakes it
+        accumMs = 0;
+      }
     }
 
     function startLoop(): void {
       if (disposed || reducedMotion || rafId || !width || !height || !canvasVisible || !pageVisible) return;
-      clearReducedMotionCycle();
+      if (!sceneActive()) return;
       lastAt = performance.now();
+      accumMs = 0;
       rafId = requestAnimationFrame(tick);
     }
 
@@ -873,6 +947,7 @@
 
       if (reducedMotion) {
         stopLoop();
+        clearArrival();
         if (canvasVisible && pageVisible) {
           scheduleReducedMotionCycle();
         } else {
@@ -884,9 +959,36 @@
       clearReducedMotionCycle();
       if (canvasVisible && pageVisible) {
         startLoop();
+        if (!arrivalTimer) scheduleArrival();
       } else {
         stopLoop();
+        clearArrival();
       }
+    }
+
+    function resizeCanvas(): boolean {
+      const rect = (canvas.parentElement ?? canvas).getBoundingClientRect();
+      if (!rect.width || !rect.height) return false;
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      board.x = width / 2 + width * boardOffsetX;
+      board.y = height / 2 + height * boardOffsetY;
+      board.radius = Math.min(width, height) * boardScale;
+      marbleRadius = Math.max(10, board.radius * 0.08);
+      if (reducedMotion) {
+        buildBoard();
+        renderStaticBoard();
+        scheduleReducedMotionCycle();
+      } else {
+        clearReducedMotionCycle();
+        shapeIndex = 0; // animated mode lives on the classic circular board
+        buildBoard();
+        seedComposition();
+      }
+      return true;
     }
 
     function ensureCanvasReady(): void {
@@ -939,6 +1041,20 @@
     motionQuery.removeEventListener('change', onMotionChange);
     motionQuery.addEventListener('change', handleMotionChange);
 
+    // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
+    if (/[?&]mcv2perf/.test(window.location.search)) {
+      (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
+        frames: frameSamples,
+        stats: () => {
+          const xs = frameSamples.slice().sort((a, b) => a - b);
+          const n = xs.length;
+          const avg = n ? xs.reduce((s, v) => s + v, 0) / n : 0;
+          const p95 = n ? xs[Math.min(n - 1, Math.floor(n * 0.95))] : 0;
+          return { n, avg, p95, degraded, marbles: marbles.length };
+        },
+      };
+    }
+
     ensureCanvasReady();
     window.addEventListener('resize', onWindowResize);
     document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -949,7 +1065,7 @@
       stopLoop();
       if (readyFrameId) cancelAnimationFrame(readyFrameId);
       if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
-      if (morphInterval) window.clearInterval(morphInterval);
+      clearArrival();
       clearReducedMotionCycle();
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
