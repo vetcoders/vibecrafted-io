@@ -90,7 +90,7 @@ export const en = {
     faq: {
       title: "Vibecrafted · FAQ",
       description:
-        "The questions strangers ask first about the Vibecrafted release engine.",
+        "The questions strangers ask first about the Vibecrafted orchestration runtime.",
     },
     dou: {
       title: "Vibecrafted · DoU — The Definition of Undone",

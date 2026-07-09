@@ -94,7 +94,7 @@ export const pl = {
     faq: {
       title: "Vibecrafted · FAQ",
       description:
-        "Pytania, które obcy zadają jako pierwsze o silnik wydań Vibecrafted.",
+        "Pytania, które obcy zadają jako pierwsze o runtime orkiestracji Vibecrafted.",
     },
     dou: {
       title: "Vibecrafted · DoU — Definicja niezrobionego",

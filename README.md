@@ -5,7 +5,7 @@
 <h1 align="center">Ship AI-built software without the vibe hangover</h1>
 
 <p align="center">
-  <em>The release engine for AI-built software.</em><br>
+  <em>An orchestration method and runtime for CLI coding agents.</em><br>
   <em>It mapped itself, fixed itself, packaged itself, and built its own distribution path.</em>
 </p>
 
@@ -37,7 +37,7 @@ _(Read the full use case: [The 4 ways AI-coded MVPs break in production](docs/TH
 
 **We ship AI-built software.**
 
-𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is not another code generator. It is the release engine you run after AI has produced a repo and before a real user touches it. It forces that repo through perception, verification, convergence, install truth, packaging, and launch-readiness checks until a stranger can install it, trust it, and actually use it.
+𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is not another code generator. It is the orchestration runtime you run after AI has produced a repo and before a real user touches it. It forces that repo through perception, verification, convergence, install truth, packaging, and launch-readiness checks until a stranger can install it, trust it, and actually use it.
 
 ---
 

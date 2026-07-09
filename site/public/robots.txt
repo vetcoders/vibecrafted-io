@@ -1,4 +1,4 @@
-# vibecrafted.io — release engine for AI-built software
+# vibecrafted.io — orchestration method and runtime for CLI coding agents
 # Plan 18 (META_22): SEO + indexability + LLM-crawler explicit allow
 
 User-agent: *
