@@ -50,14 +50,15 @@
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__canvas" aria-hidden="true">
+    <!-- Vertical placement + groove rim intensity are owned by the canvas:
+         it centres the board between the caption and the legend and scales
+         the dished-pocket rendering per depth band. -->
     <MarbleCanvasV2
       boardScale={0.28}
       spawnScale={1.6}
       boardOffsetX={0.18}
-      boardOffsetY={-0.1}
       palette="color"
       drawGrooves={true}
-      grooveColor="rgba(245,244,239,0.10)"
       onStats={handleStats}
     />
   </div>

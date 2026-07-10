@@ -335,35 +335,52 @@
     return pos;
   }
 
-  function drawGroove(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, color: string | null): void {
-    ctx.beginPath();
-    ctx.arc(x, y, r * 0.95, 0, Math.PI * 2);
-    if (color) {
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      return;
-    }
+  // Grooves brighten toward the viewer: far rows recede, near rows carry the
+  // template. Matches the marble depth bands so the whole scene shares one light.
+  const GROOVE_BAND_INTENSITY = [0.72, 1, 1.22] as const;
 
-    const sg = ctx.createRadialGradient(x - r * 0.1, y - r * 0.1, r * 0.2, x, y, r * 0.95);
-    sg.addColorStop(0, 'rgba(0,0,0,0.28)');
-    sg.addColorStop(0.6, 'rgba(0,0,0,0.18)');
-    sg.addColorStop(1, 'rgba(0,0,0,0.05)');
-    ctx.fillStyle = sg;
+  // An empty pocket must read as a drilled dish in the tabletop, not a
+  // hairline ellipse — the template narrative lives or dies on this. Light
+  // comes from the upper-left (same as the marble glass overlay), so the
+  // near inner wall sits in shadow and the far inner edge catches the light.
+  function drawGroove(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    r: number,
+    color: string | null,
+    intensity = 1
+  ): void {
+    const rr = r * 0.96;
+
+    // Dished depression: deepest at the heart, feathering out to the felt.
+    const dish = ctx.createRadialGradient(x, y, rr * 0.1, x, y, rr);
+    dish.addColorStop(0, `rgba(0,0,0,${(0.55 * intensity).toFixed(3)})`);
+    dish.addColorStop(0.7, `rgba(0,0,0,${(0.3 * intensity).toFixed(3)})`);
+    dish.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(x, y, rr, 0, Math.PI * 2);
+    ctx.fillStyle = dish;
     ctx.fill();
+
+    // Near inner wall in shadow (under the upper-left lip).
     ctx.beginPath();
-    ctx.arc(x, y, r * 0.72, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 0.8;
+    ctx.arc(x, y, rr * 0.8, Math.PI * 0.8, Math.PI * 1.7);
+    ctx.strokeStyle = `rgba(0,0,0,${(0.38 * intensity).toFixed(3)})`;
+    ctx.lineWidth = Math.max(1, r * 0.14);
     ctx.stroke();
+
+    // Far inner edge catches the light — the cue that makes the dish concave.
     ctx.beginPath();
-    ctx.arc(x, y, r * 0.5, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-    ctx.lineWidth = 0.5;
+    ctx.arc(x, y, rr * 0.9, -Math.PI * 0.06, Math.PI * 0.64);
+    ctx.strokeStyle = color ?? `rgba(245,244,239,${(0.3 * intensity).toFixed(3)})`;
+    ctx.lineWidth = 1.4;
     ctx.stroke();
+
+    // Whisper of a full outline so the lattice reads as a deliberate pattern.
     ctx.beginPath();
-    ctx.arc(x, y, r * 0.88, Math.PI * 0.9, Math.PI * 1.6);
-    ctx.strokeStyle = 'rgba(176,174,165,0.07)';
+    ctx.arc(x, y, rr, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(245,244,239,${(0.1 * intensity).toFixed(3)})`;
     ctx.lineWidth = 1;
     ctx.stroke();
   }
@@ -637,6 +654,21 @@
         bandCtx.translate(0, -board.y);
       }
 
+      // Pool of light on the tabletop: drawn inside the perspective transform,
+      // so the circle lands as an ellipse — the one cue that turns floating
+      // circles into a template lying on a table. Far band = painted first,
+      // everything else sits on top of it.
+      const poolCtx = boardBandCtxs[0];
+      const poolR = board.radius * 1.5;
+      const pool = poolCtx.createRadialGradient(board.x, board.y, board.radius * 0.12, board.x, board.y, poolR);
+      pool.addColorStop(0, 'rgba(245,244,239,0.05)');
+      pool.addColorStop(0.62, 'rgba(245,244,239,0.022)');
+      pool.addColorStop(1, 'rgba(245,244,239,0)');
+      poolCtx.beginPath();
+      poolCtx.arc(board.x, board.y, poolR, 0, Math.PI * 2);
+      poolCtx.fillStyle = pool;
+      poolCtx.fill();
+
       if (boardTint) {
         midCtx.beginPath();
         midCtx.arc(board.x, board.y, board.radius + marbleRadius * 1.4, 0, Math.PI * 2);
@@ -653,7 +685,9 @@
       }
 
       if (drawGrooves) {
-        for (const slot of slots) drawGroove(boardBandCtxs[slot.layer], slot.x, slot.y, marbleRadius, grooveColor);
+        for (const slot of slots) {
+          drawGroove(boardBandCtxs[slot.layer], slot.x, slot.y, marbleRadius, grooveColor, GROOVE_BAND_INTENSITY[slot.layer]);
+        }
       }
 
       for (const bandCtx of boardBandCtxs) bandCtx.restore();
@@ -1101,11 +1135,20 @@
               ax += (hx / hd) * HUNT_PULL;
               ay += (hy / hd) * HUNT_PULL;
               hunting = true;
-            } else if (m.ageS > LIVE_TIMEOUT_S || speed < 6) {
-              // Nowhere to live — the hand lifts it off the table.
-              m.phase = 'retiring';
-              m.retireT = 0;
-              continue;
+            } else {
+              // No reachable hole and rolling energy spent: a near-still
+              // homeless marble reads as PARKED off-grid — the single worst
+              // tell against the "live marbles are rolling" narrative. The
+              // hand lifts it after a beat, long before the age timeout.
+              // stuckS is free to borrow here: it only ever counts standstills
+              // of pocket-holding marbles, and this marble holds no pocket.
+              if (speed < 24) m.stuckS += DT;
+              else m.stuckS = 0;
+              if (m.ageS > LIVE_TIMEOUT_S || speed < 6 || m.stuckS > 1.4) {
+                m.phase = 'retiring';
+                m.retireT = 0;
+                continue;
+              }
             }
           }
         }
@@ -1580,11 +1623,35 @@
       const safeX = width >= 901 ? width * 0.82 : requestedX;
       board.x = Math.min(width - board.radius - 32, Math.max(requestedX, safeX));
       board.y = height / 2 + height * boardOffsetY;
+
+      // Text is sacred: no marble may cross the canvas caption (top-right) or
+      // the telemetry legend (bottom-right) at any desktop viewport. The
+      // numbers mirror HeroSectionV2 CSS — caption top clamp(112px,14vh,168px)
+      // plus two mono lines, legend bottom clamp(96px,12vh,128px) plus the
+      // stacked rows above it. The board is centred inside that text band and,
+      // if the band is short, shrunk to fit; screen-space limits are mapped
+      // back to board-plane coords through the PERSPECTIVE_Y projection.
+      let laneTopScreen = 36;
+      let laneBottomScreen = height - 34;
+      if (width >= 901) {
+        const captionBottom = Math.min(Math.max(112, height * 0.14), 168) + 46;
+        const legendTop = height - Math.min(Math.max(96, height * 0.12), 128) - 118;
+        const bandMid = (captionBottom + legendTop) / 2;
+        const halfBudget = Math.max(80, (legendTop - captionBottom) / 2);
+        // Vertical footprint ≈ (R − mr)·persp + mr·1.6 with mr ≈ 0.115·R → ≈ 0.93·R.
+        board.radius = Math.min(board.radius, halfBudget / 0.93);
+        board.y = bandMid;
+        laneTopScreen = captionBottom;
+        laneBottomScreen = legendTop;
+      }
+
       marbleRadius = Math.max(12, board.radius * 0.115); // chunky glass: rolling reads, a template fills in ~1 min
       tableLane.left = Math.max(board.x - board.radius - marbleRadius * 2.4, width >= 901 ? width * 0.58 : 0);
       tableLane.right = width - marbleRadius * 1.2;
-      tableLane.top = Math.max(36, board.y - board.radius * 1.25);
-      tableLane.bottom = Math.min(height - 34, board.y + board.radius * 1.25);
+      const laneTopBoard = board.y + (laneTopScreen + marbleRadius * 1.1 - board.y) / PERSPECTIVE_Y;
+      const laneBottomBoard = board.y + (laneBottomScreen - marbleRadius * 1.6 - board.y) / PERSPECTIVE_Y;
+      tableLane.top = Math.max(laneTopBoard, board.y - board.radius * 1.25);
+      tableLane.bottom = Math.min(laneBottomBoard, board.y + board.radius * 1.25);
       if (reducedMotion) {
         buildBoard();
         renderStaticBoard();
@@ -1651,7 +1718,7 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'glass-v5',
+        version: 'board-v6',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
