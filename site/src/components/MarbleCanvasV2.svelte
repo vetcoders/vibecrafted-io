@@ -119,14 +119,17 @@
   // Visual-only — physics keeps one uniform radius so seating stays exact.
   const LAYER_SCALE = [0.92, 1, 1.05] as const;
 
+  // The sprite is the ROTATING layer of a marble: base colour + pattern only.
+  // Everything directional (form shading, refraction, specular) lives in the
+  // baked glass overlay drawn unrotated on top — so rolling never smears the
+  // lighting and a seated marble at any rollAngle stays crisp.
   function createSprite(
     radius: number,
     paletteIdx: number,
     patternType: string,
     seed: number,
     layer = 1,
-    pixelScale = 1,
-    soften = true
+    pixelScale = 1
   ): HTMLCanvasElement {
     const pad = 4;
     const s = (radius * 2 + pad) * 2;
@@ -150,11 +153,12 @@
     g.arc(cx, cy, r, 0, Math.PI * 2);
     g.clip();
 
-    const bg = g.createRadialGradient(cx - r * 0.3, cy - r * 0.35, r * 0.05, cx + r * 0.1, cy + r * 0.1, r * 1.1);
-    bg.addColorStop(0, rgbStr(lighten(base, 60), 0.95));
-    bg.addColorStop(0.35, rgbStr(base, 0.92));
-    bg.addColorStop(0.7, rgbStr(darken(base, 25), 0.9));
-    bg.addColorStop(1, rgbStr(darken(base, 55), 0.85));
+    // Rotation-symmetric base: centred falloff only. Directional light is the
+    // overlay's job — a baked offset gradient here would spin with the roll.
+    const bg = g.createRadialGradient(cx, cy, r * 0.08, cx, cy, r);
+    bg.addColorStop(0, rgbStr(lighten(base, 42), 1));
+    bg.addColorStop(0.55, rgbStr(base, 1));
+    bg.addColorStop(1, rgbStr(darken(base, 38), 1));
     g.fillStyle = bg;
     g.fillRect(0, 0, s, s);
 
@@ -237,17 +241,7 @@
     }
     // solid = no extra pattern
 
-    // Glass internal refraction
-    const rfl = g.createRadialGradient(cx + r * 0.2, cy + r * 0.35, r * 0.02, cx + r * 0.15, cy + r * 0.3, r * 0.45);
-    rfl.addColorStop(0, 'rgba(255,255,255,0.26)');
-    rfl.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = rfl;
-    g.fillRect(0, 0, s, s);
-
-    // Top highlights are drawn at render time, fixed to the light source.
-    // The sprite itself rotates underneath them so rolling does not read as sliding.
-
-    // Edge darkening rim
+    // Edge darkening rim (rotation-symmetric, safe to bake here)
     const rim = g.createRadialGradient(cx, cy, r * 0.75, cx, cy, r);
     rim.addColorStop(0, 'rgba(0,0,0,0)');
     rim.addColorStop(0.8, 'rgba(0,0,0,0.08)');
@@ -258,24 +252,61 @@
     g.restore();
 
     if (layer === 0) {
-      // Far layer: bake softness (downscale-upscale) and a depth tint ONCE at
-      // sprite creation — never a per-frame canvas filter.
-      if (soften) {
-        const tmp = document.createElement('canvas');
-        tmp.width = Math.max(1, Math.round(s / 2));
-        tmp.height = tmp.width;
-        const tg = tmp.getContext('2d')!;
-        tg.drawImage(oc, 0, 0, tmp.width, tmp.height);
-        g.setTransform(1, 0, 0, 1, 0, 0);
-        g.clearRect(0, 0, oc.width, oc.height);
-        g.drawImage(tmp, 0, 0, oc.width, oc.height);
-      }
+      // Far layer depth cue: a tint ONLY. Glass stays hard — no blur pass may
+      // ever touch the silhouette (the old downscale-upscale soften read as fur).
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.globalCompositeOperation = 'source-atop';
-      g.fillStyle = 'rgba(10,14,20,0.18)';
+      g.fillStyle = 'rgba(10,14,20,0.16)';
       g.fillRect(0, 0, oc.width, oc.height);
       g.globalCompositeOperation = 'source-over';
     }
+    return oc;
+  }
+
+  // Baked once per depth band: the FIXED lighting of a glass marble — form
+  // shading (light upper-left), internal refraction, specular highlight.
+  // Drawn unrotated over the rotating sprite, so light never spins and no
+  // per-frame gradients are built.
+  function createGlassOverlay(radius: number, layer: number, pixelScale: number): HTMLCanvasElement {
+    const pad = 4;
+    const s = (radius * 2 + pad) * 2;
+    const oc = document.createElement('canvas');
+    oc.width = Math.max(1, Math.round(s * pixelScale));
+    oc.height = oc.width;
+    const g = oc.getContext('2d')!;
+    g.setTransform(pixelScale, 0, 0, pixelScale, 0, 0);
+    const cx = s / 2, cy = s / 2, r = radius * LAYER_SCALE[layer];
+
+    g.beginPath();
+    g.arc(cx, cy, r * 0.99, 0, Math.PI * 2);
+    g.clip();
+
+    // Form shading: shadow gathers lower-right, away from the light.
+    const form = g.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx + r * 0.12, cy + r * 0.14, r * 1.05);
+    form.addColorStop(0, 'rgba(0,0,0,0)');
+    form.addColorStop(0.55, 'rgba(0,0,0,0.04)');
+    form.addColorStop(0.82, 'rgba(0,0,0,0.18)');
+    form.addColorStop(1, 'rgba(0,0,0,0.38)');
+    g.fillStyle = form;
+    g.fillRect(0, 0, s, s);
+
+    // Internal refraction: light re-emerges at the lower rim of real glass.
+    const rfl = g.createRadialGradient(cx + r * 0.18, cy + r * 0.42, r * 0.02, cx + r * 0.14, cy + r * 0.36, r * 0.42);
+    rfl.addColorStop(0, 'rgba(255,255,255,0.24)');
+    rfl.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = rfl;
+    g.fillRect(0, 0, s, s);
+
+    // Specular: one crisp point, fixed to the light source.
+    const hl = g.createRadialGradient(cx - r * 0.28, cy - r * 0.32, r * 0.02, cx - r * 0.15, cy - r * 0.2, r * 0.5);
+    hl.addColorStop(0, 'rgba(255,255,255,0.95)');
+    hl.addColorStop(0.12, 'rgba(255,255,255,0.66)');
+    hl.addColorStop(0.34, 'rgba(255,255,255,0.22)');
+    hl.addColorStop(0.62, 'rgba(255,255,255,0.08)');
+    hl.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = hl;
+    g.fillRect(0, 0, s, s);
+
     return oc;
   }
 
@@ -537,6 +568,7 @@
     const frameSamples: number[] = [];
     // Perspective & life state (L2): parallax, glint, ambient low-power loop
     let shadowSprite: HTMLCanvasElement | null = null;
+    let glassOverlays: (HTMLCanvasElement | null)[] = [null, null, null];
     let parallaxP = 0;
     let parallaxTarget = 0;
     let ambientRafId = 0;
@@ -649,6 +681,7 @@
       }
       marbles = [];
       shadowSprite = createShadowSprite(marbleRadius);
+      glassOverlays = [0, 1, 2].map((b) => createGlassOverlay(marbleRadius, b, dpr));
       renderBoardLayer();
       updateCounters();
     }
@@ -667,7 +700,7 @@
         seq: marbleSeq++,
         layer: slot.layer,
         rollAngle: rand(0, Math.PI * 2),
-        sprite: createSprite(marbleRadius, paletteIdx, pattern, seed, slot.layer, dpr, !degraded),
+        sprite: createSprite(marbleRadius, paletteIdx, pattern, seed, slot.layer, dpr),
         mk: { pal: paletteIdx, pattern, seed },
       };
     }
@@ -717,26 +750,6 @@
       ctx.restore();
     }
 
-    function drawFixedHighlight(x: number, y: number, r: number, alpha = 1): void {
-      const hl = ctx.createRadialGradient(
-        x - r * 0.28,
-        y - r * 0.32,
-        r * 0.02,
-        x - r * 0.15,
-        y - r * 0.2,
-        r * 0.5
-      );
-      hl.addColorStop(0, `rgba(255,255,255,${(0.95 * alpha).toFixed(3)})`);
-      hl.addColorStop(0.12, `rgba(255,255,255,${(0.66 * alpha).toFixed(3)})`);
-      hl.addColorStop(0.34, `rgba(255,255,255,${(0.22 * alpha).toFixed(3)})`);
-      hl.addColorStop(0.62, `rgba(255,255,255,${(0.08 * alpha).toFixed(3)})`);
-      hl.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = hl;
-      ctx.beginPath();
-      ctx.arc(x, y, r * 0.98, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
     function renderScene(now = performance.now()): void {
       if (!width || !height) return;
 
@@ -784,7 +797,12 @@
         ctx.rotate(m.rollAngle);
         ctx.drawImage(m.sprite, -dw / 2, -dh / 2, dw, dh);
         ctx.restore();
-        drawFixedHighlight(m.x, gy, marbleRadius * LAYER_SCALE[m.layer] * retireScale, mAlpha);
+        // Fixed glass lighting, unrotated — the pattern rolls UNDER the light.
+        const ov = glassOverlays[m.layer];
+        if (ov) {
+          const ow = (ov.width / dpr) * retireScale;
+          ctx.drawImage(ov, m.x - ow / 2, gy - ow / 2, ow, ow);
+        }
       }
 
       ctx.globalAlpha = 1;
@@ -1187,7 +1205,7 @@
       if (pocket.layer !== m.layer) {
         // Rebake the sprite for its final depth band (tossed marbles fly at mid depth).
         m.layer = pocket.layer;
-        m.sprite = createSprite(marbleRadius, m.mk.pal, m.mk.pattern, m.mk.seed, m.layer, dpr, !degraded);
+        m.sprite = createSprite(marbleRadius, m.mk.pal, m.mk.pattern, m.mk.seed, m.layer, dpr);
       }
       m.phase = 'seated';
     }
@@ -1316,7 +1334,7 @@
           seq: marbleSeq++,
           layer: 1,
           rollAngle: rand(0, Math.PI * 2),
-          sprite: createSprite(marbleRadius, pal, pattern, seed, 1, dpr, !degraded),
+          sprite: createSprite(marbleRadius, pal, pattern, seed, 1, dpr),
           mk: { pal, pattern, seed },
         });
       }
@@ -1553,6 +1571,9 @@
       canvas.width = width * dpr;
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Rotated sprite blits must resample at best quality or edges shimmer.
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       const rawRadius = Math.min(width, height) * boardScale;
       board.radius = width >= 901 ? Math.min(rawRadius, width * 0.155, height * 0.31) : rawRadius;
       const requestedX = width / 2 + width * boardOffsetX;
@@ -1630,7 +1651,7 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'toss-v4',
+        version: 'glass-v5',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
