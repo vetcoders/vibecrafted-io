@@ -546,7 +546,7 @@
     const SEAT_SPEED = 45;        // px/s — seating max planar speed
     const TOSS_MIN_MS = 900;      // a handful of marbles hits the table every 1-3 s
     const TOSS_MAX_MS = 2600;
-    const TOSS_DIVISOR = 3;       // handful ≈ remaining/3 — a 50-slot template fills in ≤5 tosses
+    const TOSS_DIVISOR = 2.6;     // handful ≈ remaining/2.6 — a 50-slot template fills in ≤5 tosses
     const TOSS_MIN_SIZE = 5;      // even a late handful reads as a handful, not a dribble
     const TOSS_FINISH = 12;       // at this few holes the hand throws exactly what is missing
     const LIVE_CAP = 20;          // rolling marbles at once — big handfuls need the headroom
@@ -554,6 +554,8 @@
                                   // so 16 sprite bakes never land on one frame spike
     const WALL_RESTITUTION = 0.12; // lane and rim walls are cushioned: one soft contact
                                    // absorbs the throw — three bounces is pinball, not a table
+    const MAX_SPEED = 620;         // px/s — glass on felt never moves faster; the hard lid on
+                                   // solver-injected spikes (overlap correction implies velocity)
     const HOLD_FILLED_MS = 1700;  // beat of stillness on a completed template
     const RETIRE_MS = 1300;       // retirement fade+shrink duration
     const CLEAR_STAGGER_MS = 900; // template clear ripples across the board, no blink
@@ -590,6 +592,15 @@
     let accumMs = 0;
     let marbleSeq = 0;
     let firstTossPending = true;
+    // Fill-dynamics evidence: the ≤5-tosses and rare-migration contracts are
+    // probe-audited, so the counters live in the sim, not in a tuning notebook.
+    let tossCount = 0;
+    let migrationCount = 0;
+    let wallBounceSum = 0;
+    let seatedEver = 0;
+    const cycleLog: { shape: string; slots: number; tosses: number; migrations: number; avgWallB: number }[] = [];
+    const spawnQueue: Array<() => void> = [];
+    const templateHeart = { x: 0, y: 0 };
     // Frame-budget guard: degradation is one-way per session (no oscillating quality)
     let degraded = false;
     let slowStreak = 0;
@@ -612,6 +623,7 @@
       retireT: number;
       ageS: number;
       stuckS: number;           // seconds spent nearly-still while holding a pocket it cannot roll into
+      wallB: number;            // wall contacts this life — the naturalness gate wants ~≤1 average
       seq: number;
       layer: number;
       rollAngle: number;
@@ -756,6 +768,22 @@
         s.assigned = false;
         s.layer = slotLayer(s);
       }
+      // The template heart: centroid of the lattice, the deepest point of the
+      // fill. Aim, capture bias and the pass-shallow-holes rule all measure
+      // depth against it, so every shape (ring, crescent…) grows centre-out.
+      templateHeart.x = board.x;
+      templateHeart.y = board.y;
+      if (slots.length) {
+        let hx = 0, hy = 0;
+        for (const s of slots) { hx += s.x; hy += s.y; }
+        templateHeart.x = hx / slots.length;
+        templateHeart.y = hy / slots.length;
+      }
+      tossCount = 0;
+      migrationCount = 0;
+      wallBounceSum = 0;
+      seatedEver = 0;
+      spawnQueue.length = 0;
       marbles = [];
       shadowSprite = createShadowSprite(marbleRadius);
       glassOverlays = [0, 1, 2].map((b) => createGlassOverlay(marbleRadius, b, dpr));
@@ -774,6 +802,7 @@
         retireT: 0,
         ageS: 0,
         stuckS: 0,
+        wallB: 0,
         seq: marbleSeq++,
         layer: slot.layer,
         rollAngle: rand(0, Math.PI * 2),
@@ -943,7 +972,7 @@
       let { vx, vy } = velocity(m);
       const speed = Math.hypot(vx, vy);
       if (speed > 0.001) {
-        const nextSpeed = Math.max(0, speed - resistance * DT);
+        const nextSpeed = Math.min(MAX_SPEED, Math.max(0, speed - resistance * DT));
         const k = (nextSpeed / speed) * (1 - damping);
         vx *= k;
         vy *= k;
@@ -1058,12 +1087,17 @@
 
     function nearestEmptySlot(x: number, y: number, reach: number, reachableOnly = false): Slot | null {
       let best: Slot | null = null;
-      let bestD = reach;
+      let bestScore = Infinity;
       for (const s of slots) {
         if (s.assigned) continue;
         const d = Math.hypot(s.x - x, s.y - y);
-        if (d < bestD && (!reachableOnly || (!holeIsWalled(s) && !enclosedHoles.has(s)))) {
-          bestD = d;
+        if (d >= reach) continue;
+        if (reachableOnly && (holeIsWalled(s) || enclosedHoles.has(s))) continue;
+        // Depth bias: between comparable candidates, capture leans toward the
+        // hole nearer the template heart — the fill itself grows centre-out.
+        const score = d + Math.hypot(s.x - templateHeart.x, s.y - templateHeart.y) * 0.3;
+        if (score < bestScore) {
+          bestScore = score;
           best = s;
         }
       }
@@ -1087,12 +1121,23 @@
       // early return here left enclosedHoles stale-empty, so hunters kept
       // grinding at the wall toward holes no roll could ever reach.
       const earlyFill = holes.length > slots.length * 0.45;
+      // The geometry-blind vacancy clock runs ONLY while the table is idle of
+      // homeless rollers: while a handful is still in flight the tosses own
+      // every reachable hole. Counting since template start mass-migrated
+      // mid-fill — seated marbles kept standing up, live count stayed pinned,
+      // and the fill turned into churn instead of throws.
+      // "Idle" means nothing is genuinely EN ROUTE: a homeless marble parked
+      // at v≈0 against the seated wall must not freeze the vacancy clock —
+      // that deadlock held a template at 32/38 for over a minute.
+      const idleTable = !marbles.some((m) =>
+        m.phase === 'live' && !m.pocket && Math.hypot(m.x - m.px, m.y - m.py) / DT > 40);
       for (const hole of holes) {
         if (marbles.some((m) => m.phase === 'live' && m.pocket === hole)) {
           hole.vacantS = 0; // a marble is on its way — the hole is spoken for
           continue;
         }
-        hole.vacantS = (hole.vacantS ?? 0) + 0.375; // migration tick cadence
+        if (idleTable) hole.vacantS = (hole.vacantS ?? 0) + 0.375; // migration tick cadence
+        // (threshold below: 4 idle-seconds — two toss beats of genuine quiet)
         // Reachable holes belong to the tosses; migration feeds what rolling
         // physically cannot: ringed holes, enclosed clusters — and, as the
         // geometry-blind backstop, any hole the tosses have failed to claim
@@ -1116,6 +1161,7 @@
         best.phase = 'live';
         best.ageS = 0;
         best.stuckS = 0;
+        migrationCount++;
         return; // one hop per tick — the cascade stays calm
       }
     }
@@ -1177,7 +1223,30 @@
         }
         if (!m.pocket && speed < captureSpeed) {
           const near = nearestEmptySlot(m.x, m.y, marbleRadius * WELL_REACH);
-          if (near) {
+          // A marble still rolling toward the heart PASSES a shallow hole when
+          // a deeper empty one lies within its remaining roll — rim holes wait
+          // their turn, so no seated wall ever closes across the entry.
+          // Endgame (few holes left) captures greedily: the throw was aimed at
+          // this exact hole, and with a near-full board the "deeper hole in
+          // range" test matches almost anything — passing then is a grind loop.
+          let passForDeeper = false;
+          if (near && speed > 45 && emptyNow > TOSS_FINISH) {
+            const hdx = templateHeart.x - m.x;
+            const hdy = templateHeart.y - m.y;
+            const myDepth = Math.max(1, Math.hypot(hdx, hdy));
+            const vx = (m.x - m.px) / DT;
+            const vy = (m.y - m.py) / DT;
+            const inward = (hdx * vx + hdy * vy) / myDepth;
+            const nearDepth = Math.hypot(near.x - templateHeart.x, near.y - templateHeart.y);
+            if (inward > 45 && nearDepth > myDepth - marbleRadius) {
+              const stopDist = (speed * speed) / (2 * ROLL_RESISTANCE) + marbleRadius * WELL_REACH;
+              passForDeeper = slots.some((s) =>
+                !s.assigned &&
+                Math.hypot(s.x - templateHeart.x, s.y - templateHeart.y) < myDepth - marbleRadius &&
+                Math.hypot(s.x - m.x, s.y - m.y) < stopDist);
+            }
+          }
+          if (near && !passForDeeper) {
             near.assigned = true;
             m.pocket = near;
             hunting = true;
@@ -1192,6 +1261,17 @@
               ax += (hx / hd) * HUNT_PULL;
               ay += (hy / hd) * HUNT_PULL;
               hunting = true;
+              // A hunter pressed against a wall of seated marbles reaches
+              // pull-vs-pile equilibrium at v≈0 and would push forever — the
+              // exact "marble circling a wall it cannot pass" the operator
+              // rejected. Count the standstill and lift it off the table.
+              if (speed < 12) m.stuckS += DT;
+              else m.stuckS = 0;
+              if (m.stuckS > 1.5) {
+                m.phase = 'retiring';
+                m.retireT = 0;
+                continue;
+              }
             } else {
               // No reachable hole and rolling energy spent: a near-still
               // homeless marble reads as PARKED off-grid — the single worst
@@ -1237,7 +1317,9 @@
           const d2 = dx * dx + dy * dy;
           if (d2 >= minD2 || d2 === 0) continue;
           const d = Math.sqrt(d2);
-          const push = minD - d;
+          // Overlap correction is capped: resolving a deep overlap in one step
+          // implies a huge velocity next step — the pinball detonation.
+          const push = Math.min(minD - d, marbleRadius * 0.5);
           const ux = dx / d;
           const uy = dy / d;
           const invA = a.phase === 'seated' ? 0.22 : 1;
@@ -1266,17 +1348,20 @@
       }
     }
 
-    function clampAxis(value: number, previous: number, min: number, max: number): { value: number; previous: number } {
+    function clampAxis(value: number, previous: number, min: number, max: number): { value: number; previous: number; hit: boolean } {
       const v = value - previous;
+      // A hit is a real impact (>30 px/s into the wall, i.e. >0.25 px/step) —
+      // a marble resting against the lane would otherwise count one per step
+      // and the wall-bounce evidence would read as pinball on a calm board.
       if (value < min) {
-        const k = v < 0 ? COLLISION_RESTITUTION : 1;
-        return { value: min, previous: min - Math.abs(v) * k };
+        const k = v < 0 ? WALL_RESTITUTION : 1;
+        return { value: min, previous: min - Math.abs(v) * k, hit: v < -0.25 };
       }
       if (value > max) {
-        const k = v > 0 ? COLLISION_RESTITUTION : 1;
-        return { value: max, previous: max + Math.abs(v) * k };
+        const k = v > 0 ? WALL_RESTITUTION : 1;
+        return { value: max, previous: max + Math.abs(v) * k, hit: v > 0.25 };
       }
-      return { value, previous };
+      return { value, previous, hit: false };
     }
 
     function bounceInLane(m: Marble): void {
@@ -1286,6 +1371,7 @@
       const y = clampAxis(m.y, m.py, tableLane.top, tableLane.bottom);
       m.y = y.value;
       m.py = y.previous;
+      if (x.hit || y.hit) m.wallB++;
     }
 
     // The table is round: a marble leaving the felt would roll with its
@@ -1305,8 +1391,14 @@
       const vy = m.y - m.py;
       const vn = vx * ux + vy * uy;
       if (vn > 0) {
-        m.px = m.x - (vx - (1 + COLLISION_RESTITUTION) * vn * ux);
-        m.py = m.y - (vy - (1 + COLLISION_RESTITUTION) * vn * uy);
+        // Cushioned rim: the normal component dies to WALL_RESTITUTION and the
+        // tangential bleeds too — a marble kisses the rim once and rolls back
+        // onto the felt instead of orbiting the edge wall-to-wall.
+        const tx = vx - vn * ux;
+        const ty = vy - vn * uy;
+        m.px = m.x - (tx * 0.75 - vn * ux * WALL_RESTITUTION);
+        m.py = m.y - (ty * 0.75 - vn * uy * WALL_RESTITUTION);
+        if (vn > 0.25) m.wallB++; // real impact, not a rest-against-rim step
       }
     }
 
@@ -1331,6 +1423,8 @@
         m.sprite = createSprite(marbleRadius, m.mk.pal, m.mk.pattern, m.mk.seed, m.layer, dpr);
       }
       m.phase = 'seated';
+      wallBounceSum += m.wallB;
+      seatedEver++;
     }
 
     function settleAndSweep(): void {
@@ -1367,6 +1461,16 @@
       if (cyclePhase !== 'filling' || !slots.length) return;
       if (slots.some((s) => !s.assigned)) return;
       if (marbles.some((m) => m.phase !== 'seated')) return;
+      // The dynamics contract, recorded per completed template: ≤5 tosses to
+      // 100%, migrations rare, wall contacts ~≤1 per marble. Probe-readable.
+      cycleLog.push({
+        shape: SHAPES[shapeIndex % SHAPES.length].name,
+        slots: slots.length,
+        tosses: tossCount,
+        migrations: migrationCount,
+        avgWallB: seatedEver ? +(wallBounceSum / seatedEver).toFixed(2) : 0,
+      });
+      if (cycleLog.length > 20) cycleLog.shift();
       cyclePhase = 'hold';
       clearToss();
       holdTimer = window.setTimeout(() => {
@@ -1400,34 +1504,110 @@
       if (!empty) return;
       const room = LIVE_CAP - liveCount();
       if (room <= 0) return;
-      const wanted = Math.round(rand(TOSS_SIZE[0], TOSS_SIZE[1]));
-      const size = Math.min(room, empty + 2, wanted, degraded ? 3 : wanted);
+      // A handful scales with the template: ~a third of what is missing, so a
+      // 50-slot shape completes in 3-5 tosses instead of a dozen dribbles.
+      // Endgame throws exactly the missing count — aimed, generous capture.
+      const wanted = empty <= TOSS_FINISH ? empty : Math.max(TOSS_MIN_SIZE, Math.ceil(empty / TOSS_DIVISOR));
+      // A hand throws a handful or waits — top-up dribbles of 1-2 marbles are
+      // what inflated a fill to dozens of "tosses". If the table is still busy
+      // seating the last throw, skip this beat entirely.
+      if (room < Math.min(wanted, 6)) return;
+      const size = Math.min(room, empty + 2, degraded ? 8 : wanted);
       if (size <= 0) return;
+      tossCount++;
+
+      // Centre-out by aim: every throw targets one of the DEEPEST empty holes
+      // (nearest the template heart), so matched-energy marbles die over the
+      // middle and the fill grows outward — never a seated rim ring the next
+      // toss ricochets off. Late game the pool tightens to the exact holes.
+      const holes = slots.filter((s) => !s.assigned);
+      holes.sort((a, b) =>
+        Math.hypot(a.x - templateHeart.x, a.y - templateHeart.y) -
+        Math.hypot(b.x - templateHeart.x, b.y - templateHeart.y));
+      const endgame = empty <= TOSS_FINISH;
+      const poolN = endgame ? Math.min(3, holes.length) : Math.max(1, Math.ceil(holes.length * 0.35));
+      const targetHole = holes[Math.floor(Math.random() * poolN)];
+      const jitter = endgame ? 1.5 : 2.5;
+      const aimX = targetHole.x + rand(-jitter, jitter) * marbleRadius;
+      const aimY = targetHole.y + rand(-jitter, jitter) * marbleRadius;
 
       // One throw = one hand position on the table rim; the handful scatters
-      // from it. The hand reaches in over the hero's right side, so the rim
-      // angle stays on the right arc — and every spawn is ON the felt, never
-      // on bare background beyond the round table.
-      const rimAngle = rand(-1.15, 1.15);
+      // from it. The hand reaches in over the hero's right side (right arc
+      // only), and it aims AROUND the pile like a person would: of several
+      // grips, take the one whose straight lane to the target crosses the
+      // fewest seated marbles. Without this every throw at a far-side hole
+      // slams into the seated wall and parks — the deadlock the probe caught.
       const spawnR = board.tableR - marbleRadius * 2;
+      let rimAngle = rand(-1.15, 1.15);
+      let bestBlock = Infinity;
+      for (let c = 0; c < 7; c++) {
+        const a = -1.15 + (2.3 * c) / 6 + rand(-0.08, 0.08);
+        const cx0 = board.x + Math.cos(a) * spawnR;
+        const cy0 = board.y + Math.sin(a) * spawnR;
+        const ldx = aimX - cx0;
+        const ldy = aimY - cy0;
+        const lLen2 = Math.max(1, ldx * ldx + ldy * ldy);
+        let blocked = 0;
+        for (const s of marbles) {
+          if (s.phase !== 'seated') continue;
+          const t = Math.max(0, Math.min(1, ((s.x - cx0) * ldx + (s.y - cy0) * ldy) / lLen2));
+          if (Math.hypot(s.x - (cx0 + ldx * t), s.y - (cy0 + ldy * t)) < marbleRadius * 2.2) blocked++;
+        }
+        if (blocked < bestBlock) {
+          bestBlock = blocked;
+          rimAngle = a;
+        }
+      }
       const ox = board.x + Math.cos(rimAngle) * spawnR;
       const oy = board.y + Math.sin(rimAngle) * spawnR;
-      // Late game: aim the throw at the remaining holes so the last marbles
-      // do not waste themselves rolling across a full board.
-      let aimX = board.x + rand(-0.4, 0.4) * board.radius;
-      let aimY = board.y + rand(-0.4, 0.4) * board.radius;
-      if (empty <= 8) {
-        const holes = slots.filter((s) => !s.assigned);
-        const target = holes[Math.floor(Math.random() * holes.length)];
-        aimX = target.x + rand(-1.5, 1.5) * marbleRadius;
-        aimY = target.y + rand(-1.5, 1.5) * marbleRadius;
-      }
 
+      // The handful leaves the hand PACKED BUT NOT OVERLAPPING: a hex spiral
+      // at >2r spacing, randomly rotated. Random scatter interpenetrated at
+      // spawn and the Verlet overlap correction detonated the pile — implied
+      // velocities in the thousands of px/s, marbles ricocheting for seconds.
+      const handSpots: [number, number][] = [[0, 0]];
+      for (let ringN = 1; handSpots.length < size; ringN++) {
+        const cnt = 6 * ringN;
+        for (let j = 0; j < cnt && handSpots.length < size; j++) {
+          const a = (j / cnt) * Math.PI * 2;
+          handSpots.push([Math.cos(a) * ringN, Math.sin(a) * ringN]);
+        }
+      }
+      const handRot = rand(0, Math.PI * 2);
+      const handCos = Math.cos(handRot);
+      const handSin = Math.sin(handRot);
+      const handSpacing = marbleRadius * 2.3;
+      // Every spawn lands ON the felt inside the lane. A spot beyond the rim
+      // gets snapped in by the wall solver next step — the snap distance reads
+      // as velocity in Verlet, a slingshot in the thousands of px/s that then
+      // ricochets across the board. That WAS the residual pinball.
+      const spawnCapR = board.tableR - marbleRadius * 1.5;
       for (let i = 0; i < size; i++) {
-        const sx = ox + rand(-1.6, 1.6) * marbleRadius;
-        const sy = oy + rand(-1.6, 1.6) * marbleRadius;
-        const dx = aimX - sx;
-        const dy = aimY - sy;
+        const [hpx, hpy] = handSpots[i];
+        let sx = ox + (hpx * handCos - hpy * handSin) * handSpacing + rand(-0.3, 0.3) * marbleRadius;
+        let sy = oy + (hpx * handSin + hpy * handCos) * handSpacing + rand(-0.3, 0.3) * marbleRadius;
+        const sdx = sx - board.x;
+        const sdy = sy - board.y;
+        const sd = Math.hypot(sdx, sdy);
+        if (sd > spawnCapR) {
+          sx = board.x + (sdx / sd) * spawnCapR;
+          sy = board.y + (sdy / sd) * spawnCapR;
+        }
+        sx = Math.min(tableLane.right - 1, Math.max(tableLane.left + 1, sx));
+        sy = Math.min(tableLane.bottom - 1, Math.max(tableLane.top + 1, sy));
+        // Endgame is PLACING, not tossing: each marble gets its OWN hole,
+        // round-robin over the remainder. Six marbles converging on one
+        // shared aim elbowed each other off the last dishes for wave after
+        // wave — that grind was most of the toss-count overrun.
+        let mAimX = aimX;
+        let mAimY = aimY;
+        if (endgame) {
+          const own = holes[i % holes.length];
+          mAimX = own.x + rand(-1, 1) * marbleRadius;
+          mAimY = own.y + rand(-1, 1) * marbleRadius;
+        }
+        const dx = mAimX - sx;
+        const dy = mAimY - sy;
         const dist = Math.max(1, Math.hypot(dx, dy));
         // Toss energy matched to felt drag: v = √(2·drag·dist) dies exactly at
         // the aim point, so the marble arrives slow enough for a pocket to
@@ -1438,29 +1618,37 @@
         // alive; the dish and the pocket wells finish the job.
         const speed = Math.min(470, Math.max(220, Math.sqrt(2 * ROLL_RESISTANCE * dist) * rand(1.0, 1.22)))
           * Math.max(0.85, Math.min(spawnScale, 1.15));
-        const spread = rand(-0.35, 0.35); // per-marble scatter within the throw
+        // Per-marble scatter within the throw; a placing hand barely scatters.
+        const spread = endgame ? rand(-0.08, 0.08) : rand(-0.35, 0.35);
         const cosS = Math.cos(spread);
         const sinS = Math.sin(spread);
         const ux = (dx / dist) * cosS - (dy / dist) * sinS;
         const uy = (dx / dist) * sinS + (dy / dist) * cosS;
-        const pal = marbleSeq;
         const pattern = PATTERNS[Math.floor(Math.random() * PATTERNS.length)];
         const seed = Math.floor(Math.random() * 99999);
-        marbles.push({
-          x: sx, y: sy,
-          px: sx - ux * speed * DT,
-          py: sy - uy * speed * DT,
-          pocket: null,
-          phase: 'live',
-          retireT: 0,
-          ageS: 0,
-          stuckS: 0,
-          seq: marbleSeq++,
-          layer: 1,
-          rollAngle: rand(0, Math.PI * 2),
-          sprite: createSprite(marbleRadius, pal, pattern, seed, 1, dpr),
-          mk: { pal, pattern, seed },
-        });
+        const release = (): void => {
+          const pal = marbleSeq;
+          marbles.push({
+            x: sx, y: sy,
+            px: sx - ux * speed * DT,
+            py: sy - uy * speed * DT,
+            pocket: null,
+            phase: 'live',
+            retireT: 0,
+            ageS: 0,
+            stuckS: 0,
+            wallB: 0,
+            seq: marbleSeq++,
+            layer: 1,
+            rollAngle: rand(0, Math.PI * 2),
+            sprite: createSprite(marbleRadius, pal, pattern, seed, 1, dpr),
+            mk: { pal, pattern, seed },
+          });
+        };
+        // The hand streams the handful over a few frames: reads as a real
+        // release, and spreads the sprite bakes off a single frame.
+        if (i < SPAWN_CHUNK) release();
+        else spawnQueue.push(release);
       }
       updateCounters();
     }
@@ -1623,6 +1811,10 @@
       const frameMs = Math.min(now - lastAt, MAX_FRAME_MS);
       lastAt = now;
       accumMs += frameMs;
+      if (spawnQueue.length) {
+        if (cyclePhase !== 'filling') spawnQueue.length = 0;
+        else for (let k = 0; k < SPAWN_CHUNK && spawnQueue.length; k++) spawnQueue.shift()!();
+      }
       while (accumMs >= STEP_MS) {
         physicsStep();
         accumMs -= STEP_MS;
@@ -1800,11 +1992,12 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'board-v9',
+        version: 'board-v10',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
           lane: { ...tableLane },
+          heart: { x: Math.round(templateHeart.x), y: Math.round(templateHeart.y) },
           holes: slots.filter((s) => !s.assigned).map((s) => ({ x: Math.round(s.x), y: Math.round(s.y), walled: holeIsWalled(s) })),
           live: marbles.filter((m) => m.phase !== 'seated').map((m) => ({
             phase: m.phase,
@@ -1812,9 +2005,14 @@
             v: Math.round(Math.hypot(m.x - m.px, m.y - m.py) / DT),
             age: +m.ageS.toFixed(1),
             stuck: +m.stuckS.toFixed(1),
+            wallB: m.wallB,
             hasPocket: !!m.pocket,
             pDist: m.pocket ? Math.round(Math.hypot(m.pocket.x - m.x, m.pocket.y - m.y)) : -1,
           })),
+          tosses: tossCount,
+          migrations: migrationCount,
+          queued: spawnQueue.length,
+          cycles: cycleLog.slice(),
           cyclePhase,
         }),
         stats: () => {
@@ -1828,6 +2026,7 @@
             seated: seatedCount(),
             slots: slots.length,
             parallax: parallaxP,
+            avgWallB: seatedEver ? +(wallBounceSum / seatedEver).toFixed(2) : 0,
           };
         },
         // Degradation-path levers for tuning sessions — probe is opt-in only
