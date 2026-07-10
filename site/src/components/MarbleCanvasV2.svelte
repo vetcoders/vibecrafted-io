@@ -546,8 +546,14 @@
     const SEAT_SPEED = 45;        // px/s — seating max planar speed
     const TOSS_MIN_MS = 900;      // a handful of marbles hits the table every 1-3 s
     const TOSS_MAX_MS = 2600;
-    const TOSS_SIZE: [number, number] = [3, 6]; // marbles per handful
-    const LIVE_CAP = 12;          // rolling marbles at once — the scene stays legible
+    const TOSS_DIVISOR = 3;       // handful ≈ remaining/3 — a 50-slot template fills in ≤5 tosses
+    const TOSS_MIN_SIZE = 5;      // even a late handful reads as a handful, not a dribble
+    const TOSS_FINISH = 12;       // at this few holes the hand throws exactly what is missing
+    const LIVE_CAP = 20;          // rolling marbles at once — big handfuls need the headroom
+    const SPAWN_CHUNK = 4;        // marbles released per frame: the hand streams the handful,
+                                  // so 16 sprite bakes never land on one frame spike
+    const WALL_RESTITUTION = 0.12; // lane and rim walls are cushioned: one soft contact
+                                   // absorbs the throw — three bounces is pinball, not a table
     const HOLD_FILLED_MS = 1700;  // beat of stillness on a completed template
     const RETIRE_MS = 1300;       // retirement fade+shrink duration
     const CLEAR_STAGGER_MS = 900; // template clear ripples across the board, no blink
@@ -1072,8 +1078,15 @@
     function migrateWalledHole(): void {
       if (cyclePhase !== 'filling' || !slots.length) return;
       const holes = slots.filter((s) => !s.assigned);
-      if (!holes.length || holes.length > slots.length * 0.45) return;
+      if (!holes.length) return;
       enclosedHoles = computeEnclosedHoles();
+      // The hole-count throttle applies ONLY to the geometry-blind vacancy
+      // backstop. Walled/enclosed holes must migrate no matter how many holes
+      // remain: a rim-first fill can wall off the whole centre at ~48% holes,
+      // and gating everything on the count deadlocks the board — worse, an
+      // early return here left enclosedHoles stale-empty, so hunters kept
+      // grinding at the wall toward holes no roll could ever reach.
+      const earlyFill = holes.length > slots.length * 0.45;
       for (const hole of holes) {
         if (marbles.some((m) => m.phase === 'live' && m.pocket === hole)) {
           hole.vacantS = 0; // a marble is on its way — the hole is spoken for
@@ -1084,7 +1097,8 @@
         // physically cannot: ringed holes, enclosed clusters — and, as the
         // geometry-blind backstop, any hole the tosses have failed to claim
         // for seconds (sparse templates hide walls the lattice tests miss).
-        if (!holeIsWalled(hole) && !enclosedHoles.has(hole) && (hole.vacantS ?? 0) < 4) continue;
+        const unreachable = holeIsWalled(hole) || enclosedHoles.has(hole);
+        if (!unreachable && (earlyFill || (hole.vacantS ?? 0) < 4)) continue;
         let best: Marble | null = null;
         let bestD = marbleRadius * 2.6;
         for (const m of marbles) {
@@ -1415,7 +1429,15 @@
         const dx = aimX - sx;
         const dy = aimY - sy;
         const dist = Math.max(1, Math.hypot(dx, dy));
-        const speed = rand(340, 470) * Math.max(0.85, Math.min(spawnScale, 1.15));
+        // Toss energy matched to felt drag: v = √(2·drag·dist) dies exactly at
+        // the aim point, so the marble arrives slow enough for a pocket to
+        // capture it NEAR the aim and the fill grows centre-out. A flat hot
+        // speed (340–470) has a ~700 px stopping distance — 3× the board — so
+        // marbles seated wherever the rim bounces bled them dry: rim first,
+        // centre walled off, donut deadlock. Mild overshoot keeps the arrival
+        // alive; the dish and the pocket wells finish the job.
+        const speed = Math.min(470, Math.max(220, Math.sqrt(2 * ROLL_RESISTANCE * dist) * rand(1.0, 1.22)))
+          * Math.max(0.85, Math.min(spawnScale, 1.15));
         const spread = rand(-0.35, 0.35); // per-marble scatter within the throw
         const cosS = Math.cos(spread);
         const sinS = Math.sin(spread);
@@ -1778,7 +1800,7 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'board-v8',
+        version: 'board-v9',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
