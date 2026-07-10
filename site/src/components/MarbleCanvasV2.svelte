@@ -561,7 +561,7 @@
     let slots: Slot[] = [];
     let marbles: Marble[] = [];
     let marbleRadius = 12;
-    const board = { x: 0, y: 0, radius: 0 };
+    const board = { x: 0, y: 0, radius: 0, tableR: 0 };
     const tableLane = { left: 0, right: 0, top: 0, bottom: 0 };
     // One groove layer per depth band so scroll parallax shifts each band
     // together with its marbles — seated marbles never detach from pockets.
@@ -659,20 +659,44 @@
         bandCtx.translate(0, -board.y);
       }
 
-      // Pool of light on the tabletop: drawn inside the perspective transform,
-      // so the circle lands as an ellipse — the one cue that turns floating
-      // circles into a template lying on a table. Far band = painted first,
-      // everything else sits on top of it.
+      // The tabletop itself: a felt disc drawn inside the perspective
+      // transform, so it lands as an ellipse. Without this surface the holes
+      // and marbles float on the page background — the "it was always lying
+      // on a table" read lives or dies here. Far band = painted first,
+      // everything else sits on top of it. The felt feathers to zero inside
+      // its rim, so it never washes under the caption or the legend.
       const poolCtx = boardBandCtxs[0];
-      const poolR = board.radius * 1.5;
-      const pool = poolCtx.createRadialGradient(board.x, board.y, board.radius * 0.12, board.x, board.y, poolR);
-      pool.addColorStop(0, 'rgba(245,244,239,0.05)');
-      pool.addColorStop(0.62, 'rgba(245,244,239,0.022)');
-      pool.addColorStop(1, 'rgba(245,244,239,0)');
+      const feltR = board.tableR;
+      const felt = poolCtx.createRadialGradient(board.x - board.radius * 0.28, board.y - board.radius * 0.32, board.radius * 0.1, board.x, board.y, feltR);
+      felt.addColorStop(0, 'rgba(233,226,211,0.105)');
+      felt.addColorStop(0.45, 'rgba(230,222,206,0.075)');
+      felt.addColorStop(0.82, 'rgba(226,218,201,0.05)');
+      felt.addColorStop(0.94, 'rgba(226,218,201,0.028)');
+      felt.addColorStop(1, 'rgba(226,218,201,0)');
       poolCtx.beginPath();
-      poolCtx.arc(board.x, board.y, poolR, 0, Math.PI * 2);
-      poolCtx.fillStyle = pool;
+      poolCtx.arc(board.x, board.y, feltR, 0, Math.PI * 2);
+      poolCtx.fillStyle = felt;
       poolCtx.fill();
+
+      // Table rim: a thin edge just inside the felt falloff. The far arc
+      // catches the upper-left light; the near arc sits darker — the same
+      // light the marbles and dished pockets already obey.
+      const rimR = board.radius * 1.34;
+      poolCtx.beginPath();
+      poolCtx.arc(board.x, board.y, rimR, 0, Math.PI * 2);
+      poolCtx.strokeStyle = 'rgba(245,244,239,0.05)';
+      poolCtx.lineWidth = 1;
+      poolCtx.stroke();
+      poolCtx.beginPath();
+      poolCtx.arc(board.x, board.y, rimR, Math.PI * 0.92, Math.PI * 1.62);
+      poolCtx.strokeStyle = 'rgba(245,244,239,0.13)';
+      poolCtx.lineWidth = 1.2;
+      poolCtx.stroke();
+      poolCtx.beginPath();
+      poolCtx.arc(board.x, board.y, rimR, Math.PI * 0.12, Math.PI * 0.68);
+      poolCtx.strokeStyle = 'rgba(0,0,0,0.28)';
+      poolCtx.lineWidth = 1.6;
+      poolCtx.stroke();
 
       if (boardTint) {
         midCtx.beginPath();
@@ -1250,10 +1274,33 @@
       m.py = y.previous;
     }
 
+    // The table is round: a marble leaving the felt would roll with its
+    // contact shadow onto bare page background and shatter the tabletop
+    // illusion. Reflect it off the rim, glass-on-wood soft.
+    function bounceOnTableRim(m: Marble): void {
+      const rimR = board.tableR - marbleRadius * 1.2;
+      const dx = m.x - board.x;
+      const dy = m.y - board.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist <= rimR || dist === 0) return;
+      const ux = dx / dist;
+      const uy = dy / dist;
+      m.x = board.x + ux * rimR;
+      m.y = board.y + uy * rimR;
+      const vx = m.x - m.px;
+      const vy = m.y - m.py;
+      const vn = vx * ux + vy * uy;
+      if (vn > 0) {
+        m.px = m.x - (vx - (1 + COLLISION_RESTITUTION) * vn * ux);
+        m.py = m.y - (vy - (1 + COLLISION_RESTITUTION) * vn * uy);
+      }
+    }
+
     function constrainToTableLane(): void {
       for (const m of marbles) {
         if (m.phase !== 'live') continue;
         bounceInLane(m);
+        bounceOnTableRim(m);
       }
     }
 
@@ -1344,20 +1391,13 @@
       if (size <= 0) return;
 
       // One throw = one hand position on the table rim; the handful scatters
-      // from it. The lane keeps every toss on the hero's right side.
-      const edge = Math.random();
-      let ox: number;
-      let oy: number;
-      if (edge < 0.45) {
-        ox = tableLane.right - marbleRadius;
-        oy = rand(tableLane.top + marbleRadius, tableLane.bottom - marbleRadius);
-      } else if (edge < 0.75) {
-        ox = rand(board.x - board.radius * 0.4, tableLane.right - marbleRadius * 2);
-        oy = tableLane.bottom - marbleRadius;
-      } else {
-        ox = rand(board.x - board.radius * 0.4, tableLane.right - marbleRadius * 2);
-        oy = tableLane.top + marbleRadius;
-      }
+      // from it. The hand reaches in over the hero's right side, so the rim
+      // angle stays on the right arc — and every spawn is ON the felt, never
+      // on bare background beyond the round table.
+      const rimAngle = rand(-1.15, 1.15);
+      const spawnR = board.tableR - marbleRadius * 2;
+      const ox = board.x + Math.cos(rimAngle) * spawnR;
+      const oy = board.y + Math.sin(rimAngle) * spawnR;
       // Late game: aim the throw at the remaining holes so the last marbles
       // do not waste themselves rolling across a full board.
       let aimX = board.x + rand(-0.4, 0.4) * board.radius;
@@ -1664,6 +1704,7 @@
         laneBottomScreen = legendTop;
       }
 
+      board.tableR = board.radius * 1.45; // the felt disc — render surface AND physics rim
       marbleRadius = Math.max(12, board.radius * 0.115); // chunky glass: rolling reads, a template fills in ~1 min
       tableLane.left = Math.max(board.x - board.radius - marbleRadius * 2.4, width >= 901 ? width * 0.58 : 0);
       tableLane.right = width - marbleRadius * 1.2;
@@ -1737,7 +1778,7 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'board-v7',
+        version: 'board-v8',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
