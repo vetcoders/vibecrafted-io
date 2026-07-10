@@ -534,8 +534,13 @@
     const HUNT_REACH = 9;         // marble radii — how far a slow marble hunts an empty pocket
     const HUNT_PULL = 200;        // s⁻² — must beat rolling drag, or hunters freeze in place
     const HUNT_DRAG = 34;         // px/s² — reduced drag while a marble drifts toward a hole
-    const DISH_PULL = 0.5;        // s⁻² per px — the table is a shallow bowl: live marbles
+    const DISH_PULL = 0.7;        // s⁻² per px — the table is a shallow bowl: live marbles
                                   // drift toward its centre, so the fill grows centre-out
+                                  // (must clearly beat ROLL_RESISTANCE at the rim, or
+                                  // homeless marbles stall there and read as parked)
+    const ARRIVAL_DAMP = 0.09;    // per-step velocity bleed at the dish lip — kills the
+                                  // spring's orbit so a claimed marble rolls IN once
+                                  // instead of circling its pocket for seconds
     const SEAT_DIST = 6;          // px — seating snap distance (collision jitter keeps
                                   // a marble a few px off-axis; the snap is invisible)
     const SEAT_SPEED = 45;        // px/s — seating max planar speed
@@ -701,7 +706,15 @@
 
     function updateCounters(): void {
       marbleCount = marbles.length;
-      const pct = slots.length ? Math.round((seatedCount() / slots.length) * 100) : 0;
+      // The HUD reports what the EYE sees: beginClear flips every marble to
+      // 'retiring' in one step, but the ripple takes ~2 s to visibly empty the
+      // board — READY must fall with the fade, not flash 0% under a full table.
+      let visiblySeated = 0;
+      for (const m of marbles) {
+        if (!m.pocket) continue;
+        if (m.phase === 'seated' || (m.phase === 'retiring' && m.retireT < 0.5)) visiblySeated++;
+      }
+      const pct = slots.length ? Math.round((visiblySeated / slots.length) * 100) : 0;
       coveragePct = pct + '%';
       onStats?.(marbles.length, pct);
     }
@@ -894,14 +907,14 @@
       };
     }
 
-    function advanceVerlet(m: Marble, ax: number, ay: number, resistance = ROLL_RESISTANCE): void {
+    function advanceVerlet(m: Marble, ax: number, ay: number, resistance = ROLL_RESISTANCE, damping = 0): void {
       const oldX = m.x;
       const oldY = m.y;
       let { vx, vy } = velocity(m);
       const speed = Math.hypot(vx, vy);
       if (speed > 0.001) {
         const nextSpeed = Math.max(0, speed - resistance * DT);
-        const k = nextSpeed / speed;
+        const k = (nextSpeed / speed) * (1 - damping);
         vx *= k;
         vy *= k;
       }
@@ -1097,6 +1110,7 @@
         let ax = m.pocket ? 0 : (board.x - m.x) * DISH_PULL;
         let ay = m.pocket ? 0 : (board.y - m.y) * DISH_PULL;
         let hunting = false;
+        let arrivalDamp = 0;
 
         // A tossed marble rolls free. Pockets capture it only when it passes
         // close AND slow enough — fast marbles roll straight over the holes.
@@ -1111,6 +1125,11 @@
             ax += dx * WELL_SPRING;
             ay += dy * WELL_SPRING;
             hunting = true; // pocket spring must not fight full felt drag
+            // The undamped spring orbits: constant felt drag bleeds a 300 px/s
+            // overshoot for ~9 s, and all that time the marble hovers BESIDE
+            // an open dish — the board's worst "resting off the holes" read.
+            // Proximity-scaled damping settles the arrival in under a second.
+            arrivalDamp = ARRIVAL_DAMP * (1 - Math.min(1, dist / (marbleRadius * 3)));
             // Blocked by a wall of seated neighbours: spring vs collision reaches
             // equilibrium at v≈0 short of the hole. Count the standstill so the
             // sweep can hand-place the marble instead of hogging the live cap.
@@ -1157,7 +1176,7 @@
           m.retireT = 0;
           continue;
         }
-        advanceVerlet(m, ax, ay, hunting ? HUNT_DRAG : ROLL_RESISTANCE);
+        advanceVerlet(m, ax, ay, hunting ? HUNT_DRAG : ROLL_RESISTANCE, arrivalDamp);
       }
 
       resolveCollisions();
@@ -1718,7 +1737,7 @@
     // Opt-in perf probe (?mcv2perf) — frame-time evidence for tuning sessions
     if (/[?&]mcv2perf/.test(window.location.search)) {
       (window as unknown as { __mcv2Perf?: unknown }).__mcv2Perf = {
-        version: 'board-v6',
+        version: 'board-v7',
         frames: frameSamples,
         dump: () => ({
           board: { x: board.x, y: board.y, r: board.radius, mr: marbleRadius },
