@@ -44,20 +44,17 @@
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__visual" aria-hidden="true">
-    <!-- Real vc-frame / control-plane usage — not generated marketing art -->
+    <!-- Real vc-frame operator layout — Start here map + Session Manager -->
     <div class="hero__frame">
-      <picture>
-        <source srcset="/assets/hero/real-usage.gif" type="image/gif" />
-        <img
-          class="hero__art"
-          src="/assets/hero/real-usage.png"
-          alt=""
-          width="1600"
-          height="900"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </picture>
+      <img
+        class="hero__art"
+        src="/assets/hero/real-usage.png"
+        alt=""
+        width="2400"
+        height="1350"
+        decoding="async"
+        fetchpriority="high"
+      />
     </div>
     <div class="hero__art-shade"></div>
   </div>
