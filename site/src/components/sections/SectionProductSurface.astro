@@ -1,0 +1,250 @@
+---
+/**
+ * Product surface — realistic terminal proof gallery.
+ * Pattern: codescribe / pensieve / vetcoders-io — product is obvious.
+ * Pixels: real vc-frame captures only (no AI art, no marble sim as proof).
+ */
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import CopyButton from '../CopyButton.svelte';
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+const entry = await getEntry('i18n', `${lang}/product-surface-v2`);
+if (!entry) throw new Error(`Missing i18n entry: ${lang}/product-surface-v2`);
+
+const section = entry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+  shots: Array<{
+    id: string;
+    src: string;
+    label: string;
+    title: string;
+    body: string;
+    alt: string;
+  }>;
+  installLead: string;
+  installCommand: string;
+  installNote: string;
+};
+
+const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
+---
+
+<SectionShell
+  number="02"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="02 · DWG VC-002"
+  surface="ink"
+  seam="to-ink"
+  id="surface"
+>
+  <div class="ps">
+    <h2 class="ps__heading">
+      <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+    <p class="ps__subtitle">{section.subtitle}</p>
+
+    <div class="ps__grid">
+      {
+        section.shots.map((shot, i) => (
+          <figure class={`ps__shot ${i === 0 ? 'ps__shot--lead' : ''}`}>
+            <div class="ps__shot-chrome">
+              <span class="ps__shot-label">{shot.label}</span>
+              <span class="ps__shot-id">{shot.id}</span>
+            </div>
+            <div class="ps__shot-frame">
+              <img
+                src={shot.src}
+                alt={shot.alt}
+                width="1600"
+                height="1000"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </div>
+            <figcaption class="ps__shot-cap">
+              <strong class="ps__shot-title">{shot.title}</strong>
+              <span class="ps__shot-body">{shot.body}</span>
+            </figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    <div class="ps__install" aria-label={section.installLead}>
+      <span class="ps__install-lead">{section.installLead}</span>
+      <div class="ps__install-row">
+        <code class="ps__install-cmd">{section.installCommand}</code>
+        <CopyButton
+          client:visible
+          textToCopy={section.installCommand}
+          defaultLabel={lang === 'pl' ? 'Kopiuj' : 'Copy'}
+          copiedLabel={lang === 'pl' ? 'Skopiowano' : 'Copied'}
+        />
+      </div>
+      <span class="ps__install-note">{section.installNote}</span>
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="03" nextTitle={nextTitle} surface="ink" lang={lang} />
+</SectionShell>
+
+<style>
+  .ps__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 72px);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 20px;
+  }
+
+  .ps__heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .ps__subtitle {
+    font-family: var(--font-body);
+    font-size: clamp(15px, 1.1vw, 18px);
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 62ch;
+    margin: 0 0 48px;
+  }
+
+  .ps__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 24px;
+    margin-bottom: 56px;
+  }
+
+  .ps__shot--lead {
+    grid-column: 1 / -1;
+  }
+
+  .ps__shot {
+    margin: 0;
+  }
+
+  .ps__shot-chrome {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .ps__shot-id {
+    opacity: 0.55;
+    letter-spacing: 0.08em;
+    text-transform: none;
+  }
+
+  .ps__shot-frame {
+    border: 1px solid rgba(245, 244, 239, 0.12);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #0a0c10;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .ps__shot-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+  }
+
+  .ps__shot-cap {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .ps__shot-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(18px, 1.6vw, 24px);
+    letter-spacing: -0.02em;
+    color: var(--fg-on-dark);
+  }
+
+  .ps__shot-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--fg-on-dark-dim);
+    max-width: 62ch;
+  }
+
+  .ps__install {
+    border: 1px solid rgba(245, 244, 239, 0.14);
+    border-radius: 4px;
+    padding: 22px 24px;
+    background: rgba(245, 244, 239, 0.03);
+  }
+
+  .ps__install-lead {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin-bottom: 12px;
+  }
+
+  .ps__install-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ps__install-cmd {
+    font-family: var(--font-mono);
+    font-size: clamp(12px, 1.1vw, 14px);
+    color: var(--fg-on-dark);
+    overflow-x: auto;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .ps__install-note {
+    display: block;
+    margin-top: 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--fg-on-dark-dim);
+  }
+
+  @media (max-width: 900px) {
+    .ps__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .ps__shot--lead {
+      grid-column: auto;
+    }
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import LayoutV2 from '../../layouts/LayoutV2.astro';
 import HeroSectionV2 from '../../components/sections/HeroSectionV2.svelte';
+import SectionProductSurface from '../../components/sections/SectionProductSurface.astro';
 import SectionProblem from '../../components/sections/SectionProblem.astro';
 import SectionShift from '../../components/sections/SectionShift.astro';
 import SectionFramework from '../../components/sections/SectionFramework.astro';
@@ -21,9 +22,10 @@ const hero = t.v2Hero;
   description={page.description}
   lang="en"
   hasHero={true}
-  ogImage="/assets/release-3.6.0/og-360.jpg"
+  ogImage="/assets/product/01-finalized-run.png"
 >
   <HeroSectionV2 client:load lang="en" hero={hero} />
+  <SectionProductSurface lang="en" />
   <SectionProblem lang="en" />
   <SectionEngineering lang="en" />
   <SectionShift lang="en" />

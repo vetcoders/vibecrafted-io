@@ -1,0 +1,38 @@
+[
+  {
+    "id": "finalized-run",
+    "src": "/assets/product/01-finalized-run.png",
+    "label": "FINALIZED RUN",
+    "title_en": "Report · tokens · resume path",
+    "title_pl": "Raport · tokeny · ścieżka resume",
+    "alt_en": "vc-frame session with finalized run report, session rail, and Session Manager",
+    "alt_pl": "Sesja vc-frame z raportem finalized run, railem sesji i Session Manager"
+  },
+  {
+    "id": "start-here",
+    "src": "/assets/product/02-start-here-map.png",
+    "label": "OPERATOR MAP",
+    "title_en": "Start here · chrome legend",
+    "title_pl": "Start here · legenda chrome",
+    "alt_en": "vc-frame Start here guide with session list and Session Manager",
+    "alt_pl": "Przewodnik Start here w vc-frame z listą sesji i Session Manager"
+  },
+  {
+    "id": "cockpit",
+    "src": "/assets/product/03-vc-frame-cockpit.png",
+    "label": "COCKPIT",
+    "title_en": "Dispatch layout · multi-pane",
+    "title_pl": "Layout dispatch · multi-pane",
+    "alt_en": "vc-frame cockpit with multiple agent panes and session rail",
+    "alt_pl": "Kokpit vc-frame z wieloma panelami agentów i railem sesji"
+  },
+  {
+    "id": "anatomy",
+    "src": "/assets/product/04-vc-frame-anatomy.png",
+    "label": "ANATOMY",
+    "title_en": "Rail · tabs · panes",
+    "title_pl": "Rail · taby · panele",
+    "alt_en": "vc-frame anatomy diagram of rail, tabs, and panes",
+    "alt_pl": "Anatomia vc-frame: rail, taby i panele"
+  }
+]
