@@ -100,21 +100,22 @@ export const en = {
   },
   v2Hero: {
     ariaLabel: "Hero",
-    eyebrow: "ORCHESTRATION RUNTIME FOR CLI CODING AGENTS",
+    eyebrow: "3.6.0 · SHIP WITHOUT THE VIBE HANGOVER",
     heading: {
-      pre: "Orchestrate CLI coding agents",
-      accent: "Wisely.",
+      pre: "The board finally tells",
+      accent: "the truth.",
     },
-    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and <code>/vc-ship</code> — a whole project delivered A to Z.",
-    ctaPrimary: "INSTALL",
-    ctaSecondary: "READ THE DOCS",
+    body: "Vibecrafted 3.6.0 makes settlement f/x/n canonical, welds the vc-frame 0.46 cockpit into every dispatch layout, and hardens the installer container lane so a stranger still installs with one command. Evidence over mood — then <code>/vc-ship</code>.",
+    ctaPrimary: "INSTALL 3.6.0",
+    ctaSecondary: "READ THE STORY",
     telemetry: {
-      marbles: "CHECKS",
-      converge: "READY",
-      live: "LIVE",
+      marbles: "F/X/N",
+      converge: "SEALED",
+      live: "3.6.0",
     },
-    telemetryLegend: "Run-loop signal: checks, readiness, live build.",
-    canvasCaption: "Each marble = one verified write.",
+    telemetryLegend: "Settlement board: finished · failed · needs attention.",
+    canvasCaption:
+      "Each marble = one verified write. The board keeps the score.",
     scroll: "SCROLL",
   },
   copyButton: {

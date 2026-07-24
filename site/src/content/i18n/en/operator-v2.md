@@ -9,7 +9,7 @@
 
 # Section chrome from landingV2.operator
 title: "THE OPERATOR"
-centerLabel: "INSTALL · HAND OFF · OBSERVE"
+centerLabel: "INSTALL · HAND OFF · OBSERVE · 3.6.0"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
 headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
@@ -17,14 +17,14 @@ headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
 # Three install steps — terminal-shaped cards.
 installSteps:
   - step: "STEP 01"
-    command: "$ curl -fsSL vibecrafted.io/install.sh | bash"
-    note: "One local bootstrap. It installs the commands and opens the guided launcher."
+    command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
+    note: "One local bootstrap from the published 3.6.0 artifact — not a private checkout."
   - step: "STEP 02"
     command: "$ vibecrafted doctor"
-    note: "A quick health check before agents touch the repo."
+    note: "Health check: foundations prebuilt-first, control plane staged, VERSION stamped."
   - step: "STEP 03"
     command: "$ vibecrafted init claude"
-    note: "A first-context pass with a real agent inside a real repository."
+    note: "First-context pass: Loctree map + AICX intent before any agent cuts code."
 
 # Secondary heading for the "shared surface" half of the section.
 shotHeadingHtml: 'The repo gets a <em class="accent-2">shared surface</em>'
@@ -32,12 +32,12 @@ shotBody: "A session can end without disappearing. The operator is an agent: it 
 
 # Three bullets describing what the shared surface gives you.
 bullets:
-  - title: "State has a place."
-    body: "Artifacts live under $VIBECRAFTED_ROOT/. Not in the memory of whichever tab happened to be open."
-  - title: "Runs leave evidence."
-    body: "Each agent run leaves prompt, report, metadata, and the decision it was meant to back up."
+  - title: "Settlement is canonical."
+    body: "Mission Control f/x/n reads retained control-plane settlement — the same truth as vc-server API and SSR. The rail is inventory; the board is the score."
+  - title: "Runs leave seals."
+    body: "Delivery-proof kernel: execution envelope, proof contract, reconstructable seal. A completion label is not enough."
   - title: "Undone stays visible."
-    body: "DoU and marbles keep the unresolved pieces on the board until somebody decides what they mean."
+    body: "DoU and marbles keep unresolved pieces on the board until somebody decides what they mean."
 
 # Operator habits — caps-locked tape running across the section.
 practicesLabel: "HOW THE RELAY HOLDS"

@@ -104,21 +104,22 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "RUNTIME ORKIESTRACJI AGENTÓW CLI",
+    eyebrow: "3.6.0 · SHIP BEZ VIBE HANGOVER",
     heading: {
-      pre: "Orkiestruj agentów CLI",
-      accent: "Mądrze.",
+      pre: "Tablica wreszcie mówi",
+      accent: "prawdę.",
     },
-    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write, mądra obsada modeli i <code>/vc-ship</code> — cały projekt dowieziony od A do Z.",
-    ctaPrimary: "INSTALUJ",
-    ctaSecondary: "CZYTAJ DOKUMENTACJĘ",
+    body: "Vibecrafted 3.6.0 kanonizuje settlement f/x/n, spawa kokpit vc-frame 0.46 do każdego layoutu dispatchu i hartuje installer container-lane — obcy wciąż instaluje jedną komendą. Dowód ponad nastrój — potem <code>/vc-ship</code>.",
+    ctaPrimary: "INSTALUJ 3.6.0",
+    ctaSecondary: "CZYTAJ HISTORIĘ",
     telemetry: {
-      marbles: "CHECKI",
-      converge: "GOTOWE",
-      live: "LIVE",
+      marbles: "F/X/N",
+      converge: "SEAL",
+      live: "3.6.0",
     },
-    telemetryLegend: "Sygnał z pętli: checki, gotowość, live build.",
-    canvasCaption: "Każda kulka = jeden zweryfikowany write.",
+    telemetryLegend: "Tablica settlement: finished · failed · needs attention.",
+    canvasCaption:
+      "Każda kulka = jeden zweryfikowany write. Tablica trzyma wynik.",
     scroll: "SCROLL",
   },
   copyButton: {

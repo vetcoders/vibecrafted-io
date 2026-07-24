@@ -27,23 +27,24 @@ cta: "Open the Playground"
 
 # Six operators rendered as a row of cards. Order matters — it traces the
 # Scaffold → Release path through the framework.
+# Channel labels (3.6.0): prebuilt-first acquisition — npm / crates / PyPI before cargo.
 operators:
   - num: "00"
     name: "loctree"
-    kind: "STRUCTURE"
+    kind: "npm · STRUCTURE"
   - num: "01"
     name: "aicx"
-    kind: "MEMORY"
+    kind: "npm · MEMORY"
   - num: "02"
     name: "prview"
-    kind: "REVIEW"
+    kind: "crates · REVIEW"
   - num: "03"
     name: "ScreenScribe"
-    kind: "RUNTIME"
+    kind: "PyPI · EARS"
   - num: "04"
+    name: "vc-frame"
+    kind: "cockpit · RAIL"
+  - num: "05"
     name: "DoU"
     kind: "GATE"
-  - num: "05"
-    name: "Review"
-    kind: "CLOSING"
 ---

@@ -92,6 +92,45 @@ const nextTitle = quickstartEntry.data.title as string;
       ))}
     </div>
 
+    {/* 3.6.0 cockpit strip — real vc-frame screenshots from the framework docs assets. */}
+    <div class="op__cockpit" id="vc-frame">
+      <div class="op__cockpit-copy">
+        <span class="op__cockpit-kicker">VC-FRAME 0.46 · COCKPIT</span>
+        <h3 class="op__cockpit-heading">
+          Session rail on every dispatch layout
+          <span class="brand-dot">.</span>
+        </h3>
+        <p class="op__cockpit-body">
+          The operator cockpit ships with the session-manager rail welded into
+          dashboard, marbles, operator, research, and workflow layouts. Tab
+          inventory stays honest; fleet settlement lives on the Mission Control
+          board — not the rail.
+        </p>
+      </div>
+      <figure class="op__cockpit-figure">
+        <img
+          src="/assets/vc-frame/vc-frame-cockpit.png"
+          alt="vc-frame operator cockpit with session rail and active dispatch panes"
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>vc-frame cockpit — live layout chrome, not a mock.</figcaption>
+      </figure>
+      <figure class="op__cockpit-figure op__cockpit-figure--secondary">
+        <img
+          src="/assets/vc-frame/vc-frame-anatomy.png"
+          alt="vc-frame anatomy diagram of panes, rail, and layout structure"
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>Anatomy of the rail — where inventory lives.</figcaption>
+      </figure>
+    </div>
+
     {/* #marbles — nav MARBLES anchor lands on the board preview (BOARD /
         MARBLES / DOU tabs), the convergence story, not the install steps. */}
     <div class="op__shot" id="marbles">
@@ -152,7 +191,77 @@ const nextTitle = quickstartEntry.data.title as string;
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--rule-paper);
     border-radius: 2px;
+    margin-bottom: 72px;
+  }
+
+  .op__cockpit {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 28px 48px;
     margin-bottom: 96px;
+    align-items: start;
+  }
+
+  .op__cockpit-copy {
+    grid-column: 1 / -1;
+  }
+
+  .op__cockpit-kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 12px;
+  }
+
+  .op__cockpit-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 44px);
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    color: var(--fg-on-paper);
+    margin: 0 0 14px;
+  }
+
+  .op__cockpit-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .op__cockpit-figure {
+    margin: 0;
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--bg-ink, #0a1018);
+  }
+
+  .op__cockpit-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .op__cockpit-figure figcaption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--fg-on-paper-mute);
+    padding: 10px 12px;
+    border-top: 1px solid var(--rule-paper);
+  }
+
+  @media (max-width: 900px) {
+    .op__cockpit {
+      grid-template-columns: 1fr;
+    }
   }
 
   .op__install-col {
