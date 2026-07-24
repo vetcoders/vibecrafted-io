@@ -114,7 +114,7 @@ export const en = {
       live: "LIVE",
     },
     telemetryLegend: "Dispatch surface: agents, repos, live runs.",
-    canvasCaption: "Control plane · peer lanes multiplexed into one bus.",
+    canvasCaption: "Real usage · vc-frame session rail + settlement strip.",
     scroll: "SCROLL",
   },
   copyButton: {

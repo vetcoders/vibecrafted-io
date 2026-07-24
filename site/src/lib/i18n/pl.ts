@@ -118,7 +118,7 @@ export const pl = {
       live: "LIVE",
     },
     telemetryLegend: "Powierzchnia dispatchu: agenci, repo, żywe runy.",
-    canvasCaption: "Control plane · peer lane'y w jeden bus.",
+    canvasCaption: "Real usage · rail sesji vc-frame + settlement strip.",
     scroll: "SCROLL",
   },
   copyButton: {

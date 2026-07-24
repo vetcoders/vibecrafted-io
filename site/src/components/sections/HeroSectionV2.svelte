@@ -44,15 +44,21 @@
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__visual" aria-hidden="true">
-    <img
-      class="hero__art"
-      src="/assets/hero/factory-multiplexer.jpg"
-      alt=""
-      width="2400"
-      height="1350"
-      decoding="async"
-      fetchpriority="high"
-    />
+    <!-- Real vc-frame / control-plane usage — not generated marketing art -->
+    <div class="hero__frame">
+      <picture>
+        <source srcset="/assets/hero/real-usage.gif" type="image/gif" />
+        <img
+          class="hero__art"
+          src="/assets/hero/real-usage.png"
+          alt=""
+          width="1600"
+          height="900"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
+    </div>
     <div class="hero__art-shade"></div>
   </div>
 
@@ -155,7 +161,7 @@
     pointer-events: none;
   }
 
-  /* ── Hero art (replaces marble canvas) ───────────────────── */
+  /* ── Real-usage frame (replaces marble canvas + AI art) ──── */
 
   .hero__visual {
     position: absolute;
@@ -165,39 +171,37 @@
     overflow: hidden;
   }
 
-  .hero__art {
+  .hero__frame {
     position: absolute;
-    /* Bias instrument mass to the right so copy on the left stays legible */
-    right: -6%;
-    top: 42%;
-    transform: translateY(-50%);
-    width: min(72vw, 1100px);
+    right: clamp(16px, 3vw, 48px);
+    top: 50%;
+    transform: translateY(-52%);
+    width: min(58vw, 920px);
+    border-radius: 6px;
+    border: 1px solid rgba(245, 244, 239, 0.12);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.45),
+      0 28px 80px rgba(0, 0, 0, 0.55),
+      0 0 120px rgba(var(--v2-accent-rgb), 0.06);
+    overflow: hidden;
+    background: #0a0c10;
+  }
+
+  .hero__art {
+    display: block;
+    width: 100%;
     height: auto;
-    max-height: 92vh;
-    object-fit: cover;
-    object-position: 62% 48%;
-    opacity: 0.92;
-    filter: saturate(0.92) contrast(1.04);
-    mask-image: radial-gradient(
-      ellipse 72% 68% at 58% 48%,
-      #000 0%,
-      #000 42%,
-      transparent 78%
-    );
-    -webkit-mask-image: radial-gradient(
-      ellipse 72% 68% at 58% 48%,
-      #000 0%,
-      #000 42%,
-      transparent 78%
-    );
+    vertical-align: top;
+    opacity: 0.98;
+    filter: contrast(1.02) saturate(0.95);
   }
 
   .hero__art-shade {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, var(--ink) 0%, rgba(7, 10, 14, 0.88) 28%, transparent 58%),
-      linear-gradient(180deg, rgba(7, 10, 14, 0.55) 0%, transparent 28%, transparent 72%, rgba(7, 10, 14, 0.75) 100%);
+      linear-gradient(90deg, var(--ink) 0%, rgba(7, 10, 14, 0.82) 26%, transparent 52%),
+      linear-gradient(180deg, rgba(7, 10, 14, 0.4) 0%, transparent 22%, transparent 78%, rgba(7, 10, 14, 0.7) 100%);
   }
 
   /* ── Text overlay ───────────────────────────────────────── */
@@ -466,22 +470,21 @@
     .hero__visual {
       position: absolute;
       inset: 0 0 auto 0;
-      height: 42vh;
-      min-height: 220px;
-      opacity: 0.55;
+      height: 40vh;
+      min-height: 200px;
     }
 
-    .hero__art {
-      right: -10%;
-      top: 50%;
-      width: 110%;
-      max-height: none;
-      mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
-      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+    .hero__frame {
+      right: 12px;
+      left: 12px;
+      top: 88px;
+      transform: none;
+      width: auto;
+      opacity: 0.72;
     }
 
     .hero__art-shade {
-      background: linear-gradient(180deg, transparent 30%, var(--ink) 100%);
+      background: linear-gradient(180deg, transparent 20%, var(--ink) 100%);
     }
 
     .hero__overlay {
