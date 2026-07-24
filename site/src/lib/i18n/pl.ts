@@ -118,8 +118,7 @@ export const pl = {
       live: "LIVE",
     },
     telemetryLegend: "Powierzchnia dispatchu: agenci, repo, żywe runy.",
-    canvasCaption:
-      "Każda kulka = jeden zweryfikowany write w multipleksowanej pętli.",
+    canvasCaption: "Control plane · peer lane'y w jeden bus.",
     scroll: "SCROLL",
   },
   copyButton: {

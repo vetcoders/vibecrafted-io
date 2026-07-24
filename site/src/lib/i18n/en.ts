@@ -114,7 +114,7 @@ export const en = {
       live: "LIVE",
     },
     telemetryLegend: "Dispatch surface: agents, repos, live runs.",
-    canvasCaption: "Each marble = one verified write in the multiplexed loop.",
+    canvasCaption: "Control plane · peer lanes multiplexed into one bus.",
     scroll: "SCROLL",
   },
   copyButton: {

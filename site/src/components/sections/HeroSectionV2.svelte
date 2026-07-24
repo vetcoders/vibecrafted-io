@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Lang } from '../../lib/i18n';
-  import MarbleCanvasV2 from '../MarbleCanvasV2.svelte';
 
   interface HeroData {
     ariaLabel: string;
@@ -29,46 +28,44 @@
 
   let { lang = 'en', hero }: Props = $props();
 
-  let marbleCount = $state(0);
-  let convergePct = $state(0);
-
-  function handleStats(count: number, pct: number): void {
-    marbleCount = count;
-    convergePct = pct;
-  }
-
-  const pctLabel = $derived(String(convergePct).padStart(3, '0'));
-  const countLabel = $derived(String(marbleCount).padStart(3, '0'));
   const headingAccentWord = $derived(hero.heading.accent.replace(/\.$/, ''));
   const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
   const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
+
+  // Static surface stats — not marble sim counters.
+  const teleAgents = '040';
+  const teleRepos = '008';
+  const teleLive = 'LIVE';
 </script>
 
 <section class={`hero hero--${lang}`} id="hero" aria-label={hero.ariaLabel}>
   <div class="hero__vignette" aria-hidden="true"></div>
 
-  <div class="hero__canvas" aria-hidden="true">
-    <!-- Vertical placement + groove rim intensity are owned by the canvas:
-         it centres the board between the caption and the legend and scales
-         the dished-pocket rendering per depth band. -->
-    <MarbleCanvasV2
-      boardScale={0.28}
-      spawnScale={1.6}
-      boardOffsetX={0.18}
-      palette="color"
-      drawGrooves={true}
-      onStats={handleStats}
+  <div class="hero__visual" aria-hidden="true">
+    <img
+      class="hero__art"
+      src="/assets/hero/factory-multiplexer.jpg"
+      alt=""
+      width="2400"
+      height="1350"
+      decoding="async"
+      fetchpriority="high"
     />
+    <div class="hero__art-shade"></div>
   </div>
 
   <div class="hero__overlay" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      <span class="hero__heading-mark">{hero.heading.pre}<span class="hero__heading-dot">.</span></span>
+      <span class="hero__heading-mark"
+        >{hero.heading.pre}<span class="hero__heading-dot">.</span></span
+      >
       <span class="hero__heading-line">
-        <em class="hero__heading-accent">{headingAccentWord}</em><span class="hero__heading-dot">{headingAccentDot}</span>
+        <em class="hero__heading-accent">{headingAccentWord}</em><span
+          class="hero__heading-dot">{headingAccentDot}</span
+        >
       </span>
     </h1>
     <p class="hero__body">
@@ -89,17 +86,17 @@
     <span class="hero__tele-row">
       <span class="hero__tele-label">{hero.telemetry.marbles}</span>
       <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{countLabel}</span>
+      <span class="hero__tele-value">{teleAgents}</span>
     </span>
     <span class="hero__tele-row">
       <span class="hero__tele-label">{hero.telemetry.converge}</span>
       <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{pctLabel}%</span>
+      <span class="hero__tele-value">{teleRepos}</span>
     </span>
     <span class="hero__tele-row hero__tele-row--live">
       <span class="hero__tele-label">{hero.telemetry.live}</span>
       <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">DWG VC-001</span>
+      <span class="hero__tele-value">{teleLive}</span>
     </span>
   </div>
 
@@ -129,7 +126,7 @@
   }
 
   .hero::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     z-index: 2;
@@ -138,31 +135,69 @@
       radial-gradient(circle at 20% 28%, rgba(var(--v2-paper-rgb), 0.11) 0 0.8px, transparent 1.45px),
       radial-gradient(circle at 72% 64%, rgba(var(--v2-paper-rgb), 0.075) 0 0.7px, transparent 1.35px),
       repeating-linear-gradient(90deg, rgba(var(--v2-paper-rgb), 0.024) 0 1px, transparent 1px 8px);
-    background-size: 19px 19px, 27px 27px, 100% 100%;
+    background-size:
+      19px 19px,
+      27px 27px,
+      100% 100%;
     mix-blend-mode: screen;
-    opacity: 0.28;
+    opacity: 0.22;
   }
 
   .hero__vignette {
     position: absolute;
     inset: 0;
+    z-index: 2;
     background: radial-gradient(
       ellipse 80% 60% at 50% 55%,
-      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.04) 0%,
       transparent 70%
     );
     pointer-events: none;
   }
 
-  .hero__canvas {
+  /* ── Hero art (replaces marble canvas) ───────────────────── */
+
+  .hero__visual {
     position: absolute;
     inset: 0;
+    z-index: 1;
     pointer-events: none;
+    overflow: hidden;
   }
 
-  .hero__canvas :global(canvas) {
-    width: 100%;
-    height: 100%;
+  .hero__art {
+    position: absolute;
+    /* Bias instrument mass to the right so copy on the left stays legible */
+    right: -6%;
+    top: 42%;
+    transform: translateY(-50%);
+    width: min(72vw, 1100px);
+    height: auto;
+    max-height: 92vh;
+    object-fit: cover;
+    object-position: 62% 48%;
+    opacity: 0.92;
+    filter: saturate(0.92) contrast(1.04);
+    mask-image: radial-gradient(
+      ellipse 72% 68% at 58% 48%,
+      #000 0%,
+      #000 42%,
+      transparent 78%
+    );
+    -webkit-mask-image: radial-gradient(
+      ellipse 72% 68% at 58% 48%,
+      #000 0%,
+      #000 42%,
+      transparent 78%
+    );
+  }
+
+  .hero__art-shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, var(--ink) 0%, rgba(7, 10, 14, 0.88) 28%, transparent 58%),
+      linear-gradient(180deg, rgba(7, 10, 14, 0.55) 0%, transparent 28%, transparent 72%, rgba(7, 10, 14, 0.75) 100%);
   }
 
   /* ── Text overlay ───────────────────────────────────────── */
@@ -194,8 +229,6 @@
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    /* Cap by width AND viewport height: a 4-line EN heading must never grow
-       past the fold and clip under the fixed nav. */
     font-size: min(clamp(46px, 7vw, 92px), 10.5vh);
     line-height: 1.02;
     letter-spacing: -0.025em;
@@ -324,7 +357,7 @@
     position: absolute;
     right: clamp(32px, 4vw, 72px);
     bottom: clamp(96px, 12vh, 128px);
-    z-index: 2;
+    z-index: 3;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -395,6 +428,7 @@
     left: 50%;
     bottom: 28px;
     transform: translateX(-50%);
+    z-index: 3;
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
@@ -411,8 +445,13 @@
   }
 
   @keyframes hero-scroll-bob {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(3px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(3px);
+    }
   }
 
   /* ── Responsive ──────────────────────────────────────────── */
@@ -424,9 +463,25 @@
       padding-bottom: 48px;
     }
 
-    .hero__canvas {
-      /* Hide canvas on mobile (handoff § 4.3 note — parent owns responsive) */
-      display: none;
+    .hero__visual {
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 42vh;
+      min-height: 220px;
+      opacity: 0.55;
+    }
+
+    .hero__art {
+      right: -10%;
+      top: 50%;
+      width: 110%;
+      max-height: none;
+      mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%);
+    }
+
+    .hero__art-shade {
+      background: linear-gradient(180deg, transparent 30%, var(--ink) 100%);
     }
 
     .hero__overlay {
@@ -458,49 +513,18 @@
     }
 
     .hero__tele-legend {
-      flex-basis: 100%;
-      max-width: 38ch;
-      margin: 0 0 2px;
+      margin-left: 0;
+      width: 100%;
+      max-width: none;
     }
 
     .hero__canvas-caption {
-      display: none;
-    }
-
-    .hero__scroll {
-      display: none;
-    }
-  }
-
-  /* Short viewports — the heading already self-caps via the vh term above;
-     here we only tighten surrounding spacing + the bottom anchor so the block
-     clears the fixed nav. */
-  @media (min-width: 901px) and (max-height: 860px) {
-    .hero__overlay { bottom: clamp(44px, 6vh, 96px); }
-    .hero__telemetry { bottom: clamp(44px, 6vh, 96px); }
-    .hero__eyebrow { margin-bottom: 18px; }
-    .hero__heading { margin-bottom: 20px; }
-    .hero__body { margin-bottom: 22px; }
-  }
-
-  @media (min-width: 901px) and (max-height: 680px) {
-    .hero__overlay { bottom: 40px; }
-    .hero__telemetry { bottom: 40px; }
-    .hero__eyebrow { margin-bottom: 12px; }
-    .hero__heading { margin-bottom: 14px; }
-    .hero__body { margin-bottom: 16px; max-width: 52ch; }
-    .hero__scroll { display: none; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero__scroll-arrow {
-      animation: none;
-    }
-
-    .hero__cta,
-    .hero__cta:hover {
-      transition: none;
-      transform: none;
+      position: relative;
+      right: 0;
+      top: 0;
+      margin: 0 24px 16px;
+      text-align: left;
+      max-width: none;
     }
   }
 </style>
