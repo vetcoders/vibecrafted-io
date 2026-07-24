@@ -64,38 +64,38 @@ assert.doesNotMatch(
 );
 assert.match(
   englishCopy,
-  /pre:\s*"Orchestrate CLI coding agents"/,
-  'English hero should lead with the CLI coding agent category.',
+  /pre:\s*"The board finally tells"/,
+  'English hero should lead with the 3.6.0 settlement-truth beat.',
 );
 assert.match(
   englishCopy,
-  /accent:\s*"Wisely\."/,
-  'English hero should close on the wise-casting accent beat.',
+  /accent:\s*"the truth\."/,
+  'English hero should close on the truth accent beat.',
 );
 assert.match(
   polishCopy,
-  /pre:\s*"Orkiestruj agentów CLI"/,
-  'Polish hero should lead with the CLI coding agent category.',
+  /pre:\s*"Tablica wreszcie mówi"/,
+  'Polish hero should lead with the 3.6.0 settlement-truth beat.',
 );
 assert.match(
   polishCopy,
-  /accent:\s*"Mądrze\."/,
-  'Polish hero should close on the wise-casting accent beat.',
+  /accent:\s*"prawdę\."/,
+  'Polish hero should close on the truth accent beat.',
 );
 assert.match(
   englishCopy,
-  /Vibecrafted is an orchestration method and runtime for CLI coding agents/,
-  'English hero should include the strict Vibecrafted definition.',
+  /settlement f\/x\/n canonical/,
+  'English hero should name canonical settlement f/x/n.',
 );
 assert.match(
   englishCopy,
-  /smart model casting/,
-  'English hero should cast the engine as wise model casting, not price.',
+  /vc-frame 0\.46/,
+  'English hero should name the vc-frame 0.46 cockpit.',
 );
 assert.match(
   polishCopy,
-  /mądra obsada modeli/,
-  'Polish hero should cast the engine as wise model casting, not price.',
+  /settlement f\/x\/n/,
+  'Polish hero should name settlement f/x/n.',
 );
 assert.doesNotMatch(
   englishCopy,
@@ -108,4 +108,4 @@ assert.doesNotMatch(
   'Polish copy must not sell the rejected price axis.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, definition-first hero, and wise model casting are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, 3.6.0 settlement story, and anti-price axis are intact.');
