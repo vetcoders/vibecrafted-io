@@ -87,9 +87,9 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Runtime orkiestracji agentów CLI.",
+      title: "Vibecrafted — Fabryka i multiplekser agentów CLI.",
       description:
-        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): 11-etapowy cykl read/write, mądra obsada modeli i /vc-ship — cały projekt dowieziony od A do Z.",
+        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -104,22 +104,22 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "3.6.0 · SHIP BEZ VIBE HANGOVER",
+    eyebrow: "FABRYKA · MULTIPLEKSER AGENTÓW CLI",
     heading: {
-      pre: "Tablica wreszcie mówi",
-      accent: "prawdę.",
+      pre: "Fabryka i",
+      accent: "multiplekser.",
     },
-    body: "Vibecrafted 3.6.0 kanonizuje settlement f/x/n, spawa kokpit vc-frame 0.46 do każdego layoutu dispatchu i hartuje installer container-lane — obcy wciąż instaluje jedną komendą. Dowód ponad nastrój — potem <code>/vc-ship</code>.",
-    ctaPrimary: "INSTALUJ 3.6.0",
-    ctaSecondary: "CZYTAJ HISTORIĘ",
+    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
+    ctaPrimary: "INSTALUJ",
+    ctaSecondary: "QUICK START",
     telemetry: {
-      marbles: "F/X/N",
-      converge: "SEAL",
-      live: "3.6.0",
+      marbles: "AGENCI",
+      converge: "REPO",
+      live: "LIVE",
     },
-    telemetryLegend: "Tablica settlement: finished · failed · needs attention.",
+    telemetryLegend: "Powierzchnia dispatchu: agenci, repo, żywe runy.",
     canvasCaption:
-      "Każda kulka = jeden zweryfikowany write. Tablica trzyma wynik.",
+      "Każda kulka = jeden zweryfikowany write w multipleksowanej pętli.",
     scroll: "SCROLL",
   },
   copyButton: {

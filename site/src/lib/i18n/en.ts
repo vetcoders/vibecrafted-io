@@ -83,9 +83,9 @@ export const en = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Orchestration runtime for CLI coding agents.",
+      title: "Vibecrafted — Factory and multiplexer for CLI coding agents.",
       description:
-        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and /vc-ship — a whole project delivered A to Z.",
+        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): peer dispatch from the TUI, a shared control plane, read/write cadence, and /vc-ship end-to-end.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -100,22 +100,21 @@ export const en = {
   },
   v2Hero: {
     ariaLabel: "Hero",
-    eyebrow: "3.6.0 · SHIP WITHOUT THE VIBE HANGOVER",
+    eyebrow: "FACTORY · MULTIPLEXER FOR CLI CODING AGENTS",
     heading: {
-      pre: "The board finally tells",
-      accent: "the truth.",
+      pre: "A factory and a",
+      accent: "multiplexer.",
     },
-    body: "Vibecrafted 3.6.0 makes settlement f/x/n canonical, welds the vc-frame 0.46 cockpit into every dispatch layout, and hardens the installer container lane so a stranger still installs with one command. Evidence over mood — then <code>/vc-ship</code>.",
-    ctaPrimary: "INSTALL 3.6.0",
-    ctaSecondary: "READ THE STORY",
+    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchers that dispatch peer agents from the TUI, a shared control plane, and a read/write cadence. When you want one pass end-to-end, that is <code>/vc-ship</code>.",
+    ctaPrimary: "INSTALL",
+    ctaSecondary: "QUICK START",
     telemetry: {
-      marbles: "F/X/N",
-      converge: "SEALED",
-      live: "3.6.0",
+      marbles: "AGENTS",
+      converge: "REPOS",
+      live: "LIVE",
     },
-    telemetryLegend: "Settlement board: finished · failed · needs attention.",
-    canvasCaption:
-      "Each marble = one verified write. The board keeps the score.",
+    telemetryLegend: "Dispatch surface: agents, repos, live runs.",
+    canvasCaption: "Each marble = one verified write in the multiplexed loop.",
     scroll: "SCROLL",
   },
   copyButton: {

@@ -64,48 +64,48 @@ assert.doesNotMatch(
 );
 assert.match(
   englishCopy,
-  /pre:\s*"The board finally tells"/,
-  'English hero should lead with the 3.6.0 settlement-truth beat.',
+  /pre:\s*"A factory and a"/,
+  'English hero should lead with the factory/multiplexer definition.',
 );
 assert.match(
   englishCopy,
-  /accent:\s*"the truth\."/,
-  'English hero should close on the truth accent beat.',
+  /accent:\s*"multiplexer\."/,
+  'English hero should close on the multiplexer accent beat.',
 );
 assert.match(
   polishCopy,
-  /pre:\s*"Tablica wreszcie mówi"/,
-  'Polish hero should lead with the 3.6.0 settlement-truth beat.',
+  /pre:\s*"Fabryka i"/,
+  'Polish hero should lead with the factory/multiplexer definition.',
 );
 assert.match(
   polishCopy,
-  /accent:\s*"prawdę\."/,
-  'Polish hero should close on the truth accent beat.',
+  /accent:\s*"multiplekser\."/,
+  'Polish hero should close on the multiplexer accent beat.',
 );
 assert.match(
   englishCopy,
-  /settlement f\/x\/n canonical/,
-  'English hero should name canonical settlement f/x/n.',
+  /orchestration method and runtime for CLI coding agents/,
+  'English hero should define Vibecrafted as CLI-agent orchestration.',
 );
 assert.match(
   englishCopy,
-  /vc-frame 0\.46/,
-  'English hero should name the vc-frame 0.46 cockpit.',
+  /\/vc-ship/,
+  'English hero should name /vc-ship as the end-to-end pass.',
 );
 assert.match(
   polishCopy,
-  /settlement f\/x\/n/,
-  'Polish hero should name settlement f/x/n.',
+  /metoda i runtime orkiestracji agentów CLI/,
+  'Polish hero should define Vibecrafted as CLI-agent orchestration.',
 );
 assert.doesNotMatch(
   englishCopy,
-  /cheapest|cheaper|frontier price/i,
-  'English copy must not sell the rejected price axis.',
+  /cheapest|cheaper|frontier price|finally tells the truth/i,
+  'English copy must not sell price axis or the retired "finally truth" beat.',
 );
 assert.doesNotMatch(
   polishCopy,
-  /najtańsz|stawki frontier/i,
-  'Polish copy must not sell the rejected price axis.',
+  /najtańsz|stawki frontier|wreszcie mówi/i,
+  'Polish copy must not sell price axis or the retired "finally truth" beat.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, 3.6.0 settlement story, and anti-price axis are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, factory/multiplexer definition, and anti-price axis are intact.');
