@@ -6,7 +6,6 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DIST_DIR = REPO_ROOT / "site" / "dist"
 DOCS_DIR = REPO_ROOT / "docs"

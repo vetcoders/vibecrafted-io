@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shlex
 import shutil
-import hashlib
 from pathlib import Path
 
 try:
