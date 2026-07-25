@@ -1,14 +1,16 @@
 ---
 /**
- * Product surface — realistic proof gallery.
+ * Product surface — realistic proof gallery + floating resizable frame.
  * Pattern: codescribe / pensieve / vetcoders-io — product is obvious.
  * Pixels: real vc-frame captures only (no AI art, no marble sim as proof).
- * Frame: soft borderless plate — captures already own app chrome (no window-in-window).
- * Next cut: floating resizable frame + larger gallery (FloatingTerminal port).
+ * Frame rule: exactly one decorative chrome per capture (no plate-only, no window-in-window).
+ * Floating: drag titlebar, resize SE handle, multi-shot tabs (FloatingTerminal-inspired).
  */
 import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import TerminalWindow from '../TerminalWindow.astro';
+import FloatingProductProof from '../FloatingProductProof.svelte';
 import CopyButton from '../CopyButton.svelte';
 import type { Lang } from '../../lib/i18n';
 
@@ -41,6 +43,11 @@ const section = entry.data as {
 };
 
 const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
+const floatingAria =
+  lang === 'pl'
+    ? 'Dowód produktu — pływająca, skalowalna ramka'
+    : 'Product proof — floating resizable frame';
+const browseLabel = lang === 'pl' ? 'Przeglądaj zrzuty' : 'Browse captures';
 ---
 
 <SectionShell
@@ -59,6 +66,15 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     </h2>
     <p class="ps__subtitle">{section.subtitle}</p>
 
+    <!-- Primary: floating resizable single-chrome multi-shot surface -->
+    <FloatingProductProof
+      client:visible
+      shots={section.shots}
+      ariaLabel={floatingAria}
+      browseLabel={browseLabel}
+    />
+
+    <!-- Static tiles: same single-chrome rule, at-a-glance proof -->
     <div class="ps__grid">
       {
         section.shots.map((shot, i) => (
@@ -67,19 +83,16 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
               <span class="ps__shot-label">{shot.label}</span>
               <span class="ps__shot-id">{shot.id}</span>
             </div>
-            {/* Soft decorative plate only — capture owns chrome */}
-            <div class="ps__plate">
-              <img
-                class="ps__img"
-                src={shot.src}
-                alt={shot.alt}
-                width={1600}
-                height={1000}
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-                fetchpriority={i === 0 ? 'high' : 'auto'}
-              />
-            </div>
+            <TerminalWindow
+              src={shot.src}
+              alt={shot.alt}
+              title={shot.windowTitle ?? `vc-frame · ${shot.label}`}
+              width={1600}
+              height={1000}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+              variant={i === 0 ? 'hero' : 'compact'}
+            />
             <figcaption class="ps__shot-cap">
               <strong class="ps__shot-title">{shot.title}</strong>
               <span class="ps__shot-body">{shot.body}</span>
@@ -170,23 +183,6 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     opacity: 0.55;
     letter-spacing: 0.08em;
     text-transform: none;
-  }
-
-  /* Soft borderless plate — no traffic lights / title bar */
-  .ps__plate {
-    border-radius: 10px;
-    overflow: hidden;
-    background: #0a0c10;
-    box-shadow:
-      0 0 0 1px rgba(245, 244, 239, 0.06),
-      0 24px 64px rgba(0, 0, 0, 0.45);
-  }
-
-  .ps__img {
-    display: block;
-    width: 100%;
-    height: auto;
-    vertical-align: top;
   }
 
   .ps__shot-cap {

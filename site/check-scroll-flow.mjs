@@ -59,6 +59,16 @@ assert.match(
 );
 assert.doesNotMatch(
   heroSection,
+  /hero\.heading\.pre\}<span class="hero__heading-dot">/,
+  'Hero mid-phrase lead-in must not carry a brand-colored period.',
+);
+assert.match(
+  heroSection,
+  /vc-termwin__titlebar/,
+  'Hero product proof must keep a single decorative titlebar chrome.',
+);
+assert.doesNotMatch(
+  heroSection,
   /\.hero__heading-accent \{[\s\S]*color:\s*var\(--accent\)/,
   'Hero accent word must not be colored; the brand dot owns the accent.',
 );
