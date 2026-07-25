@@ -109,6 +109,47 @@ assert.match(floating, /applyResize/, 'Floating proof uses shipped resize helper
 assert.match(floating, /nextShotIndex|selectShot|shotIndex/, 'Floating proof browses multi-shot.');
 assert.match(floating, /vc-termwin__titlebar/, 'Floating proof reuses single decorative chrome.');
 assert.match(floating, /fpp__img/, 'Floating proof fills body with capture image.');
+assert.match(floating, /onclick=\{\(\) => selectShot\(i\)\}/, 'Tabs call selectShot (live path).');
+assert.match(floating, /onpointerdown=\{onResizePointerDown\}/, 'Resize handle wired to pointer path.');
+assert.match(floating, /onpointerdown=\{onTitlePointerDown\}/, 'Titlebar drag wired to pointer path.');
+
+// --- mount layout must not re-read written size state (effect_update_depth_exceeded) ---
+// Strip comments so prose mentioning $effect does not false-positive / false-negative gates.
+const floatingCode = floating
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/(^|[^:])\/\/.*$/gm, '$1');
+assert.doesNotMatch(
+  floatingCode,
+  /\$effect\s*\(/,
+  'Shipped island must not use $effect for layout (onMount only — avoids depth exceeded).',
+);
+assert.doesNotMatch(
+  floatingCode,
+  /\$effect\s*\(\s*\(\)\s*=>\s*\{[\s\S]*?size\s*=[\s\S]*?size\.(width|height)/,
+  'Mount layout must not $effect-write size then read size.* (infinite re-run).',
+);
+assert.match(
+  floating,
+  /onMount\s*\(\s*\(\)\s*=>\s*\{[\s\S]*?const nextSize/,
+  'Initial layout uses onMount + local nextSize (no reactive size re-read).',
+);
+assert.match(
+  floating,
+  /size\s*=\s*nextSize[\s\S]*?nextSize\.width/,
+  'Position must be computed from local nextSize, not reactive size after write.',
+);
+// selectShot must actually assign shotIndex through clamp helper
+assert.match(
+  floating,
+  /function selectShot\(i:\s*number\)\s*\{\s*shotIndex\s*=\s*clampShotIndex/,
+  'selectShot must write shotIndex via clampShotIndex (tab switch path).',
+);
+// active image src bound to active shot (not a hardcoded single asset)
+assert.match(
+  floating,
+  /src=\{active\.src\}/,
+  'Panel image src must bind to active shot so tab switch changes capture.',
+);
 
 assert.match(termWin, /vc-termwin__titlebar/, 'TerminalWindow is the shared chrome shell.');
 assert.match(termWin, /vc-termwin__body[\s\S]*<img/, 'TerminalWindow body is edge-to-edge image fill.');
@@ -119,6 +160,20 @@ for (const shot of shotsJson) {
   assert.match(shot.src, /^\/assets\/(product|hero)\//, `Shot ${shot.id} must point at real assets.`);
 }
 
+// Regression: extract the onMount body and assert it never reads `size.` after assignment
+const onMountMatch = floating.match(/onMount\s*\(\s*\(\)\s*=>\s*\{([\s\S]*?)\}\s*\);/);
+assert.ok(onMountMatch, 'onMount layout block present');
+const onMountBody = onMountMatch[1];
+const sizeAssignIdx = onMountBody.search(/\bsize\s*=/);
+assert.ok(sizeAssignIdx >= 0, 'onMount assigns size');
+const afterAssign = onMountBody.slice(sizeAssignIdx);
+assert.doesNotMatch(
+  afterAssign,
+  /\bsize\.(width|height)\b/,
+  'After size= assignment, onMount must not read size.width/height (use nextSize).',
+);
+assert.match(afterAssign, /nextSize\.(width|height)/, 'After size=, layout uses nextSize fields.');
+
 console.log(
-  'Floating frame checks passed: clamp/resize/shot helpers + single-chrome structure (hero, surface, floating).',
+  'Floating frame checks passed: clamp/resize/shot helpers + single-chrome + no size-effect loop + tab/resize wiring.',
 );

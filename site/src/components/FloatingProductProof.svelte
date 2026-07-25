@@ -4,6 +4,7 @@
    * Inspiration: vetcoders-io FloatingTerminal (drag/resize) — not a live shell.
    * One decorative window; body fill is edge-to-edge capture; multi-shot browse.
    */
+  import { onMount } from 'svelte';
   import {
     applyResize,
     clampPosition,
@@ -155,17 +156,25 @@
     }
   }
 
-  $effect(() => {
+  /**
+   * One-shot layout on mount only.
+   * Do NOT use $effect that writes `size`/`pos` and then reads them — that
+   * re-subscribes and throws effect_update_depth_exceeded, killing handlers.
+   * Always compute with a local `nextSize` (never read the reactive size after write).
+   */
+  onMount(() => {
     if (!stageEl) return;
-    const b = stageBounds();
-    const max = maxSize();
-    size = {
-      width: Math.min(DEFAULT_PANEL_WIDTH, max.width),
-      height: Math.min(DEFAULT_PANEL_HEIGHT, max.height),
+    const b = stageEl.getBoundingClientRect();
+    const maxW = Math.max(MIN_PANEL_WIDTH, b.width - 16);
+    const maxH = Math.max(MIN_PANEL_HEIGHT, b.height - 16);
+    const nextSize: PanelSize = {
+      width: Math.min(DEFAULT_PANEL_WIDTH, maxW),
+      height: Math.min(DEFAULT_PANEL_HEIGHT, maxH),
     };
+    size = nextSize;
     pos = {
-      left: Math.max(8, b.width - size.width - 24),
-      top: Math.max(8, (b.height - size.height) / 2),
+      left: Math.max(8, b.width - nextSize.width - 24),
+      top: Math.max(8, (b.height - nextSize.height) / 2),
     };
   });
 </script>
