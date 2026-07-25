@@ -87,8 +87,7 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title:
-        "Vibecrafted — Runtime operacyjny multi-agentowych workflowów CLI.",
+      title: "Vibecrafted — Runtime operacyjny multiagentowych CLI workflows.",
       description:
         "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
     },
@@ -105,11 +104,11 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "RUNTIME OPERACYJNY · MULTI-AGENTOWE WORKFLOWY CLI",
+    eyebrow: "RUNTIME OPERACYJNY · MULTIAGENTOWE CLI WORKFLOWS",
     heading: {
       pre: "Runtime operacyjny",
-      mid: "dla multi-agentowych",
-      accent: "workflowów CLI.",
+      mid: "dla multiagentowych",
+      accent: "CLI workflows.",
     },
     body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
     ctaPrimary: "INSTALUJ",

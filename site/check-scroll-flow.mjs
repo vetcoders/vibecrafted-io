@@ -94,12 +94,12 @@ assert.match(
 );
 assert.match(
   polishCopy,
-  /mid:\s*"dla multi-agentowych"/,
-  'Polish hero should carry the multi-agent middle line.',
+  /mid:\s*"dla multiagentowych"/,
+  'Polish hero should carry the multiagentowych middle line.',
 );
 assert.match(
   polishCopy,
-  /accent:\s*"workflowów CLI\."/,
+  /accent:\s*"CLI workflows\."/,
   'Polish hero should close on the CLI workflows accent beat.',
 );
 assert.match(
