@@ -44,27 +44,17 @@
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__visual" aria-hidden="true">
-    <!-- Real vc-frame capture in macOS window chrome (frame only; simulator later) -->
-    <div class="hero__window vc-termwin vc-termwin--hero">
-      <div class="vc-termwin__titlebar">
-        <span class="vc-termwin__lights">
-          <span class="vc-termwin__dot vc-termwin__dot--close"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--min"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--max"></span>
-        </span>
-        <span class="vc-termwin__title">Needs attention · Sessions — vc-frame</span>
-      </div>
-      <div class="vc-termwin__body">
-        <img
-          class="hero__art"
-          src="/assets/hero/real-usage.png"
-          alt="vc-frame operator layout: Start here map, sessions rail, Session Manager"
-          width="1600"
-          height="1000"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </div>
+    <!-- Borderless fill: capture already has app chrome — no outer traffic-lights frame -->
+    <div class="hero__shot">
+      <img
+        class="hero__art"
+        src="/assets/hero/real-usage.png"
+        alt="vc-frame operator layout: Start here map, sessions rail, Session Manager"
+        width="1600"
+        height="1000"
+        decoding="async"
+        fetchpriority="high"
+      />
     </div>
     <div class="hero__art-shade"></div>
   </div>
@@ -72,13 +62,12 @@
   <div class="hero__overlay" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      <span class="hero__heading-mark"
-        >{hero.heading.pre}<span class="hero__heading-dot">.</span></span
-      >
+      <!-- Brand-dot is sentence terminator only — never mid-phrase after `pre`. -->
+      <span class="hero__heading-mark">{hero.heading.pre}</span>
       <span class="hero__heading-line">
-        <em class="hero__heading-accent">{headingAccentWord}</em><span
-          class="hero__heading-dot">{headingAccentDot}</span
-        >
+        <em class="hero__heading-accent">{headingAccentWord}</em
+        >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
+          >{/if}
       </span>
     </h1>
     <p class="hero__body">
@@ -168,7 +157,7 @@
     pointer-events: none;
   }
 
-  /* ── Real-usage window (macOS chrome + capture) ──────────── */
+  /* ── Real-usage shot (borderless fill — capture owns chrome) ─ */
 
   .hero__visual {
     position: absolute;
@@ -178,12 +167,19 @@
     overflow: hidden;
   }
 
-  .hero__window {
+  .hero__shot {
     position: absolute;
-    right: clamp(16px, 3vw, 48px);
+    right: clamp(12px, 2.5vw, 40px);
     top: 50%;
     transform: translateY(-52%);
-    width: min(58vw, 920px);
+    width: min(60vw, 960px);
+    border-radius: 10px;
+    overflow: hidden;
+    /* Soft plate only — no traffic lights / title bar (avoids window-in-window) */
+    box-shadow:
+      0 0 0 1px rgba(245, 244, 239, 0.06),
+      0 32px 90px rgba(0, 0, 0, 0.55);
+    background: #0a0c10;
   }
 
   .hero__art {
@@ -473,13 +469,13 @@
       min-height: 200px;
     }
 
-    .hero__window {
+    .hero__shot {
       right: 12px;
       left: 12px;
       top: 88px;
       transform: none;
       width: auto;
-      opacity: 0.88;
+      opacity: 0.9;
     }
 
     .hero__art-shade {

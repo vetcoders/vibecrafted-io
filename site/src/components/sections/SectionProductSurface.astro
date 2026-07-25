@@ -1,13 +1,14 @@
 ---
 /**
- * Product surface — realistic terminal proof gallery.
+ * Product surface — realistic proof gallery.
  * Pattern: codescribe / pensieve / vetcoders-io — product is obvious.
  * Pixels: real vc-frame captures only (no AI art, no marble sim as proof).
+ * Frame: soft borderless plate — captures already own app chrome (no window-in-window).
+ * Next cut: floating resizable frame + larger gallery (FloatingTerminal port).
  */
 import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
-import TerminalWindow from '../TerminalWindow.astro';
 import CopyButton from '../CopyButton.svelte';
 import type { Lang } from '../../lib/i18n';
 
@@ -61,26 +62,29 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     <div class="ps__grid">
       {
         section.shots.map((shot, i) => (
-          <div class={`ps__shot ${i === 0 ? 'ps__shot--lead' : ''}`}>
+          <figure class={`ps__shot ${i === 0 ? 'ps__shot--lead' : ''}`}>
             <div class="ps__shot-meta">
               <span class="ps__shot-label">{shot.label}</span>
               <span class="ps__shot-id">{shot.id}</span>
             </div>
-            <TerminalWindow
-              src={shot.src}
-              alt={shot.alt}
-              title={shot.windowTitle ?? `vc-frame · ${shot.label}`}
-              width={1600}
-              height={1000}
-              loading={i === 0 ? 'eager' : 'lazy'}
-              fetchpriority={i === 0 ? 'high' : 'auto'}
-              variant={i === 0 ? 'hero' : 'compact'}
-            />
-            <div class="ps__shot-cap">
+            {/* Soft decorative plate only — capture owns chrome */}
+            <div class="ps__plate">
+              <img
+                class="ps__img"
+                src={shot.src}
+                alt={shot.alt}
+                width={1600}
+                height={1000}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchpriority={i === 0 ? 'high' : 'auto'}
+              />
+            </div>
+            <figcaption class="ps__shot-cap">
               <strong class="ps__shot-title">{shot.title}</strong>
               <span class="ps__shot-body">{shot.body}</span>
-            </div>
-          </div>
+            </figcaption>
+          </figure>
         ))
       }
     </div>
@@ -166,6 +170,23 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     opacity: 0.55;
     letter-spacing: 0.08em;
     text-transform: none;
+  }
+
+  /* Soft borderless plate — no traffic lights / title bar */
+  .ps__plate {
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0a0c10;
+    box-shadow:
+      0 0 0 1px rgba(245, 244, 239, 0.06),
+      0 24px 64px rgba(0, 0, 0, 0.45);
+  }
+
+  .ps__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
   }
 
   .ps__shot-cap {
