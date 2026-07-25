@@ -114,7 +114,7 @@ export const en = {
       live: "LIVE",
     },
     telemetryLegend: "Dispatch surface: agents, repos, live runs.",
-    canvasCaption: "Real usage · finalized run · session rail · f/x/n strip.",
+    canvasCaption: "Real usage · Start here · Session Manager · sessions rail.",
     scroll: "SCROLL",
   },
   copyButton: {

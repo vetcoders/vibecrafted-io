@@ -44,17 +44,27 @@
   <div class="hero__vignette" aria-hidden="true"></div>
 
   <div class="hero__visual" aria-hidden="true">
-    <!-- Real vc-frame operator layout — Start here map + Session Manager -->
-    <div class="hero__frame">
-      <img
-        class="hero__art"
-        src="/assets/hero/real-usage.png"
-        alt=""
-        width="2400"
-        height="1350"
-        decoding="async"
-        fetchpriority="high"
-      />
+    <!-- Real vc-frame capture in macOS window chrome (frame only; simulator later) -->
+    <div class="hero__window vc-termwin vc-termwin--hero">
+      <div class="vc-termwin__titlebar">
+        <span class="vc-termwin__lights">
+          <span class="vc-termwin__dot vc-termwin__dot--close"></span>
+          <span class="vc-termwin__dot vc-termwin__dot--min"></span>
+          <span class="vc-termwin__dot vc-termwin__dot--max"></span>
+        </span>
+        <span class="vc-termwin__title">Needs attention · Sessions — vc-frame</span>
+      </div>
+      <div class="vc-termwin__body">
+        <img
+          class="hero__art"
+          src="/assets/hero/real-usage.png"
+          alt="vc-frame operator layout: Start here map, sessions rail, Session Manager"
+          width="1600"
+          height="1000"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </div>
     </div>
     <div class="hero__art-shade"></div>
   </div>
@@ -158,7 +168,7 @@
     pointer-events: none;
   }
 
-  /* ── Real-usage frame (replaces marble canvas + AI art) ──── */
+  /* ── Real-usage window (macOS chrome + capture) ──────────── */
 
   .hero__visual {
     position: absolute;
@@ -168,20 +178,12 @@
     overflow: hidden;
   }
 
-  .hero__frame {
+  .hero__window {
     position: absolute;
     right: clamp(16px, 3vw, 48px);
     top: 50%;
     transform: translateY(-52%);
     width: min(58vw, 920px);
-    border-radius: 6px;
-    border: 1px solid rgba(245, 244, 239, 0.12);
-    box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.45),
-      0 28px 80px rgba(0, 0, 0, 0.55),
-      0 0 120px rgba(var(--v2-accent-rgb), 0.06);
-    overflow: hidden;
-    background: #0a0c10;
   }
 
   .hero__art {
@@ -471,13 +473,13 @@
       min-height: 200px;
     }
 
-    .hero__frame {
+    .hero__window {
       right: 12px;
       left: 12px;
       top: 88px;
       transform: none;
       width: auto;
-      opacity: 0.72;
+      opacity: 0.88;
     }
 
     .hero__art-shade {

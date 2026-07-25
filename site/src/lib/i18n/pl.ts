@@ -118,7 +118,7 @@ export const pl = {
       live: "LIVE",
     },
     telemetryLegend: "Powierzchnia dispatchu: agenci, repo, żywe runy.",
-    canvasCaption: "Real usage · finalized run · rail sesji · strip f/x/n.",
+    canvasCaption: "Real usage · Start here · Session Manager · rail sesji.",
     scroll: "SCROLL",
   },
   copyButton: {

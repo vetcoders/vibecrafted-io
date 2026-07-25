@@ -1,0 +1,62 @@
+---
+/**
+ * Realistic macOS window chrome around real product screenshots.
+ * Not a simulator — frame only. Simulator port is a later cut.
+ */
+import '../styles/terminal-window.css';
+
+interface Props {
+  title?: string;
+  alt?: string;
+  src: string;
+  width?: number;
+  height?: number;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  variant?: 'default' | 'hero' | 'compact';
+  class?: string;
+}
+
+const {
+  title = 'vc-frame · Vibecrafted.',
+  alt = '',
+  src,
+  width = 1600,
+  height = 1000,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  variant = 'default',
+  class: className = '',
+} = Astro.props as Props;
+
+const variantClass =
+  variant === 'hero' ? 'vc-termwin--hero' : variant === 'compact' ? 'vc-termwin--compact' : '';
+---
+
+<figure class:list={['vc-termwin', variantClass, className]}>
+  <div class="vc-termwin__titlebar" aria-hidden="true">
+    <span class="vc-termwin__lights">
+      <span class="vc-termwin__dot vc-termwin__dot--close"></span>
+      <span class="vc-termwin__dot vc-termwin__dot--min"></span>
+      <span class="vc-termwin__dot vc-termwin__dot--max"></span>
+    </span>
+    <span class="vc-termwin__title">{title}</span>
+  </div>
+  <div class="vc-termwin__body">
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      loading={loading}
+      decoding="async"
+      fetchpriority={fetchpriority}
+    />
+  </div>
+</figure>
+
+<style>
+  figure.vc-termwin {
+    margin: 0;
+  }
+</style>

@@ -7,6 +7,7 @@
 import { getEntry } from 'astro:content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
+import TerminalWindow from '../TerminalWindow.astro';
 import CopyButton from '../CopyButton.svelte';
 import type { Lang } from '../../lib/i18n';
 
@@ -31,6 +32,7 @@ const section = entry.data as {
     title: string;
     body: string;
     alt: string;
+    windowTitle?: string;
   }>;
   installLead: string;
   installCommand: string;
@@ -59,26 +61,26 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     <div class="ps__grid">
       {
         section.shots.map((shot, i) => (
-          <figure class={`ps__shot ${i === 0 ? 'ps__shot--lead' : ''}`}>
-            <div class="ps__shot-chrome">
+          <div class={`ps__shot ${i === 0 ? 'ps__shot--lead' : ''}`}>
+            <div class="ps__shot-meta">
               <span class="ps__shot-label">{shot.label}</span>
               <span class="ps__shot-id">{shot.id}</span>
             </div>
-            <div class="ps__shot-frame">
-              <img
-                src={shot.src}
-                alt={shot.alt}
-                width="1600"
-                height="1000"
-                loading={i === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-              />
-            </div>
-            <figcaption class="ps__shot-cap">
+            <TerminalWindow
+              src={shot.src}
+              alt={shot.alt}
+              title={shot.windowTitle ?? `vc-frame · ${shot.label}`}
+              width={1600}
+              height={1000}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+              variant={i === 0 ? 'hero' : 'compact'}
+            />
+            <div class="ps__shot-cap">
               <strong class="ps__shot-title">{shot.title}</strong>
               <span class="ps__shot-body">{shot.body}</span>
-            </figcaption>
-          </figure>
+            </div>
+          </div>
         ))
       }
     </div>
@@ -139,9 +141,12 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
 
   .ps__shot {
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
-  .ps__shot-chrome {
+  .ps__shot-meta {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -153,25 +158,14 @@ const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
     color: var(--fg-on-dark-mute);
   }
 
+  .ps__shot-label {
+    color: var(--accent);
+  }
+
   .ps__shot-id {
     opacity: 0.55;
     letter-spacing: 0.08em;
     text-transform: none;
-  }
-
-  .ps__shot-frame {
-    border: 1px solid rgba(245, 244, 239, 0.12);
-    border-radius: 4px;
-    overflow: hidden;
-    background: #0a0c10;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  }
-
-  .ps__shot-frame img {
-    display: block;
-    width: 100%;
-    height: auto;
-    vertical-align: top;
   }
 
   .ps__shot-cap {
