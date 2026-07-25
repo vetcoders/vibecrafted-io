@@ -74,23 +74,33 @@ assert.doesNotMatch(
 );
 assert.match(
   englishCopy,
-  /pre:\s*"A factory and a"/,
-  'English hero should lead with the factory/multiplexer definition.',
+  /pre:\s*"An operating runtime"/,
+  'English hero should lead with the operating-runtime definition.',
 );
 assert.match(
   englishCopy,
-  /accent:\s*"multiplexer\."/,
-  'English hero should close on the multiplexer accent beat.',
+  /mid:\s*"for multi-agent cli"/,
+  'English hero should carry the multi-agent cli middle line.',
+);
+assert.match(
+  englishCopy,
+  /accent:\s*"workflows\."/,
+  'English hero should close on the workflows accent beat.',
 );
 assert.match(
   polishCopy,
-  /pre:\s*"Fabryka i"/,
-  'Polish hero should lead with the factory/multiplexer definition.',
+  /pre:\s*"Runtime operacyjny"/,
+  'Polish hero should lead with the operating-runtime definition.',
 );
 assert.match(
   polishCopy,
-  /accent:\s*"multiplekser\."/,
-  'Polish hero should close on the multiplexer accent beat.',
+  /mid:\s*"dla multi-agentowych"/,
+  'Polish hero should carry the multi-agent middle line.',
+);
+assert.match(
+  polishCopy,
+  /accent:\s*"workflowów CLI\."/,
+  'Polish hero should close on the CLI workflows accent beat.',
 );
 assert.match(
   englishCopy,
@@ -118,4 +128,4 @@ assert.doesNotMatch(
   'Polish copy must not sell price axis or the retired "finally truth" beat.',
 );
 
-console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, factory/multiplexer definition, and anti-price axis are intact.');
+console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, operating-runtime definition, and anti-price axis are intact.');

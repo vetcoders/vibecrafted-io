@@ -6,6 +6,8 @@
     eyebrow: string;
     heading: {
       pre: string;
+      /** Optional middle line (block) between pre and accent. */
+      mid?: string;
       accent: string;
     };
     body: string;
@@ -72,8 +74,11 @@
   <div class="hero__overlay" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      <!-- Brand-dot is sentence terminator only — never mid-phrase after `pre`. -->
+      <!-- Brand-dot is sentence terminator only — never mid-phrase after pre/mid. -->
       <span class="hero__heading-mark">{hero.heading.pre}</span>
+      {#if hero.heading.mid}
+        <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
+      {/if}
       <span class="hero__heading-line">
         <em class="hero__heading-accent">{headingAccentWord}</em
         >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
@@ -254,11 +259,15 @@
   }
 
   .hero__heading-line {
-    max-width: 13.5ch;
+    max-width: 16ch;
   }
 
   .hero--en .hero__heading-line {
-    max-width: 20ch;
+    max-width: 14ch;
+  }
+
+  .hero--en .hero__heading-mark {
+    max-width: 22ch;
   }
 
   .hero--pl .hero__heading {
@@ -266,7 +275,11 @@
   }
 
   .hero--pl .hero__heading-line {
-    max-width: 20ch;
+    max-width: 18ch;
+  }
+
+  .hero--pl .hero__heading-mark {
+    max-width: 22ch;
   }
 
   .hero__heading em {

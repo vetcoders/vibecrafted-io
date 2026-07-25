@@ -4,7 +4,7 @@ title: "POWIERZCHNIA"
 centerLabel: "REAL USAGE · VC-FRAME"
 
 headingHtml: 'To jest <em class="accent-2">produkt</em>'
-subtitle: "Fabryka i multiplekser agentów CLI. Poniżej kokpit operatora — prawdziwe kadry z vc-frame, nie mockupy."
+subtitle: "Runtime operacyjny multi-agentowych workflowów CLI. Poniżej kokpit operatora — prawdziwe kadry z vc-frame, nie mockupy."
 
 shots:
   - id: start-here

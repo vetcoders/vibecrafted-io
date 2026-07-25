@@ -4,7 +4,7 @@ title: "THE SURFACE"
 centerLabel: "REAL USAGE · VC-FRAME"
 
 headingHtml: 'This is the <em class="accent-2">product</em>'
-subtitle: "A factory and a multiplexer for CLI coding agents. Below is the operator cockpit — real frames from vc-frame, not mockups."
+subtitle: "An operating runtime for multi-agent CLI workflows. Below is the operator cockpit — real frames from vc-frame, not mockups."
 
 shots:
   - id: start-here

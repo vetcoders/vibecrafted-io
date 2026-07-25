@@ -87,7 +87,8 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Fabryka i multiplekser agentów CLI.",
+      title:
+        "Vibecrafted — Runtime operacyjny multi-agentowych workflowów CLI.",
       description:
         "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
     },
@@ -104,10 +105,11 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "FABRYKA · MULTIPLEKSER AGENTÓW CLI",
+    eyebrow: "RUNTIME OPERACYJNY · MULTI-AGENTOWE WORKFLOWY CLI",
     heading: {
-      pre: "Fabryka i",
-      accent: "multiplekser.",
+      pre: "Runtime operacyjny",
+      mid: "dla multi-agentowych",
+      accent: "workflowów CLI.",
     },
     body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
     ctaPrimary: "INSTALUJ",
