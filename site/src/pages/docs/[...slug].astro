@@ -1,0 +1,446 @@
+---
+/**
+ * docs/[...slug].astro — Plan 15 catch-all docs renderer.
+ *
+ * Renders entries from the `docs` content collection (mirrored from
+ * `../vibecrafted/docs/` via `scripts/sync-docs.sh`). One route per doc:
+ *
+ *   /docs/quick-start/   ←  src/content/docs/quick-start.md
+ *   /docs/install/       ←  src/content/docs/install.md
+ *   /docs/faq/           ←  src/content/docs/faq.md
+ *   ...
+ *
+ * Layout: sticky sidebar nav on the left (grouped by section), prose body
+ * on the right. Collapses to single-column on mobile (sidebar above body).
+ *
+ * Anti-aesthetic gates per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807 via tokens-v2.css)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack
+ *   - no tracking script per-page (Plausible loaded once in LayoutV2)
+ *   - no popup / nag overlay
+ *
+ * No search widget on this cut. Browser Cmd+F + good in-doc TOC is the v1
+ * answer; Algolia DocSearch deferred to v2 pending account setup.
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import DocsSidebarNav from '../../components/DocsSidebarNav.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('docs');
+  return entries.map((entry) => ({
+    params: { slug: entry.data.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const allDocs = await getCollection('docs');
+
+// <title> must carry the searchable ASCII brand; the styled glyph brand
+// (𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.) stays in the visible h1 only.
+const pageTitle = `${entry.data.title.replace(/𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍\./gu, 'Vibecrafted')} — Docs`;
+const pageDescription = entry.data.description;
+
+// Plan 17 — single shared OG card for docs pages. Per-slug OG cards are
+// deferred to v2 (adds N cards to prerender budget; minimal SEO uplift since
+// docs traffic is mostly inbound from search engines + direct links rather
+// than social shares).
+const ogImagePath = '/og/docs-default.png';
+---
+
+<LayoutV2
+  title={pageTitle}
+  description={pageDescription}
+  lang="en"
+  hasHero={false}
+  ogImage={ogImagePath}
+  ogType="article"
+>
+  <article class="doc">
+    <div class="doc__inner">
+      <header class="doc__header">
+        <div class="doc__eyebrow-row">
+          <span class="doc__eyebrow">DOCS · {entry.data.section.toUpperCase()}</span>
+          <div class="doc__top-actions">
+            <a class="doc__home" href="/docs/">
+              <span aria-hidden="true">←</span>
+              ALL DOCS
+            </a>
+            <span class="doc__fig">FIG. 15 · DWG VC-015</span>
+          </div>
+        </div>
+        <div class="doc__rule" aria-hidden="true"></div>
+
+        <h1 class="doc__title">{entry.data.title}</h1>
+
+        {entry.data.description && (
+          <p class="doc__lead">{entry.data.description}</p>
+        )}
+
+        <p class="doc__synced">
+          <span class="doc__synced-label">Synced —</span>
+          <span class="doc__synced-value">{entry.data.syncedAt}</span>
+          {entry.data.sourcePath && (
+            <>
+              <span class="doc__synced-sep" aria-hidden="true">·</span>
+              <span class="doc__synced-source">
+                source: <code>{entry.data.sourcePath}</code>
+              </span>
+            </>
+          )}
+        </p>
+      </header>
+
+      <div class="doc__layout">
+        <aside class="doc__nav-col" aria-label="Documentation nav">
+          <DocsSidebarNav entries={allDocs} currentSlug={entry.data.slug} />
+        </aside>
+
+        <div class="doc__prose">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .doc {
+    width: 100%;
+    background: var(--v2-ink, #080807);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    padding: 96px 0 128px;
+  }
+
+  .doc__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .doc__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .doc__rule {
+    height: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    margin-bottom: 48px;
+  }
+
+  .doc__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .doc__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .doc__home:hover,
+  .doc__home:focus-visible {
+    color: var(--v2-accent, #c99a3b);
+    opacity: 1;
+  }
+
+  .doc__title {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-size: clamp(32px, 4.6vw, 50px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 0 0 20px;
+    max-width: 28ch;
+  }
+
+  .doc__lead {
+    font-family: var(--v2-font-body, system-ui);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.78));
+    max-width: 62ch;
+    margin: 0 0 24px;
+  }
+
+  .doc__synced {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    margin: 0 0 48px;
+  }
+
+  .doc__synced-label {
+    color: var(--v2-accent, #c99a3b);
+    margin-right: 6px;
+  }
+
+  .doc__synced-sep {
+    margin: 0 10px;
+  }
+
+  .doc__synced-source code {
+    font-size: 11px;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.62));
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Layout: sidebar + prose ────────────────────────────── */
+
+  .doc__layout {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 64px;
+    align-items: start;
+  }
+
+  .doc__nav-col {
+    position: sticky;
+    top: 96px;
+    padding-top: 8px;
+  }
+
+  .doc__prose {
+    font-family: var(--v2-font-body, system-ui);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    min-width: 0;
+  }
+
+  /* The synced source body usually starts with its own H1; suppress the
+   * duplicate by hiding the first H1 inside .doc__prose (the route header
+   * already shows the title). */
+  .doc__prose :global(h1:first-child) {
+    display: none;
+  }
+
+  .doc__prose :global(h1) {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-size: clamp(28px, 3.6vw, 36px);
+    line-height: 1.15;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 56px 0 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .doc__prose :global(h2) {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.2;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 48px 0 18px;
+  }
+
+  .doc__prose :global(h3) {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 32px 0 12px;
+  }
+
+  .doc__prose :global(h4) {
+    font-family: var(--v2-font-body, system-ui);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 24px 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .doc__prose :global(p) {
+    margin: 0 0 20px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    max-width: 64ch;
+  }
+
+  .doc__prose :global(p em),
+  .doc__prose :global(li em) {
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.78));
+    font-style: italic;
+  }
+
+  .doc__prose :global(p strong),
+  .doc__prose :global(li strong) {
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-weight: 600;
+  }
+
+  .doc__prose :global(p code),
+  .doc__prose :global(li code),
+  .doc__prose :global(td code) {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 0.92em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.10);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  .doc__prose :global(a) {
+    color: var(--v2-accent, #c99a3b);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--v2-accent-rgb, 201, 154, 59), 0.4);
+  }
+
+  .doc__prose :global(a:hover),
+  .doc__prose :global(a:focus-visible) {
+    border-bottom-color: var(--v2-accent, #c99a3b);
+  }
+
+  .doc__prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    margin: 40px 0;
+  }
+
+  .doc__prose :global(ul),
+  .doc__prose :global(ol) {
+    margin: 0 0 22px;
+    padding-left: 22px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  .doc__prose :global(li) {
+    margin-bottom: 8px;
+    max-width: 62ch;
+  }
+
+  .doc__prose :global(blockquote) {
+    margin: 0 0 22px;
+    padding: 12px 18px;
+    border-left: 2px solid var(--v2-accent, #c99a3b);
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.06);
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.85));
+    font-style: italic;
+    max-width: 60ch;
+  }
+
+  .doc__prose :global(pre) {
+    margin: 0 0 22px;
+    padding: 16px 18px;
+    border-radius: 4px;
+    background: rgba(14, 14, 12, 0.7);
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    overflow-x: auto;
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  .doc__prose :global(pre code) {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 13px;
+  }
+
+  .doc__prose :global(table) {
+    width: 100%;
+    margin: 0 0 24px;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .doc__prose :global(th),
+  .doc__prose :global(td) {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .doc__prose :global(th) {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.62));
+    font-weight: 500;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 960px) {
+    .doc__layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .doc__nav-col {
+      position: static;
+      order: -1;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .doc {
+      padding: 64px 0 88px;
+    }
+
+    .doc__inner {
+      padding: 0 20px;
+    }
+
+    .doc__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .doc__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .doc__rule {
+      margin-bottom: 32px;
+    }
+
+    .doc__prose {
+      font-size: 16px;
+    }
+
+    .doc__prose :global(pre) {
+      font-size: 12px;
+      padding: 12px 14px;
+    }
+  }
+</style>

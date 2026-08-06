@@ -1,0 +1,193 @@
+---
+/**
+ * DocsSidebarNav.astro — Plan 15.
+ *
+ * Sidebar navigation for `/docs/...` routes. Renders entries from the `docs`
+ * content collection grouped by frontmatter `section`. Active route is
+ * highlighted via `aria-current="page"`.
+ *
+ * Layout: sticky-on-desktop column on the left of the prose body; collapses
+ * to a top-of-page nav block on mobile (handled by the parent route's CSS).
+ *
+ * No client-side JS; entirely static markup. Search, hover trails, and the
+ * Plausible script live in LayoutV2 — this component is just an anchor list.
+ */
+import type { CollectionEntry } from 'astro:content';
+
+type DocEntry = CollectionEntry<'docs'>;
+
+interface Props {
+  entries: DocEntry[];
+  currentSlug?: string;
+}
+
+const { entries, currentSlug } = Astro.props as Props;
+
+type SectionKey = 'install' | 'architecture' | 'skills' | 'faq' | 'release' | 'other';
+
+const SECTION_ORDER: SectionKey[] = [
+  'install',
+  'architecture',
+  'skills',
+  'release',
+  'faq',
+  'other',
+];
+
+const SECTION_LABEL: Record<SectionKey, string> = {
+  install: 'Install',
+  architecture: 'Architecture',
+  skills: 'Skills',
+  release: 'Release',
+  faq: 'FAQ',
+  other: 'Other',
+};
+
+// Group entries by section, preserving alphabetical-by-title order within
+// each group. We do not sort by mtime because docs are sourced from the
+// sibling repo and operator-edited; alphabetical is more stable for nav.
+const grouped: Record<SectionKey, DocEntry[]> = {
+  install: [],
+  architecture: [],
+  skills: [],
+  release: [],
+  faq: [],
+  other: [],
+};
+
+for (const entry of entries) {
+  const section = entry.data.section as SectionKey;
+  if (grouped[section]) {
+    grouped[section].push(entry);
+  } else {
+    grouped.other.push(entry);
+  }
+}
+
+for (const section of SECTION_ORDER) {
+  grouped[section].sort((a, b) =>
+    a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+  );
+}
+---
+
+<nav class="docs-nav" aria-label="Documentation sections">
+  <div class="docs-nav__heading">DOCUMENTATION</div>
+  {SECTION_ORDER.map((section) => {
+    const items = grouped[section];
+    if (items.length === 0) return null;
+    return (
+      <section class="docs-nav__section">
+        <h3 class="docs-nav__section-title">{SECTION_LABEL[section]}</h3>
+        <ul class="docs-nav__list">
+          {items.map((entry) => {
+            const isCurrent = entry.data.slug === currentSlug;
+            return (
+              <li class="docs-nav__item">
+                <a
+                  class={isCurrent ? 'docs-nav__link is-current' : 'docs-nav__link'}
+                  href={`/docs/${entry.data.slug}/`}
+                  aria-current={isCurrent ? 'page' : undefined}
+                >
+                  {entry.data.title}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    );
+  })}
+</nav>
+
+<style>
+  .docs-nav {
+    font-family: var(--v2-font-body, var(--font-body, system-ui));
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  .docs-nav__heading {
+    font-family: var(--v2-font-mono, var(--font-mono, monospace));
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+  }
+
+  .docs-nav__section + .docs-nav__section {
+    margin-top: 24px;
+  }
+
+  .docs-nav__section-title {
+    font-family: var(--v2-font-mono, var(--font-mono, monospace));
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.62));
+    margin: 0 0 10px;
+    font-weight: 500;
+  }
+
+  .docs-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .docs-nav__item {
+    margin: 0;
+  }
+
+  .docs-nav__link {
+    display: block;
+    padding: 6px 10px;
+    margin: 0 -10px;
+    text-decoration: none;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    font-size: 14px;
+    line-height: 1.4;
+    border-radius: 2px;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .docs-nav__link:hover,
+  .docs-nav__link:focus-visible {
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.06);
+    color: var(--v2-accent, #c99a3b);
+    opacity: 1;
+  }
+
+  .docs-nav__link.is-current {
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.10);
+    color: var(--v2-accent, #c99a3b);
+    border-left: 2px solid var(--v2-accent, #c99a3b);
+    padding-left: 12px;
+    margin-left: -12px;
+    opacity: 1;
+  }
+
+  @media (max-width: 960px) {
+    .docs-nav {
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    }
+
+    .docs-nav__list {
+      gap: 2px;
+    }
+
+    .docs-nav__link {
+      font-size: 15px;
+    }
+  }
+</style>

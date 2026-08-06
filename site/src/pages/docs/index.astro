@@ -1,0 +1,360 @@
+---
+/**
+ * docs/index.astro — Plan 15 docs landing.
+ *
+ * Lists all entries in the `docs` content collection grouped by section.
+ * Brief one-line description per entry; click-through to `/docs/<slug>/`.
+ *
+ * Public-source-only — synced from `../vibecrafted/docs/` via
+ * `scripts/sync-docs.sh`. No internal report identity, no operator paths.
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments
+ *   - no scroll-jack / entrance animation
+ *   - no popup / nag overlay
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection('docs');
+
+type SectionKey = 'install' | 'architecture' | 'skills' | 'release' | 'faq' | 'other';
+
+const SECTION_ORDER: SectionKey[] = [
+  'install',
+  'architecture',
+  'skills',
+  'release',
+  'faq',
+  'other',
+];
+
+const SECTION_LABEL: Record<SectionKey, string> = {
+  install: 'Install',
+  architecture: 'Architecture',
+  skills: 'Skills reference',
+  release: 'Release',
+  faq: 'FAQ',
+  other: 'Other',
+};
+
+const SECTION_BLURB: Record<SectionKey, string> = {
+  install: 'How to put vibecrafted on a workstation and confirm the install is real.',
+  architecture: 'How the framework is shaped, why the seams sit where they do, and what each layer is allowed to know.',
+  skills: 'The vc-* skills — what each does, when to invoke it, and what truth it leaves behind.',
+  release: 'Release engineering and shipping discipline — turning "done in the repo" into "safe to deploy."',
+  faq: 'Questions people ask before they trust the framework. Honest answers, not marketing.',
+  other: 'Reference material that does not slot neatly into the other sections.',
+};
+
+const grouped: Record<SectionKey, typeof entries> = {
+  install: [],
+  architecture: [],
+  skills: [],
+  release: [],
+  faq: [],
+  other: [],
+};
+
+for (const entry of entries) {
+  const section = entry.data.section as SectionKey;
+  if (grouped[section]) {
+    grouped[section].push(entry);
+  } else {
+    grouped.other.push(entry);
+  }
+}
+
+for (const section of SECTION_ORDER) {
+  grouped[section].sort((a, b) =>
+    a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+  );
+}
+
+const pageTitle = 'Documentation — Vibecrafted';
+const pageDescription =
+  'Public documentation for vibecrafted: install path, architecture, vc-* skills reference, release discipline, and FAQ. Synced from the canonical source repo.';
+
+const totalCount = entries.length;
+---
+
+<LayoutV2
+  title={pageTitle}
+  description={pageDescription}
+  lang="en"
+  hasHero={false}
+  ogImage="/og/docs-default.png"
+>
+  <article class="docs-index">
+    <div class="docs-index__inner">
+      <header class="docs-index__header">
+        <div class="docs-index__eyebrow-row">
+          <span class="docs-index__eyebrow">DOCUMENTATION</span>
+          <div class="docs-index__top-actions">
+            <a class="docs-index__home" href="/">
+              <span aria-hidden="true">←</span>
+              BACK TO MAIN
+            </a>
+            <span class="docs-index__fig">FIG. 15 · DWG VC-015</span>
+          </div>
+        </div>
+        <div class="docs-index__rule" aria-hidden="true"></div>
+
+        <h1 class="docs-index__title">
+          The {totalCount} documents that ship with vibecrafted.
+        </h1>
+        <p class="docs-index__lead">
+          Install path, architecture, vc-* skills reference, release discipline,
+          FAQ. Sourced from the canonical repo at <code>vetcoders/vibecrafted</code>
+          and synced to this site. No marketing prose: each document is the same
+          one an operator reads at the terminal.
+        </p>
+      </header>
+
+      <div class="docs-index__sections">
+        {SECTION_ORDER.map((section) => {
+          const items = grouped[section];
+          if (items.length === 0) return null;
+          return (
+            <section class="docs-index__section">
+              <header class="docs-index__section-header">
+                <h2 class="docs-index__section-title">{SECTION_LABEL[section]}</h2>
+                <p class="docs-index__section-blurb">{SECTION_BLURB[section]}</p>
+              </header>
+              <ol class="docs-index__list">
+                {items.map((entry) => (
+                  <li class="docs-index__item">
+                    <a class="docs-index__card" href={`/docs/${entry.data.slug}/`}>
+                      <h3 class="docs-index__card-title">{entry.data.title}</h3>
+                      <p class="docs-index__card-desc">{entry.data.description}</p>
+                      <span class="docs-index__card-cta">
+                        Open <span aria-hidden="true">→</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .docs-index {
+    width: 100%;
+    background: var(--v2-ink, #080807);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    padding: 96px 0 128px;
+  }
+
+  .docs-index__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .docs-index__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--v2-fg-on-dark-mute, rgba(245, 244, 239, 0.42));
+  }
+
+  .docs-index__rule {
+    height: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    margin-bottom: 48px;
+  }
+
+  .docs-index__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .docs-index__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .docs-index__home:hover,
+  .docs-index__home:focus-visible {
+    color: var(--v2-accent, #c99a3b);
+    opacity: 1;
+  }
+
+  .docs-index__title {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 0 0 24px;
+    max-width: 26ch;
+  }
+
+  .docs-index__lead {
+    font-family: var(--v2-font-body, system-ui);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.85));
+    max-width: 62ch;
+    margin: 0 0 56px;
+  }
+
+  .docs-index__lead code {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 0.92em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.10);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+  }
+
+  /* ── Sections ───────────────────────────────────────────── */
+
+  .docs-index__section + .docs-index__section {
+    margin-top: 64px;
+  }
+
+  .docs-index__section-header {
+    margin-bottom: 24px;
+  }
+
+  .docs-index__section-title {
+    font-family: var(--v2-font-display, serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(24px, 2.6vw, 30px);
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .docs-index__section-blurb {
+    font-family: var(--v2-font-body, system-ui);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.72));
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .docs-index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+    border: 1px solid var(--v2-rule-dark, rgba(245, 244, 239, 0.12));
+  }
+
+  .docs-index__item {
+    margin: 0;
+    background: var(--v2-ink, #080807);
+  }
+
+  .docs-index__card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 20px;
+    text-decoration: none;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    height: 100%;
+    transition: background 0.15s ease;
+  }
+
+  .docs-index__card:hover,
+  .docs-index__card:focus-visible {
+    background: rgba(var(--v2-accent-rgb, 201, 154, 59), 0.05);
+  }
+
+  .docs-index__card-title {
+    font-family: var(--v2-font-display, serif);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.2;
+    color: var(--v2-fg-on-dark, #f5f4ef);
+    margin: 0;
+  }
+
+  .docs-index__card-desc {
+    font-family: var(--v2-font-body, system-ui);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--v2-fg-on-dark-dim, rgba(245, 244, 239, 0.72));
+    margin: 0;
+    flex: 1;
+  }
+
+  .docs-index__card-cta {
+    font-family: var(--v2-font-mono, monospace);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--v2-accent, #c99a3b);
+    margin-top: 4px;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .docs-index {
+      padding: 64px 0 88px;
+    }
+
+    .docs-index__inner {
+      padding: 0 20px;
+    }
+
+    .docs-index__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .docs-index__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .docs-index__rule {
+      margin-bottom: 36px;
+    }
+
+    .docs-index__section + .docs-index__section {
+      margin-top: 48px;
+    }
+
+    .docs-index__list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

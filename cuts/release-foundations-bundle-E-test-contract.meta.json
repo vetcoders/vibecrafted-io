@@ -1,0 +1,46 @@
+{
+  "track": "release-foundations-bundle-E-test-contract",
+  "parent_plan": "release-foundations-bundle-2026-05-02",
+  "phase": "E",
+  "agent": "codex",
+  "priority": "P1",
+  "repo": "/Users/polyversai/Libraxis/vc-runtime/vibecrafted-io",
+  "branch": "release/foundations-bundle-2026-05-02",
+  "status": "completed",
+  "single_cta": "curl -fsSL https://vibecrafted.io/install.sh | bash",
+  "files_touched": [
+    "README.md",
+    "framework/README.md",
+    "framework/install.sh",
+    "framework/tests/tui/test_release_contract.py",
+    "framework/docs/FAQ.md",
+    "framework/docs/QUICK_START.md",
+    "framework/docs/RELEASE_KICKOFF.md",
+    "framework/docs/SUBMISSION_FORMS.md",
+    "framework/docs/installer/LIVE_WIZARD.md",
+    "framework/docs/installer/REFERENCE.md",
+    "framework/docs/installer/SCAFFOLD.md",
+    "cuts/release-foundations-bundle-E-test-contract.report.md",
+    "cuts/release-foundations-bundle-E-test-contract.meta.json"
+  ],
+  "verification": {
+    "pytest_release_contract": "pass",
+    "pytest_release_contract_result": "6 passed",
+    "grep_framework_readme_gui_cta": "pass_zero_output",
+    "grep_site_public_install_sh_gui_cta": "pass_expected_backcompat_match",
+    "git_diff_check": "pass",
+    "make_test": "pass",
+    "make_test_result": "37 passed"
+  },
+  "scope_boundary": {
+    "site_public_install_sh_changed": false,
+    "git_push": false,
+    "branch_switch": false,
+    "worktree": false
+  },
+  "layered_reading": {
+    "truncation_warning_with_dump_path_seen": false,
+    "spans_read": 0,
+    "coverage": "not_applicable"
+  }
+}

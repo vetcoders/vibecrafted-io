@@ -1,15 +1,120 @@
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
 const pages = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/pages" }),
   schema: z.object({
     title: z.string(),
     description: z.string().optional(),
   }),
 });
 
+// i18n collection — per-locale page sections. Each file is a logical section
+// (hero, pipeline, skills, ...) with redaction-friendly YAML frontmatter for
+// structured data and markdown body for long prose. Monika edits these
+// directly; type safety is enforced by zod on build.
+const i18n = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/i18n" }),
+  schema: z.looseObject({
+    // Shared optional fields — individual sections extend this loose object.
+    frameworkTitle: z.string().optional(),
+    lead: z.string().optional(),
+    quote: z.string().optional(),
+    evidence: z.string().optional(),
+    quickstart: z.string().optional(),
+    quickstartHref: z.string().optional(),
+  }),
+});
+
+// manifesto collection — bilingual operator-voice manifesto rendered at
+// `/manifesto?lang=en|pl`. EN is the canonical source (mirrored from
+// `vibecrafted/docs/THE_VIBE_HANGOVER.md`). PL ships as a stub for v1 until
+// a human-curated translation lands.
+const manifesto = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/manifesto" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    lang: z.enum(["en", "pl"]),
+    status: z.enum(["canonical", "en-only-for-v1"]).optional(),
+  }),
+});
+
+// showcase collection — Plan 16. Three case studies of vibecrafted discipline
+// in production. Public-source-only per kronika 2026-05-09 doctrine
+// (no PII, no internal topology, no operator file paths, no internal report
+// identity). Renders at `/showcase/` (index) and `/showcase/[slug]/` (per
+// study). Markdown body holds the long-form prose; frontmatter holds the
+// meta surface (title, lesson, plan/agent counts, duration, optional
+// public GitHub link).
+const showcase = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/showcase" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    lesson: z.string(),
+    plan_count: z.number().optional(),
+    agent_count: z.number().optional(),
+    duration: z.string().optional(),
+    description: z.string(),
+    github_link: z.url().optional(),
+  }),
+});
+
+// newsletter collection — Plan 19. Operator-voice updates published when
+// vibecrafted ships. Markdown-first; pushed to Buttondown via the
+// operator-side `scripts/buttondown-sync.sh` helper (env-gated, NOT
+// runtime). Frontmatter mirrors showcase shape so the rendering surface
+// stays familiar (title + date + summary). Optional `lesson` echoes the
+// shipping discipline; optional `github_link` cross-links to the cut that
+// motivated the issue. `summary` is required and feeds both archive cards
+// and RSS <description>.
+const newsletter = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/newsletter" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.string(),
+    summary: z.string(),
+    lesson: z.string().optional(),
+    github_link: z.url().optional(),
+  }),
+});
+
+// docs collection — Plan 15. Public docs mirror sourced from the sibling
+// repo `../vibecrafted/docs/` via `scripts/sync-docs.sh`. DO NOT edit the
+// generated files in `site/src/content/docs/` directly — the sync script
+// overwrites them on every run. Edit upstream in `../vibecrafted/docs/`,
+// then re-run sync.
+//
+// Frontmatter shape is fixed by the sync script:
+//   title       — display title (canonical H1 of the source doc)
+//   description — single-line summary for nav cards + meta tags
+//   slug        — URL slug (lowercased basename with underscores->dashes)
+//   section     — sidebar nav grouping ("install" | "architecture" |
+//                 "skills" | "faq" | "release" | "other")
+//   lang        — currently "en" only (PL deferred to v2)
+//   syncedAt    — UTC date of last sync (YYYY-MM-DD)
+//   sourcePath  — origin file path (`docs/<NAME>.md` in sibling repo) for
+//                 operator-side debugging
+const docs = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/docs" }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    slug: z.string(),
+    section: z.enum(["install", "architecture", "skills", "faq", "release", "other"]),
+    lang: z.enum(["en", "pl"]).default("en"),
+    syncedAt: z.string(),
+    sourcePath: z.string().optional(),
+  }),
+});
+
 export const collections = {
   pages,
+  i18n,
+  manifesto,
+  showcase,
+  newsletter,
+  docs,
 };

@@ -1,6 +1,7 @@
 .DS_Store
 **/.DS_Store
 .ai-agents/
+.env.foundations
 
 # AI Context
 .ai-context/*
@@ -47,3 +48,6 @@ aicx-dashboard.html
 /docs/_astro
 /docs/vibecrafted/.claude
 /docs/vibecrafted/.ai-context
+/shots
+/.loctree
+/framework

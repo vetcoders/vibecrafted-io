@@ -1,0 +1,105 @@
+{
+  "title": "\u2692 Vibecrafted.",
+  "version": "3.6.0",
+  "persist": true,
+  "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
+  "phases": [
+    {
+      "key": "introduction",
+      "label": "Introduction",
+      "optional": false,
+      "reason": "We will install \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. as a local-first framework for agent-assisted\ndevelopment. This step is intentionally quiet: it names the product, the install\nsurface, and the fact that every durable write below has a reason.",
+      "reasonLines": [
+        "We will install \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. as a local-first framework for agent-assisted",
+        "development. This step is intentionally quiet: it names the product, the install",
+        "surface, and the fact that every durable write below has a reason."
+      ],
+      "commands": ["pass"]
+    },
+    {
+      "key": "diagnostics",
+      "label": "Diagnostics and plan",
+      "optional": true,
+      "reason": "We will inspect the current machine before changing files.\n\nRequired decision:\n  Set your artifacts storage location.\n  REASON: \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. keeps the persistent artifacts on developer's hard disks\n  for past session context retrieval. We make this location explicit so reports,\n  transcripts, and run state can be inspected, moved, backed up, or deleted.\n  Default: ${VIBECRAFTED_HOME:-$HOME/.vibecrafted}/artifacts\n\nInstaller options live in one place:\n  runtime horse \u00b7 skill views \u00b7 Python tools \u00b7 dry-run or automation mode",
+      "reasonLines": [
+        "We will inspect the current machine before changing files.",
+        "Required decision:",
+        "Set your artifacts storage location.",
+        "REASON: \ud835\ude85\ud835\ude92\ud835\ude8b\ud835\ude8e\ud835\ude8c\ud835\ude9b\ud835\ude8a\ud835\ude8f\ud835\ude9d\ud835\ude8e\ud835\ude8d. keeps the persistent artifacts on developer's hard disks",
+        "for past session context retrieval. We make this location explicit so reports,",
+        "transcripts, and run state can be inspected, moved, backed up, or deleted.",
+        "Default: ${VIBECRAFTED_HOME:-$HOME/.vibecrafted}/artifacts",
+        "Installer options live in one place:",
+        "runtime horse \u00b7 skill views \u00b7 Python tools \u00b7 dry-run or automation mode"
+      ],
+      "commands": ["python3 scripts/vetcoders_install.py list --source ."]
+    },
+    {
+      "key": "installation",
+      "label": "Installation",
+      "optional": false,
+      "reason": "We will install:\n  - validate product foundations: loctree and aicx stay product-managed\n  - install or validate framework-owned support tools when needed\n  - frontier agent configuration\n  - shared skills, launchers, and mirrored agent views\n  - the selected runtime horse when RUNTIME=... is provided\n  - the Python CLI and MCP packages through uv tool install\n  - the vendored foundation binaries from bin/vendor/<platform> when the bundle carries them\n  - the Rust app/server binaries (voc, vc-admin, vc-server) as real files in ~/.local/bin",
+      "reasonLines": [
+        "We will install:",
+        "- validate product foundations: loctree and aicx stay product-managed",
+        "- install or validate framework-owned support tools when needed",
+        "- frontier agent configuration",
+        "- shared skills, launchers, and mirrored agent views",
+        "- the selected runtime horse when RUNTIME=... is provided",
+        "- the Python CLI and MCP packages through uv tool install",
+        "- the vendored foundation binaries from bin/vendor/<platform> when the bundle carries them",
+        "- the Rust app/server binaries (voc, vc-admin, vc-server) as real files in ~/.local/bin"
+      ],
+      "commands": [
+        "bash -e -c 'bash scripts/install-foundations.sh\nbash \"$PWD/vibecrafted-core/vibecrafted_core/runtime/scripts/install-frontier-config.sh\" --source \"$PWD\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\npython3 scripts/vetcoders_install.py install --source \".\" --compact --non-interactive --mirror\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\nmake --no-print-directory install-python-tools\nmake --no-print-directory install-vendored-binaries\nmake --no-print-directory install-app-binaries\nmake --no-print-directory install-server\n'"
+      ]
+    },
+    {
+      "key": "onboarding",
+      "label": "Onboarding",
+      "optional": true,
+      "reason": "We will run a final health check and leave the next useful commands visible:\ndoctor, update, uninstall, and the first project-level Vibecrafted entrypoint.",
+      "reasonLines": [
+        "We will run a final health check and leave the next useful commands visible:",
+        "doctor, update, uninstall, and the first project-level Vibecrafted entrypoint."
+      ],
+      "commands": ["python3 scripts/vetcoders_install.py doctor"]
+    }
+  ],
+  "diagnostics": {
+    "categories": [
+      "frameworks",
+      "foundations",
+      "toolchains",
+      "agents",
+      "additional_tools"
+    ],
+    "labels": {
+      "frameworks": "Frameworks",
+      "foundations": "Foundations",
+      "toolchains": "Toolchains",
+      "agents": "Agents",
+      "additional_tools": "Additional tools"
+    },
+    "commands": {
+      "foundations": ["loctree-mcp", "aicx-mcp", "prview", "screenscribe"],
+      "toolchains": ["python3", "node", "git", "rsync"],
+      "agents": ["claude", "codex", "agy", "junie", "grok"],
+      "additional_tools": ["mise", "starship", "atuin", "zoxide"]
+    },
+    "paths": {
+      "store_dir": "$VIBECRAFTED_ROOT/.vibecrafted/skills",
+      "helpers": "$XDG_CONFIG_HOME/vetcoders/vc-skills.sh",
+      "binaries": ["vibecraft", "vibecrafted"],
+      "symlinks": [
+        "$HOME/.agents",
+        "$HOME/.claude",
+        "$HOME/.codex",
+        "$HOME/.gemini",
+        "$HOME/.agy",
+        "$HOME/.junie",
+        "$HOME/.grok"
+      ]
+    }
+  }
+}

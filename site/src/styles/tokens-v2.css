@@ -1,0 +1,144 @@
+/*
+ * Landing V2 tokens — scoped to `.v2-scope` (applied on <body> by
+ * LayoutV2.astro). Coexists with classic tokens from tokens.css; does NOT
+ * override anything on :root, so classic Layout.astro consumers keep their
+ * current mint-muted / Fraunces styling untouched.
+ *
+ * Source of truth: /Users/silver/Downloads/explore/HANDOFF.md § 1 (tokens).
+ * Mockup: Vibecrafted Hero V1.html + 5 section screenshots in hero-v1/.
+ */
+
+.v2-scope {
+  /* ─── Surface ─────────────────────────────────────────────── */
+  --v2-black: #080807;
+  --v2-ink: #080807;
+  --v2-ink-soft: #171615;
+  --v2-ash: #2d2b27;
+  --v2-paper: #d8d1c4;
+  --v2-paper-soft: #e5ded2;
+  --v2-ink-rgb: 23, 22, 21;
+  --v2-paper-rgb: 216, 209, 196;
+  --v2-accent-rgb: 201, 154, 59;
+
+  /* ─── Text on dark ───────────────────────────────────────── */
+  --v2-fg-on-dark: #f5f4ef;
+  --v2-fg-on-dark-dim: rgba(245, 244, 239, 0.62);
+  --v2-fg-on-dark-mute: rgba(245, 244, 239, 0.42);
+
+  /* ─── Text on paper ──────────────────────────────────────── */
+  --v2-fg-on-paper: #171615;
+  --v2-fg-on-paper-dim: rgba(23, 22, 21, 0.64);
+  --v2-fg-on-paper-mute: rgba(23, 22, 21, 0.46);
+
+  /* ─── Accents ────────────────────────────────────────────── */
+  /* Amber (--v2-accent): narrative accent — hero italics ("AI-built"),
+     CTA borders, active tab underlines, phase numbers, evidence stats.
+     Aligned with loctree-com `--amber` (#c99a3b) for cross-product coherence. */
+  --v2-accent: #c99a3b;
+  --v2-accent-amber: var(--v2-accent);
+  /* Copper: kept as a discrete token for any surface that still wants the
+     rust narrative band; not aliased to --v2-accent any more. */
+  --v2-copper: #cf6f4e;
+  --v2-accent-red: #c0392b;
+  /* --v2-accent-2 was the mint/teal narrative companion (#3d7a72) for the
+     "vibes/vectors" dual-keyword pattern. Removed from product surface — all
+     existing var(--accent-2) consumers now collapse to the primary amber so
+     the page stays monochrome on narrative italics. The token name is kept
+     as an alias to avoid touching every component / i18n string. */
+  --v2-accent-2: var(--v2-accent);
+
+  /* ─── Rules (hairlines) ──────────────────────────────────── */
+  --v2-rule-dark: rgba(245, 244, 239, 0.12);
+  --v2-rule-dark-soft: rgba(245, 244, 239, 0.06);
+  --v2-rule-paper: rgba(23, 22, 21, 0.17);
+  --v2-rule-paper-soft: rgba(23, 22, 21, 0.09);
+
+  /* ─── Editorial paper material ──────────────────────────── */
+  --v2-paper-wash-on-ink: rgba(216, 209, 196, 0.055);
+  --v2-paper-wash-on-paper: rgba(229, 222, 210, 0.34);
+  --v2-paper-fiber-ink: rgba(245, 244, 239, 0.13);
+  --v2-paper-fiber-paper: rgba(23, 22, 21, 0.07);
+  --v2-paper-hairline: rgba(23, 22, 21, 0.24);
+  --v2-paper-hairline-soft: rgba(23, 22, 21, 0.12);
+  --v2-paper-glass: rgba(216, 209, 196, 0.34);
+  --v2-paper-glass-strong: rgba(216, 209, 196, 0.48);
+  --v2-paper-glass-highlight: rgba(255, 255, 255, 0.22);
+  --v2-paper-glass-shadow: 0 18px 44px rgba(23, 22, 21, 0.12);
+  --v2-paper-backdrop: blur(20px) saturate(0.92) contrast(0.96);
+
+  /* ─── Typography ─────────────────────────────────────────── */
+  --v2-font-display: "Instrument Serif", "Times New Roman", serif;
+  --v2-font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --v2-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Classic font stack — available globally for branding/typography variants
+     that need them. V2 layout still uses Instrument Serif + Inter + JBM. */
+  --v2-font-serif: "Lora", Georgia, serif;
+  --v2-font-sans: "Poppins", system-ui, -apple-system, sans-serif;
+  --v2-font-script: "Allura", "Brush Script MT", cursive;
+
+  /* ─── Radius ─────────────────────────────────────────────── */
+  /* Never pill-rounded. 2px everywhere. */
+  --v2-radius: 2px;
+
+  /* ─── Layout ─────────────────────────────────────────────── */
+  --v2-max-width: 1280px;
+  --v2-section-padding-y-top: 140px;
+  --v2-section-padding-y-bottom: 160px;
+  --v2-section-padding-x: 48px;
+
+  /* ─── Hero ───────────────────────────────────────────────── */
+  --v2-hero-min-height: 720px;
+
+  /* ─── Convenience aliases (scoped to .v2-scope only) ─────── */
+  /* Section components use these shorter names. They don't leak to :root
+     because they're defined inside .v2-scope. Classic tokens of the same
+     name on :root (if any) are shadowed only within this subtree. */
+  --ink: var(--v2-ink);
+  --ink-soft: var(--v2-ink-soft);
+  --ash: var(--v2-ash);
+  --paper: var(--v2-paper);
+  --paper-soft: var(--v2-paper-soft);
+  --fg-on-dark: var(--v2-fg-on-dark);
+  --fg-on-dark-dim: var(--v2-fg-on-dark-dim);
+  --fg-on-dark-mute: var(--v2-fg-on-dark-mute);
+  --fg-on-paper: var(--v2-fg-on-paper);
+  --fg-on-paper-dim: var(--v2-fg-on-paper-dim);
+  --fg-on-paper-mute: var(--v2-fg-on-paper-mute);
+  --accent: var(--v2-accent);
+  --accent-rgb: var(--v2-accent-rgb);
+  --accent-red: var(--v2-accent-red);
+  --accent-2: var(--v2-accent-2);
+  --accent-amber: var(--v2-accent-amber);
+  --rule-dark: var(--v2-rule-dark);
+  --rule-dark-soft: var(--v2-rule-dark-soft);
+  --rule-paper: var(--v2-rule-paper);
+  --rule-paper-soft: var(--v2-rule-paper-soft);
+  --paper-wash-on-ink: var(--v2-paper-wash-on-ink);
+  --paper-wash-on-paper: var(--v2-paper-wash-on-paper);
+  --paper-fiber-ink: var(--v2-paper-fiber-ink);
+  --paper-fiber-paper: var(--v2-paper-fiber-paper);
+  --paper-hairline: var(--v2-paper-hairline);
+  --paper-hairline-soft: var(--v2-paper-hairline-soft);
+  --paper-glass: var(--v2-paper-glass);
+  --paper-glass-strong: var(--v2-paper-glass-strong);
+  --paper-glass-highlight: var(--v2-paper-glass-highlight);
+  --paper-glass-shadow: var(--v2-paper-glass-shadow);
+  --paper-backdrop: var(--v2-paper-backdrop);
+  --font-display: var(--v2-font-display);
+  --font-body: var(--v2-font-body);
+  --font-mono: var(--v2-font-mono);
+  --font-serif: var(--v2-font-serif);
+  --font-sans: var(--v2-font-sans);
+  --font-script: var(--v2-font-script);
+}
+
+/* Narrow-viewport tuning — shared by all V2 sections. Individual sections
+   override where needed. */
+@media (max-width: 720px) {
+  .v2-scope {
+    --v2-section-padding-y-top: 80px;
+    --v2-section-padding-y-bottom: 100px;
+    --v2-section-padding-x: 24px;
+  }
+}

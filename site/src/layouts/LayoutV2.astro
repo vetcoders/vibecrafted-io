@@ -1,0 +1,491 @@
+---
+/**
+ * LayoutV2.astro — thin shell for the V2 landing redesign.
+ *
+ * Coexists with Layout.astro (classic). Subpages and classic landing continue
+ * to use Layout.astro. Only the new V2 landing (`/`, `/en/`, `/pl/`) uses
+ * LayoutV2.
+ *
+ * Loads: Instrument Serif (display) + Inter (body) + JetBrains Mono (code).
+ * Sets `.v2-scope` on <body> so `styles/tokens-v2.css` tokens apply.
+ * No nav/footer baked in — the page owns layout (handoff § 3.2: Nav is
+ * absolute positioned inside Hero section, not a global top bar).
+ */
+import { ClientRouter } from 'astro:transitions';
+import type { Lang } from '../lib/i18n';
+import SiteNavV2 from '../components/SiteNavV2.svelte';
+import SiteFooterV2 from '../components/SiteFooterV2.svelte';
+import SearchShellV2 from '../components/SearchShellV2.svelte';
+import SchemaOrg from '../components/SchemaOrg.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { getDocsSearchData } from '../lib/search/docs';
+import { getLocaleAlternates, getAlternateLocale } from '../lib/seo/hreflang';
+import '../styles/tokens-v2.css';
+import '../styles/terminal-window.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: Lang;
+  /** Path to OG image. Defaults to `/presence/og-image.png` (legacy static).
+   * For Plan 17 dynamic OGs, pass a `/og/<slug>.png` path that matches
+   * an entry in `OG_SLUGS` (src/lib/og-renderer.ts). Dynamic OGs render
+   * at 1200×630 — the og:image:width/height meta below adapts automatically. */
+  ogImage?: string;
+  ogType?: string;
+  /** When true, the page opens with a full-viewport hero that owns its own top
+   * spacing — no top padding is applied to <main>. Subpages should leave this
+   * false so the fixed nav doesn't overlap their content. */
+  hasHero?: boolean;
+  /** Full-screen interactive surfaces can opt out of the floating global search pill. */
+  hideSearch?: boolean;
+  /** Full-screen tools can own the ending of the page instead of rendering global footer chrome. */
+  hideFooter?: boolean;
+  /** Plan 19 — newsletter signup block above the footer. On by default for
+   *  prose pages; opt out for full-screen interactive surfaces and for the
+   *  newsletter routes themselves (which embed the signup inline). */
+  hideNewsletter?: boolean;
+  /** Contact form block above the footer. On by default for prose pages; opt
+   *  out for full-screen interactive surfaces. */
+  hideContact?: boolean;
+}
+
+const {
+  title,
+  description = 'Orchestration runtime for CLI coding agents.',
+  lang = 'en',
+  ogImage = '/presence/og-image.png',
+  ogType = 'website',
+  hasHero = false,
+  hideSearch = false,
+  hideFooter = false,
+  hideNewsletter = false,
+  hideContact = false,
+} = Astro.props as Props;
+
+// Plan 17 — Dynamic OG cards live under `/og/*.png` at 1200×630 (canonical
+// social-card size). Legacy static OG at `/presence/og-image.png` ships at
+// 1536×1024. Detect which family this page uses and emit matching dimensions
+// so Facebook/X/LinkedIn don't have to guess.
+const isDynamicOG = ogImage.startsWith('/og/');
+const ogImageWidth = isDynamicOG ? '1200' : '1536';
+const ogImageHeight = isDynamicOG ? '630' : '1024';
+
+const currentPath = Astro.url.pathname;
+
+function computeToggleHref(path: string, currentLang: Lang): string {
+  if (currentLang === 'pl') {
+    return path.replace(/^\/pl\//, '/en/').replace(/^\/pl$/, '/en/');
+  }
+  if (path === '/' || path === '') return '/pl/';
+  return path.replace(/^\/en\//, '/pl/').replace(/^\/en$/, '/pl/');
+}
+
+const toggleHref = computeToggleHref(currentPath, lang);
+
+const [searchDataAll, searchDataQuickstart, searchDataFaq] = hideSearch
+  ? [null, null, null]
+  : await Promise.all([
+      getDocsSearchData(lang, 'all'),
+      getDocsSearchData(lang, 'quickstart'),
+      getDocsSearchData(lang, 'faq'),
+    ]);
+
+const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
+const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
+const canonicalUrl = new URL(canonicalPath || '/', siteUrl).href;
+const ogImageUrl = new URL(ogImage, siteUrl).href;
+const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
+const alternates = getLocaleAlternates(canonicalPath || '/');
+const alternateOgLocale = getAlternateLocale(lang);
+
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description,
+  url: canonicalUrl,
+  inLanguage: lang,
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'Vibecrafted',
+    url: siteUrl,
+    publisher: {
+      '@type': 'Organization',
+      name: 'VetCoders',
+      url: 'https://github.com/VetCoders',
+    },
+  },
+});
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+  <ClientRouter />
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>{title}</title>
+  <meta content={description} name="description" />
+  <meta content={title} property="og:title" />
+  <meta content={description} property="og:description" />
+  <meta content={ogImageUrl} property="og:image" />
+  <meta content={ogImageWidth} property="og:image:width" />
+  <meta content={ogImageHeight} property="og:image:height" />
+  <meta content="image/png" property="og:image:type" />
+  <meta content={description} property="og:image:alt" />
+  <meta content={ogType} property="og:type" />
+  <meta content={canonicalUrl} property="og:url" />
+  <meta content="Vibecrafted" property="og:site_name" />
+  <meta content={ogLocale} property="og:locale" />
+  {alternates && <meta content={alternateOgLocale} property="og:locale:alternate" />}
+  <meta content="summary_large_image" name="twitter:card" />
+  <meta content={title} name="twitter:title" />
+  <meta content={description} name="twitter:description" />
+  <meta content={ogImageUrl} name="twitter:image" />
+  <meta content={description} name="twitter:image:alt" />
+  <meta content="@VetCoders" name="twitter:site" />
+  <meta content="index,follow" name="robots" />
+  <meta content="#080807" name="theme-color" />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content={[
+      "default-src 'none'",
+      "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src-attr 'unsafe-inline'",
+      "img-src 'self' data:",
+      "font-src 'self' https://fonts.gstatic.com",
+      "connect-src 'self' https://plausible.io",
+      "frame-src 'none'",
+      "worker-src 'self'",
+      "manifest-src 'self'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join('; ')}
+  />
+  <link href={canonicalUrl} rel="canonical" />
+  {alternates && <>
+    <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
+    <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
+    <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
+  </>}
+  <link href="/presence/favicon.ico" rel="icon" sizes="32x32" />
+  <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png" />
+  <link href="/presence/logo-128.png" rel="apple-touch-icon" />
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script is:inline type="application/ld+json" set:html={jsonLd} />
+  <SchemaOrg siteUrl={siteUrl} />
+  <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
+  <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+  <script is:inline>
+    (() => {
+      if (window.__vcScrollFadeRuntime) return;
+      window.__vcScrollFadeRuntime = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let targets = [];
+      let ticking = false;
+
+      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+      const sync = () => {
+        ticking = false;
+
+        if (reduceMotion.matches) {
+          targets.forEach((target) => {
+            target.style.removeProperty('--scroll-fade-opacity');
+            target.style.removeProperty('--scroll-fade-y');
+          });
+          return;
+        }
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+        const center = viewportHeight * 0.5;
+
+        targets.forEach((target) => {
+          const rect = target.getBoundingClientRect();
+          const targetHeight = Math.max(1, Math.min(rect.height, viewportHeight));
+          const targetCenter = rect.top + rect.height * 0.5;
+          const centerDistance = Math.abs(targetCenter - center);
+          const centerFade = 1 - clamp((centerDistance - viewportHeight * 0.18) / (viewportHeight * 0.42), 0, 1);
+          const visiblePx = clamp(Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0), 0, targetHeight);
+          const visibilityFade = clamp(visiblePx / targetHeight, 0, 1);
+          const opacity = clamp(Math.max(centerFade, visibilityFade * 1.15), 0.08, 1);
+          const direction = targetCenter < center ? -1 : 1;
+          const offset = Math.round((1 - opacity) * 18 * direction);
+
+          target.style.setProperty('--scroll-fade-opacity', opacity.toFixed(3));
+          target.style.setProperty('--scroll-fade-y', `${offset}px`);
+        });
+      };
+
+      const schedule = () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(sync);
+      };
+
+      const boot = () => {
+        targets = Array.from(document.querySelectorAll('[data-scroll-fade]'));
+        sync();
+      };
+
+      document.addEventListener('astro:page-load', boot);
+      window.addEventListener('scroll', schedule, { passive: true });
+      window.addEventListener('resize', schedule, { passive: true });
+      reduceMotion.addEventListener?.('change', schedule);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot, { once: true });
+      } else {
+        boot();
+      }
+    })();
+
+    (() => {
+      if (window.__vcSoftSectionSettleRuntime) return;
+      window.__vcSoftSectionSettleRuntime = true;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const settled = new Set();
+      let idleTimer = 0;
+      let programmatic = false;
+      let userScrollIntent = false;
+
+      const isLanding = () =>
+        document.body?.matches('.v2-scope[data-has-hero="true"]') && !reduceMotion.matches;
+
+      const markIntent = () => {
+        userScrollIntent = true;
+      };
+
+      const getKey = (target, index) => target.id || target.dataset?.settleKey || `v2-frame-${index}`;
+
+      const settleIfClose = () => {
+        window.clearTimeout(idleTimer);
+        idleTimer = 0;
+
+        if (!isLanding() || !userScrollIntent || programmatic) return;
+
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
+        const threshold = Math.min(220, viewportHeight * 0.22);
+        const candidates = Array.from(document.querySelectorAll('.hero, .v2-section[id]'));
+
+        let best = null;
+        candidates.forEach((target, index) => {
+          const key = getKey(target, index);
+          if (settled.has(key)) return;
+
+          const rect = target.getBoundingClientRect();
+          const distance = Math.abs(rect.top);
+          const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+          const visibleRatio = visible / Math.max(1, Math.min(rect.height, viewportHeight));
+
+          if (distance <= threshold && visibleRatio >= 0.48 && (!best || distance < best.distance)) {
+            best = { target, key, distance };
+          }
+        });
+
+        if (!best || best.distance < 8) return;
+
+        settled.add(best.key);
+        programmatic = true;
+        window.scrollTo({
+          top: window.scrollY + best.target.getBoundingClientRect().top,
+          behavior: 'smooth',
+        });
+        window.setTimeout(() => {
+          programmatic = false;
+          userScrollIntent = false;
+        }, 420);
+      };
+
+      const scheduleSettle = () => {
+        if (!isLanding() || !userScrollIntent || programmatic) return;
+        window.clearTimeout(idleTimer);
+        idleTimer = window.setTimeout(settleIfClose, 150);
+      };
+
+      const bootSettle = () => {
+        window.clearTimeout(idleTimer);
+        userScrollIntent = false;
+        programmatic = false;
+        settled.clear();
+      };
+
+      window.addEventListener('wheel', markIntent, { passive: true });
+      window.addEventListener('touchmove', markIntent, { passive: true });
+      window.addEventListener('keydown', (event) => {
+        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+          markIntent();
+        }
+      });
+      window.addEventListener('scroll', scheduleSettle, { passive: true });
+      document.addEventListener('astro:page-load', bootSettle);
+      bootSettle();
+    })();
+  </script>
+</head>
+<body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
+  <SiteNavV2 client:load lang={lang} currentPath={currentPath} toggleHref={toggleHref} />
+  <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
+    <slot />
+  </main>
+  {!hideFooter && !hideNewsletter && (
+    <div class="v2-newsletter-slot">
+      <NewsletterSignup variant="footer" lang={lang} />
+    </div>
+  )}
+  {!hideFooter && !hideContact && (
+    <div class="v2-contact-slot">
+      <ContactForm variant="footer" lang={lang} />
+    </div>
+  )}
+  {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
+  {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
+    <SearchShellV2
+      client:load
+      lang={lang}
+      searchDataAll={searchDataAll}
+      searchDataQuickstart={searchDataQuickstart}
+      searchDataFaq={searchDataFaq}
+    />
+  )}
+</body>
+</html>
+
+<style is:global>
+  /* ── V2 root + body baseline ────────────────────────────── */
+  /* Apply ink background as early as possible — html paints before body so
+   * we avoid the brief white flash that otherwise leaks through the fixed
+   * nav's semi-transparent background, and avoids any "white strip" between
+   * nav and first section during view-transitions. */
+  html:has(body.v2-scope) {
+    background: #080807;
+  }
+
+  body.v2-scope {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(var(--v2-paper-rgb), 0.035), transparent 34rem),
+      var(--v2-ink);
+    color: var(--v2-fg-on-dark);
+    font-family: var(--v2-font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body.v2-scope::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(var(--v2-paper-rgb), 0.18) 0 0.8px, transparent 1.35px),
+      radial-gradient(circle at 78% 62%, rgba(var(--v2-ink-rgb), 0.10) 0 0.75px, transparent 1.4px),
+      repeating-linear-gradient(0deg, rgba(var(--v2-paper-rgb), 0.045) 0 1px, transparent 1px 5px),
+      repeating-linear-gradient(90deg, rgba(var(--v2-ink-rgb), 0.028) 0 1px, transparent 1px 9px);
+    background-size: 17px 17px, 23px 23px, 100% 100%, 100% 100%;
+    mix-blend-mode: soft-light;
+    opacity: 0.32;
+  }
+
+  /* Anchor links can glide, but vertical snap made the full-bleed views fight natural scrolling. */
+  html:has(body.v2-scope) {
+    scroll-behavior: smooth;
+    scroll-snap-type: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html:has(body.v2-scope) {
+      scroll-behavior: auto;
+      scroll-snap-type: none;
+    }
+  }
+  body.v2-scope [id] {
+    scroll-margin-top: 96px;
+  }
+
+  /* Reset for any element that might end up inside V2 content */
+  body.v2-scope * {
+    box-sizing: border-box;
+  }
+  body.v2-scope img,
+  body.v2-scope svg,
+  body.v2-scope canvas {
+    display: block;
+    max-width: 100%;
+  }
+  body.v2-scope a {
+    color: inherit;
+    text-decoration: none;
+  }
+  body.v2-scope button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* V2 main shell — landing has full-viewport hero (no top padding), subpages
+   * need clearance for the fixed SiteNavV2 (~72px tall). Explicit ink bg so
+   * the area beneath the fixed nav is never empty/white during scroll or
+   * view-transitions. */
+  body.v2-scope .v2-main {
+    display: block;
+    background:
+      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 420px),
+      var(--v2-ink);
+  }
+  body.v2-scope .v2-main--subpage {
+    padding-top: 72px;
+  }
+
+  /* Plan 19 — newsletter slot above the footer. Lightweight wrapper; the
+   * NewsletterSignup component owns its own max-width and padding. */
+  body.v2-scope .v2-newsletter-slot {
+    padding: 64px 0 16px;
+  }
+
+  /* Contact form slot — sits between newsletter and footer. */
+  body.v2-scope .v2-contact-slot {
+    padding: 16px 0 16px;
+  }
+
+  @media (max-width: 720px) {
+    body.v2-scope .v2-newsletter-slot {
+      padding: 40px 0 8px;
+    }
+    body.v2-scope .v2-contact-slot {
+      padding: 8px 0 8px;
+    }
+  }
+
+  body.v2-scope [data-scroll-fade] {
+    opacity: var(--scroll-fade-opacity, 1);
+    transform: translate3d(0, var(--scroll-fade-y, 0), 0);
+    transition:
+      opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body.v2-scope [data-scroll-fade] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

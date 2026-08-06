@@ -1,0 +1,119 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import EngineeringCard from '../EngineeringCard.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+// Engineering V2 markdown is chrome-only; axioms body still lives in
+// sections.evidence (V1 dict) so we keep that import.
+const engineeringEntry = await getEntry('i18n', `${lang}/engineering-v2`);
+if (!engineeringEntry) throw new Error(`Missing i18n entry: ${lang}/engineering-v2`);
+const chromeData = engineeringEntry.data as { title: string; centerLabel: string };
+
+const section = getTranslations(lang).sections.evidence;
+
+const shiftEntry = await getEntry('i18n', `${lang}/shift-v2`);
+if (!shiftEntry) throw new Error(`Missing i18n entry: ${lang}/shift-v2`);
+const nextTitle = shiftEntry.data.title as string;
+
+function mapAccent(accent: string): 'default' | 'rust' | 'teal' {
+  if (accent === 'copper') return 'rust';
+  if (accent === 'patina') return 'teal';
+  return 'default';
+}
+---
+
+<SectionShell
+  number="02"
+  title={chromeData.title}
+  centerLabel={chromeData.centerLabel}
+  figure="02 · DWG VC-002"
+  surface="ink"
+  seam="to-ink"
+  id="engineering"
+>
+  <div class="eng">
+    <h2 class="eng__heading">
+      <Fragment set:html={section.titleHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+    <p class="eng__subtitle">{section.lead}</p>
+
+    <div class="eng__grid">
+      {section.items.map((axiom) => (
+        <EngineeringCard
+          client:visible
+          num={axiom.number}
+          title={axiom.title}
+          body={axiom.body}
+          bullets={[...axiom.details]}
+          detailsLabel={section.detailsLabel}
+          accent={mapAccent(axiom.accent)}
+        />
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="03" nextTitle={nextTitle} surface="ink" lang={lang} />
+</SectionShell>
+
+<style>
+  .eng__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.8vw, 72px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 24px;
+    text-align: center;
+  }
+
+  .eng__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .eng__subtitle {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 64ch;
+    margin: 0 auto 72px;
+    text-align: center;
+  }
+
+  .eng__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    /* Editorial doctrine (Maciej 2026-05-23): aksjomaty cards same height. */
+    align-items: stretch;
+  }
+
+  @media (max-width: 900px) {
+    .eng__grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .eng__heading {
+      text-align: left;
+    }
+
+    .eng__subtitle {
+      text-align: left;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+</style>

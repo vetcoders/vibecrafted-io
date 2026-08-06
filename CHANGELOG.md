@@ -3,6 +3,13 @@
 All notable changes to 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
+- Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
+
 ## 1.2.1 — 2026-04-01
 
 ### Added

@@ -1,0 +1,37 @@
+# Vibecrafted contact mailer — Caddy wiring (same-origin /api/contact).
+#
+# Merge the `handle /api/contact` block into your EXISTING vibecrafted.io site
+# block on libraxis-vm. Order matters: the specific handle must come BEFORE the
+# catch-all file_server handle, or the static server swallows /api/contact.
+#
+# Full example block (adapt root/paths to your deploy — DEPLOY_ROOT in the Makefile):
+
+vibecrafted.io {
+	encode zstd gzip
+
+	# Security headers. HSTS is the one Caddy must add (meta tags cannot carry it).
+	# CSP is delivered as a <meta http-equiv> from the site layout (LayoutV2.astro);
+	# promote it to a header only together with a drift check against that meta,
+	# or the two policies will silently diverge.
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	# Contact form → local mailer (systemd, 127.0.0.1:8787). Same-origin: no CORS.
+	handle /api/contact {
+		reverse_proxy 127.0.0.1:8787
+	}
+
+	# Static site (rsynced by `make site-deploy`).
+	handle {
+		root * /home/libraxis/vibecrafted-io
+		file_server
+	}
+}
+
+# After editing the Caddyfile:
+#   caddy validate --config /etc/caddy/Caddyfile
+#   sudo systemctl reload caddy

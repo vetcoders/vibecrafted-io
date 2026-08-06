@@ -16,28 +16,34 @@
     links: NavLink[];
     installHref: string;
     installLabel: string;
+    vcHref: string;
+    vcLabel: string;
+    vcTitle?: string;
     toggleHref: string;
     toggleLabel: string;
     toggleHreflang: string;
     toggleLang: string;
     githubLabel: string;
-    searchLabel: string;
     menuLabel: string;
     closeLabel: string;
+    primaryNavLabel: string;
   }
 
   let {
     links,
     installHref,
     installLabel,
+    vcHref,
+    vcLabel,
+    vcTitle,
     toggleHref,
     toggleLabel,
     toggleHreflang,
     toggleLang,
     githubLabel,
-    searchLabel,
     menuLabel,
     closeLabel,
+    primaryNavLabel,
   }: Props = $props();
 
   let mobileOpen = $state(false);
@@ -51,11 +57,6 @@
 
   function handleLinkClick() {
     window.setTimeout(closeNav, 0);
-  }
-
-  function openSearch() {
-    closeNav();
-    window.dispatchEvent(new CustomEvent('vibecrafted:search-toggle'));
   }
 
   function handleKeydown(event: KeyboardEvent) {
@@ -74,7 +75,7 @@
 <svelte:window bind:innerWidth={innerWidth} onkeydown={handleKeydown} />
 
 <div class="site-nav">
-  <nav aria-label="Primary" class="nav-links nav-links--desktop">
+  <nav aria-label={primaryNavLabel} class="nav-links nav-links--desktop">
     {#each links as link}
       <a
         class="nav-link"
@@ -86,15 +87,16 @@
       </a>
     {/each}
     <div class="nav-get-zone">
-      <button
-        class="nav-link nav-link--button nav-link--search"
-        type="button"
-        aria-label={searchLabel}
-        onclick={openSearch}
-      >
-        {searchLabel}
-      </button>
       <a class="nav-link nav-link--install" href={installHref}>{installLabel}</a>
+      <a
+        class="nav-link nav-link--vc"
+        href={vcHref}
+        rel="noopener noreferrer"
+        target="_blank"
+        title={vcTitle ?? vcLabel}
+      >
+        {vcLabel}
+      </a>
       <a
         class="nav-link nav-link--toggle"
         href={toggleHref}
@@ -142,7 +144,7 @@
       out:fade={{ duration: backdropDuration }}
     ></button>
     <nav
-      aria-label="Primary mobile"
+      aria-label={primaryNavLabel}
       class="nav-links nav-links--mobile"
       id="site-nav-mobile"
       in:fly={{ duration: panelDuration, y: -10 }}
@@ -161,22 +163,24 @@
         </a>
       {/each}
       <div class="nav-get-zone nav-get-zone--mobile">
-        <button
-          class="nav-link nav-link--button nav-link--search nav-link--mobile-item"
-          type="button"
-          aria-label={searchLabel}
-          onclick={openSearch}
-          style={`--nav-item-index: ${links.length};`}
-        >
-          {searchLabel}
-        </button>
         <a
           class="nav-link nav-link--install nav-link--mobile-item"
           href={installHref}
           onclick={handleLinkClick}
-          style={`--nav-item-index: ${links.length + 1};`}
+          style={`--nav-item-index: ${links.length};`}
         >
           {installLabel}
+        </a>
+        <a
+          class="nav-link nav-link--vc nav-link--mobile-item"
+          href={vcHref}
+          rel="noopener noreferrer"
+          target="_blank"
+          title={vcTitle ?? vcLabel}
+          onclick={handleLinkClick}
+          style={`--nav-item-index: ${links.length + 1};`}
+        >
+          {vcLabel}
         </a>
         <a
           class="nav-link nav-link--toggle nav-link--mobile-item"
@@ -236,82 +240,74 @@
     display: inline-flex;
     isolation: isolate;
     align-items: center;
-    min-height: 3rem;
-    padding-block: var(--space-xs);
+    min-height: 2.5rem;
+    padding: 0.55rem 0.45rem 0.6rem;
     color: var(--steel-dark);
     font-weight: 500;
     text-decoration: none;
     transition:
       color 0.2s ease,
-      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-      text-shadow 0.18s ease;
+      text-shadow 0.2s ease;
   }
 
-  .nav-link--button {
-    appearance: none;
-    border: 0;
-    background: none;
-    cursor: pointer;
-    font: inherit;
-  }
-
+  /* Top copper underline — matches phase-bar active marker (Image #33) */
   .nav-link::before {
     content: '';
     position: absolute;
-    inset: 0.38rem -0.55rem;
-    z-index: -1;
-    border: 1px solid rgba(212, 144, 92, 0.08);
-    border-radius: 999px;
-    background:
-      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
-      linear-gradient(135deg, rgba(184, 115, 51, 0.12), rgba(163, 184, 199, 0.04));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.04),
-      0 10px 24px rgba(0, 0, 0, 0.08);
+    top: 0;
+    left: 0.1rem;
+    right: 0.1rem;
+    height: 1.5px;
+    background: var(--copper);
     opacity: 0;
-    transform: scale(0.94);
+    transform: scaleX(0.3);
+    transform-origin: center;
     transition:
-      opacity 0.18s ease,
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.18s ease;
+      opacity 0.22s ease,
+      transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  /* Subtle shine sweep on hover */
   .nav-link::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0.38rem;
-    height: 1px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, rgba(212, 144, 92, 0), rgba(212, 144, 92, 0.92), rgba(212, 144, 92, 0));
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      115deg,
+      transparent 40%,
+      rgba(212, 144, 92, 0.14) 50%,
+      transparent 60%
+    );
     opacity: 0;
-    transform: scaleX(0.35);
-    transform-origin: center;
-    transition:
-      opacity 0.18s ease,
-      transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.25s ease;
   }
 
   .nav-link:hover,
   .nav-link:focus-visible {
-    color: var(--steel);
-    transform: translateY(-1px);
-    text-shadow: 0 0 14px rgba(163, 184, 199, 0.12);
+    color: var(--copper);
+    text-shadow: 0 0 10px rgba(212, 144, 92, 0.18);
   }
 
   .nav-link:hover::before,
-  .nav-link:focus-visible::before,
-  .nav-link--current::before {
-    opacity: 1;
-    transform: scale(1);
+  .nav-link:focus-visible::before {
+    opacity: 0.75;
+    transform: scaleX(1);
   }
 
   .nav-link:hover::after,
-  .nav-link:focus-visible::after,
-  .nav-link--current::after {
+  .nav-link:focus-visible::after {
     opacity: 1;
-    transform: scaleX(1);
+    animation: nav-shine 0.55s ease-out;
+  }
+
+  @keyframes nav-shine {
+    0% {
+      background-position: -120% 0;
+    }
+    100% {
+      background-position: 120% 0;
+    }
   }
 
   .nav-link--current {
@@ -319,10 +315,8 @@
   }
 
   .nav-link--current::before {
-    border-color: rgba(212, 144, 92, 0.18);
-    background:
-      linear-gradient(180deg, rgba(255, 251, 244, 0.05), transparent 58%),
-      linear-gradient(135deg, rgba(184, 115, 51, 0.16), rgba(163, 184, 199, 0.05));
+    opacity: 1;
+    transform: scaleX(1);
   }
 
   .nav-get-zone {
@@ -333,17 +327,9 @@
 
   .nav-link--toggle {
     position: relative;
-  }
-
-  .nav-link--toggle::before {
-    content: '';
-    position: absolute;
-    left: -0.625rem;
-    top: 50%;
-    width: 1px;
-    height: 14px;
-    background-color: var(--glass-panel-border);
-    transform: translateY(-50%);
+    border-left: 1px solid var(--glass-panel-border);
+    margin-left: 0.625rem;
+    padding-left: 0.625rem;
   }
 
   .nav-icon-link {
@@ -359,19 +345,13 @@
     color: var(--steel-dark);
     transition:
       border-color 0.2s ease,
-      background 0.2s ease,
-      color 0.2s ease,
-      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.18s ease;
+      color 0.2s ease;
   }
 
   .nav-icon-link:hover,
   .nav-icon-link:focus-visible {
-    color: var(--steel);
-    border-color: var(--steel-border-subtle);
-    background: var(--steel-bg-subtle);
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+    color: var(--copper);
+    border-color: color-mix(in srgb, var(--copper) 32%, transparent);
   }
 
   .nav-icon {
@@ -492,11 +472,6 @@
       padding: 0.1rem 0.2rem;
     }
 
-    .nav-links--mobile .nav-link--search {
-      grid-column: 1 / -1;
-      justify-content: center;
-    }
-
     .nav-link--mobile-item {
       opacity: 0;
       animation: nav-item-settle 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -530,13 +505,15 @@
       border-top: 1px solid rgba(216, 206, 188, 0.12);
     }
 
-    .nav-links--mobile .nav-link--toggle::before {
-      display: none;
-    }
-
     .nav-links--mobile .nav-link--install,
     .nav-links--mobile .nav-link--toggle {
       justify-content: center;
+    }
+
+    .nav-links--mobile .nav-link--toggle {
+      border-left: 0;
+      margin-left: 0;
+      padding-left: 0;
     }
 
     .nav-links--mobile .nav-icon-link {

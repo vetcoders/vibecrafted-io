@@ -1,0 +1,26 @@
+[
+  {
+    "id": "start-here",
+    "src": "/assets/product/02-start-here-map.png",
+    "label": "OPERATOR MAP",
+    "windowTitle": "Needs attention · Sessions — vc-frame"
+  },
+  {
+    "id": "finalized-run",
+    "src": "/assets/product/01-finalized-run.png",
+    "label": "FINALIZED RUN",
+    "windowTitle": "Vibecrafted. · Finalized runs"
+  },
+  {
+    "id": "cockpit",
+    "src": "/assets/product/03-vc-frame-cockpit.png",
+    "label": "COCKPIT",
+    "windowTitle": "vc-frame · dispatch layout"
+  },
+  {
+    "id": "anatomy",
+    "src": "/assets/product/04-vc-frame-anatomy.png",
+    "label": "ANATOMY",
+    "windowTitle": "vc-frame · anatomy"
+  }
+]

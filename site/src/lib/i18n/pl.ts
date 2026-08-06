@@ -3,17 +3,23 @@
 // docs/runtime/CONTENT_TRUTH.md.
 export const pl = {
   nav: {
+    about: "O nas",
+    runtime: "Runtime",
     pipeline: "Pipeline",
     skills: "Skille",
     marbles: "Marbles",
     framework: "Framework",
+    board: "BOARD",
     quickstart: "Szybki start",
     faq: "FAQ",
     dou: "DoU",
     get: "Pobierz",
     search: "Szukaj dokumentacji",
+    searchAll: "Cała powierzchnia",
     searchClose: "Zamknij wyszukiwanie",
     install: "Instaluj",
+    vc: "VC",
+    vcLabel: "VetCoders",
     github: "GitHub",
     license: "Licencja (BSL 1.1)",
     security: "Bezpieczeństwo",
@@ -24,12 +30,97 @@ export const pl = {
     closeMenu: "Zamknij menu",
     navPrimary: "Nawigacja główna",
     navFooter: "Nawigacja stopki",
+    v2Anchors: {
+      about: { label: "O NAS", sub: "Co to jest" },
+      runtime: { label: "RUNTIME", sub: "Cykl pracy" },
+      aicx: { label: "AICX", sub: "Pamięć" },
+      marbles: { label: "MARBLES", sub: "Konwergencja" },
+      playground: { label: "PLAYGROUND", sub: "Wypróbuj" },
+      dou: { label: "DoU", sub: "Audyt gotowości" },
+      faq: { label: "FAQ", sub: "Pytania" },
+    },
   },
   footer: {
     ariaLabel: "Stopka strony",
-    brand: "VIBECRAFTED",
-    tagline: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
-    copyright: "© 2026 VetCoders",
+    brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
+    byline: "with AI Agents by VetCoders",
+    tagline:
+      "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
+    copyright: "(c)2024-2026 VetCoders",
+    license: "BSL 1.1",
+  },
+  v2Chrome: {
+    footer: {
+      ariaLabel: "Stopka strony",
+      byline: "z agentami AI od VetCoders",
+      tagline:
+        "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
+      quickstart: "SZYBKI START",
+      faq: "FAQ",
+      github: "GITHUB",
+      license: "LICENCJA (BSL 1.1)",
+      security: "BEZPIECZEŃSTWO",
+    },
+    search: {
+      ariaLabel: "Wyszukiwanie",
+      openAria: "Otwórz wyszukiwarkę",
+      queryAria: "Wpisz szukaną frazę",
+      placeholder: "Szukaj: install, auth, Stripe, deploy…",
+      tabs: {
+        all: "WSZYSTKIE SEKCJE",
+        quickstart: "SZYBKI START",
+        faq: "FAQ",
+      },
+      prompt:
+        "Zapytaj co to naprawia, jak to zainstalować albo gdzie zwykle chowa się ryzyko release.",
+      fastPathsLabel: "SZYBKIE ŚCIEŻKI",
+      fastPaths: {
+        framework: "Playground frameworka",
+        install: "Zainstaluj krok po kroku",
+        quickstart: "Zobacz szybki start",
+        overview: "Wróć do przeglądu",
+      },
+      resultsLabel: "WYNIKI",
+      empty:
+        "Wpisz co najmniej dwa znaki, żeby przeszukać statyczny indeks dokumentacji.",
+    },
+  },
+  v2Pages: {
+    landing: {
+      title: "Vibecrafted — Runtime operacyjny multiagentowych CLI workflows.",
+      description:
+        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
+    },
+    faq: {
+      title: "Vibecrafted · FAQ",
+      description:
+        "Pytania, które obcy zadają jako pierwsze o runtime orkiestracji Vibecrafted.",
+    },
+    dou: {
+      title: "Vibecrafted · DoU — Definicja niezrobionego",
+      description:
+        "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+    },
+  },
+  v2Hero: {
+    ariaLabel: "Sekcja główna",
+    eyebrow: "RUNTIME OPERACYJNY · MULTIAGENTOWE CLI WORKFLOWS",
+    heading: {
+      pre: "Runtime operacyjny",
+      mid: "dla multiagentowych",
+      accent: "CLI workflows.",
+    },
+    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
+    ctaPrimary: "INSTALUJ",
+    ctaSecondary: "QUICK START",
+    telemetry: {
+      marbles: "AGENCI",
+      converge: "REPO",
+      live: "LIVE",
+    },
+    telemetryLegend: "Powierzchnia dispatchu: agenci, repo, żywe runy.",
+    canvasCaption: "Real usage · Start here · Session Manager · rail sesji.",
+    scroll: "SCROLL",
   },
   copyButton: {
     default: "Kopiuj",
@@ -41,50 +132,83 @@ export const pl = {
     errorAria: "Kopiowanie nie powiodło się",
   },
   sections: {
-    hero: {
-      frameworkTitleHtml:
-        'Silnik <span class="manifesto-title__framework-accent">release</span>&apos;u dla oprogramowania budowanego z AI',
-      lead: "Dowieź oprogramowanie budowane z AI bez vibe hangover.",
-      quoteHtml:
-        "Weź repo, które agenci już wytworzyli, i doprowadź je do stanu, który obca osoba może zainstalować, zaufać mu i użyć.",
-      evidence: "Dowody",
-      quickstart: "Otwórz szybki start",
-      quickstartHref: "/pl/quickstart/",
-    },
     pipeline: {
       label: "Metoda",
       title: "Twórz → Konwerguj → Wypuść",
-      sub: "Model operacyjny klasy założycielskiej do kształtowania, odszumiania i wreszcie wypuszczania oprogramowania z agentami AI.",
-      mermaid: `%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.3.0
+      sub: "Mały model operacyjny do kształtowania pracy agentów, redukowania dryfu i przygotowania release surface, którą da się obejrzeć.",
+      hero: {
+        stages: [
+          { name: "Scaffold", subtitle: "read · mapa przed cięciem" },
+          { name: "Implement", subtitle: "write · agenci dowożą" },
+          { name: "Review", subtitle: "read · podważ zapis" },
+          {
+            name: "Konwergencja",
+            subtitle: "write · marbles ⬆ polarize ⬇",
+            kind: "core" as const,
+          },
+          { name: "Release", subtitle: "write · wypuść dla obcych" },
+        ],
+      },
+      controls: {
+        expand: "Rozwiń",
+        expandLabel: "Rozwiń pełny pipeline",
+        source: "Źródło",
+        preview: "Podgląd",
+        split: "Podział",
+        copy: "Kopiuj",
+        copied: "Skopiowano",
+        copyError: "Nie udało się",
+        ariaSource: "Pokaż lub ukryj kod źródłowy Mermaid",
+        ariaPreview: "Wróć do diagramu hero",
+        ariaSplit: "Pokaż źródło i techniczny podgląd obok siebie",
+        ariaCopy: "Skopiuj kod Mermaid do schowka",
+        ariaCopiedFeedback: "Kod skopiowany do schowka",
+        ariaCopyErrorFeedback: "Kopiowanie nie powiodło się",
+      },
+      mermaidFull: `%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#07111f",
+    "primaryColor": "#0c1626",
+    "primaryTextColor": "#f3efe7",
+    "primaryBorderColor": "#2d3b56",
+    "lineColor": "#d8894b",
+    "secondaryColor": "#101b2d",
+    "tertiaryColor": "#0d1728",
+    "fontFamily": "Inter, ui-sans-serif, system-ui, sans-serif",
+    "fontSize": "16px"
+  },
+  "flowchart": {
+    "curve": "basis",
+    "htmlLabels": true,
+    "nodeSpacing": 32,
+    "rankSpacing": 46,
+    "padding": 14
+  }
+} }%%
 flowchart LR
-    subgraph "Twórz"
-        scaffold["Scaffold"] --> init["Init"]
-        init --> workflow["Workflow"]
-        workflow --> followup["Follow-up"]
-    end
-    followup --> marbles{{"Pętla Marbles"}}
-    marbles -->|P0/P1/P2 > 0| marbles
-    marbles --> dou["DoU"]
-    subgraph "Wypuść"
-        dou --> decorate["Decorate"]
-        decorate --> hydrate["Hydrate"]
-        hydrate --> release(["Release"])
-    end`,
-      highlighted: `<span class="comment">%% 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Pipeline v1.3.0</span>
-flowchart LR
-    subgraph "Twórz"
-        scaffold["Scaffold"] --&gt; init["Init"]
-        init --&gt; workflow["Workflow"]
-        workflow --&gt; followup["Follow-up"]
-    end
-    followup --&gt; marbles{{"Pętla Marbles"}}
-    marbles --&gt;|P0/P1/P2 &gt; 0| marbles
-    marbles --&gt; dou["DoU"]
-    subgraph "Wypuść"
-        dou --&gt; decorate["Decorate"]
-        decorate --&gt; hydrate["Hydrate"]
-        hydrate --&gt; release(["Release"])
-    end`,
+    S["Scaffold · R"] --> I["Implement · W"]
+    I --> RV["Review · R"]
+    RV --> WF["Workflow · W"]
+    WF --> FU["Follow-up · R"]
+    FU --> MA{{"Marbles · W ⬆"}}
+    MA --> AU["Audit · R"]
+    AU --> PO{{"Polarize · W ⬇"}}
+    PO --> DU["DoU · R"]
+    DU --> HY["Hydrate · W"]
+    HY --> RE["Release · W"]
+
+    classDef read fill:#0d1728,stroke:#3b6ea5,color:#dbe7f3,stroke-width:1.3px;
+    classDef write fill:#1a1410,stroke:#d8894b,color:#ffd9bd,stroke-width:1.6px;
+    classDef core fill:#1a1110,stroke:#e2935a,color:#ffd9bd,stroke-width:2.4px;
+    class S,RV,FU,AU,DU read;
+    class I,WF,HY,RE write;
+    class MA,PO core;`,
+      mermaidModal: {
+        open: "Rozwiń pełny pipeline",
+        close: "Zamknij diagram pipeline'u",
+        title: "kadencja vc-ship — Read ↔ Write, 11 taktów",
+      },
       notes: [
         {
           title: "Twórz",
@@ -96,88 +220,13 @@ flowchart LR
         },
         {
           title: "Wypuść",
-          body: "Zaudytuj powierzchnię produktu z DoU, wypoleruj z Decorate i zapakuj z Hydrate przed finalnym Release.",
+          body: "Przeaudytuj powierzchnię produktu przez DoU, wypoleruj przez Decorate i zapakuj przez Hydrate przed finalnym Release.",
         },
       ],
-    },
-    foundation: {
-      label: "Fundamenty runtime",
-      title: "Infrastruktura pod frameworkiem.",
-      sub: "To są fundamenty, a nie skille: wzrok, pamięć, artefakty review i narracyjny dowód z runtime dla warstwy agentowej.",
-      cards: [
-        {
-          number: "01",
-          href: "https://loct.io",
-          name: "loctree",
-          iconClass: "foundation-icon foundation-icon--steel",
-          role: "Oczy",
-          body: "Strukturalna inteligencja codebase. Mapuje pliki, zależności, huby i blast radius zanim agent dotknie jakiejkolwiek zmiany.",
-          linkLabel: "loct.io",
-        },
-        {
-          number: "02",
-          href: "https://github.com/VetCoders/ai-contexters/releases",
-          name: "aicx",
-          iconClass: "foundation-icon foundation-icon--copper",
-          role: "Pamięć",
-          body: "Odzyskiwanie decyzji dla warstwy agentowej. CLI `aicx` / serwer `aicx-mcp` indeksują decyzje, intencje i wyniki, żeby sesje mogły odtworzyć co zostało ustalone i dlaczego.",
-          linkLabel: "github.com/VetCoders/ai-contexters/releases",
-        },
-        {
-          number: "03",
-          href: "https://github.com/VetCoders/prview/releases",
-          name: "prview",
-          iconClass: "foundation-icon foundation-icon--patina",
-          role: "Review",
-          body: "Ustrukturyzowane artefakty review. Zamienia zmiany w kodzie w trwałe findingi, które mogą czytać kolejne agenty i ludzie.",
-          linkLabel: "github.com/VetCoders/prview/releases",
-        },
-        {
-          number: "04",
-          href: "https://github.com/VetCoders/ScreenScribe",
-          name: "ScreenScribe",
-          iconClass: "foundation-icon foundation-icon--muted",
-          role: "Uszy",
-          body: "Narracyjny review runtime. Zamienia nagrania ekranu z komentarzem w ustrukturyzowane findingi o realnej powierzchni produktu.",
-          linkLabel: "github.com/VetCoders/ScreenScribe",
-        },
-      ],
-    },
-    marbles: {
-      label: "Marbles",
-      title: "Odszumiaj aż koło się zapełni",
-      sub: "Agenci AI to stochastyczne papugi. Każda generacja wprowadza szum. Nie da się tego obejść promptem. Iterujesz.",
-      heading: "Izomorfizm",
-      formulas: [
-        {
-          label: "Dyfuzja obrazu",
-          code: "szum → odszumienie × N → obraz",
-        },
-        {
-          label: "Dyfuzja kodu",
-          code: "chaos → redukcja_entropii × N → produkt",
-        },
-      ],
-      stepsAria: "Etapy konwergencji",
-      steps: [
-        "Krok 0: Czysty szum",
-        "Krok 1: Init",
-        "Krok 2: Implementacja",
-        "Krok N: DoU < próg = DoD",
-      ],
-      note: "Nie ma ustalonej liczby pętli. Pętla działa aż P0=P1=P2=0 i koło się wypełni. Wczesne pętle robią korekty strukturalne, późne pętle dopracowują detale.",
-      frameworkHref: "/pl/framework/",
-      portal: {
-        kicker: "Interaktywny playground",
-        title: "Otwórz tablicę konwergencji jako osobną powierzchnię",
-        body: "Tablica nie jest już wciśnięta w landing page. Pełnoekranowy playground jest teraz powierzchnią dydaktyczną: ręczne fazy, prompt poleceń i ruch board-first.",
-        cta: "Wejdź do playgroundu",
-        note: "Board-first. Ręczny. Kształtowany komendami. Zbudowany dla kierunku 1.3.0.",
-      },
     },
     evidence: {
-      titleHtml: "To nie magia.<br />To rygorystyczna inżynieria.",
-      lead: "Słownictwo jest żywe, bo powstało pod nocną presją. Pod vibem kryje się rygorystyczny model operacyjny dla kontekstu, redukcji wariancji i prawdy o produkcie.",
+      titleHtml: "Mniej magii<br />Więcej pracy, którą da się obejrzeć",
+      lead: "Słownictwo żyje tylko wtedy, kiedy system zostaje inspekowalny: kontekst przed edycją, dowód po runie i powierzchnia release, która sama mówi, co nadal jest niepewne.",
       revealLabel: "Otwórz notatkę",
       closeLabel: "Zamknij notatkę",
       detailsLabel: "Konsekwencja operacyjna",
@@ -186,10 +235,10 @@ flowchart LR
           number: "01",
           accent: "steel",
           title: "Kontekst wzbogacony AST",
-          body: "LLM-y halucynują, gdy kodują na ślepo. Dzięki eksternalizacji pamięci architektonicznej w mapy AST, 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. utrzymuje modele dokładnie zorientowane w Twoim codebase.",
+          body: "Modele dryfują, kiedy piszą w repo na ślepo. Mapy strukturalne dają sesji punkty orientacyjne, zanim agent ruszy plik.",
           details: [
-            "Loctree i pokrewne mapy strukturalne zamieniają repo w teren nawigacyjny jeszcze zanim zacznie się edycja.",
-            "Agent pracuje na nazwanych plikach, blast radiusie i topologii symboli zamiast dryfować w mgle grepów.",
+            "Loctree i pokrewne mapy zamieniają repo w teren nawigacyjny przed pierwszą edycją.",
+            "Agent pracuje na nazwanych plikach, blast radiusie i topologii symboli — zamiast dryfować w mgle grepów.",
             "To obniża fałszywą pewność: jeśli struktura kłóci się z promptem, wygrywa struktura.",
           ],
         },
@@ -197,10 +246,10 @@ flowchart LR
           number: "02",
           accent: "copper",
           title: "Stochastyczna konwergencja",
-          body: "Generowanie kodu jest stochastyczne. Pętla Marbles wykorzystuje priorytetowane pętle odszumiania, aby nieustannie redukować wariancję, wymuszając stan gotowy do wysyłki.",
+          body: "Każde generowanie kodu to szum. Pętla Marbles przerabia ten szum: małe pętle, kontrprzykłady i widoczna praca nierozwiązana.",
           details: [
             "Jedno odpalenie nie jest dowodem. Pętla stale tnie najbardziej ryzykowne kłamstwo, aż runtime zacznie zgadzać się z obietnicą.",
-            "Wczesne pętle usuwają fałsze strukturalne; późniejsze ściskają chropowatość do spokojniejszego i bardziej powtarzalnego kształtu produktu.",
+            "Wczesne pętle wycinają fałsze strukturalne. Późniejsze ściskają chropowatość do powtarzalnego kształtu produktu.",
             "Celem nie jest „ładny output”, tylko stan, w którym problemy P0/P1/P2 zbiegają do zera.",
           ],
         },
@@ -208,7 +257,7 @@ flowchart LR
           number: "03",
           accent: "patina",
           title: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚜𝚖𝚊𝚗𝚜𝚑𝚒𝚙",
-          body: "Ustrukturyzowana Inżynieria Współpracy Człowiek-AI. Opakowujemy deterministyczne checkpointy ludzkie wokół stochastycznej generacji. Rezultat to system, który kontrolujesz, któremu ufasz i który rozumiesz.",
+          body: "Rzemieślnicza współpraca człowieka i AI. Rzemiosło jest w handoffie: ludzie trzymają scope, smak i decyzje nieodwracalne; agenci robią fieldwork z dowodem przyczepionym do pracy.",
           details: [
             "Ludzie nie ścigają się z modelem na szybkość pisania; biorą odpowiedzialność za scope, truth checki i nieodwracalne decyzje.",
             "Agenci dostają przestrzeń do głębokiego fieldworku, ale gates, artefakty review i dowód z runtime trzymają finalny kształt w ryzach.",
@@ -217,177 +266,12 @@ flowchart LR
         },
       ],
     },
-    skills: {
-      label: "Zestaw skilli",
-      title: "16 wyspecjalizowanych workflowów",
-      sub: "Zakodowane na twardo procedury wykute w okopach. Napędzane modelami frontier i inteligencją strukturalną w Rust.",
-      scrollLeft: "Przewiń w lewo",
-      scrollRight: "Przewiń w prawo",
-      revealLabel: "Flip po kontekst. Klik po pełną notatkę.",
-      openLabel: "Otwórz notatkę skilla",
-      closeLabel: "Zamknij notatkę skilla",
-      phaseLabel: "Najlepsze miejsce w pętli",
-      tagsLabel: "Tagi operacyjne",
-      triggersLabel: "Typowe prompty wejściowe",
-      cards: [
-        {
-          id: "vc-scaffold",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          cardClass: "card--accent-steel",
-          descHtml:
-            "Planowanie architektury od założyciela. Mapuje krajobraz i tworzy scoped plan budowy do realizacji przez agentów.",
-          tags: ["architektura", "scoping", "MVP"],
-          triggerHtml: '"Scaffold: real-time dashboard" · "Zaplanuj to"',
-        },
-        {
-          id: "vc-init",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Bootstrap sesji agenta. Zmusza modele do zaindeksowania historii (AICX), odczytania AST (Loctree) i weryfikacji bramek jakości.",
-          tags: ["bootstrap", "kontekst", "ground truth"],
-          triggerHtml: '"Init session" · "Zainicjuj" · "Daj kontekst"',
-        },
-        {
-          id: "vc-workflow",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Pipeline ERi: Zbadaj &rarr; Researchu &rarr; Zaimplementuj. Ustrukturyzowana implementacja z kumulatywnym kontekstem.",
-          tags: ["ERi", "loctree", "research"],
-          triggerHtml: '"Workflow" · "Zbadaj i zaimplementuj" · "ERi"',
-        },
-        {
-          id: "vc-agents",
-          phase: "Flota Frontier",
-          phaseClass: "build card-phase--copper",
-          cardClass: "card--accent-copper",
-          descHtml:
-            "Spawnuj zewnętrzną flotę (Codex, Claude, Gemini) w prawdziwych terminalach z izolowanym kontekstem i trwałymi artefaktami.",
-          tags: ["frontier", "izolacja", "eval"],
-          triggerHtml: '"Spawn agents" · "Agent fleet" · "Odpal agentów"',
-        },
-        {
-          id: "vc-research",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Triangulacja trzech agentów. Rzuć trzy modele na ten sam problem i zsyntetyzuj dokument badawczy bez luk.",
-          tags: ["triangulacja", "SoTA", "prawda"],
-          triggerHtml: '"Research this" · "Zbadaj to" · "Triple research"',
-        },
-        {
-          id: "vc-partner",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Parowanie executive. Tryb wspólnego mózgu do strategicznego debugowania i triażu architektonicznego z delegowanym fieldworkiem.",
-          tags: ["partner", "strategia", "ownership"],
-          triggerHtml: '"Partner mode" · "Idziemy razem" · "You drive"',
-        },
-        {
-          id: "vc-justdo",
-          phase: "Dostawa E2E",
-          phaseClass: "build card-phase--light",
-          cardClass: "card--accent-steel",
-          descHtml:
-            "Autonomiczna dostawa. Bierze mandat, decyduje, implementuje, weryfikuje i pakuje bez ceremonii.",
-          tags: ["autonomiczny", "dostawa", "wow effect"],
-          triggerHtml: '"Just do it" · "Zrób to" · "Dowieź to"',
-        },
-        {
-          id: "vc-followup",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Sprawdzian rzeczywistości. Audyt po implementacji dający brutalny werdykt GO / NO-GO na podstawie bramek jakości.",
-          tags: ["audyt", "severity", "gotowość"],
-          triggerHtml: '"Follow-up check" · "Czy są jeszcze luki?"',
-        },
-        {
-          id: "vc-marbles",
-          phase: "Faza 2 · Konwerguj",
-          phaseClass: "loop-phase",
-          cardClass: "card--accent-copper",
-          descHtml:
-            "Iteracyjna konwergencja. Pętla aż entropia zostanie zmiażdżona (P0=0, P1=0, P2=0). Adaptacyjne odszumianie kodu.",
-          tags: ["dyfuzja", "konwergencja", "entropia"],
-          triggerHtml: '"Marbles" · "Kulki" · "Loop until done"',
-        },
-        {
-          id: "vc-review",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Pipeline review PR. Generuje artefakty prview i wyciąga maksimum findingów z dowodami na poziomie linii.",
-          tags: ["review", "prview", "findings"],
-          triggerHtml: '"Review PR" · "Daj findings" · "Run prview"',
-        },
-        {
-          id: "vc-prune",
-          phase: "Faza 1 · Twórz",
-          phaseClass: "build",
-          descHtml:
-            "Bezlitosne czyszczenie. Definiuje stożek runtime i wycina martwy kod, eksperymenty i bliznowatą tkankę bez litości.",
-          tags: ["prune", "clean", "runtime cone"],
-          triggerHtml: '"Prune repo" · "Strip dead code" · "Wyczyść repo"',
-        },
-        {
-          id: "vc-delegate",
-          phase: "Fallback",
-          phaseClass: "build card-phase--muted",
-          descHtml:
-            "Bezpieczna natywna delegacja przy użyciu Task tool Claude. Równoległość w sesji dla małych, ograniczonych zadań.",
-          tags: ["natywny", "Task tool", "sandboxed"],
-          triggerHtml: '"Delegate safely" · "Native agents"',
-        },
-        {
-          id: "vc-dou",
-          phase: "Faza 3 · Wypuść",
-          phaseClass: "ship",
-          descHtml:
-            "Definition of Undone. Audytuje powierzchnię produktu, ścieżki instalacji i SEO. Mierzy dystans do launchu.",
-          tags: ["DoU", "Plague Score", "lejek"],
-          triggerHtml: '"DoU audit" · "Czy jesteśmy gotowi?"',
-        },
-        {
-          id: "vc-decorate",
-          phase: "Faza 3 · Wypuść",
-          phaseClass: "ship",
-          cardClass: "card--accent-steel",
-          descHtml:
-            "Spójność wizualna. Wykrywa tokeny marki i podnosi słabe wzorce do premium języka interakcji.",
-          tags: ["smaczki", "polish", "intentional"],
-          triggerHtml: '"Decorate" · "Udekoruj" · "Make it look good"',
-        },
-        {
-          id: "vc-hydrate",
-          phase: "Faza 3 · Wypuść",
-          phaseClass: "ship",
-          descHtml:
-            "Pakowanie rynkowe. Realizuje pracę poza kodem: listingi marketplace, poprawki SEO i ścieżki onboardingu.",
-          tags: ["pakowanie", "SEO", "onboarding"],
-          triggerHtml: '"Hydrate" · "Make it shippable" · "Nawodnij"',
-        },
-        {
-          id: "vc-release",
-          phase: "Krok finalny",
-          phaseClass: "ship card-phase--patina",
-          cardClass: "card--accent-patina",
-          descHtml:
-            "Finałowy kamień milowy. Tagi, changelogi, publikacja w rejestrze i mechaniki go-to-market. Wyślij to ludziom.",
-          tags: ["ship", "publikacja", "rynek"],
-          triggerHtml: '"Release" · "Ship to market" · "Wypuść wersję"',
-        },
-      ],
-    },
     dou: {
       label: "DoU",
       title: "Definicja niezrobionego",
       quote:
-        "Agenci AI rozwiązali najtrudniejszą część tworzenia oprogramowania: sprawienie, żeby rzecz działała. Nie rozwiązali jeszcze drugiej najtrudniejszej: sprawienie, żeby była osiągalna.",
-      lead: "Problem rzadko dotyczy jakości kodu. To brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+        "Agenci AI często sprawiają, że rzecz działa. Nie sprawiają jednak, że można ją znaleźć, zainstalować, zaufać jej albo za nią zapłacić.",
+      lead: "Problem rzadko leży w samej jakości kodu. Leży w przestrzeni między działającym systemem a produktem, który ludzie z zewnątrz mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
       diagnosticLabel: "Diagnostyka założyciela:",
       checklist: [
         { kind: "check", text: "Testy przechodzą" },
@@ -398,61 +282,32 @@ flowchart LR
         { kind: "cross", text: "Nikt nie może za to zapłacić" },
       ],
       summary:
-        "Punkty 4–6 to Definicja Niezrobionego. Faza 3 wymusza wejście systemu na rynek.",
+        "Punkty 4-6 to Definicja Niezrobionego. Faza 3 pyta, czy system potrafi spotkać się z rynkiem.",
       caption: "Trajektoria konwergencji — pętla aż koło się zapełni",
       bars: ["Pętla 1", "Pętla 2", "Pętla 3", "Pętla 4", "Pętla 5"],
       scoreline: "Wynik: 15 → 40 → 65 → 85 → 100",
-    },
-    get: {
-      label: "Pobierz 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-      title: "Zainstaluj silnik release'u. Uruchom pętlę.",
-      sub: "Zbootstrapuj control plane przez publiczną ścieżkę instalacji, zweryfikuj lokalną powierzchnię i wejdź w pierwszy workflow prowadzący do realnego shipu.",
-      cards: [
-        {
-          step: "01",
-          title: "Zbootstrapuj control plane",
-          body: "Zainstaluj framework lokalnie przez publiczną ścieżkę bootstrapu. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo.",
-          command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
-        },
-        {
-          step: "02",
-          title: "Wejdź przez command deck",
-          body: "Główne drzwi wejściowe to teraz <code>vibecrafted</code>. Codzienne powierzchnie skilli są dostępne jako bezpośrednie komendy <code>vc-*</code>.",
-          command: "vibecrafted help && vibecrafted init claude",
-        },
-        {
-          step: "03",
-          title: "Napędzaj prawdziwą pracę",
-          body: "Zbadaj codebase, odtwórz ground truth i deleguj implementację do równoległych agentów &mdash; wszystko w jednym pipeline.",
-          command:
-            'vibecrafted workflow claude --prompt "Plan and implement auth module"',
-        },
-        {
-          step: "04",
-          title: "Konwerguj aż przestanie kłamać",
-          body: "Pętla marbles znajduje to, co wciąż jest źle i eliminuje to. Każde przejście wyostrza powierzchnię.",
-          command: "vibecrafted marbles codex --count 3 --depth 3",
-        },
-      ],
-      installWizardHref: "/pl/install/",
-      installWizardLabel: "Otwórz prowadzony instalator",
-      links: [
-        { href: "/pl/quickstart/", label: "Szybki start" },
-        { href: "/pl/faq/", label: "FAQ" },
-        { href: "https://github.com/VetCoders/vibecrafted", label: "GitHub" },
-      ],
     },
     quickstartHero: {
       label: "Szybki start",
       title: "Od zera do pierwszej pętli 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
       lead: "Zainstaluj framework, sprawdź środowisko i uruchom pierwszy workflow w realnym repozytorium. Chodzi o szybki sygnał, nie o długie ustawianie środowiska.",
-      quote: "Od repo wygenerowanego przez AI do produktu gotowego do release'u.",
+      quote:
+        "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
       primaryHref: "/pl/",
       primaryLabel: "Wróć do przeglądu",
       secondaryHref: "/pl/framework/",
       secondaryLabel: "Otwórz framework",
     },
     quickstartResources: {
+      reveal: "Zobacz więcej",
+      nextStep: {
+        label: "Następny krok",
+        lead: "Kiedy quickstart już ma sens, skieruj się do warstwy wyjaśniającej.",
+        faq: "FAQ",
+        foundation: "Fundamenty",
+        overview: "Przegląd",
+      },
+      sourceLabel: "Źródła kanoniczne",
       cards: [
         {
           kicker: "Czego potrzebujesz",
@@ -461,7 +316,8 @@ flowchart LR
             "macOS albo Linux",
             "Git, Python 3.10+ i <code>make</code>",
             "Co najmniej jeden runtime: Codex, Claude albo Gemini",
-            "Opcjonalnie, ale bardzo przydatne: loctree, aicx, prview, ScreenScribe",
+            "Wymagane fundamenty: loctree i aicx",
+            "Zalecane narzędzia dowodowe: prview i ScreenScribe",
           ],
         },
         {
@@ -504,49 +360,49 @@ flowchart LR
         {
           kicker: "Krok 1",
           title: "Zainstaluj 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. lokalnie",
-          body: "Użyj publicznej ścieżki bootstrapu. Tworzy kopię w <code>$VIBECRAFTED_ROOT/.vibecrafted/tools</code> i trzyma ten sam install truth co automatyzacja. Jeśli chcesz browser-guided installer, użyj <code>make vibecrafted</code> w repo.",
+          body: "Zacznij od lokalnej instalacji. Installer przygotuje narzędzia w Twoim środowisku i ustawi bazę, z której korzysta później automatyzacja.",
           command: "curl -fsSL https://vibecrafted.io/install.sh | bash",
-          note: "Bezpośredniej ścieżki <code>| bash</code> używaj tylko wtedy, gdy celowo wybierasz compact automation zamiast guided kickoffu.",
+          note: "Jeśli wolisz prowadzony start z poziomu repo, użyj <code>make vibecrafted</code>.",
         },
         {
           kicker: "Krok 2",
-          title: "Sprawdź, czy wszystko jest gotowe",
-          body: "Uruchom <code>doctor</code> wcześnie. Szybko pokaże, czy środowisko jest gotowe do pracy i czy czegoś jeszcze nie brakuje.",
+          title: "Sprawdź środowisko",
+          body: "Uruchom doctor, zanim zaczniesz pracę. To szybki przegląd instalacji, helperów, symlinków i ustawień shellowych, które mogą wpływać na pracę agentów.",
           command: "vibecrafted doctor",
-          note: "Jeśli coś świeci na żółto, doctor pokaże, czego brakuje, zamiast zostawiać Cię z domysłami.",
+          note: "Gdy coś wymaga poprawy, doctor pokazuje konkretny problem zamiast zostawiać Cię z domysłami.",
         },
         {
           kicker: "Krok 3",
-          title: "Wejdź w realne repo",
-          body: "Wejdź do repo, które naprawdę ma znaczenie, i pozwól agentowi załadować historię, strukturę i bramki jakości, zanim cokolwiek zmieni.",
+          title: "Wejdź do właściwego repo",
+          body: "Przejdź do projektu, nad którym naprawdę chcesz pracować, i pozwól agentowi najpierw poznać kontekst: historię, strukturę oraz bramki jakości.",
           command: "cd $VIBECRAFTED_ROOT/twoj-projekt\nvibecrafted init claude",
-          note: "<code>vibecrafted init</code> czyta historię, mapuje strukturę i uruchamia bramki jakości, zanim zacznie się implementacja.",
+          note: "<code>vibecrafted init</code> zakotwicza pracę w realnym repo, zanim agent zacznie cokolwiek zmieniać.",
         },
         {
           kicker: "Krok 4",
-          title: "Uruchom pierwsze realne zadanie",
-          body: "Gdy kontekst jest już zakotwiczony, możesz uruchomić pełną ścieżkę realizacji albo bardziej kontrolowany workflow, zależnie od tego, ile kontroli chcesz zachować.",
+          title: "Uruchom pierwsze zadanie",
+          body: "Kiedy kontekst jest już gotowy, zleć agentowi konkretne zadanie. Możesz wybrać szybki tryb wykonawczy albo spokojniejszy workflow z planem i implementacją.",
           commands: [
             'vibecrafted justdo codex --prompt "Dodaj uwierzytelnianie użytkowników z JWT"',
             'vibecrafted workflow claude --prompt "Zaplanuj i zaimplementuj moduł auth"',
           ],
-          note: "Użyj <code>vibecrafted justdo</code>, gdy chcesz oddać agentowi pełną odpowiedzialność. Użyj <code>vibecrafted workflow</code>, gdy chcesz przejść przez wyraźny układ ERI: Eksploruj &rarr; Research &rarr; Implementuj.",
+          note: "<code>justdo</code> jest dobre, gdy chcesz szybkiego wykonania. <code>workflow</code> sprawdza się, gdy potrzebujesz więcej kontroli nad planem i decyzjami.",
         },
         {
           kicker: "Krok 5",
-          title: "Uruchom flotę, gdy jeden model nie wystarcza",
-          body: "Ta ścieżka służy do pracy równoległej i zostawia trwałe artefakty. Chodzi o realne porównanie wyników, nie o pokaz.",
+          title: "Uruchom kilka modeli równolegle",
+          body: "Gdy jedno podejście to za mało, możesz rozdzielić pracę między modele. Jeden może robić research, drugi implementować, trzeci sprawdzić alternatywną ścieżkę.",
           command:
             "vibecrafted codex implement .vibecrafted/plans/my-plan.md\nvibecrafted claude research .vibecrafted/plans/my-plan.md\nvibecrafted gemini implement .vibecrafted/plans/my-plan.md",
-          note: "To są wygodne powierzchnie launchera. Przenośny kontrakt oparty o skrypty spawn jest opisany w kontrakcie runtime.",
+          note: "To nie jest pokaz siły. To sposób na porównanie wyników i zebranie trwałych artefaktów z pracy równoległej.",
         },
         {
           kicker: "Krok 6",
-          title: "Domknij pętlę, zanim uznasz pracę za skończoną",
-          body: 'W 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. "gotowe" nie oznacza tylko działającego kodu. Oznacza też to, czy ktoś rzeczywiście może z tego skorzystać.',
+          title: "Domknij pracę przed releasem",
+          body: "W 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. gotowe oznacza więcej niż działający kod. Projekt ma być zrozumiały, odnajdywalny, możliwy do uruchomienia i gotowy dla kogoś poza autorem.",
           command:
             'vibecrafted dou claude --prompt "Audit launch readiness"\nvibecrafted decorate codex --prompt "Polish the release surface"\nvibecrafted hydrate codex --prompt "Package the product"\nvibecrafted release codex --prompt "Prepare release steps"',
-          note: "Jeśli nie da się tego znaleźć, zrozumieć i zainstalować, to jeszcze nie jest gotowe. Nawet jeśli testy są zielone.",
+          note: "Zielone testy to dobry znak, ale nie koniec pracy. Release zaczyna się wtedy, gdy ktoś naprawdę może z tego skorzystać.",
         },
       ],
     },
@@ -554,13 +410,22 @@ flowchart LR
       label: "FAQ",
       title: "Pytania, które padają na początku.",
       lead: "Tutaj wyjaśniamy, jak działa 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. — bez zmuszania Cię do przekopywania repo, konfiguracji shella czy licencji.",
-      quote: "Installer, docs i command deck muszą obiecywać dokładnie to samo.",
+      quote:
+        "Installer, docs i command deck muszą obiecywać dokładnie to samo.",
       primaryHref: "/pl/quickstart/",
       primaryLabel: "Szybki start",
       secondaryHref: "/pl/",
       secondaryLabel: "Wróć do przeglądu",
     },
     faqContent: {
+      learningPath: {
+        label: "Wiedza",
+        lead: "Najpierw poznaj ścieżkę pracy, potem sięgaj po źródła.",
+        quickstart: "Szybki start",
+        foundation: "Fundamenty",
+        overview: "Przegląd",
+      },
+      sourceLabel: "Źródła kanoniczne",
       groups: [
         {
           title: "Instalacja",
@@ -570,25 +435,25 @@ flowchart LR
               questionHtml:
                 "Dlaczego 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. instaluje się do <code>$VIBECRAFTED_ROOT/.vibecrafted/</code>, a nie do <code>$HOME/.agents/</code>?",
               answerHtml:
-                "<code>$VIBECRAFTED_ROOT/.vibecrafted/</code> to miejsce, w którym działa cały system. Katalogi agentów tylko odwołują się do tego jednego wspólnego miejsca. To właśnie tam trafiają logika, artefakty i skrypty pomocnicze.",
+                "<code>$VIBECRAFTED_ROOT/.vibecrafted/</code> to wspólne miejsce pracy całego systemu. Katalogi agentów tylko się do niego odwołują. Dzięki temu logika, artefakty i skrypty pomocnicze nie rozchodzą się po różnych folderach.",
             },
             {
               questionHtml:
                 "Czy mogę zainstalować 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez edycji konfiguracji shella?",
               answerHtml:
-                "Tak. W trybie interaktywnym możesz zrezygnować z instalacji helperów. Jeśli chcesz mieć je tylko w bieżącej sesji, załaduj ręcznie skrypt pomocniczy <code>${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh</code>.",
+                "Tak. W trybie interaktywnym możesz pominąć instalację helperów. Jeśli chcesz użyć ich tylko w bieżącej sesji, załaduj ręcznie <code>${XDG_CONFIG_HOME:-$HOME/.config}/vetcoders/vc-skills.sh</code>.",
             },
             {
               questionHtml:
                 "Co dokładnie sprawdza <code>vibecrafted doctor</code>?",
               answerHtml:
-                "Polecenie <code>doctor</code> sprawdza centralny magazyn, dostępność helperów, stan odwołań agentów, opcjonalne fundamenty, takie jak loctree, aicx, prview i ScreenScribe, oraz to, czy środowisko nie przeszkadza narzędziom agentowym w stabilnej pracy.",
+                "<code>doctor</code> sprawdza, czy lokalne środowisko jest gotowe do pracy z agentami: czy istnieje wspólny katalog narzędzi, czy helpery są dostępne, czy odwołania agentów działają, czy wymagane fundamenty <code>loctree-mcp</code> i <code>aicx-mcp</code> są na miejscu, czy narzędzia dowodowe takie jak prview i ScreenScribe są dostępne oraz czy shell nie wypisuje zbędnych komunikatów, które mogłyby zepsuć automatyzację.",
             },
             {
               questionHtml:
                 "Którą ścieżkę instalacji wybrać w CI lub automatyzacji?",
               answerHtml:
-                'Użyj <code>make install</code>, jeśli chcesz prostą ścieżkę bez interakcji. Jeśli potrzebujesz pełnej kontroli z poziomu wiersza poleceń, uruchom <code>python3 scripts/vetcoders_install.py install --source "$PWD" --non-interactive</code>.',
+                'W CI użyj <code>make install</code>, jeśli potrzebujesz prostej instalacji bez pytań. Jeśli chcesz pełnej kontroli z poziomu komendy, uruchom <code>python3 scripts/vetcoders_install.py install --source "$PWD" --non-interactive</code>.',
             },
           ],
         },
@@ -599,30 +464,29 @@ flowchart LR
               open: true,
               questionHtml: "Jaka jest różnica między skillem a agentem?",
               answerHtml:
-                "Agent to runtime &mdash; na przykład Codex, Claude albo Gemini. Skill to zestaw instrukcji i zasad pracy, które mówią agentowi, jak ma działać na danym etapie.",
+                "Agent to wykonawca, na przykład Codex, Claude albo Gemini. Skill to zestaw zasad, instrukcji i kontekstu, który mówi agentowi, jak ma pracować na danym etapie.",
             },
             {
               questionHtml:
-                "Dlaczego nie po prostu ChatGPT, Copilot albo jeden wielki prompt?",
+                "Dlaczego nie wystarczy ChatGPT, Copilot albo jeden wielki prompt?",
               answerHtml:
-                "Bo 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. nie służy tylko do rozmowy z modelem. Opiera pracę na strukturze kodu, pamięci decyzji i iteracji. Dzięki temu model widzi repo i realną powierzchnię produktu, zamiast improwizować po omacku.",
+                "Bo 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. nie jest tylko rozmową z modelem. Framework kotwiczy pracę w repo, decyzjach, artefaktach i kolejnych iteracjach. Dzięki temu agent pracuje na realnym kontekście produktu, a nie na luźnym opisie zadania.",
             },
             {
-              questionHtml:
-                "Czy mogę używać 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. bez loctree albo aicx?",
+              questionHtml: "Czy loctree i aicx są wymagane?",
               answerHtml:
-                "Technicznie tak, ale tracisz rozumienie struktury i ciągłość między sesjami. Framework dalej działa, tylko agent pracuje na dużo słabszym kontekście.",
+                "Nie uczciwie. <code>loctree</code> i <code>aicx</code> są wymaganymi fundamentami: jedno daje agentowi percepcję struktury, drugie przywraca wcześniejsze decyzje i intencje. Jeśli któregoś brakuje, najpierw napraw warstwę fundamentów.",
             },
             {
               questionHtml:
                 "Jak przepchnąć <code>screenscribe review</code> przez wczesną walidację modeli?",
               answerHtml:
-                "Potraktuj to jak prawdę runtime, a nie rytuał. CLI musi być widoczny na <code>PATH</code>, <code>~/.config/screenscribe/config.env</code> musi być zgodne z domyślną konfiguracją Libraxis, dla aliasów modeli używaj <code>ai-suggestions</code>, ustaw <code>SCREENSCRIBE_VISION=false</code> jako intencję operatora i pamiętaj, że obecny CLI nadal nadpisuje tę flagę podczas <code>review</code>, więc launcher musi wstrzykiwać <code>--no-vision</code> dla zwykłych uruchomień review na obecnej ścieżce Libraxis. Lokalnym źródłem prawdy w repo jest dokument ScreenScribe Review Gate.",
+                "Najprościej: upewnij się, że CLI jest dostępne na <code>PATH</code>, konfiguracja w <code>~/.config/screenscribe/config.env</code> pasuje do ustawień Libraxis AI, alias modeli to <code>ai-suggestions</code>, a zwykłe uruchomienia review dostają <code>--no-vision</code>. Szczegóły tej bramki są opisane w dokumencie ScreenScribe Review Gate.",
             },
             {
               questionHtml: "Co to jest pętla Marbles?",
               answerHtml:
-                "Marbles to silnik konwergencji. Wynik AI bywa zaszumiony, więc framework zapętla implementację, sprawdzenie, pomiar i poprawki, aż najważniejsze problemy spadną do zera.",
+                "Marbles to sposób na doprowadzanie pracy agentów do wspólnego, stabilnego wyniku. Framework uruchamia kolejne rundy implementacji, sprawdzenia i poprawek, aż najważniejsze problemy zostaną usunięte albo jasno nazwane.",
             },
           ],
         },
@@ -634,18 +498,23 @@ flowchart LR
               questionHtml:
                 "Kiedy używać <code>vc-justdo</code> zamiast ręcznych faz?",
               answerHtml:
-                "Użyj <code>vc-justdo</code>, kiedy zadanie jest jasne i chcesz, żeby agent dowiózł je od początku do końca. Ręczne fazy wybierz wtedy, gdy chcesz bliżej pilnować kierunku i decyzji architektonicznych.",
+                "Użyj <code>vc-justdo</code>, gdy zadanie jest jasne i chcesz, żeby agent przeszedł przez nie od początku do końca. Ręczne fazy wybierz wtedy, gdy chcesz bliżej pilnować kierunku, decyzji technicznych albo architektury.",
+            },
+            {
+              questionHtml: "Czy mogę uruchomić 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. w CI/CD?",
+              answerHtml:
+                "Tak. Bezpośrednia ścieżka instalacji jest nieinteraktywna, a skille takie jak review, followup i release są wprost pomyślane jako powtarzalne bramki jakości albo pakowania.",
             },
             {
               questionHtml:
                 "Co znajduje się w <code>$VIBECRAFTED_ROOT/.vibecrafted/artifacts/</code>?",
               answerHtml:
-                "To tutaj trafiają plany, raporty, transkrypty i metadane z większych uruchomień. Powstało po to, żeby praca agentów zostawiała trwały ślad, a nie znikała w historii terminala.",
+                "Tam trafiają plany, raporty, transkrypty i metadane z większych uruchomień. Dzięki temu praca agentów zostawia trwały ślad i nie znika w historii terminala.",
             },
             {
               questionHtml: "Czym jest Definition of Undone?",
               answerHtml:
-                "DoU to audyt, który sprawdza, czy ktoś z zewnątrz może ten projekt znaleźć, zrozumieć, zainstalować i mu zaufać. Mierzy prawdę powierzchni produktu, a nie tylko stan repo.",
+                "Definition of Undone to audyt niedomkniętych miejsc. Sprawdza, czy ktoś spoza zespołu może projekt znaleźć, zrozumieć, zainstalować i zaufać mu na tyle, żeby naprawdę z niego skorzystać.",
             },
           ],
         },
@@ -668,7 +537,7 @@ flowchart LR
               questionHtml:
                 "Co jeśli potrzebuję szerszego modelu komercyjnego?",
               answerHtml:
-                "Jeśli potrzebujesz szerszych uprawnień komercyjnych, skontaktuj się z VetCoders. Przeczytaj warunki licencji i ustal właściwą ścieżkę.",
+                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. VetCoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
             },
           ],
         },
@@ -693,84 +562,186 @@ flowchart LR
         },
       ],
     },
-    references: {
-      label: "Referencje",
-      title: "Ground Truth i inspiracje",
-      sub: "Poniższa bibliografia rozszerza listę manifestu o wpływy modelowania strukturalnego i konwergencji wyłonione ponownie w wewnętrznej pracy groundingowej AICX.",
-      modal: {
-        eyebrow: "Źródło referencji",
-        title: "Ta strona zostanie otwarta w nowej karcie.",
-        sourceLabel: "Źródło",
-        backLabel: "<<< Wróć",
-        openLabel: "Otwórz >>>",
-        backHover: "Powrót do portalu",
-        openHover: "Przejdź do strony",
+    wizardLayout: {
+      defaultDescription: "Zainstaluj Vibecrafted lokalnie.",
+      closeInstaller: "Zamknij instalator",
+      closeInstallerShort: "Zamknij",
+    },
+    diffusionCanvas: {
+      boardLabel: "Plansza",
+      loopPrefix: "Pętla",
+    },
+    marbleCanvas: {
+      marbles: "Marbles",
+      converge: "Konwergencja",
+    },
+    installer: {
+      wizard: {
+        terminalKicker: "Podgląd instalacji",
+        terminalBody: "Skrypt uruchamia lokalny instalator.",
+        welcomeCta: "Pokaż jak to działa",
+        installPasteKicker: "Krok 1 · Skopiuj",
+        installPasteHint: "Wklej do terminala (macOS lub Linux)",
+        installRunKicker: "Krok 2 · Uruchom",
+        installRunHint:
+          "Instalator otwiera się lokalnie i pokazuje każdy krok tutaj.",
+        installPreviewKicker: "Podgląd",
+        installPreviewBody: "Czysta instalacja, krok po kroku.",
+        checkSummaryAria: "Podsumowanie diagnostyki",
+        doneStamp: "Status · Gotowy",
+        steps: {
+          labels: {
+            steps: "Kroki",
+            required: "wymagane",
+            optional: "opcjonalne",
+            previous: "Poprzedni krok",
+            next: "Następny krok",
+            quickStart: "Start",
+            toFinish: "Do finału",
+            stepAria: "krok",
+            ofAria: "z",
+          },
+        },
+        welcomeNotes: [
+          {
+            label: "Start w terminalu",
+            value: "Komenda startowa uruchamia lokalny instalator.",
+          },
+          {
+            label: "Jawna zgoda",
+            value: "Widzisz plan, zanim cokolwiek się zmieni.",
+          },
+        ],
+        terminal: [
+          "$ curl -fsSL https://vibecrafted.io/install.sh | bash",
+          "[bootstrap] Pobieranie install.sh...",
+          "[bootstrap] Rozwiązywanie kanału main...",
+          "[bootstrap] Weryfikacja integralności... SHA256 \u2713  Signature \u2713",
+          "[bootstrap] Przygotowywanie środowiska lokalnego w ~/.vibecrafted/",
+          "",
+          "[bootstrap] Uruchamianie instalatora...",
+          "",
+          "[instalator] Witaj -> Wyjaśnienie -> Sprawdzenie -> Lista kontrolna",
+          "[instalator] Otwieranie lokalnego widoku instalacji.",
+          "[instalator] Rozpoczynanie instalacji...",
+          "[instalator] [etap] Konfiguracja fundamentów",
+          "[instalator] [etap] Instalacja Vibecrafted",
+          "[instalator] Tutaj będą pojawiać się komunikaty na żywo...",
+        ],
+        pages: [
+          {
+            label: "Witaj",
+            title: "Zainstaluj Vibecrafted",
+            body: ["Wklej jedną komendę. Sprawdź plan. Zainstaluj lokalnie."],
+            hint: "Instalacja lokalna.",
+          },
+          {
+            label: "Skład",
+            title: "Manifest instalacji",
+            body: [],
+            hint: "Główne komponenty frameworka.",
+          },
+          {
+            label: "Stan",
+            title: "Weryfikacja środowiska",
+            body: [
+              "Vibecrafted sprawdza, co już jest na miejscu i co trzeba doinstalować.",
+            ],
+            hint: "Najpierw stan.",
+          },
+          {
+            label: "Instaluj",
+            title: "Egzekucja instalacji",
+            body: ["Kliknij Zainstaluj, żeby uruchomić plan."],
+            hint: "Uruchom plan.",
+          },
+          {
+            label: "Gotowe",
+            title: "Framework wdrożony",
+            body: ["Deck komend jest dostępny lokalnie. Kolejne kroki:"],
+            hint: "Środowisko jest gotowe.",
+          },
+        ],
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Weryfikacja stanu" },
+          { cmd: "vibecrafted init claude", desc: "Inicjalizacja sesji" },
+          { cmd: "vibecrafted help", desc: "Referencja komend" },
+        ],
       },
-      items: [
-        {
-          citationHtml:
-            "Morris, K.; B&ouml;ckeler, B. (2026). <em>Humans and Agents in Software Engineering Loops</em>; <em>Harness Engineering</em>; <em>Context Engineering for Coding Agents</em>. Thoughtworks / Martin Fowler.",
-          note: "Framing why-loop / how-loop, projektowanie harnessów i dyscyplina workflow prowadzonego przez człowieka stojące za SHACE i rolą operatora.",
-          links: [
-            {
-              href: "https://martinfowler.com/articles/exploring-gen-ai/humans-and-agents.html",
-              label: "Humans & Agents",
-            },
-            {
-              href: "https://martinfowler.com/articles/harness-engineering.html",
-              label: "Harness Engineering",
-            },
-            {
-              href: "https://martinfowler.com/articles/exploring-gen-ai/context-engineering-coding-agents.html",
-              label: "Context Engineering",
-            },
-          ],
+      live: {
+        regionLabel: "Instalator Vibecrafted",
+        stepsAria: "Kroki",
+        brandFallback: "Vibecrafted.",
+        labels: {
+          welcome: "Start",
+          diagnostics: "Diagnostyka",
+          plan: "Plan",
+          consent: "Zgoda",
+          execute: "Instaluj",
+          ready: "Gotowe",
         },
-        {
-          citationHtml:
-            "Gong, L.; Elhoushi, M.; Cheung, A. (2024). <em>AST-T5: Structure-Aware Pretraining for Code Generation</em>.",
-          note: "Wątek pretreningu świadomego struktury stojący za insistencją 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍., że modele nie powinny pisać do repo na ślepo.",
-          links: [{ href: "https://arxiv.org/abs/2401.03003", label: "arXiv" }],
+        welcome: {
+          title: "Zainstaluj Vibecrafted",
+          leads: [],
+          cta: "Start",
+          componentsFound: "komponentów gotowych",
+          componentsTotal: "łącznie",
+          missingList: "Brakujące komponenty",
+          planPreview: "Plan instalacji",
+          timeEstimate: "Około 2 minuty",
+          sourceDir: "z",
+          reRun: "Skanuj ponownie",
         },
-        {
-          citationHtml:
-            "Guo, D. et al. (2021). <em>GraphCodeBERT: Pre-training Code Representations with Data Flow</em>.",
-          note: "Komplementarny wynik świadomy struktury, który wzmocnił argument za eksternalizowanym kształtem kodu, mimo że GraphCodeBERT modeluje przepływ danych, a nie AST.",
-          links: [{ href: "https://arxiv.org/abs/2009.08366", label: "arXiv" }],
+        diagnostics: {
+          title: "Co znaleziono",
+          present: "Obecne",
+          missing: "Brakujące",
+          empty: "Brak skanu. Spróbuj ponownie.",
         },
-        {
-          citationHtml:
-            "Cunningham, W. (1992) i późniejsza literatura o długu technicznym.",
-          note: "Konceptualny przodek DoU: działający kod to nie to samo co zdrowy, godny zaufania, gotowy do wysyłki system.",
-          links: [
-            {
-              href: "https://martinfowler.com/bliki/TechnicalDebt.html",
-              label: "Technical Debt",
-            },
-          ],
+        plan: {
+          title: "Co się wydarzy",
+          empty: "Brak planu. Sprawdź źródła i spróbuj odświeżyć.",
+          stepLabel: "Krok",
         },
-        {
-          citationHtml:
-            "CEGIS / synteza prowadzona kontrprzykładami i późniejsza literatura o optymalizacji prowadzonej kontrprzykładami.",
-          note: "Linia konwergencji za Marbles: pętla, inspekcja awarii, dodanie kontrprzykładów, redukcja przestrzeni programów, powtarzanie aż powierzchnia przestanie kłamać.",
-          links: [
-            {
-              href: "https://www.cprover.org/synthesis",
-              label: "Przegląd syntezy prowadzonej kontrprzykładami",
-            },
-          ],
+        consent: {
+          title: "Potwierdź instalację",
+          body: "Kliknij Zainstaluj, żeby uruchomić plan.",
+          accept: "Akceptuję plan",
+          withShell: "Zintegruj helpery shella (zalecane)",
+          cta: "Zainstaluj teraz",
+          again: "Instalacja zakończona. Możesz uruchomić ją ponownie.",
+          running: "Instalacja trwa. Otwórz krok postępu.",
         },
-        {
-          citationHtml: "VetCoders (2026). <em>Manifest 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</em>.",
-          note: "Źródło pierwotne dla SHACE, Marbles, Loctree Mapping, PSCD i założycielskiej Definicji Niezrobionego jako oryginalnych konceptów 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍..",
-          links: [
-            {
-              href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/MANIFESTO_PL.md",
-              label: "Przeczytaj manifest",
-            },
-          ],
+        execute: {
+          title: "Trwa instalacja",
+          stage: "Aktualny etap",
+          waiting: "Czekam na pierwszą linię outputu…",
         },
-      ],
+        ready: {
+          titleOk: "Zainstalowano",
+          titleFail: "Instalacja nie zakończyła się czysto",
+          exit: "Kod wyjścia",
+          openGuide: "Otwórz START_HERE.md",
+          nextSteps: "Następne kroki",
+          reinstall: "Uruchom ponownie",
+        },
+        nav: {
+          back: "Wstecz",
+          next: "Dalej",
+          refresh: "Odśwież preflight",
+        },
+        status: {
+          loadingPreflight: "Skanuję…",
+          loadFailed: "Skan się nie powiódł",
+          notConnected:
+            "Uruchom instalator komendą curl i zostaw terminal otwarty.",
+        },
+        nextCommands: [
+          { cmd: "vibecrafted doctor", desc: "Weryfikacja stanu" },
+          { cmd: "vibecrafted init claude", desc: "Inicjalizacja sesji" },
+          { cmd: "vibecrafted help", desc: "Lista komend" },
+        ],
+      },
     },
   },
 } as const;

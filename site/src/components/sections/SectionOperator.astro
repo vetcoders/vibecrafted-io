@@ -1,0 +1,451 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import BoardPreview from '../BoardPreview.svelte';
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
+const section = operatorEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  installSteps: Array<{ step: string; command: string; note: string }>;
+  shotHeadingHtml: string;
+  shotBody: string;
+  bullets: Array<{ title: string; body: string }>;
+  practicesLabel: string;
+  practices: string[];
+  boardPreview: BoardPreviewData;
+};
+
+type BoardPreviewData = {
+  dwg: string;
+  timestamp: string;
+  meta: string;
+  metaLeft: string;
+  live: string;
+  tabsAria: string;
+  tabs: { board: string; marbles: string; dou: string };
+  boardHeaders: { n: string; phase: string; marbles: string; coverage: string; state: string };
+  boardRows: Array<{
+    num: string;
+    phase: string;
+    marbles: string;
+    coverage: number;
+    pct: string;
+    state: 'converged' | 'active' | 'waiting' | 'blocked';
+    stateLabel: string;
+  }>;
+  marblesHeaders: { time: string; op: string; phase: string; marble: string; status: string };
+  marblesLog: Array<{
+    ts: string;
+    op: string;
+    phase: string;
+    msg: string;
+    status: 'ok' | 'rej';
+  }>;
+  douItems: Array<{
+    num: string;
+    severity: 'warn' | 'block';
+    phase: string;
+    text: string;
+  }>;
+  ticksAria: string;
+  caption: string;
+};
+
+const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
+const nextTitle = quickstartEntry.data.title as string;
+---
+
+<SectionShell
+  number="05"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="05 · DWG VC-005"
+  surface="paper"
+  seam="to-paper"
+  id="operator"
+>
+  <div class="op">
+    <h2 class="op__heading">
+      <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+
+    <div class="op__install">
+      {section.installSteps.map((item) => (
+        <div class="op__install-col">
+          <span class="op__install-step">{item.step}</span>
+          <code class="op__install-cmd">{item.command}</code>
+          <span class="op__install-note">{item.note}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* 3.6.0 cockpit strip — real vc-frame screenshots from the framework docs assets. */}
+    <div class="op__cockpit" id="vc-frame">
+      <div class="op__cockpit-copy">
+        <span class="op__cockpit-kicker">VC-FRAME 0.46 · COCKPIT</span>
+        <h3 class="op__cockpit-heading">
+          Session rail on every dispatch layout
+          <span class="brand-dot">.</span>
+        </h3>
+        <p class="op__cockpit-body">
+          The operator cockpit ships with the session-manager rail welded into
+          dashboard, marbles, operator, research, and workflow layouts. Tab
+          inventory stays honest; fleet settlement lives on the Mission Control
+          board — not the rail.
+        </p>
+      </div>
+      <figure class="op__cockpit-figure">
+        <img
+          src="/assets/vc-frame/vc-frame-cockpit.png"
+          alt="vc-frame operator cockpit with session rail and active dispatch panes"
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>vc-frame cockpit — live layout chrome, not a mock.</figcaption>
+      </figure>
+      <figure class="op__cockpit-figure op__cockpit-figure--secondary">
+        <img
+          src="/assets/vc-frame/vc-frame-anatomy.png"
+          alt="vc-frame anatomy diagram of panes, rail, and layout structure"
+          width="1600"
+          height="900"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>Anatomy of the rail — where inventory lives.</figcaption>
+      </figure>
+    </div>
+
+    {/* #marbles — nav MARBLES anchor lands on the board preview (BOARD /
+        MARBLES / DOU tabs), the convergence story, not the install steps. */}
+    <div class="op__shot" id="marbles">
+      <div class="op__shot-left">
+        <h3 class="op__shot-heading">
+          <Fragment set:html={section.shotHeadingHtml} />
+          <span class="brand-dot">.</span>
+        </h3>
+        <p class="op__shot-body">{section.shotBody}</p>
+
+        <ul class="op__bullets">
+          {section.bullets.map((bullet) => (
+            <li>
+              <strong class="op__bullet-title">{bullet.title}</strong>
+              <span class="op__bullet-body">{bullet.body}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="op__shot-right">
+        <BoardPreview client:visible copy={section.boardPreview} />
+      </div>
+    </div>
+
+    <div class="op__practices">
+      <span class="op__practices-label">{section.practicesLabel}</span>
+      {section.practices.map((practice) => (
+        <span class="op__practice">{practice}</span>
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="06" nextTitle={nextTitle} surface="paper" lang={lang} />
+</SectionShell>
+
+<style>
+  .op__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(40px, 5vw, 80px);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-paper);
+    margin: 0 0 72px;
+  }
+
+  .op__heading em {
+    font-style: italic;
+  }
+
+  .op__heading em.accent-2 {
+    color: var(--accent-2);
+  }
+
+  .op__install {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    margin-bottom: 72px;
+  }
+
+  .op__cockpit {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 28px 48px;
+    margin-bottom: 96px;
+    align-items: start;
+  }
+
+  .op__cockpit-copy {
+    grid-column: 1 / -1;
+  }
+
+  .op__cockpit-kicker {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 12px;
+  }
+
+  .op__cockpit-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(28px, 3.4vw, 44px);
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+    color: var(--fg-on-paper);
+    margin: 0 0 14px;
+  }
+
+  .op__cockpit-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .op__cockpit-figure {
+    margin: 0;
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--bg-ink, #0a1018);
+  }
+
+  .op__cockpit-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .op__cockpit-figure figcaption {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--fg-on-paper-mute);
+    padding: 10px 12px;
+    border-top: 1px solid var(--rule-paper);
+  }
+
+  @media (max-width: 900px) {
+    .op__cockpit {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .op__install-col {
+    padding: 20px 22px;
+    border-right: 1px solid var(--rule-paper);
+  }
+
+  .op__install-col:last-child {
+    border-right: none;
+  }
+
+  .op__install-step {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 10px;
+  }
+
+  .op__install-cmd {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-paper);
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 2px 0;
+  }
+
+  .op__install-note {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--fg-on-paper-dim);
+    margin-top: 10px;
+  }
+
+  .op__shot {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 64px;
+    /* Editorial doctrine (Maciej 2026-05-23): bullets column matches shot height. */
+    align-items: stretch;
+    margin-bottom: 96px;
+  }
+
+  .op__shot-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(32px, 4vw, 56px);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: var(--fg-on-paper);
+    margin: 0 0 20px;
+  }
+
+  .op__shot-heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .op__shot-body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 44ch;
+    margin: 0 0 28px;
+  }
+
+  .op__bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .op__bullets li {
+    position: relative;
+    padding-left: 18px;
+    padding-top: 6px;
+  }
+
+  .op__bullets li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .op__bullet-title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--fg-on-paper);
+    margin-right: 6px;
+  }
+
+  .op__bullet-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+  }
+
+  .op__practices {
+    display: grid;
+    grid-template-columns: auto repeat(4, 1fr);
+    gap: 16px;
+    align-items: center;
+    border-top: 1px solid var(--rule-paper-soft);
+    padding-top: 28px;
+  }
+
+  .op__practices-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+  }
+
+  .op__practice {
+    padding: 8px 12px;
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-dim);
+    text-align: center;
+  }
+
+  @media (max-width: 980px) {
+    /* minmax(0, …) — a plain 1fr track grows to the nowrap install command's
+     * min-content and drags the whole section past the viewport on phones. */
+    .op__install {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .op__install-col {
+      border-right: none;
+      border-bottom: 1px solid var(--rule-paper);
+    }
+
+    .op__install-col:last-child {
+      border-bottom: none;
+    }
+
+    .op__shot {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 40px;
+    }
+
+    .op__shot-left,
+    .op__shot-right {
+      min-width: 0;
+    }
+
+    .op__practices {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .op__practices-label {
+      grid-column: 1 / -1;
+      margin-bottom: 4px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .op__practices {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

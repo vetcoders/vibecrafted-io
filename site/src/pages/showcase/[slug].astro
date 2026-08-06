@@ -1,0 +1,508 @@
+---
+/**
+ * showcase/[slug].astro — Plan 16 per-case-study page.
+ *
+ * Static-generated for each entry in the `showcase` content collection.
+ * Layout: sidebar nav between studies on desktop, dropdown-style stack on
+ * mobile. Body renders the markdown content.
+ *
+ * Public-source-only per kronika 2026-05-09 .github leak doctrine: the
+ * underlying `.md` files are the canonical surface. This route only renders
+ * what they hold; nothing internal is injected at render time.
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack on this route
+ */
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('showcase');
+  return studies.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const allStudies = (await getCollection('showcase')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime(),
+);
+
+const pageTitle = `${entry.data.title} — Case study`;
+const pageDescription = entry.data.description;
+
+// Plan 17 — Per-study OG card. Slug pattern mirrors `OG_SLUGS` in
+// src/lib/og-renderer.ts: `showcase-<study-id>`. If a study lacks a
+// matching OG entry, fall back to the showcase-index card.
+const ogSlugCandidates = [`showcase-${entry.id}`, 'showcase-index'];
+const ogImagePath = `/og/${ogSlugCandidates[0]}.png`;
+---
+
+<LayoutV2 title={pageTitle} description={pageDescription} lang="en" hasHero={false} ogImage={ogImagePath}>
+  <article class="study">
+    <div class="study__inner">
+      <header class="study__header">
+        <div class="study__eyebrow-row">
+          <span class="study__eyebrow">CASE STUDY</span>
+          <div class="study__top-actions">
+            <a class="study__home" href="/showcase/">
+              <span aria-hidden="true">←</span>
+              ALL CASE STUDIES
+            </a>
+            <span class="study__fig">FIG. 16 · DWG VC-016</span>
+          </div>
+        </div>
+        <div class="study__rule" aria-hidden="true"></div>
+
+        <h1 class="study__title">{entry.data.title}</h1>
+
+        <p class="study__lead">{entry.data.description}</p>
+
+        <dl class="study__meta">
+          <div class="study__meta-row">
+            <dt class="study__meta-label">Date</dt>
+            <dd class="study__meta-value">{entry.data.date}</dd>
+          </div>
+          {entry.data.duration && (
+            <div class="study__meta-row">
+              <dt class="study__meta-label">Duration</dt>
+              <dd class="study__meta-value">{entry.data.duration}</dd>
+            </div>
+          )}
+          {entry.data.plan_count && (
+            <div class="study__meta-row">
+              <dt class="study__meta-label">Plans</dt>
+              <dd class="study__meta-value">{entry.data.plan_count}</dd>
+            </div>
+          )}
+          {entry.data.agent_count && (
+            <div class="study__meta-row">
+              <dt class="study__meta-label">Agents</dt>
+              <dd class="study__meta-value">{entry.data.agent_count}</dd>
+            </div>
+          )}
+          {entry.data.github_link && (
+            <div class="study__meta-row">
+              <dt class="study__meta-label">Source</dt>
+              <dd class="study__meta-value">
+                <a class="study__meta-link" href={entry.data.github_link} target="_blank" rel="noopener">
+                  GitHub <span aria-hidden="true">↗</span>
+                </a>
+              </dd>
+            </div>
+          )}
+        </dl>
+
+        <p class="study__lesson">
+          <span class="study__lesson-label">Lesson —</span>
+          <span class="study__lesson-text">{entry.data.lesson}</span>
+        </p>
+      </header>
+
+      <div class="study__layout">
+        <div class="study__prose">
+          <Content />
+        </div>
+
+        <aside class="study__nav" aria-label="Other case studies">
+          <div class="study__nav-heading">Other case studies</div>
+          <ul class="study__nav-list">
+            {allStudies.map((other) => {
+              const isCurrent = other.id === entry.id;
+              return (
+                <li class="study__nav-item">
+                  <a
+                    class={isCurrent ? 'study__nav-link is-current' : 'study__nav-link'}
+                    href={`/showcase/${other.id}/`}
+                    aria-current={isCurrent ? 'page' : undefined}
+                  >
+                    <span class="study__nav-link-title">{other.data.title}</span>
+                    <span class="study__nav-link-date">{other.data.date}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </article>
+</LayoutV2>
+
+<style>
+  .study {
+    width: 100%;
+    background: var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .study__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .study__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .study__rule {
+    height: 1px;
+    background: var(--rule-dark);
+    margin-bottom: 48px;
+  }
+
+  .study__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .study__home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease;
+  }
+
+  .study__home:hover,
+  .study__home:focus-visible {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .study__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    color: var(--fg-on-dark);
+    margin: 0 0 24px;
+    max-width: 24ch;
+  }
+
+  .study__lead {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--fg-on-dark);
+    max-width: 60ch;
+    margin: 0 0 32px;
+  }
+
+  /* ── Meta ───────────────────────────────────────────────── */
+
+  .study__meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 18px 32px;
+    margin: 0 0 32px;
+    padding: 22px 24px;
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+    background: rgba(14, 14, 12, 0.5);
+  }
+
+  .study__meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .study__meta-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 0;
+  }
+
+  .study__meta-value {
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--fg-on-dark);
+    margin: 0;
+  }
+
+  .study__meta-link {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .study__meta-link:hover,
+  .study__meta-link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* ── Lesson banner ──────────────────────────────────────── */
+
+  .study__lesson {
+    margin: 0 0 56px;
+    padding: 16px 20px;
+    border-left: 2px solid var(--accent);
+    background: rgba(var(--accent-rgb), 0.05);
+    color: var(--fg-on-dark);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 60ch;
+  }
+
+  .study__lesson-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: 6px;
+  }
+
+  .study__lesson-text {
+    font-style: italic;
+  }
+
+  /* ── Layout: prose + sidebar ────────────────────────────── */
+
+  .study__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .study__prose {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--fg-on-dark);
+    min-width: 0;
+  }
+
+  .study__prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.2;
+    color: var(--fg-on-dark);
+    margin: 48px 0 18px;
+  }
+
+  .study__prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .study__prose :global(h3) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--fg-on-dark);
+    margin: 32px 0 12px;
+  }
+
+  .study__prose :global(p) {
+    margin: 0 0 22px;
+    color: var(--fg-on-dark);
+    max-width: 64ch;
+  }
+
+  .study__prose :global(p em) {
+    color: var(--fg-on-dark-dim);
+    font-style: italic;
+  }
+
+  .study__prose :global(p strong) {
+    color: var(--fg-on-dark);
+    font-weight: 600;
+  }
+
+  .study__prose :global(p code),
+  .study__prose :global(li code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: rgba(var(--accent-rgb), 0.10);
+    color: var(--fg-on-dark);
+  }
+
+  .study__prose :global(a) {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--accent-rgb), 0.4);
+  }
+
+  .study__prose :global(a:hover),
+  .study__prose :global(a:focus-visible) {
+    border-bottom-color: var(--accent);
+  }
+
+  .study__prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--rule-dark);
+    margin: 40px 0;
+  }
+
+  .study__prose :global(ul),
+  .study__prose :global(ol) {
+    margin: 0 0 22px;
+    padding-left: 20px;
+    color: var(--fg-on-dark);
+  }
+
+  .study__prose :global(li) {
+    margin-bottom: 8px;
+  }
+
+  /* ── Sidebar nav ────────────────────────────────────────── */
+
+  .study__nav {
+    position: sticky;
+    top: 96px;
+    padding: 20px 0 0;
+    border-top: 1px solid var(--rule-dark);
+  }
+
+  .study__nav-heading {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+    margin: 0 0 16px;
+  }
+
+  .study__nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .study__nav-item {
+    margin: 0;
+  }
+
+  .study__nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    margin: 0 -12px;
+    text-decoration: none;
+    color: var(--fg-on-dark);
+    border-radius: 2px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .study__nav-link:hover,
+  .study__nav-link:focus-visible {
+    background: rgba(var(--accent-rgb), 0.06);
+    color: var(--accent);
+  }
+
+  .study__nav-link.is-current {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+    border-left: 2px solid var(--accent);
+    padding-left: 14px;
+    margin-left: -14px;
+  }
+
+  .study__nav-link-title {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .study__nav-link-date {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 960px) {
+    .study__layout {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .study__nav {
+      position: static;
+      order: 2;
+      border-top: 1px solid var(--rule-dark);
+      padding-top: 24px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .study {
+      padding: 64px 0 88px;
+    }
+
+    .study__inner {
+      padding: 0 20px;
+    }
+
+    .study__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .study__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .study__rule {
+      margin-bottom: 36px;
+    }
+
+    .study__meta {
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+      padding: 18px 20px;
+    }
+
+    .study__prose {
+      font-size: 16px;
+    }
+  }
+</style>

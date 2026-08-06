@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+echo "=== Pre-commit (fast checks) ==="
+
+STAGED_PY=$(git diff --cached --name-only --diff-filter=ACM | grep '\.py$' || true)
+STAGED_PRETTIER=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|js|svelte|astro|md|json|yml|yaml|css)$' || true)
+
+if [ -n "$STAGED_PY" ]; then
+  echo "Running ruff format & check (auto-fix)..."
+  if command -v uvx >/dev/null 2>&1; then
+      echo "$STAGED_PY" | xargs uvx ruff check --fix 2>/dev/null || true
+      echo "$STAGED_PY" | xargs uvx ruff format 2>/dev/null || true
+      echo "$STAGED_PY" | xargs -I {} git add "{}" 2>/dev/null || true
+  else
+      echo "[warn] uvx unavailable; skipping ruff auto-fix"
+  fi
+fi
+
+if [ -n "$STAGED_PRETTIER" ]; then
+  echo "Running prettier (auto-fix)..."
+  if command -v npx >/dev/null 2>&1; then
+      echo "$STAGED_PRETTIER" | xargs npx --yes prettier --write 2>/dev/null || true
+      echo "$STAGED_PRETTIER" | xargs -I {} git add "{}" 2>/dev/null || true
+  else
+      echo "[warn] npx unavailable; skipping prettier auto-fix"
+  fi
+fi
+
+echo "Pre-commit checks passed."

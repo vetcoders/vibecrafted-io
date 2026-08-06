@@ -1,14 +1,15 @@
 ---
-import { getEntry, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-
-const entry = await getEntry('pages', 'pl/framework');
-if (!entry) {
-  throw new Error("Content entry not found: pl/framework");
-}
-const { Content } = await render(entry);
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import FrameworkPlayground from '../../components/FrameworkPlayground.svelte';
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} lang="pl">
-    <Content />
-</Layout>
+<LayoutV2
+  title="Vibecrafted · Framework — playground konwergencji"
+  description="Interaktywna plansza ucząca pięciofazowej pętli frameworka Vibecrafted."
+  lang="pl"
+  hasHero={false}
+  hideSearch={true}
+  hideFooter={true}
+>
+  <FrameworkPlayground client:load lang="pl" />
+</LayoutV2>

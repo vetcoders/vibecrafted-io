@@ -1,0 +1,123 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+const problemEntry = await getEntry('i18n', `${lang}/problem-v2`);
+if (!problemEntry) throw new Error(`Missing i18n entry: ${lang}/problem-v2`);
+const section = problemEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  body: string;
+  symptoms: Array<{ label: string; body: string }>;
+};
+
+const engineeringEntry = await getEntry('i18n', `${lang}/engineering-v2`);
+if (!engineeringEntry) throw new Error(`Missing i18n entry: ${lang}/engineering-v2`);
+const nextTitle = engineeringEntry.data.title as string;
+---
+
+<SectionShell
+  number="01"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="01"
+  surface="paper"
+  seam="to-paper"
+  id="about"
+>
+  <div class="problem">
+    <div class="problem__col problem__col--heading">
+      <h2 class="problem__heading">
+        <Fragment set:html={section.headingHtml} />
+        <span class="brand-dot">.</span>
+      </h2>
+      <p class="problem__body">{section.body}</p>
+    </div>
+
+    {section.symptoms.map((symptom) => (
+      <div class="problem__col">
+        <span class="problem__symptom-label">{symptom.label}</span>
+        <p class="problem__symptom-body">{symptom.body}</p>
+      </div>
+    ))}
+  </div>
+
+  <SectionFooter nextNumber="02" nextTitle={nextTitle} surface="paper" lang={lang} />
+</SectionShell>
+
+<style>
+  .problem {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 56px;
+    align-items: stretch;
+  }
+
+  .problem__col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .problem__col--heading {
+    /* Heading column sets row height; symptom columns stretch to match. */
+  }
+
+  .problem__heading {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 4.2vw, 62px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-paper);
+    margin: 0 0 24px;
+  }
+
+  .problem__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .problem__body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 34ch;
+    margin: 0;
+  }
+
+  .problem__symptom-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-bottom: 14px;
+  }
+
+  .problem__symptom-body {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .problem {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+</style>

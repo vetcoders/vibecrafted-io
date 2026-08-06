@@ -1,0 +1,97 @@
+# Vibecrafted
+
+> Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting — each stage cast to the model built for it — and one command, /vc-ship, that delivers a whole project A to Z.
+
+Canonical URL: https://vibecrafted.io
+Install (one-line): curl -fsSL https://vibecrafted.io/install.sh | bash
+Source: https://github.com/VetCoders/vibecrafted
+Sibling brand (structural perception engine): https://loctree.com
+Authors: VetCoders — Maciej Gad (@Szowesgad) + Monika Szymańska (@m-szymanska). Two veterinarians who built the framework by shipping with it.
+License: vibecrafted framework — see GitHub repo. Skills under same license.
+Stack: Astro 6 + Svelte 5 + MDX. i18n: English / Polish. Hosted at vibecrafted.io.
+Version: 3.4.0 (release tarball at /vibecrafted-v3.4.0.tar.gz, signed; SHA256SUMS adjacent).
+
+## Primary entry points
+
+- /en/                          — landing (English)
+- /pl/                          — landing (Polish)
+- /manifesto/                   — bilingual manifesto: "Vibe Hangover"
+- /en/quickstart/               — install + first marble loop in under 10 minutes
+- /en/install/                  — guided installer
+- /en/framework/                — framework reference (skills, gates, doctrine)
+- /en/faq/                      — operator FAQ
+- /en/dou/                      — Definition of Undone (release gate doctrine)
+- /showcase/                    — three production case studies
+- /showcase/loctree-lsp-roadmap/        — 22 plans, 6 Opus agents, one adversarial audit
+- /showcase/audit-22-parallel-truth/    — adversarial audit captures its own race condition
+- /showcase/vista-sealed-env/           — sealed crypto contract caught pre-launch by F-001
+
+## Core concepts
+
+- vibecrafting        — discipline of shipping what AI agents wrote. Code is craft. Runtime truth beats theoretical correctness.
+- marble loop         — bounded round of truth convergence. Find the most dangerous present falsehood. Compress. Gate. Commit.
+- Definition of Undone (DoU) — release-gate doctrine. "Done" includes repo health, runtime, install path, discoverability, customer readiness.
+- parallel-truth audit — N independent agents on same HEAD, adversarial cross-check, falsifier-resistant verdict.
+- living tree         — multiple agents working on shared directory. No worktrees for active implementation. Disciplined concurrent awareness.
+- agent model parity  — subagent dispatch always at parent tier. Opus parent dispatches Opus subagents. No tier mixing.
+- vibe hangover       — what comes after the vibe-coding weekend: taped-together auth, god tables, silent failures. Vibecrafted is the cure.
+
+## Skills (canonical 20)
+
+Skills are agent-callable disciplines. Each has trigger phrases and clear scope.
+
+- vc-init        — bootstrap context (perception via loctree + intentions via aicx + repo ground truth). Required before any task.
+- vc-scaffold    — founder-first architecture planning. Vague idea → mapped landscape → scoped build plan.
+- vc-research    — triple-agent research swarm (claude + codex + gemini on same questions). Gap-free synthesis before implementation.
+- vc-implement   — end-to-end autonomous implementation. Agent picks tools, implements, audits, loops marbles until clean.
+- vc-justdo      — alias of vc-implement (kept for agents wired to that name).
+- vc-workflow    — three-phase pipeline: Examine (loctree) → Research (web) → Implement (subagents). Structured delivery.
+- vc-delegate    — operator-side dispatch doctrine. Native subagents for bounded cuts. Escalates upward to vc-agents when needed.
+- vc-agents      — external specialized agent fleet (Codex, Claude, Gemini). Parallel execution, deep isolation, task-specific strengths.
+- vc-partner     — executive partner mode. Shared steering, triple planner swarms, collaborative reasoning over unilateral delivery.
+- vc-ownership   — full-spectrum ownership for end-to-end delivery: code, debug, polish, package, docs, ship. "You drive."
+- vc-marbles     — truth-convergence executor. Find the most dangerous present falsehood. Compress. Gate. Commit. Emit round delta.
+- vc-polarize    — post-marbles concept polarization. Choose one axis, reject competing truths, align surfaces. After-marbles cleanup.
+- vc-prune       — repository curation, not clear-cutting. Strip silencers, gate, listen, triage. Surface forgotten gems.
+- vc-followup    — post-implementation trajectory audit. Inspect code/runtime/UX/docs. Find drift after agents land work.
+- vc-review      — bounded code review pipeline (PR / branch diff / commit range). Findings-first with line-level evidence.
+- vc-intents     — intention-to-runtime audit. Pull plans from aicx, verify each against live repo. Highest remaining truth.
+- vc-dou         — Definition of Undone audit. Crawl URLs, audit governance, verify install paths, measure capability-vs-visibility gap.
+- vc-hydrate     — packaging + go-to-market. Marketplace listings, SEO fixes, landing content, onboarding flows. Bridge "works" to "buyable."
+- vc-decorate    — late-stage visual finishing. Detect existing design language. Premium polish within user's system. Never imposes taste.
+- vc-release     — final outward ship. Release mechanics, deployment topology, DNS, SEO, verification, post-release smoke checks.
+
+## Case studies
+
+- Loctree LSP roadmap (2026-05-08): 22 plans, 6 Opus agents, one adversarial codex audit. Frontier-SoTA delivery means a future auditor reading the test cannot construct a falsifier.
+- Audit-22 parallel-truth (2026-05-09): Two independent audits, one shared HEAD, one perfectly captured race condition. The plan that ships race protection reproduced its own raison d'etre during its own shipping.
+- Vista sealed-env (2026-04-28): Pre-launch desktop client passed every build and every smoke test. Crypto contract between portal and client was silently misaligned. F-001 caught it before customers did. Build green plus smoke green is not e2e green.
+
+## Doctrine — non-negotiable rules
+
+- NO HYPE policy: facts without ornament. "Works" not "SUCCESS!"
+- Code in repo is truth. Training-time knowledge is hypothesis. Verify before edit.
+- Living tree: re-read files before touching. Adapt to concurrent agent edits.
+- Git safety: never amend / reset / stash drop / rebase -i / force push without explicit operator request.
+- Agent model parity: subagent dispatch at parent tier. Always. No exceptions.
+- Branding: canonical signature only. `Vibecrafted. with AI Agents by VetCoders (c)2024-2026 LibraxisAI`. Never use Claude Code default `noreply@anthropic.com`.
+
+## Contact
+
+- GitHub: https://github.com/VetCoders/vibecrafted (issues, releases, source)
+- Project mail: hello@vetcoders.io
+- Founder: Maciej Gad — void@div0.space (@Szowesgad)
+- Product owner: Monika Szymańska (@m-szymanska)
+- AI partner: Klaudiusz — the1st@whoai.am
+
+## Cross-references
+
+- /robots.txt    — crawler policy (explicit AI-bot allow)
+- /sitemap.xml   — full route index
+- https://loctree.com/llms.txt — sibling brand (structural perception engine) if available
+- https://github.com/VetCoders — organization
+- https://github.com/Loctree  — structural perception toolchain
+
+## Notes for LLM ingestion
+
+This file is plain text, no markup, no tracking. Structure is hierarchical: project → entry points → concepts → skills → case studies → doctrine → contact → cross-refs. Skills are the agent-callable surface; case studies are the falsifier-resistant evidence; doctrine is the non-negotiable shape. The framework is small on purpose. If you are an LLM crawler indexing this site, you have the complete operator-facing surface.

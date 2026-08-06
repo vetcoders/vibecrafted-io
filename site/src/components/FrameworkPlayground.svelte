@@ -2,2410 +2,2450 @@
   import { onDestroy, onMount } from 'svelte';
 
   type Lang = 'en' | 'pl';
-  type BoardShape = 'circle' | 'square' | 'hexagon' | 'spiral' | 'waves' | 'grid';
-  type PhaseName =
-    | 'scaffold'
-    | 'init'
-    | 'workflow'
-    | 'followup'
-    | 'marbles'
-    | 'dou'
-    | 'decorate'
-    | 'hydrate'
-    | 'release';
-  type AccentTone = 'steel' | 'copper' | 'patina' | 'alert';
-  type MarblePaletteKey = 'amber' | 'ocean' | 'forest' | 'smoke' | 'rose' | 'violet' | 'honey' | 'teal';
+  type PhaseId = 'frame' | 'perceive' | 'work' | 'converge' | 'ship';
+  type BoardShape = 'ring' | 'oval' | 'grid';
+  type MarbleTone = 'teal' | 'steel' | 'copper' | 'mint' | 'danger';
+  type OperatorId = 'loctree' | 'aicx' | 'prview' | 'screenscribe' | 'agents' | 'marbles';
 
-  interface PhaseBlueprint {
-    name: PhaseName;
-    label: string;
+  interface PhaseCopy {
+    id: PhaseId;
     eyebrow: string;
     title: string;
-    description: string;
-    detail: string;
-    duration: number;
-    snapshotRatio: number;
-    tone: AccentTone;
+    verb: string;
+    body: string;
+    command: string;
+    note: string;
+    fill: number;
+    tone: MarbleTone;
   }
 
-  interface PhaseDescriptor extends PhaseBlueprint {}
+  interface Copy {
+    top: {
+      brand: string;
+      center: string;
+      fig: string;
+      mode: string;
+    };
+    hero: {
+      kicker: string;
+      title: string;
+      lead: string;
+      foot: string;
+    };
+    board: {
+      shape: string;
+      density: string;
+      operators: string;
+      precision: string;
+      spawn: string;
+      converge: string;
+      next: string;
+      reset: string;
+      command: string;
+      convergence: string;
+      grooves: string;
+      marbles: string;
+      signal: string;
+      teaching: string;
+      pickShape: string;
+      runHint: string;
+      throwRound: string;
+      filled: string;
+      advanced: string;
+      previous: string;
+      nextPhase: string;
+      pickMarble: string;
+    };
+    shapes: Record<BoardShape, string>;
+    phases: PhaseCopy[];
+    operators: Record<OperatorId, { label: string; kind: string }>;
+    status: {
+      ready: string;
+      phase: string;
+      spawned: string;
+      convergence: string;
+      thrown: string;
+      reset: string;
+    };
+  }
 
   interface Slot {
     x: number;
     y: number;
     filled: boolean;
-    revealOrder: number;
-    visible: boolean;
+    blocked: boolean;
+    order: number;
   }
 
   interface Marble {
     x: number;
     y: number;
+    tx: number;
+    ty: number;
     vx: number;
     vy: number;
-    target: Slot | null;
-    settled: boolean;
-    seed: number;
-    palette: MarblePaletteKey;
+    tone: MarbleTone;
     alpha: number;
-    saturation: number;
-    landX?: number;
-    landY?: number;
+    settled: boolean;
+    slot: Slot | null;
+    seed: number;
   }
 
   interface Ping {
     x: number;
     y: number;
-    life: number;
-    color: string;
+    alpha: number;
+    danger?: boolean;
   }
 
-  interface FrameworkStrings {
-    overlayPhase: string;
-    overlayConverge: string;
-    overlayMarbles: string;
-    showcaseKicker: string;
-    showcaseHeading: string;
-    showcaseLead: string;
-    defaultEyebrow: string;
-    defaultPressCopy: string;
-    operators: string;
-    choosePhase: string;
-    alerts: {
-      dou: { title: string; detail: string };
-      review: { title: string; detail: string };
-    };
-    hints: Record<PhaseName | 'review' | 'research' | 'agents' | 'prune', string>;
-    controls: {
-      boardShape: string;
-      density: string;
-      operators: string;
-      precisionFill: string;
-      command: string;
-      phaseDetail: string;
-      actionPanel: string;
-      alerts: string;
-      metrics: {
-        progress: string;
-        grooves: string;
-        marbles: string;
-      };
-      buttons: {
-        spawnOperators: string;
-        runConvergence: string;
-        running: string;
-        phaseAction: Record<PhaseName, string>;
-        nextPhase: string;
-        resetLoop: string;
-      };
-      status: {
-        operatorsSpawned: string;
-        convergenceStarted: string;
-        followupComplete: string;
-        blockersSurfaced: string;
-        finishApplied: string;
-        gapsFilled: string;
-        loopReleased: string;
-        phaseChanged: string;
-      };
-      shapes: Record<BoardShape, string>;
-    };
-    phaseOverrides: Partial<Record<PhaseName, Partial<Omit<PhaseBlueprint, 'name' | 'duration' | 'snapshotRatio' | 'tone'>>>>;
-  }
-
-  const SHAPES = ['circle', 'square', 'hexagon', 'spiral', 'waves', 'grid'] as const satisfies readonly BoardShape[];
-  const ALERT_RED = '#e05544';
-  const PAL = {
-    amber: { base: '#d46b3f', light: '#f4c89a' },
-    ocean: { base: '#5b87a8', light: '#c2ddf0' },
-    forest: { base: '#7d8e57', light: '#bdd4a0' },
-    smoke: { base: '#9b9a95', light: '#e8e6dc' },
-    rose: { base: '#c46b8a', light: '#f0c4d4' },
-    violet: { base: '#8b7ec8', light: '#cdc4ef' },
-    honey: { base: '#cc8844', light: '#f0d4a0' },
-    teal: { base: '#5ba3a3', light: '#a8dede' }
-  } as const satisfies Record<MarblePaletteKey, { base: string; light: string }>;
-  const PAL_KEYS = Object.keys(PAL) as MarblePaletteKey[];
-  const PHASE_BLUEPRINTS: readonly PhaseBlueprint[] = [
-    {
-      name: 'scaffold',
-      label: 'Scaffold',
-      eyebrow: 'Phase 0 · Setup',
-      title: 'Trace the outer frame',
-      description: 'Set the boundary first. Scaffold is only about the silhouette of the board before we decide how many grooves it can carry.',
-      detail: 'Layout shell · geometry lock',
-      duration: 1500,
-      snapshotRatio: 0.28,
-      tone: 'steel'
-    },
-    {
-      name: 'init',
-      label: 'Init',
-      eyebrow: 'Phase 1 · Craft',
-      title: 'Etch the first grooves',
-      description: 'Init anchors the board in reality. History and structure start cutting true grooves into the frame so later work has somewhere real to land.',
-      detail: 'Context load · first grooves',
-      duration: 1600,
-      snapshotRatio: 0.48,
-      tone: 'steel'
-    },
-    {
-      name: 'workflow',
-      label: 'Workflow',
-      eyebrow: 'Phase 1 · Craft',
-      title: 'Set groove density',
-      description: 'Now define capacity. Workflow decides how many grooves the board exposes, so later work lands into a real operating model instead of empty texture.',
-      detail: 'Groove count · density tuning',
-      duration: 2000,
-      snapshotRatio: 0.74,
-      tone: 'copper'
-    },
-    {
-      name: 'followup',
-      label: 'Follow-up',
-      eyebrow: 'Phase 2 · Converge',
-      title: 'Shake loose the false positives',
-      description: 'Loose marbles start falling away. Followup is where noisy success claims get tested against what actually holds.',
-      detail: 'Gravity purge · excess falls off',
-      duration: 1500,
-      snapshotRatio: 0.68,
-      tone: 'steel'
-    },
-    {
-      name: 'marbles',
-      label: 'Marbles',
-      eyebrow: 'Phase 2 · Converge',
-      title: 'Add force, accept variance',
-      description: 'More batches arrive and entropy climbs. This is the honest middle: throughput increases, but so does noise.',
-      detail: 'Batch throws · growing entropy',
-      duration: 3000,
-      snapshotRatio: 0.58,
-      tone: 'copper'
-    },
-    {
-      name: 'dou',
-      label: 'DoU',
-      eyebrow: 'Phase 3 · Audit',
-      title: 'Definition of Undone',
-      description: 'Surface the red truth. Run a systematic gap analysis across the entire product surface to expose what still blocks shipping.',
-      detail: 'Plague check · readiness audit',
-      duration: 1500,
-      snapshotRatio: 0.48,
-      tone: 'alert'
-    },
-    {
-      name: 'decorate',
-      label: 'Decorate',
-      eyebrow: 'Phase 3 · Ship',
-      title: 'Turn coherence into finish',
-      description: 'The settled marbles saturate and sharpen. Decorate is not random ornament; it is the final coherence pass that makes the system feel intentional.',
-      detail: 'Saturation lift · finish pass',
-      duration: 2000,
-      snapshotRatio: 0.72,
-      tone: 'patina'
-    },
-    {
-      name: 'hydrate',
-      label: 'Hydrate',
-      eyebrow: 'Phase 3 · Ship',
-      title: 'Fill the exact missing slots',
-      description: 'Now the motion changes tone. The remaining gaps are handled deterministically, one launch-critical hole at a time.',
-      detail: 'Precise fill · market-facing completion',
-      duration: 2500,
-      snapshotRatio: 0.68,
-      tone: 'patina'
-    },
-    {
-      name: 'release',
-      label: 'Release',
-      eyebrow: 'Final Step · Release',
-      title: 'Ship code to market',
-      description: 'The board glows, holds, and then fades for the next cycle. Shipping is not the absence of motion; it is a completed loop ready to start again.',
-      detail: 'Stable board · reset for next cycle',
-      duration: 3000,
-      snapshotRatio: 0.34,
-      tone: 'patina'
-    }
-  ];
-  const FRAMEWORK_I18N: Record<Lang, FrameworkStrings> = {
+  const COPY: Record<Lang, Copy> = {
     en: {
-      overlayPhase: 'Phase',
-      overlayConverge: 'Converge',
-      overlayMarbles: 'Marbles',
-      showcaseKicker: 'Framework Playground',
-      showcaseHeading: 'Command the convergence board',
-      showcaseLead:
-        'Board-first teaching surface. Trace the frame, tune the grooves, invite specialists, then let Marbles run the convergence batches.',
-      defaultEyebrow: 'Phase 0 · Setup',
-      defaultPressCopy: 'Define the board geometry.',
-      operators: 'Operators',
-      choosePhase: 'Choose Phase',
-      alerts: {
-        dou: { title: 'DoU', detail: 'Blockers surfaced' },
-        review: { title: 'Review', detail: 'Weak fits exposed' }
+      top: {
+        brand: 'Vibecrafted.',
+        center: 'Framework — The Game',
+        fig: 'FIG. 06 · GAME VC-006',
+        mode: 'Teaching mode'
       },
-      hints: {
-        scaffold: 'Choose the outer frame first. Capacity comes later, once the board shape is real.',
-        init: 'Bootstrap context so the first true grooves are cut from history instead of guessed from nothing.',
-        workflow: 'Tune groove density until the board exposes the right amount of working capacity.',
-        followup: 'Shake the board and see which claims of progress were never truly anchored.',
-        marbles: 'Set the marbles count and force, then let the board run the convergence sequence by itself.',
-        dou: 'Flash the undone truth in red and expose what still blocks shipping.',
-        decorate: 'Apply final polish pass to saturate colors and sharpen the finish.',
-        hydrate: 'Fill the remaining critical gaps with deterministic precision.',
-        release: 'Launch the finished surface and release the loop to the market.',
-        review: 'Run a stress pass on the first placements before the noisy convergence loops begin.',
-        research: 'Probe the lane choices before committing force. Research narrows the search space and marks the promising paths.',
-        agents: 'Select specialist count and spawn them into the grooves.',
-        prune: 'Remove weak or unnecessary fits so the board can converge around the stronger core.'
+      hero: {
+        kicker: '§ 06 · Framework loop',
+        title: 'Throw marbles onto the board.',
+        lead:
+          'Most miss, bounce, collide, and wander. Run another round. Some settle. Some keep moving. Repeat until the board fills and the pattern becomes clear.',
+        foot:
+          "A metaphor for coding with AI agents: the first throw gives you a lot of fast code and a lot of chaos. It's the next iterations that make the solution settle, errors fall away, and the project edge toward release."
       },
-      controls: {
-        boardShape: 'Board shape',
+      board: {
+        shape: 'Board shape',
         density: 'Groove density',
-        operators: 'Specialists',
-        precisionFill: 'Precision fill',
-        command: 'Command surface',
-        phaseDetail: 'Phase note',
-        actionPanel: 'Board controls',
-        alerts: 'Alert indicators',
-        metrics: {
-          progress: 'Convergence',
-          grooves: 'Grooves',
-          marbles: 'Marbles'
-        },
-        buttons: {
-          spawnOperators: 'Spawn operators',
-          runConvergence: 'Run convergence',
-          running: 'Converging...',
-          phaseAction: {
-            scaffold: 'Accept frame',
-            init: 'Bootstrap context',
-            workflow: 'Lock grooves',
-            followup: 'Run follow-up',
-            marbles: 'Stress review',
-            dou: 'Surface DoU',
-            decorate: 'Apply finish',
-            hydrate: 'Fill gaps',
-            release: 'Release loop'
-          },
-          nextPhase: 'Next phase',
-          resetLoop: 'Reset loop'
-        },
-        status: {
-          operatorsSpawned: 'Operators dropped into open grooves.',
-          convergenceStarted: 'Convergence batches are now running.',
-          followupComplete: 'Weak fits were shaken loose.',
-          blockersSurfaced: 'Definition of Undone blockers surfaced on the board.',
-          finishApplied: 'Decorate pass increased polish and saturation.',
-          gapsFilled: 'Hydrate pass filled the next launch-critical gaps.',
-          loopReleased: 'Release pulse fired. The board is resetting for a fresh loop.',
-          phaseChanged: 'Phase changed.'
-        },
-        shapes: {
-          circle: 'Circle',
-          square: 'Square',
-          hexagon: 'Hexagon',
-          spiral: 'Spiral',
-          waves: 'Waves',
-          grid: 'Grid'
-        }
+        operators: 'Throw size',
+        precision: 'Precision',
+        spawn: 'Spawn operators',
+        converge: 'Run convergence',
+        next: 'Next phase',
+        reset: 'Reset',
+        command: 'Command',
+        convergence: 'Convergence',
+        grooves: 'Grooves',
+        marbles: 'Marbles',
+        signal: 'Signal',
+        teaching: 'Teaching surface — not production output.',
+        pickShape: 'Pick shape',
+        runHint: 'watching convergence...',
+        throwRound: 'Throw round',
+        filled: 'Filled',
+        advanced: 'Advanced',
+        previous: 'Previous phase',
+        nextPhase: 'Next phase',
+        pickMarble: 'Pick marble'
       },
-      phaseOverrides: {}
+      shapes: {
+        ring: 'Ring',
+        oval: 'Oval',
+        grid: 'Grid'
+      },
+      phases: [
+        {
+          id: 'frame',
+          eyebrow: '01 · Frame',
+          title: 'Frame',
+          verb: 'Define the board',
+          body:
+            'Set the outer boundary of the work. Before agents can optimize anything, the system needs a real shape.',
+          command: 'vc-scaffold my-project',
+          note: 'Boundary first. Work without a frame becomes drift.',
+          fill: 0.08,
+          tone: 'copper'
+        },
+        {
+          id: 'perceive',
+          eyebrow: '02 · Perceive',
+          title: 'Perceive',
+          verb: 'Load repo truth',
+          body:
+            'Loctree, AICX, and history establish what is actually true before the first implementation throw.',
+          command: 'vibecrafted init codex',
+          note: 'Perception beats memory. Ground truth beats intuition.',
+          fill: 0.22,
+          tone: 'teal'
+        },
+        {
+          id: 'work',
+          eyebrow: '03 · Work',
+          title: 'Work',
+          verb: 'Send specialists',
+          body:
+            'Specialist force enters the board. Research, implementation, review, and runtime capture start filling real slots.',
+          command: 'vibecrafted workflow claude --prompt "Plan and implement auth"',
+          note: 'Throughput is useful only when every throw has a slot.',
+          fill: 0.42,
+          tone: 'steel'
+        },
+        {
+          id: 'converge',
+          eyebrow: '04 · Converge',
+          title: 'Converge',
+          verb: 'Reduce entropy',
+          body:
+            'Follow-up, Marbles, and DoU expose weak fits. The board keeps looping until blockers are visible and reducible.',
+          command: 'vibecrafted marbles codex --prompt "Reduce remaining P0/P1/P2"',
+          note: 'The question is not whether it works. The question is what is still wrong.',
+          fill: 0.68,
+          tone: 'mint'
+        },
+        {
+          id: 'ship',
+          eyebrow: '05 · Ship',
+          title: 'Ship',
+          verb: 'Close the surface',
+          body:
+            'Decorate, Hydrate, and Release turn a converged repo into a reachable, understandable product surface.',
+          command: 'vibecrafted release codex --prompt "Prepare release steps"',
+          note: 'Release begins when someone outside the repo can use the thing.',
+          fill: 0.9,
+          tone: 'mint'
+        }
+      ],
+      operators: {
+        loctree: { label: 'Loctree', kind: 'structure' },
+        aicx: { label: 'AICX', kind: 'memory' },
+        prview: { label: 'PRView', kind: 'review' },
+        screenscribe: { label: 'ScreenScribe', kind: 'runtime' },
+        agents: { label: 'Agents', kind: 'execution' },
+        marbles: { label: 'Marbles', kind: 'convergence' }
+      },
+      status: {
+        ready: 'board awaiting first throw',
+        phase: 'phase changed',
+        spawned: 'operators entered open grooves',
+        convergence: 'convergence loop running',
+        thrown: 'manual throw placed on the board',
+        reset: 'loop reset'
+      }
     },
     pl: {
-      overlayPhase: 'Faza',
-      overlayConverge: 'Domknięcie',
-      overlayMarbles: 'Marbles',
-      showcaseKicker: 'Playground frameworku',
-      showcaseHeading: 'Steruj planszą konwergencji',
-      showcaseLead:
-        'Plansza jako powierzchnia nauki. Wyznacz ramę, dostrój rowki, zaproś specjalistów, a potem pozwól Marbles uruchomić batchowe domykanie.',
-      defaultEyebrow: 'Faza 0 · Setup',
-      defaultPressCopy: 'Zdefiniuj geometrię planszy.',
-      operators: 'Operatorzy',
-      choosePhase: 'Wybierz fazę',
-      alerts: {
-        dou: { title: 'DoU', detail: 'Blokery ujawnione' },
-        review: { title: 'Review', detail: 'Słabe dopasowania ujawnione' }
+      top: {
+        brand: 'Vibecrafted.',
+        center: 'Framework — gra',
+        fig: 'FIG. 06 · GAME VC-006',
+        mode: 'Tryb'
       },
-      hints: {
-        scaffold: 'Najpierw wybierz zewnętrzną ramę. Pojemność przychodzi później, gdy kształt planszy jest już prawdziwy.',
-        init: 'Zainicjuj kontekst, żeby pierwsze prawdziwe rowki były wycinane z historii zamiast zgadywane od zera.',
-        workflow: 'Dostrój gęstość rowków, aż plansza pokaże właściwą pojemność roboczą.',
-        followup: 'Potrząśnij planszą i sprawdź, które deklaracje postępu nigdy nie były naprawdę osadzone.',
-        marbles: 'Ustaw liczbę kulek i siłę, a potem pozwól planszy samodzielnie uruchomić sekwencję konwergencji.',
-        dou: 'Pokaż na czerwono prawdę o niedomknięciu i ujawnij, co nadal blokuje release.',
-        decorate: 'Nałóż końcowy polish pass, żeby nasycić kolory i wyostrzyć finish.',
-        hydrate: 'Wypełnij pozostałe krytyczne luki z deterministyczną precyzją.',
-        release: 'Wypuść gotową powierzchnię i uwolnij pętlę na rynek.',
-        review: 'Uruchom pass stresowy dla pierwszych ułożeń, zanim zaczną się głośniejsze pętle domykania.',
-        research: 'Przetestuj możliwe tory, zanim dołożysz siłę. Research zawęża przestrzeń szukania i zaznacza obiecujące ścieżki.',
-        agents: 'Wybierz liczbę specjalistów i wpuść ich w rowki.',
-        prune: 'Usuń słabe albo zbędne dopasowania, żeby plansza mogła domknąć się wokół mocniejszego rdzenia.'
+      hero: {
+        kicker: '§ 06 · Pętla frameworka',
+        title: 'Rzuć marble na planszę.',
+        lead:
+          'Większość chybi, odbije się albo zabłądzi. Uruchom kolejną rundę. Część osiądzie, część ruszy dalej. Powtarzaj, aż plansza się wypełni, a wzór stanie się czytelny.',
+        foot:
+          'To metafora kodowania z agentami AI: pierwszy rzut daje dużo szybkiego kodu i dużo chaosu. Dopiero kolejne iteracje sprawiają, że rozwiązanie osiada, błędy odpadają, a projekt zaczyna zbliżać się do release’u.'
       },
-      controls: {
-        boardShape: 'Kształt planszy',
-        density: 'Gęstość rowków',
-        operators: 'Specjaliści',
-        precisionFill: 'Precyzja domknięcia',
-        command: 'Powierzchnia komend',
-        phaseDetail: 'Notatka fazy',
-        actionPanel: 'Sterowanie planszą',
-        alerts: 'Wskaźniki alarmowe',
-        metrics: {
-          progress: 'Domknięcie',
-          grooves: 'Rowki',
-          marbles: 'Kulki'
+      board: {
+        shape: 'Kształt planszy',
+        density: 'Zagęszczenie',
+        operators: 'Liczba kulek w rzucie',
+        precision: 'Precyzja',
+        spawn: 'Wpuść operatorów',
+        converge: 'Uruchom konwergencję',
+        next: 'Następna faza',
+        reset: 'Reset',
+        command: 'Komenda',
+        convergence: 'Konwergencja',
+        grooves: 'Rowki',
+        marbles: 'Kulki',
+        signal: 'Sygnał',
+        teaching: 'Powierzchnia nauki — nie output produkcyjny.',
+        pickShape: 'Wybierz kształt',
+        runHint: 'obserwuję konwergencję...',
+        throwRound: 'Rozpocznij rundę',
+        filled: 'Wypełnione',
+        advanced: 'Zaawansowane',
+        previous: 'Poprzednia faza',
+        nextPhase: 'Następna faza',
+        pickMarble: 'Wybierz kulkę'
+      },
+      shapes: {
+        ring: 'Ring',
+        oval: 'Oval',
+        grid: 'Grid'
+      },
+      phases: [
+        {
+          id: 'frame',
+          eyebrow: '01 · Frame',
+          title: 'Frame',
+          verb: 'Zdefiniuj planszę',
+          body: 'Ustal kształt planszy.',
+          command: 'vc-scaffold my-project',
+          note: 'Najpierw granica. Praca bez ramy szybko zamienia się w drift.',
+          fill: 0.08,
+          tone: 'copper'
         },
-        buttons: {
-          spawnOperators: 'Wpuść operatorów',
-          runConvergence: 'Uruchom konwergencję',
-          running: 'Domykanie...',
-          phaseAction: {
-            scaffold: 'Zatwierdź ramę',
-            init: 'Zainicjuj kontekst',
-            workflow: 'Zablokuj rowki',
-            followup: 'Uruchom follow-up',
-            marbles: 'Uruchom review',
-            dou: 'Pokaż DoU',
-            decorate: 'Nałóż finish',
-            hydrate: 'Wypełnij luki',
-            release: 'Wypuść pętlę'
-          },
-          nextPhase: 'Następna faza',
-          resetLoop: 'Reset pętli'
+        {
+          id: 'perceive',
+          eyebrow: '02 · Perceive',
+          title: 'Perceive',
+          verb: 'Załaduj prawdę repo',
+          body: 'Sprawdź, co naprawdę jest na planszy.',
+          command: 'vibecrafted init codex',
+          note: 'Percepcja bije pamięć. Ground truth bije intuicję.',
+          fill: 0.22,
+          tone: 'teal'
         },
-        status: {
-          operatorsSpawned: 'Operatorzy wpadli do otwartych rowków.',
-          convergenceStarted: 'Batchowa konwergencja właśnie ruszyła.',
-          followupComplete: 'Słabe dopasowania zostały strząśnięte.',
-          blockersSurfaced: 'Blokery Definition of Undone pojawiły się na planszy.',
-          finishApplied: 'Pass decorate podbił polish i nasycenie.',
-          gapsFilled: 'Hydrate domknął kolejne krytyczne dla launchu luki.',
-          loopReleased: 'Impulse release odpalony. Plansza wraca do nowej pętli.',
-          phaseChanged: 'Faza została zmieniona.'
+        {
+          id: 'work',
+          eyebrow: '03 · Work',
+          title: 'Work',
+          verb: 'Wpuść specjalistów',
+          body: 'Wpuść specjalistów na planszę.',
+          command: 'vibecrafted workflow claude --prompt "Zaplanuj i zaimplementuj auth"',
+          note: 'Przepustowość ma sens tylko wtedy, gdy każdy throw ma swój slot.',
+          fill: 0.42,
+          tone: 'steel'
         },
-        shapes: {
-          circle: 'Koło',
-          square: 'Kwadrat',
-          hexagon: 'Heksagon',
-          spiral: 'Spirala',
-          waves: 'Fale',
-          grid: 'Siatka'
+        {
+          id: 'converge',
+          eyebrow: '04 · Converge',
+          title: 'Converge',
+          verb: 'Zmniejsz entropię',
+          body: 'Niech słabe dopasowania odpadną.',
+          command: 'vibecrafted marbles codex --prompt "Reduce remaining P0/P1/P2"',
+          note: 'Pytanie nie brzmi, czy działa. Pytanie brzmi, co nadal jest źle.',
+          fill: 0.68,
+          tone: 'mint'
+        },
+        {
+          id: 'ship',
+          eyebrow: '05 · Ship',
+          title: 'Ship',
+          verb: 'Domknij surface',
+          body: 'Wypuść planszę w świat.',
+          command: 'vibecrafted release codex --prompt "Prepare release steps"',
+          note: 'Release zaczyna się wtedy, gdy ktoś spoza repo może z tego skorzystać.',
+          fill: 0.9,
+          tone: 'mint'
         }
+      ],
+      operators: {
+        loctree: { label: 'Loctree', kind: 'struktura' },
+        aicx: { label: 'AICX', kind: 'pamięć' },
+        prview: { label: 'PRView', kind: 'review' },
+        screenscribe: { label: 'ScreenScribe', kind: 'runtime' },
+        agents: { label: 'Agents', kind: 'wykonanie' },
+        marbles: { label: 'Marbles', kind: 'konwergencja' }
       },
-      phaseOverrides: {
-        scaffold: {
-          eyebrow: 'Faza 0 · Setup',
-          title: 'Wyznacz zewnętrzną ramę',
-          description: 'Najpierw wyznacz granicę. Scaffold dotyczy tylko sylwetki planszy, zanim zdecydujemy, ile rowków ma unieść.',
-          detail: 'Szkielet układu · blokada geometrii'
-        },
-        init: {
-          eyebrow: 'Faza 1 · Twórz',
-          title: 'Wytraw pierwsze rowki',
-          description: 'Init zakotwicza planszę w rzeczywistości. Historia i struktura zaczynają wycinać prawdziwe rowki, żeby późniejsza praca miała gdzie lądować.',
-          detail: 'Ładowanie kontekstu · pierwsze rowki'
-        },
-        workflow: {
-          eyebrow: 'Faza 1 · Twórz',
-          title: 'Ustaw gęstość rowków',
-          description: 'Tutaj definiujemy pojemność. Workflow decyduje, ile rowków plansza wystawi, żeby dalsza praca wpadała w prawdziwy model operacyjny zamiast pustej tekstury.',
-          detail: 'Liczba rowków · strojenie gęstości'
-        },
-        followup: {
-          eyebrow: 'Faza 2 · Domykaj',
-          title: 'Strząśnij fałszywe sukcesy',
-          description: 'Luźne kulki zaczynają odpadać. Followup to moment, w którym głośne deklaracje sukcesu zderzają się z tym, co naprawdę się trzyma.',
-          detail: 'Grawitacyjne czyszczenie · nadmiar odpada'
-        },
-        marbles: {
-          eyebrow: 'Faza 2 · Domykaj',
-          title: 'Dodaj siłę i zaakceptuj wariancję',
-          description: 'Docierają kolejne batch’e i rośnie entropia. To uczciwy środek: throughput przyspiesza, ale rośnie też szum.',
-          detail: 'Rzuty batchowe · rosnąca entropia'
-        },
-        dou: {
-          eyebrow: 'Faza 3 · Audyt',
-          title: 'Definition of Undone',
-          description: 'Wyciągnij na czerwono prawdę. Uruchom systematyczną analizę luk na całej powierzchni produktu, żeby zobaczyć, co nadal blokuje wysyłkę.',
-          detail: 'Plague check · audyt gotowości'
-        },
-        decorate: {
-          eyebrow: 'Faza 3 · Wdrażaj',
-          title: 'Zamień spójność w wykończenie',
-          description: 'Osadzone kulki zyskują nasycenie i ostrość. Decorate nie jest przypadkową ornamentyką; to końcowy pass spójności, który sprawia, że system czuje się intencjonalny.',
-          detail: 'Podbicie nasycenia · pass wykończenia'
-        },
-        hydrate: {
-          eyebrow: 'Faza 3 · Wdrażaj',
-          title: 'Wypełnij dokładnie brakujące szczeliny',
-          description: 'Tutaj ruch zmienia ton. Pozostałe luki są domykane deterministycznie, po jednym krytycznym dla launchu otworze naraz.',
-          detail: 'Precyzyjne wypełnienie · domknięcie pod rynek'
-        },
-        release: {
-          eyebrow: 'Krok końcowy · Release',
-          title: 'Wypuść kod na rynek',
-          description: 'Plansza rozświetla się, utrzymuje wzór, a potem blednie przed kolejnym cyklem. Shipping nie jest brakiem ruchu; to domknięta pętla gotowa, by zacząć od nowa.',
-          detail: 'Stabilna plansza · reset na kolejny cykl'
-        }
+      status: {
+        ready: 'plansza czeka na pierwszy throw',
+        phase: 'faza zmieniona',
+        spawned: 'operatorzy weszli w otwarte rowki',
+        convergence: 'pętla konwergencji uruchomiona',
+        thrown: 'manualny throw trafił na planszę',
+        reset: 'pętla zresetowana'
       }
     }
+  };
+
+  const OPERATORS: OperatorId[] = ['loctree', 'aicx', 'prview', 'screenscribe', 'agents', 'marbles'];
+  const MARBLE_COLORS: Record<MarbleTone, { base: string; light: string }> = {
+    teal: { base: '#3d7a72', light: '#a6c5bc' },
+    steel: { base: '#c8c2b4', light: '#e5ded2' },
+    copper: { base: '#cf6f4e', light: '#e5b18e' },
+    mint: { base: '#a6c5bc', light: '#d0e0d8' },
+    danger: { base: '#d85a4f', light: '#ffb0a8' }
   };
 
   let { lang = 'en' } = $props<{ lang?: Lang }>();
-  const componentId = `framework-playground-${lang === 'pl' ? 'pl' : 'en'}`;
 
-  let rootEl: HTMLDivElement | undefined;
-  let stageEl: HTMLDivElement | undefined;
   let canvasEl: HTMLCanvasElement | undefined;
-  let phaseButtons: Array<HTMLButtonElement | null> = [];
-
-  let prefersReducedMotion = $state(false);
-  let currentPhaseIndex = $state(0);
-  let boardShape = $state<BoardShape>('circle');
-  let grooveDensity = $state(1);
-  let operatorCount = $state(3);
-  let hydrateBatchSize = $state(5);
-  let polishIntensity = $state(0.18);
-  let polishTarget = $state(0.18);
-  let phaseTime = $state(0);
-  let grooveRevealProgress = $state(0);
-  let boardAlpha = $state(0.88);
-  let phasePulse = $state(0);
-  let errorFlash = $state(0);
-  let shipGlow = $state(0);
-  let shakeOffset = $state({ x: 0, y: 0 });
-  let convergenceRunning = $state(false);
-  let motionActive = $state(false);
-  let convergenceWaveCount = $state(0);
-  let convergenceCooldown = $state(0);
-  let followupShakeMs = $state(0);
-  let douPulseMs = $state(0);
-  let releasePulseMs = $state(0);
-  let slots = $state<Slot[]>([]);
-  let marbles = $state<Marble[]>([]);
-  let overflowMarbles = $state<Marble[]>([]);
-  let pings = $state<Ping[]>([]);
-  let liveMessage = $state('');
-
-  let ctx: CanvasRenderingContext2D | null = null;
-  let resizeObserver: ResizeObserver | undefined;
-  let reducedMotionMedia: MediaQueryList | undefined;
-  let resetTimer: ReturnType<typeof setTimeout> | undefined;
-  let lastFrameTime = 0;
-  let frameWidth = 0;
-  let frameHeight = 0;
+  let boardEl: HTMLDivElement | undefined;
+  let context: CanvasRenderingContext2D | null = null;
+  let frameHandle = 0;
+  let lastFrame = 0;
+  let waveDelay = 0;
+  let waveCount = 0;
+  let reduceMotion = false;
   let dpr = 1;
-  let centerX = 0;
-  let centerY = 0;
-  let boardRadius = 0;
-  let marbleRadius = 0;
-  let theme = {
-    copper: '#b87333',
-    copperBright: '#d4905c',
-    patina: '#5a8a7a',
-    steel: '#a3b8c7',
-    steelDark: '#6b7f8e',
-    steelEdge: '#c4d4e0',
-    surfaceGlass: 'rgba(14, 14, 17, 0.78)',
-    surfaceOverlay: 'rgba(9, 10, 12, 0.88)',
-    steelBorder: 'rgba(163, 184, 199, 0.18)'
-  };
+  let width = 0;
+  let height = 0;
+  let resizeObserver: ResizeObserver | undefined;
 
-  let locale = $derived<Lang>(lang === 'pl' ? 'pl' : 'en');
-  let text = $derived(FRAMEWORK_I18N[locale]);
-  let phases = $derived.by<PhaseDescriptor[]>(() =>
-    PHASE_BLUEPRINTS.map((phase) => ({
-      ...phase,
-      ...(text.phaseOverrides[phase.name] ?? {})
-    }))
-  );
-  let currentPhase = $derived(phases[currentPhaseIndex] ?? phases[0]);
-  let visibleSlotCount = $derived.by(() => slots.filter((slot) => slot.visible).length);
-  let filledSlotCount = $derived.by(() => slots.filter((slot) => slot.visible && slot.filled).length);
-  let settledOverflowCount = $derived.by(() => overflowMarbles.filter((marble) => marble.settled && marble.alpha > 0.06).length);
-  let visibleMarbleCount = $derived.by(
-    () => marbles.filter((marble) => marble.alpha > 0.06).length + overflowMarbles.filter((marble) => marble.alpha > 0.06).length
-  );
-  let convergenceProgress = $derived(
-    visibleSlotCount > 0 ? Math.round(((filledSlotCount + settledOverflowCount) / visibleSlotCount) * 100) : 0
-  );
-  let currentHint = $derived(text.hints[currentPhase.name] ?? currentPhase.description);
-  let reviewWeakFits = $derived.by(
-    () => overflowMarbles.filter((marble) => marble.alpha > 0.18).length + Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / 24))
-  );
-  let douBlockers = $derived.by(() => Math.max(0, Math.ceil((visibleSlotCount - filledSlotCount) / Math.max(1, hydrateBatchSize))));
-  let densityPercent = $derived(Math.round(((grooveDensity - 0.5) / 1.5) * 100));
-  let operatorPercent = $derived(Math.round(((operatorCount - 1) / 9) * 100));
-  let hydratePercent = $derived(Math.round(((hydrateBatchSize - 1) / 9) * 100));
-  let boardShapeLabel = $derived(text.controls.shapes[boardShape]);
-  let promptCommand = $derived.by(() => currentPhaseCommand(currentPhase));
-  let boardAriaLabel = $derived.by(
-    () =>
-      `${currentPhase.label}. ${currentPhase.title}. ${convergenceProgress}% ${text.controls.metrics.progress.toLowerCase()}. ${filledSlotCount} ${text.controls.metrics.grooves.toLowerCase()} ${locale === 'pl' ? 'wypełnionych' : 'filled'}.`
-  );
+  let activeIndex = $state(0);
+  let shape = $state<BoardShape>('ring');
+  let density = $state(1);
+  let selectedTone: MarbleTone = $state('teal');
+  const PICK_TONES: MarbleTone[] = ['teal', 'steel', 'copper'];
+  let operatorCount = $state(6);
+  let precision = $state(72);
+  let running = $state(false);
+  let convergence = $state(0);
+  let grooveCount = $state(0);
+  let filledCount = $state(0);
+  let fillableCount = $state(0);
+  const loopComplete = $derived(fillableCount > 0 && filledCount >= fillableCount);
+  let marbleCount = $state(0);
+  let statusLine = $state('');
+
+  let slots: Slot[] = [];
+  let marbles: Marble[] = [];
+  let pings: Ping[] = [];
+
+  const locale = $derived(lang === 'pl' ? 'pl' : 'en');
+  const copy = $derived(COPY[locale]);
+  const activePhase = $derived(copy.phases[activeIndex] ?? copy.phases[0]);
+  const activePercent = $derived(`${Math.round((activePhase.fill + precision / 350) * 100)}%`);
 
   function clamp(value: number, min: number, max: number) {
-    return Math.min(max, Math.max(min, value));
+    return Math.max(min, Math.min(max, value));
   }
 
-  function parseColor(color: string) {
-    const value = color.trim();
-    if (!value) return null;
-
-    if (value.startsWith('#')) {
-      const hex = value.slice(1);
-      if (hex.length === 3) {
-        const [r, g, b] = hex.split('').map((part) => parseInt(part + part, 16));
-        return { r, g, b };
-      }
-      if (hex.length === 6) {
-        return {
-          r: parseInt(hex.slice(0, 2), 16),
-          g: parseInt(hex.slice(2, 4), 16),
-          b: parseInt(hex.slice(4, 6), 16)
-        };
-      }
-    }
-
-    const match = value.match(/rgba?\(([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
-    if (match) {
-      return {
-        r: Number(match[1]),
-        g: Number(match[2]),
-        b: Number(match[3])
-      };
-    }
-
-    return null;
-  }
-
-  function withAlpha(color: string, alpha: number) {
-    const parsed = parseColor(color);
-    if (!parsed) return color;
-    return `rgba(${parsed.r}, ${parsed.g}, ${parsed.b}, ${clamp(alpha, 0, 1)})`;
-  }
-
-  function toneColor(color: string, delta: number) {
-    const parsed = parseColor(color);
-    if (!parsed) return color;
-    return `rgb(${clamp(parsed.r + delta, 0, 255)}, ${clamp(parsed.g + delta, 0, 255)}, ${clamp(parsed.b + delta, 0, 255)})`;
-  }
-
-  function randomPalette(exclude?: MarblePaletteKey) {
-    const choices = exclude ? PAL_KEYS.filter((key) => key !== exclude) : PAL_KEYS;
-    return choices[Math.floor(Math.random() * choices.length)] ?? 'amber';
-  }
-
-  function syncThemeTokens() {
-    if (typeof window === 'undefined') return;
-    const styles = getComputedStyle(rootEl ?? document.documentElement);
-    theme = {
-      copper: styles.getPropertyValue('--copper').trim() || theme.copper,
-      copperBright: styles.getPropertyValue('--copper-bright').trim() || theme.copperBright,
-      patina: styles.getPropertyValue('--patina').trim() || theme.patina,
-      steel: styles.getPropertyValue('--steel').trim() || theme.steel,
-      steelDark: styles.getPropertyValue('--steel-dark').trim() || theme.steelDark,
-      steelEdge: styles.getPropertyValue('--steel-edge').trim() || theme.steelEdge,
-      surfaceGlass: styles.getPropertyValue('--surface-glass').trim() || theme.surfaceGlass,
-      surfaceOverlay: styles.getPropertyValue('--surface-overlay').trim() || theme.surfaceOverlay,
-      steelBorder: styles.getPropertyValue('--steel-border-soft').trim() || theme.steelBorder
+  function seeded(seed: number) {
+    let value = seed + 0x6d2b79f5;
+    return () => {
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
     };
   }
 
-  function currentPhaseCommand(phase: PhaseDescriptor) {
-    // Keep the playground anchored to public command-deck examples, not demo-only prompts.
-    switch (phase.name) {
-      case 'scaffold':
-        return 'vibecrafted scaffold claude --prompt "Plan the auth architecture"';
-      case 'init':
-        return 'vibecrafted init claude';
-      case 'workflow':
-        return 'vibecrafted workflow claude --prompt "Plan and implement auth"';
-      case 'followup':
-        return 'vibecrafted followup codex --prompt "Audit the auth changes"';
-      case 'marbles':
-        return 'vibecrafted marbles codex --prompt "Fill the gaps on the auth module" --count 3';
-      case 'dou':
-        return 'vibecrafted dou claude --prompt "Audit launch readiness"';
-      case 'decorate':
-        return 'vibecrafted decorate codex --prompt "Polish the release surface"';
-      case 'hydrate':
-        return 'vibecrafted hydrate codex --prompt "Package the product"';
-      case 'release':
-        return 'vibecrafted release codex --prompt "Prepare release steps"';
-      default:
-        return `vibecrafted ${phase.name} codex`;
-    }
+  function slotSeed() {
+    return activeIndex * 2000 + density * 211 + precision * 17 + shape.length * 47;
   }
 
-  function announce(message: string) {
-    liveMessage = `${currentPhase.label}. ${message}`;
-  }
+  function makeSlots(): Slot[] {
+    const list: Slot[] = [];
+    const rand = seeded(slotSeed());
+    /*
+     * Slot counts were tuned down so a casual run can finish in a
+     * reasonable number of throws. Density now means: Low ~14-18
+     * dimples, Medium ~28-36, High ~50-60 — across all three shapes.
+     */
+    const base = density === 1 ? 3 : density === 2 ? 5 : 7;
 
-  function buildSlots() {
-    if (!frameWidth || !frameHeight || boardRadius <= 0 || marbleRadius <= 0) return;
-
-    const nextSlots: Slot[] = [];
-    const spacing = marbleRadius * (2.2 / grooveDensity);
-    const rowHeight = spacing * 0.866;
-    let row = 0;
-
-    for (let y = centerY - boardRadius * 1.1; y <= centerY + boardRadius * 1.1; y += rowHeight) {
-      const offset = row % 2 ? spacing / 2 : 0;
-      for (let x = centerX - boardRadius * 1.1; x <= centerX + boardRadius * 1.1; x += spacing) {
-        const px = x + offset;
-        const dx = px - centerX;
-        const dy = y - centerY;
-        let isInside = false;
-
-        if (boardShape === 'circle') {
-          isInside = Math.sqrt(dx * dx + dy * dy) + marbleRadius * 0.85 <= boardRadius;
-        } else if (boardShape === 'square') {
-          isInside = Math.abs(dx) <= boardRadius * 0.85 && Math.abs(dy) <= boardRadius * 0.85;
-        } else if (boardShape === 'hexagon') {
-          const q = ((2 / 3) * dx) / (boardRadius * 0.8);
-          const r = ((-1 / 3) * dx + (Math.sqrt(3) / 3) * dy) / (boardRadius * 0.8);
-          const s = -q - r;
-          isInside = Math.abs(q) <= 1 && Math.abs(r) <= 1 && Math.abs(s) <= 1;
-        } else if (boardShape === 'spiral') {
-          const angle = Math.atan2(dy, dx);
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const spiralDistance = (angle + Math.PI * 10) * (boardRadius / 20);
-          isInside = Math.abs(distance - (spiralDistance % boardRadius)) < spacing * 0.5 && distance < boardRadius;
-        } else if (boardShape === 'waves') {
-          const wave = Math.sin(px * 0.05) * (boardRadius * 0.2);
-          isInside = Math.abs(dy - wave) < spacing * 0.8 && Math.abs(dx) < boardRadius * 0.9;
-        } else {
-          isInside = Math.abs(dx) < boardRadius && Math.abs(dy) < boardRadius;
-        }
-
-        if (isInside) {
-          nextSlots.push({
-            x: px,
-            y,
+    if (shape === 'ring') {
+      const rings = density === 1 ? [0.42, 0.82] : density === 2 ? [0.32, 0.6, 0.86] : [0.24, 0.46, 0.68, 0.88];
+      rings.forEach((radius, ringIndex) => {
+        const count = Math.max(5, Math.round(base * radius * 3.4));
+        for (let i = 0; i < count; i += 1) {
+          const angle = (Math.PI * 2 * i) / count + ringIndex * 0.22;
+          list.push({
+            x: Math.cos(angle) * radius,
+            y: Math.sin(angle) * radius,
             filled: false,
-            revealOrder: 0,
-            visible: false
+            blocked: false,
+            order: list.length
+          });
+        }
+      });
+    } else if (shape === 'oval') {
+      for (let row = -base; row <= base; row += 1) {
+        for (let col = -base; col <= base; col += 1) {
+          const x = col / base;
+          const y = row / base;
+          if (x * x + y * y * 1.85 <= 1) {
+            list.push({
+              x: x * 0.92,
+              y: y * 0.72,
+              filled: false,
+              blocked: false,
+              order: list.length
+            });
+          }
+        }
+      }
+    } else {
+      const limit = base - 1;
+      for (let row = -limit; row <= limit; row += 2) {
+        for (let col = -limit; col <= limit; col += 2) {
+          const jitter = density === 3 ? 0.015 : 0;
+          list.push({
+            x: col / Math.max(limit, 1) + (rand() - 0.5) * jitter,
+            y: row / Math.max(limit, 1) + (rand() - 0.5) * jitter,
+            filled: false,
+            blocked: false,
+            order: list.length
           });
         }
       }
-      row += 1;
     }
 
-    nextSlots.sort((a, b) => {
-      const da = Math.hypot(a.x - centerX, a.y - centerY);
-      const db = Math.hypot(b.x - centerX, b.y - centerY);
-      return da - db;
-    });
-
-    nextSlots.forEach((slot, index) => {
-      slot.revealOrder = index;
-    });
-
-    slots = nextSlots;
-    marbles = [];
-    overflowMarbles = [];
-    pings = [];
+    return list.sort((a, b) => Math.hypot(a.x, a.y) - Math.hypot(b.x, b.y)).map((slot, order) => ({
+      ...slot,
+      order
+    }));
   }
 
-  function syncSlotVisibility() {
-    const visibleCount = Math.floor(grooveRevealProgress * slots.length);
-    const workflowIndex = phases.findIndex((phase) => phase.name === 'workflow');
-    slots.forEach((slot) => {
-      slot.visible = slot.revealOrder < visibleCount || currentPhaseIndex > workflowIndex;
-    });
-  }
-
-  function resetBoardState() {
-    marbles = [];
-    overflowMarbles = [];
-    pings = [];
-    convergenceRunning = false;
-    convergenceWaveCount = 0;
-    convergenceCooldown = 0;
-    followupShakeMs = 0;
-    douPulseMs = 0;
-    releasePulseMs = 0;
-    phaseTime = 0;
-    errorFlash = 0;
-    shipGlow = 0;
-    shakeOffset = { x: 0, y: 0 };
-    slots.forEach((slot) => {
-      slot.filled = false;
-    });
-  }
-
-  function applyPhaseGeometry(index: number) {
-    const phase = phases[index];
-    currentPhaseIndex = index;
-    phaseTime = 0;
-    phasePulse = prefersReducedMotion ? 0.18 : 1;
-    boardAlpha = phase.name === 'scaffold' ? (prefersReducedMotion ? 0.88 : 0.12) : phase.name === 'init' ? 0.92 : 1;
-    shakeOffset = { x: 0, y: 0 };
-
-    if (phase.name === 'scaffold') {
-      grooveRevealProgress = 0;
-      resetBoardState();
-    } else if (phase.name === 'init') {
-      grooveRevealProgress = prefersReducedMotion ? 0.18 : 0;
-    } else if (phase.name === 'workflow') {
-      grooveRevealProgress = prefersReducedMotion ? 1 : 0;
-    } else {
-      grooveRevealProgress = 1;
+  function boardRadii() {
+    if (shape === 'ring') {
+      const r = Math.min(width, height) * 0.42;
+      return { rx: r, ry: r };
     }
-
-    if (phase.name === 'release') {
-      shipGlow = Math.max(shipGlow, 0.42);
+    if (shape === 'oval') {
+      return { rx: width * 0.4, ry: height * 0.28 };
     }
-
-    syncSlotVisibility();
-    motionActive = true;
-    announce(text.controls.status.phaseChanged);
-    renderBoard();
+    return { rx: width * 0.4, ry: height * 0.32 };
   }
 
-  function showPhase(index: number) {
-    const nextIndex = clamp(index, 0, phases.length - 1);
-    applyPhaseGeometry(nextIndex);
-  }
-
-  function resizeCanvas() {
-    if (!stageEl || !canvasEl) return;
-    const rect = stageEl.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-
-    frameWidth = rect.width;
-    frameHeight = rect.height;
-    dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, prefersReducedMotion ? 1.25 : 2));
-    centerX = frameWidth / 2;
-    centerY = frameHeight / 2;
-    boardRadius = Math.min(frameWidth, frameHeight) * 0.41;
-    marbleRadius = Math.max(6, boardRadius * 0.056);
-    ctx = canvasEl.getContext('2d');
-    if (!ctx) return;
-    canvasEl.width = Math.round(frameWidth * dpr);
-    canvasEl.height = Math.round(frameHeight * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    buildSlots();
-    syncSlotVisibility();
-    renderBoard();
-  }
-
-  function spawnMarble(target: Slot, chaos: number, palette?: MarblePaletteKey): Marble {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = boardRadius * (0.6 + chaos * 0.8);
+  function mapSlot(slot: { x: number; y: number }) {
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
     return {
-      x: centerX + Math.cos(angle) * distance,
-      y: centerY + Math.sin(angle) * distance - boardRadius * chaos * 0.3,
-      vx: (Math.random() - 0.5) * 14 * chaos,
-      vy: (Math.random() - 0.5) * 10 * chaos + 3,
-      target,
-      settled: false,
-      seed: Math.floor(Math.random() * 99999),
-      palette: palette ?? randomPalette(),
-      alpha: 1,
-      saturation: 0.62 + polishIntensity * 0.18
+      x: cx + slot.x * rx,
+      y: cy + slot.y * ry
     };
   }
 
-  function spawnOverflow(): Marble {
+  function pickOpenSlot(rand = Math.random) {
+    const open = slots.filter((slot) => !slot.filled && !slot.blocked);
+    if (!open.length) return null;
+    return open[Math.floor(rand() * open.length)] ?? open[0];
+  }
+
+  function maxSeededMarbles() {
+    if (activePhase.id === 'frame') return 5;
+    if (activePhase.id === 'perceive') return 8;
+    if (activePhase.id === 'work') return 14;
+    if (activePhase.id === 'converge') return 20;
+    return 24;
+  }
+
+  function createMarble(slot: Slot, tone: MarbleTone, settled = false, chaos = 1): Marble {
+    const target = mapSlot(slot);
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
+    const innerScale = 0.55 + chaos * 0.3;
     const angle = Math.random() * Math.PI * 2;
-    const distance = boardRadius * 1.15;
+    const startX = settled
+      ? target.x
+      : cx + Math.cos(angle) * rx * innerScale;
+    const startY = settled
+      ? target.y
+      : cy + Math.sin(angle) * ry * innerScale;
+    const dx = target.x - startX;
+    const dy = target.y - startY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = settled ? 0 : Math.min(5, dist * 0.05);
+    const noise = settled ? 0 : 0.5;
     return {
-      x: centerX + Math.cos(angle) * distance,
-      y: centerY - boardRadius * 0.5 - Math.random() * 100,
-      vx: (Math.random() - 0.5) * 18,
-      vy: 10 + Math.random() * 14,
-      target: null,
-      settled: false,
-      seed: Math.floor(Math.random() * 99999),
-      palette: randomPalette('forest'),
+      x: startX,
+      y: startY,
+      tx: target.x,
+      ty: target.y,
+      vx: (dx / dist) * speed + (Math.random() - 0.5) * noise,
+      vy: (dy / dist) * speed + (Math.random() - 0.5) * noise,
+      tone,
       alpha: 1,
-      saturation: 0.54,
-      landY: centerY + (Math.random() - 0.5) * boardRadius * 0.8,
-      landX: centerX + (Math.random() - 0.5) * boardRadius * 0.8
+      settled,
+      slot,
+      seed: Math.floor(Math.random() * 99999)
     };
   }
 
-  function updateMarble(marble: Marble, timeScale: number) {
-    if (marble.settled) return;
+  /*
+   * Miss-marble: target is outside the board, no slot assigned. The
+   * marble flies past the edge and fades — that's a "chybiony rzut".
+   */
+  function createMissMarble(rand: () => number, tone: MarbleTone): Marble {
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
+    const startAngle = rand() * Math.PI * 2;
+    const innerScale = 0.45 + rand() * 0.35;
+    const startX = cx + Math.cos(startAngle) * rx * innerScale;
+    const startY = cy + Math.sin(startAngle) * ry * innerScale;
+    const targetAngle = startAngle + (rand() - 0.5) * 1.4;
+    const targetScale = 1.55 + rand() * 0.4;
+    const targetX = cx + Math.cos(targetAngle) * rx * targetScale;
+    const targetY = cy + Math.sin(targetAngle) * ry * targetScale;
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = Math.min(6, dist * 0.06);
+    return {
+      x: startX,
+      y: startY,
+      tx: targetX,
+      ty: targetY,
+      vx: (dx / dist) * speed + (rand() - 0.5) * 0.6,
+      vy: (dy / dist) * speed + (rand() - 0.5) * 0.6,
+      tone,
+      alpha: 1,
+      settled: false,
+      slot: null,
+      seed: Math.floor(rand() * 99999)
+    };
+  }
 
-    const targetX = marble.target ? marble.target.x : marble.landX ?? marble.x;
-    const targetY = marble.target ? marble.target.y : marble.landY ?? marble.y;
-    const dx = targetX - marble.x;
-    const dy = targetY - marble.y;
-    const distance = Math.hypot(dx, dy);
-    const pull = marble.target ? (distance < 40 ? 0.04 : 0.015) : 0.008;
-    const damping = marble.target && distance < 10 ? 0.75 : 0.88;
+  function addBlocker(rand: () => number) {
+    const slot = pickOpenSlot(rand);
+    if (!slot) return;
+    slot.blocked = true;
+    const point = mapSlot(slot);
+    pings.push({ x: point.x, y: point.y, alpha: 1, danger: true });
+  }
 
-    marble.vx += dx * pull * timeScale;
-    marble.vy += dy * pull * timeScale;
-    marble.vx *= damping;
-    marble.vy *= damping;
-    marble.x += marble.vx * timeScale;
-    marble.y += marble.vy * timeScale;
+  function rebuildBoard(seedMarbles = false) {
+    slots = makeSlots();
+    marbles = [];
+    pings = [];
 
-    if (distance < 1.5 && Math.abs(marble.vx) < 0.5 && Math.abs(marble.vy) < 0.5) {
-      marble.settled = true;
-      marble.x = targetX;
-      marble.y = targetY;
-      if (marble.target) {
-        marble.target.filled = true;
-        pings.push({
-          x: targetX,
-          y: targetY,
-          life: 1,
-          color: PAL[marble.palette].light
-        });
+    if (seedMarbles) {
+      const rand = seeded(slotSeed() + 991);
+      const precisionBoost = activePhase.id === 'frame' ? 0 : precision / 520;
+      const targetFill = clamp(activePhase.fill + precisionBoost, 0.04, 0.94);
+      const total = Math.min(maxSeededMarbles(), Math.max(1, Math.floor(slots.length * targetFill)));
+      const palette: MarbleTone[] = activeIndex < 2 ? ['teal', 'steel'] : activeIndex === 2 ? ['teal', 'steel', 'copper'] : ['teal', 'steel', 'copper', 'mint'];
+
+      for (let i = 0; i < total; i += 1) {
+        const slot = pickOpenSlot(rand);
+        if (!slot) break;
+        slot.filled = true;
+        marbles.push(createMarble(slot, palette[i % palette.length] ?? activePhase.tone, true));
+      }
+
+      if (activePhase.id === 'converge') {
+        addBlocker(rand);
+        addBlocker(rand);
       }
     }
+
+    updateReadouts();
+    drawBoard();
   }
 
-  function spawnOperatorBatch() {
-    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
-    if (openSlots.length === 0) {
-      showPhase(phases.findIndex((phase) => phase.name === 'workflow'));
-      return;
+  function updateReadouts() {
+    const fillable = Math.max(1, slots.filter((slot) => !slot.blocked).length);
+    const filled = slots.filter((slot) => slot.filled).length;
+    grooveCount = slots.length;
+    fillableCount = fillable;
+    filledCount = filled;
+    marbleCount = marbles.filter((marble) => marble.alpha > 0.05).length;
+    convergence = Math.round((filled / fillable) * 100);
+    if (filled >= fillable && fillable > 0) {
+      statusLine = locale === 'pl' ? 'plansza pełna' : 'loop complete · board converged';
     }
-    for (let index = 0; index < Math.min(operatorCount, openSlots.length); index += 1) {
-      const pick = Math.floor(Math.random() * openSlots.length);
-      const target = openSlots[pick];
-      marbles.push(spawnMarble(target, 0.12, 'ocean'));
-      openSlots.splice(pick, 1);
-    }
-    motionActive = true;
-    announce(text.controls.status.operatorsSpawned);
   }
 
-  function spawnConvergenceWave() {
-    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
-    const filledRatio = visibleSlotCount > 0 ? filledSlotCount / visibleSlotCount : 0;
-    const batchSize = Math.max(3, Math.min(10, operatorCount + Math.round(grooveDensity * 2)));
+  function setPhase(index: number) {
+    activeIndex = clamp(index, 0, copy.phases.length - 1);
+    running = false;
+    statusLine = `${activePhase.title}: ${copy.status.phase}`;
+    rebuildBoard(false);
+  }
 
-    for (let index = 0; index < batchSize; index += 1) {
-      if (openSlots.length > 0) {
-        const pick = Math.floor(Math.random() * openSlots.length);
-        marbles.push(spawnMarble(openSlots[pick], 0.42 + filledRatio * 0.35));
-        openSlots.splice(pick, 1);
+  function nextPhase() {
+    setPhase((activeIndex + 1) % copy.phases.length);
+  }
+
+  function resetLoop() {
+    activeIndex = 0;
+    running = false;
+    statusLine = copy.status.reset;
+    rebuildBoard(false);
+  }
+
+  function setShape(next: BoardShape) {
+    shape = next;
+    rebuildBoard(false);
+  }
+
+  function setDensity(next: number) {
+    density = clamp(next, 1, 3);
+    rebuildBoard(false);
+  }
+
+  function setOperators(event: Event) {
+    operatorCount = Number((event.target as HTMLInputElement).value);
+  }
+
+  function setPrecision(event: Event) {
+    precision = Number((event.target as HTMLInputElement).value);
+    rebuildBoard(false);
+  }
+
+  function spawnBatch(count = operatorCount, tone: MarbleTone = activePhase.tone) {
+    if (!width || !height) return;
+    const rand = seeded(Date.now() % 100000);
+    const room = Math.max(0, maxSeededMarbles() + operatorCount - marbles.length);
+    for (let i = 0; i < Math.min(count, room); i += 1) {
+      const slot = pickOpenSlot(rand);
+      if (!slot) break;
+      marbles.push(createMarble(slot, tone, false, activePhase.id === 'converge' ? 0.7 : 1));
+    }
+    statusLine = copy.status.spawned;
+    updateReadouts();
+    startLoop();
+  }
+
+  /*
+   * Throw a round of marbles. Each marble independently rolls hit/miss
+   * based on the precision slider (35..92 → 0.30..0.85 hit chance).
+   * Hits fly to an open slot and settle; misses fly past the board
+   * edge and fade out. This is the player-facing primary action.
+   */
+  function throwMarbles() {
+    if (!width || !height) return;
+    const rand = seeded(Date.now() % 100000);
+    const hitChance = clamp(precision / 100, 0.3, 0.85);
+    let settled = 0;
+    let missed = 0;
+    for (let i = 0; i < operatorCount; i += 1) {
+      const tryHit = rand() < hitChance;
+      const slot = tryHit ? pickOpenSlot(rand) : null;
+      if (slot) {
+        marbles.push(createMarble(slot, selectedTone, false, 1));
+        settled += 1;
       } else {
-        overflowMarbles.push(spawnOverflow());
+        marbles.push(createMissMarble(rand, selectedTone));
+        missed += 1;
       }
     }
+    statusLine =
+      locale === 'pl'
+        ? `${settled} osiadło · ${missed} chybiło`
+        : `${settled} settled · ${missed} missed`;
+    updateReadouts();
+    startLoop();
+  }
 
-    if (filledRatio > 0.78 || openSlots.length === 0) {
-      overflowMarbles.push(spawnOverflow());
-    }
+  function spawnOperators() {
+    if (activeIndex < 2) setPhase(2);
+    spawnBatch(operatorCount, 'teal');
   }
 
   function runConvergence() {
-    if (visibleSlotCount === 0) {
-      showPhase(phases.findIndex((phase) => phase.name === 'workflow'));
-    }
-    convergenceWaveCount = Math.max(2, Math.min(8, operatorCount + Math.round(grooveDensity)));
-    convergenceCooldown = 0;
-    showPhase(phases.findIndex((phase) => phase.name === 'marbles'));
-    convergenceRunning = true;
-    motionActive = true;
-    announce(text.controls.status.convergenceStarted);
+    if (activeIndex < 3) setPhase(3);
+    running = true;
+    waveCount = 4;
+    waveDelay = 0;
+    statusLine = copy.status.convergence;
+    startLoop();
   }
 
-  function runFollowupPass() {
-    const openSlots = slots.filter((slot) => slot.visible && !slot.filled);
-    const settledMarbles = marbles.filter((marble) => marble.target && marble.settled);
-    const reviewThrows = Math.min(Math.max(2, operatorCount), openSlots.length);
-
-    for (let index = 0; index < reviewThrows; index += 1) {
-      const pick = Math.floor(Math.random() * openSlots.length);
-      const target = openSlots[pick];
-      marbles.push(spawnMarble(target, 0.3, 'smoke'));
-      openSlots.splice(pick, 1);
-    }
-
-    for (let index = 0; index < Math.min(2, settledMarbles.length); index += 1) {
-      const pick = settledMarbles[Math.floor(Math.random() * settledMarbles.length)];
-      if (!pick.target) continue;
-      pick.target.filled = false;
-      pick.settled = false;
-      pick.target = null;
-      pick.vx = (Math.random() - 0.5) * 8;
-      pick.vy = -4 - Math.random() * 5;
-      pick.landX = pick.x + (Math.random() - 0.5) * 24;
-      pick.landY = frameHeight + 60;
-      pick.alpha = 0.82;
-      settledMarbles.splice(settledMarbles.indexOf(pick), 1);
-    }
-
-    overflowMarbles.push(spawnOverflow());
-    if (Math.random() > 0.45) overflowMarbles.push(spawnOverflow());
-
-    followupShakeMs = prefersReducedMotion ? 140 : 680;
-    motionActive = true;
-    announce(text.controls.status.followupComplete);
-  }
-
-  function runDouAudit() {
-    douPulseMs = prefersReducedMotion ? 240 : 1400;
-    errorFlash = 0.4;
-    motionActive = true;
-    announce(text.controls.status.blockersSurfaced);
-  }
-
-  function applyFinish() {
-    polishTarget = clamp(polishTarget + 0.22, 0.2, 1);
-    phasePulse = Math.max(phasePulse, prefersReducedMotion ? 0.2 : 0.85);
-    motionActive = true;
-    announce(text.controls.status.finishApplied);
-  }
-
-  function fillGaps() {
-    const gaps = slots.filter((slot) => slot.visible && !slot.filled);
-    for (let index = 0; index < Math.min(hydrateBatchSize, gaps.length); index += 1) {
-      marbles.push(spawnMarble(gaps[index], 0.05, 'forest'));
-    }
-    motionActive = true;
-    announce(text.controls.status.gapsFilled);
-  }
-
-  function restartLoop() {
-    if (resetTimer) clearTimeout(resetTimer);
-    grooveRevealProgress = 0;
-    polishIntensity = 0.18;
-    polishTarget = 0.18;
-    boardShape = 'circle';
-    grooveDensity = 1;
-    operatorCount = 3;
-    hydrateBatchSize = 5;
-    buildSlots();
-    resetBoardState();
-    applyPhaseGeometry(0);
-  }
-
-  function releaseLoop() {
-    if (resetTimer) clearTimeout(resetTimer);
-    releasePulseMs = prefersReducedMotion ? 500 : 2200;
-    shipGlow = 1;
-    motionActive = true;
-    announce(text.controls.status.loopReleased);
-    resetTimer = setTimeout(() => {
-      restartLoop();
-    }, prefersReducedMotion ? 600 : 2200);
-  }
-
-  function runPhaseAction() {
-    switch (currentPhase.name) {
-      case 'scaffold':
-        showPhase(currentPhaseIndex + 1);
-        break;
-      case 'init':
-        showPhase(currentPhaseIndex + 1);
-        break;
-      case 'workflow':
-        grooveRevealProgress = 1;
-        syncSlotVisibility();
-        phasePulse = Math.max(phasePulse, prefersReducedMotion ? 0.2 : 0.72);
-        renderBoard();
-        break;
-      case 'followup':
-        runFollowupPass();
-        break;
-      case 'marbles':
-        runFollowupPass();
-        break;
-      case 'dou':
-        runDouAudit();
-        break;
-      case 'decorate':
-        applyFinish();
-        break;
-      case 'hydrate':
-        fillGaps();
-        break;
-      case 'release':
-        releaseLoop();
-        break;
-    }
-  }
-
-  function handlePhaseKeydown(event: KeyboardEvent, index: number) {
-    const lastIndex = phases.length - 1;
-    let nextIndex = index;
-
-    switch (event.key) {
-      case 'ArrowRight':
-      case 'ArrowDown':
-        nextIndex = index === lastIndex ? 0 : index + 1;
-        break;
-      case 'ArrowLeft':
-      case 'ArrowUp':
-        nextIndex = index === 0 ? lastIndex : index - 1;
-        break;
-      case 'Home':
-        nextIndex = 0;
-        break;
-      case 'End':
-        nextIndex = lastIndex;
-        break;
-      case 'Enter':
-      case ' ':
-        showPhase(index);
-        event.preventDefault();
-        return;
-      default:
-        return;
-    }
-
-    event.preventDefault();
-    phaseButtons[nextIndex]?.focus();
-    showPhase(nextIndex);
-  }
-
-  function handleShapeChange(shape: BoardShape) {
-    if (boardShape === shape) return;
-    boardShape = shape;
-    buildSlots();
-    syncSlotVisibility();
-    renderBoard();
-  }
-
-  function shiftBoardShape(delta: number) {
-    const nextIndex = (SHAPES.indexOf(boardShape) + delta + SHAPES.length) % SHAPES.length;
-    handleShapeChange(SHAPES[nextIndex] ?? 'circle');
-  }
-
-  function handleDensityInput(event: Event) {
-    grooveDensity = Number((event.currentTarget as HTMLInputElement).value);
-    buildSlots();
-    syncSlotVisibility();
-    renderBoard();
-  }
-
-  function handleOperatorInput(event: Event) {
-    operatorCount = Number((event.currentTarget as HTMLInputElement).value);
-  }
-
-  function handleHydrateInput(event: Event) {
-    hydrateBatchSize = Number((event.currentTarget as HTMLInputElement).value);
-  }
-
-  function traceBoardShape(context: CanvasRenderingContext2D, radiusScale = 1) {
-    const radius = boardRadius * radiusScale;
-
-    if (boardShape === 'circle' || boardShape === 'spiral' || boardShape === 'waves') {
-      context.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      return;
-    }
-
-    if (boardShape === 'square' || boardShape === 'grid') {
-      context.rect(centerX - radius * 0.92, centerY - radius * 0.92, radius * 1.84, radius * 1.84);
-      return;
-    }
-
-    if (boardShape === 'hexagon') {
-      for (let index = 0; index < 6; index += 1) {
-        const angle = (index * Math.PI) / 3 - Math.PI / 6;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        if (index === 0) context.moveTo(x, y);
-        else context.lineTo(x, y);
+  function pickNearestOpenSlot(localX: number, localY: number) {
+    let best: Slot | null = null;
+    let bestDist = Infinity;
+    for (const slot of slots) {
+      if (slot.filled || slot.blocked) continue;
+      const point = mapSlot(slot);
+      const d = Math.hypot(point.x - localX, point.y - localY);
+      if (d < bestDist) {
+        bestDist = d;
+        best = slot;
       }
-      context.closePath();
-      return;
     }
-
-    context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    return best;
   }
 
-  function drawBoardFrame(context: CanvasRenderingContext2D) {
-    if (boardAlpha <= 0) return;
-
-    context.save();
-    context.beginPath();
-    traceBoardShape(context, 1);
-    const interior = context.createRadialGradient(centerX, centerY, boardRadius * 0.18, centerX, centerY, boardRadius * 1.02);
-    interior.addColorStop(0, withAlpha(theme.surfaceOverlay, 0.54 * boardAlpha));
-    interior.addColorStop(1, withAlpha(theme.surfaceGlass, 0.22 * boardAlpha));
-    context.fillStyle = interior;
-    context.fill();
-
-    context.beginPath();
-    traceBoardShape(context, 1);
-    context.lineWidth = Math.max(1.5, marbleRadius * 0.12);
-    context.strokeStyle = withAlpha(theme.steelEdge, 0.16 * boardAlpha);
-    context.stroke();
-
-    if (phasePulse > 0.02) {
-      context.beginPath();
-      traceBoardShape(context, 1.02);
-      context.lineWidth = Math.max(2, marbleRadius * 0.16);
-      context.strokeStyle = withAlpha(theme.copperBright, 0.35 * phasePulse);
-      context.stroke();
-    }
-
-    if (shipGlow > 0.02) {
-      context.beginPath();
-      traceBoardShape(context, 1.08);
-      context.lineWidth = Math.max(3, marbleRadius * 0.24);
-      context.strokeStyle = withAlpha(theme.patina, 0.42 * shipGlow);
-      context.stroke();
-    }
-    context.restore();
-  }
-
-  function drawGroove(context: CanvasRenderingContext2D, slot: Slot) {
-    context.save();
-    context.globalAlpha = boardAlpha * 0.84;
-    context.beginPath();
-    context.arc(slot.x, slot.y, marbleRadius * 0.96, 0, Math.PI * 2);
-    const grooveGradient = context.createRadialGradient(
-      slot.x - marbleRadius * 0.18,
-      slot.y - marbleRadius * 0.18,
-      marbleRadius * 0.18,
-      slot.x,
-      slot.y,
-      marbleRadius
-    );
-    grooveGradient.addColorStop(0, withAlpha(theme.surfaceOverlay, 0.42));
-    grooveGradient.addColorStop(0.6, withAlpha(theme.surfaceOverlay, 0.2));
-    grooveGradient.addColorStop(1, withAlpha(theme.steel, 0.06));
-    context.fillStyle = grooveGradient;
-    context.fill();
-
-    context.beginPath();
-    context.arc(slot.x, slot.y, marbleRadius * 0.72, 0, Math.PI * 2);
-    context.strokeStyle = withAlpha(theme.steelEdge, 0.08);
-    context.lineWidth = 0.85;
-    context.stroke();
-    context.restore();
-  }
-
-  function drawPing(context: CanvasRenderingContext2D, ping: Ping) {
-    context.save();
-    context.globalAlpha = ping.life * 0.6;
-    context.beginPath();
-    context.arc(ping.x, ping.y, marbleRadius * (1 + (1 - ping.life) * 1.45), 0, Math.PI * 2);
-    context.strokeStyle = ping.color;
-    context.lineWidth = 2 * ping.life;
-    context.stroke();
-    context.restore();
-  }
-
-  function drawMarble(context: CanvasRenderingContext2D, marble: Marble) {
-    if (marble.alpha <= 0.01) return;
-
-    const palette = PAL[marble.palette];
-    const speed = Math.hypot(marble.vx, marble.vy);
-    const hover = marble.settled ? 0 : Math.min(marbleRadius * 0.8, speed * 1.15);
-    const drawY = marble.y - hover;
-
-    context.save();
-    context.globalAlpha = marble.alpha;
-    context.beginPath();
-    context.ellipse(marble.x, marble.y + marbleRadius * 0.6, marbleRadius * 0.6, marbleRadius * 0.24, 0, 0, Math.PI * 2);
-    context.fillStyle = 'rgba(0, 0, 0, 0.24)';
-    context.fill();
-
-    const gradient = context.createRadialGradient(
-      marble.x - marbleRadius * 0.28,
-      drawY - marbleRadius * 0.32,
-      marbleRadius * 0.14,
-      marble.x,
-      drawY,
-      marbleRadius
-    );
-    gradient.addColorStop(0, toneColor(palette.light, 22));
-    gradient.addColorStop(0.28, palette.light);
-    gradient.addColorStop(0.52, palette.base);
-    gradient.addColorStop(1, toneColor(palette.base, -42));
-
-    context.beginPath();
-    context.arc(marble.x, drawY, marbleRadius, 0, Math.PI * 2);
-    context.fillStyle = gradient;
-    context.globalAlpha = marble.alpha * marble.saturation;
-    context.fill();
-
-    context.beginPath();
-    context.arc(marble.x - marbleRadius * 0.28, drawY - marbleRadius * 0.35, marbleRadius * 0.28, 0, Math.PI * 2);
-    context.fillStyle = 'rgba(255, 255, 255, 0.42)';
-    context.globalAlpha = marble.alpha * 0.72;
-    context.fill();
-    context.restore();
-  }
-
-  function renderBoard() {
-    if (!ctx || !canvasEl) return;
-
-    ctx.clearRect(0, 0, frameWidth, frameHeight);
-    ctx.save();
-    ctx.translate(shakeOffset.x, shakeOffset.y);
-
-    drawBoardFrame(ctx);
-
-    if (convergenceProgress > 92) {
-      ctx.save();
-      ctx.beginPath();
-      traceBoardShape(ctx, 1.05);
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = withAlpha(theme.copper, ((convergenceProgress - 92) / 8) * 0.28);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    slots.forEach((slot) => {
-      if (slot.visible) {
-        drawGroove(ctx, slot);
-      }
+  function throwAt(localX: number, localY: number) {
+    const slot = pickNearestOpenSlot(localX, localY);
+    if (!slot) return;
+    const target = mapSlot(slot);
+    const dx = target.x - localX;
+    const dy = target.y - localY;
+    const dist = Math.hypot(dx, dy) || 1;
+    const speed = Math.min(14, dist * 0.18);
+    marbles.push({
+      x: localX,
+      y: localY,
+      tx: target.x,
+      ty: target.y,
+      vx: (dx / dist) * speed,
+      vy: (dy / dist) * speed,
+      tone: selectedTone,
+      alpha: 1,
+      settled: false,
+      slot,
+      seed: Math.floor(Math.random() * 99999)
     });
+    statusLine = copy.status.thrown;
+    startLoop();
+  }
 
-    pings.forEach((ping) => drawPing(ctx, ping));
+  function handleBoardPointer(event: PointerEvent) {
+    if (!boardEl) return;
+    const rect = boardEl.getBoundingClientRect();
+    throwAt(event.clientX - rect.left, event.clientY - rect.top);
+  }
 
-    if (errorFlash > 0.04) {
-      ctx.save();
-      ctx.globalAlpha = errorFlash * 0.15;
-      ctx.fillStyle = ALERT_RED;
-      ctx.fillRect(0, 0, frameWidth, frameHeight);
-      ctx.restore();
+  function updateMarble(marble: Marble, dt: number) {
+    if (marble.settled) return;
+    const dx = marble.tx - marble.x;
+    const dy = marble.ty - marble.y;
+    const distance = Math.hypot(dx, dy);
 
-      if (errorFlash > 0.22) {
-        const alertCopy = currentPhase.name === 'dou' ? text.alerts.dou : text.alerts.review;
-        ctx.save();
-        ctx.globalAlpha = clamp(errorFlash * 0.9, 0, 1);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = `700 ${boardRadius * 0.24}px var(--font-mono), monospace`;
-        ctx.fillStyle = ALERT_RED;
-        ctx.fillText(alertCopy.title, centerX, centerY - boardRadius * 0.02);
-        ctx.font = `600 ${boardRadius * 0.07}px var(--font-head), sans-serif`;
-        ctx.fillStyle = 'rgba(255, 214, 208, 0.96)';
-        ctx.fillText(alertCopy.detail, centerX, centerY + boardRadius * 0.14);
-        ctx.restore();
+    const pull = distance > 40 ? 0.015 : 0.04;
+    marble.vx += dx * pull * dt;
+    marble.vy += dy * pull * dt;
+
+    const damping = Math.pow(0.88, dt);
+    marble.vx *= damping;
+    marble.vy *= damping;
+
+    marble.x += marble.vx * dt;
+    marble.y += marble.vy * dt;
+
+    /*
+     * Miss-marble path: no slot, target sits past the board edge.
+     * Once the marble crosses the edge we start fading it; when fully
+     * faded it is marked settled so the tick loop can splice it.
+     */
+    if (marble.slot === null) {
+      const cx = width / 2;
+      const cy = height / 2;
+      const { rx, ry } = boardRadii();
+      const edge = Math.max(rx, ry) * 1.02;
+      const distFromCenter = Math.hypot(marble.x - cx, marble.y - cy);
+      if (distFromCenter > edge) {
+        marble.alpha -= 0.045 * dt;
+        if (marble.alpha <= 0) {
+          marble.alpha = 0;
+          marble.settled = true;
+        }
+      }
+      return;
+    }
+
+    const speed = Math.hypot(marble.vx, marble.vy);
+    if (distance < 2.6 && speed < 0.85) {
+      marble.settled = true;
+      marble.x = marble.tx;
+      marble.y = marble.ty;
+      if (marble.slot) marble.slot.filled = true;
+      pings.push({ x: marble.x, y: marble.y, alpha: 1 });
+    }
+  }
+
+  function tick(now: number) {
+    const dt = reduceMotion ? 0.8 : clamp((now - lastFrame) / 16.67, 0.4, 2);
+    lastFrame = now;
+
+    marbles.forEach((marble) => updateMarble(marble, dt));
+    // Drop fully-faded miss-marbles so they stop counting toward the
+    // marbleCount readout and stop being drawn.
+    marbles = marbles.filter((marble) => !(marble.slot === null && marble.alpha <= 0));
+    pings = pings.map((ping) => ({ ...ping, alpha: ping.alpha - 0.05 * dt })).filter((ping) => ping.alpha > 0);
+
+    if (running) {
+      waveDelay -= 16.67 * dt;
+      if (waveDelay <= 0 && waveCount > 0) {
+        spawnBatch(Math.max(2, Math.ceil(operatorCount / 2)), selectedTone);
+        waveCount -= 1;
+        waveDelay = 520;
+      }
+      if (waveCount <= 0 && marbles.every((marble) => marble.settled)) {
+        running = false;
       }
     }
 
-    const allMarbles = [...marbles, ...overflowMarbles].sort((a, b) => a.y - b.y);
-    allMarbles.forEach((marble) => drawMarble(ctx, marble));
+    updateReadouts();
+    drawBoard();
+
+    const moving = marbles.some((marble) => !marble.settled) || pings.length > 0 || running;
+    if (moving) {
+      frameHandle = window.requestAnimationFrame(tick);
+    } else {
+      frameHandle = 0;
+    }
+  }
+
+  function startLoop() {
+    if (frameHandle || typeof window === 'undefined') return;
+    lastFrame = performance.now();
+    frameHandle = window.requestAnimationFrame(tick);
+  }
+
+  function resizeCanvas() {
+    if (!canvasEl || !boardEl) return;
+    const rect = boardEl.getBoundingClientRect();
+    width = Math.max(320, rect.width);
+    height = Math.max(320, rect.height);
+    dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+    canvasEl.width = Math.round(width * dpr);
+    canvasEl.height = Math.round(height * dpr);
+    canvasEl.style.width = `${width}px`;
+    canvasEl.style.height = `${height}px`;
+    context = canvasEl.getContext('2d');
+    context?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    rebuildBoard(false);
+  }
+
+  function drawBoardFrame(ctx: CanvasRenderingContext2D) {
+    const cx = width / 2;
+    const cy = height / 2;
+    const { rx, ry } = boardRadii();
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.10)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    if (shape === 'grid') {
+      ctx.strokeRect(-rx, -ry, rx * 2, ry * 2);
+    } else {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
     ctx.restore();
   }
 
-  function hasMotion() {
-    if (currentPhase.name === 'scaffold' && phaseTime < (prefersReducedMotion ? 24 : 560)) return true;
-    if (currentPhase.name === 'init' && grooveRevealProgress < 0.175) return true;
-    if (currentPhase.name === 'workflow' && grooveRevealProgress < 0.995) return true;
-    if (phasePulse > 0.02 || followupShakeMs > 0 || douPulseMs > 0 || releasePulseMs > 0) return true;
-    if (convergenceWaveCount > 0) return true;
-    if (pings.length > 0) return true;
-    return [...marbles, ...overflowMarbles].some((marble) => !marble.settled && marble.alpha > 0.02);
+  function drawSlot(ctx: CanvasRenderingContext2D, slot: Slot) {
+    const point = mapSlot(slot);
+    if (slot.blocked) {
+      const radius = Math.max(5, Math.min(width, height) * 0.018);
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(216, 90, 79, 0.55)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(point.x - 5, point.y - 5);
+      ctx.lineTo(point.x + 5, point.y + 5);
+      ctx.moveTo(point.x + 5, point.y - 5);
+      ctx.lineTo(point.x - 5, point.y + 5);
+      ctx.strokeStyle = 'rgba(255, 176, 168, 0.7)';
+      ctx.stroke();
+      return;
+    }
+    if (slot.filled) return;
+    /*
+     * Empty slot bedding — visible dimple where a marble can settle.
+     * Drawn for every open slot so the player sees the goal shape
+     * before the first throw. Filled slots are covered by the marble.
+     */
+    const radius = Math.max(4, Math.min(width, height) * 0.014);
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.22)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([1.5, 2]);
+    ctx.stroke();
+    ctx.setLineDash([]);
   }
 
-  function stepSimulation(dt: number) {
-    const timeScale = dt / 16;
-    phaseTime += dt;
-    const phaseDuration = Math.max(1, currentPhase.duration);
+  function drawMarble(ctx: CanvasRenderingContext2D, marble: Marble) {
+    const palette = MARBLE_COLORS[marble.tone];
+    const radius = Math.max(8, Math.min(width, height) * 0.032);
 
-    if (currentPhase.name === 'scaffold') {
-      boardAlpha = prefersReducedMotion ? 0.88 : Math.min(0.88, Math.max(0.16, phaseTime / 420));
-      grooveRevealProgress = 0;
-      if (!prefersReducedMotion && phaseTime < 220) {
-        const intensity = 1 - phaseTime / 220;
-        shakeOffset.x = Math.sin(phaseTime * 0.06) * 2.6 * intensity;
-        shakeOffset.y = Math.cos(phaseTime * 0.04) * 1.8 * intensity;
-      }
-    } else if (currentPhase.name === 'init') {
-      boardAlpha = 1;
-      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(0.18, (phaseTime / phaseDuration) * 0.18));
-    } else if (currentPhase.name === 'workflow') {
-      boardAlpha = 1;
-      grooveRevealProgress = Math.max(grooveRevealProgress, Math.min(1, phaseTime / (phaseDuration * 0.65)));
-    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(marble.x + radius * 0.05, marble.y + radius * 0.85, radius * 0.62, radius * 0.18, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
+    ctx.fill();
+    ctx.restore();
 
-    syncSlotVisibility();
+    const sphere = ctx.createRadialGradient(
+      marble.x - radius * 0.32,
+      marble.y - radius * 0.4,
+      radius * 0.08,
+      marble.x + radius * 0.05,
+      marble.y + radius * 0.1,
+      radius * 1.05
+    );
+    sphere.addColorStop(0, palette.light);
+    sphere.addColorStop(0.32, palette.base);
+    sphere.addColorStop(0.78, palette.base);
+    sphere.addColorStop(1, 'rgba(4, 5, 5, 0.85)');
 
-    if (convergenceWaveCount > 0) {
-      convergenceCooldown -= dt;
-      if (convergenceCooldown <= 0) {
-        spawnConvergenceWave();
-        convergenceWaveCount -= 1;
-        convergenceCooldown = Math.max(220, 720 - operatorCount * 18);
-      }
-    }
+    ctx.beginPath();
+    ctx.arc(marble.x, marble.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = sphere;
+    ctx.fill();
 
-    [...marbles, ...overflowMarbles].forEach((marble) => updateMarble(marble, timeScale));
+    ctx.beginPath();
+    ctx.arc(marble.x - radius * 0.36, marble.y - radius * 0.42, radius * 0.22, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+    ctx.fill();
 
-    for (let index = pings.length - 1; index >= 0; index -= 1) {
-      pings[index].life -= dt * 0.002;
-      if (pings[index].life <= 0) {
-        pings.splice(index, 1);
-      }
-    }
+    ctx.beginPath();
+    ctx.arc(marble.x, marble.y, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(245, 244, 239, 0.16)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
 
-    if (followupShakeMs > 0) {
-      followupShakeMs = Math.max(0, followupShakeMs - dt);
-      const intensity = prefersReducedMotion ? 0.6 : followupShakeMs / 680;
-      shakeOffset.x = Math.sin(phaseTime * 0.05) * 4 * intensity;
-      shakeOffset.y = Math.cos(phaseTime * 0.04) * 3 * intensity;
-      overflowMarbles.forEach((marble) => {
-        if (marble.settled) {
-          marble.vy += 0.3 * timeScale;
-          marble.y += marble.vy;
-          marble.alpha = Math.max(0, marble.alpha - 0.005 * timeScale);
-        }
-      });
-      overflowMarbles = overflowMarbles.filter((marble) => marble.alpha > 0.02);
-    } else {
-      shakeOffset.x *= 0.84;
-      shakeOffset.y *= 0.84;
-    }
-
-    if (douPulseMs > 0) {
-      douPulseMs = Math.max(0, douPulseMs - dt);
-      errorFlash = 0.22 + (Math.sin(phaseTime * 0.018) * 0.5 + 0.5) * 0.46;
-    } else {
-      errorFlash *= 0.88;
-    }
-
-    if (releasePulseMs > 0) {
-      releasePulseMs = Math.max(0, releasePulseMs - dt);
-      shipGlow = Math.max(0, shipGlow - dt * 0.0005);
-    } else {
-      shipGlow *= 0.96;
-    }
-
-    phasePulse = Math.max(0, phasePulse - dt * (prefersReducedMotion ? 0.0025 : 0.0018));
-    polishIntensity += (polishTarget - polishIntensity) * 0.06 * timeScale;
-    marbles.forEach((marble) => {
-      if (marble.settled) {
-        marble.saturation = Math.min(1, 0.62 + polishIntensity * 0.38);
-      }
+  function drawPings(ctx: CanvasRenderingContext2D) {
+    pings.forEach((ping) => {
+      ctx.beginPath();
+      ctx.arc(ping.x, ping.y, (1 - ping.alpha) * 22 + 4, 0, Math.PI * 2);
+      ctx.strokeStyle = ping.danger ? `rgba(216, 90, 79, ${ping.alpha * 0.5})` : `rgba(166, 197, 188, ${ping.alpha * 0.32})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
     });
-
-    renderBoard();
-    if (!hasMotion()) {
-      convergenceRunning = false;
-      motionActive = false;
-      lastFrameTime = 0;
-    }
   }
 
-  $effect(() => {
-    if (!motionActive || typeof window === 'undefined') return;
-
-    let frameId = 0;
-
-    const tick = (timestamp: number) => {
-      if (!lastFrameTime) lastFrameTime = timestamp;
-      const dt = Math.min(32, timestamp - lastFrameTime);
-      lastFrameTime = timestamp;
-      if (dt > 0) {
-        stepSimulation(dt);
-      }
-      if (motionActive) {
-        frameId = window.requestAnimationFrame(tick);
-      }
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-
-    return () => {
-      lastFrameTime = 0;
-      window.cancelAnimationFrame(frameId);
-    };
-  });
-
-  $effect(() => {
-    promptCommand;
-    currentHint;
-    renderBoard();
-  });
+  function drawBoard() {
+    if (!context || !width || !height) return;
+    const ctx = context;
+    ctx.clearRect(0, 0, width, height);
+    drawBoardFrame(ctx);
+    slots.forEach((slot) => drawSlot(ctx, slot));
+    drawPings(ctx);
+    marbles.forEach((marble) => drawMarble(ctx, marble));
+  }
 
   onMount(() => {
-    reducedMotionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
-    prefersReducedMotion = reducedMotionMedia.matches;
-    let resizeFrameId = 0;
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      prefersReducedMotion = event.matches;
-    };
-    const scheduleResize = () => {
-      if (resizeFrameId) return;
-      resizeFrameId = window.requestAnimationFrame(() => {
-        resizeFrameId = 0;
-        resizeCanvas();
-      });
-    };
-    reducedMotionMedia.addEventListener('change', handleMotionChange);
-
-    syncThemeTokens();
-    resizeCanvas();
-    showPhase(0);
-
-    resizeObserver = new ResizeObserver(scheduleResize);
-    if (stageEl) {
-      resizeObserver.observe(stageEl);
+    statusLine = copy.status.ready;
+    reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (boardEl) {
+      resizeObserver = new ResizeObserver(resizeCanvas);
+      resizeObserver.observe(boardEl);
     }
-
-    return () => {
-      if (resizeFrameId) {
-        window.cancelAnimationFrame(resizeFrameId);
-      }
-      reducedMotionMedia?.removeEventListener('change', handleMotionChange);
-      resizeObserver?.disconnect();
-    };
+    resizeCanvas();
   });
 
   onDestroy(() => {
-    if (resetTimer) clearTimeout(resetTimer);
+    resizeObserver?.disconnect();
+    if (frameHandle) window.cancelAnimationFrame(frameHandle);
   });
 </script>
 
-<div
-  bind:this={rootEl}
-  class="framework-playground"
-  data-phase={currentPhase.name}
+<section
+  class={['game', loopComplete && 'game--complete']}
+  aria-labelledby="framework-game-title"
 >
-  <h1 class="framework-playground__sr-heading" id={`${componentId}-heading`}>{text.showcaseHeading}</h1>
+  <div class="game__chrome">
+    <span class="game__chrome-center">{copy.top.center}</span>
+    <span class="game__chrome-fig">{copy.top.fig}</span>
+  </div>
 
-  <div class="framework-playground__body">
-    <div class="framework-playground__board-column">
-      <p class="framework-playground__pressline">
-        <span class="framework-playground__press-kicker">{currentPhase.eyebrow}</span>
-        <span class="framework-playground__press-copy">{currentPhase.title}.</span>
-      </p>
+  <div class="game__grid">
+    <aside class="phase-narrative" aria-label="Framework loop narrative">
+      <p class="phase-narrative__kicker">{copy.hero.kicker}</p>
+      <h1 id="framework-game-title" class="phase-narrative__title">{copy.hero.title}</h1>
+      <p class="phase-narrative__lead">{copy.hero.lead}</p>
 
-      <div
-        bind:this={stageEl}
-        class="framework-playground__stage"
-        data-board-shape={boardShape}
-        id={`${componentId}-panel`}
-        role="img"
-        aria-label={boardAriaLabel}
-        aria-labelledby={`${componentId}-heading`}
-      >
-        <canvas bind:this={canvasEl} class="framework-playground__canvas" aria-hidden="true"></canvas>
-        <div class="framework-playground__overlay" aria-hidden="true">
-          <span>{text.overlayPhase} <strong>{currentPhase.label}</strong></span>
-          <span>{text.overlayConverge} <strong>{convergenceProgress}%</strong></span>
-          <span>{text.overlayMarbles} <strong>{visibleMarbleCount}</strong></span>
+      <hr class="phase-narrative__rule" aria-hidden="true" />
+
+      <div class="phase-narrative__phase">
+        <p class="phase-narrative__eyebrow">{activePhase.eyebrow}</p>
+        <h2 class="phase-narrative__verb"><em>{activePhase.verb}</em></h2>
+        <p class="phase-narrative__body">{activePhase.body}</p>
+        <p class="phase-narrative__note"><strong>{activePhase.title}.</strong> {activePhase.note}</p>
+      </div>
+
+      <nav class="phase-narrative__nav" aria-label="Phase navigation">
+        <button
+          type="button"
+          class="phase-narrative__navbtn"
+          disabled={activeIndex === 0}
+          onclick={() => setPhase(activeIndex - 1)}
+          aria-label={copy.board.previous}
+        >←</button>
+        <span class="phase-narrative__step">{activeIndex + 1} / {copy.phases.length}</span>
+        <button
+          type="button"
+          class="phase-narrative__navbtn"
+          disabled={activeIndex === copy.phases.length - 1}
+          onclick={() => setPhase(activeIndex + 1)}
+          aria-label={copy.board.nextPhase}
+        >→</button>
+      </nav>
+    </aside>
+
+    <main class="stage">
+      <div class="board-wrap">
+        <div
+          class="board"
+          bind:this={boardEl}
+          role="img"
+          aria-label={`${activePhase.title}: ${convergence}% ${copy.board.convergence}`}
+          onpointerdown={handleBoardPointer}
+        >
+          <canvas bind:this={canvasEl} class="board__canvas"></canvas>
+          <div class="board__hud board__hud--left">
+            <span>{activePhase.eyebrow}</span>
+            <b>{activePhase.title}</b>
+          </div>
+          <div class="board__hud board__hud--right">
+            <span>{copy.board.signal}</span>
+            <b>{statusLine || copy.status.ready}</b>
+          </div>
         </div>
-        <p class="framework-playground__prompt" aria-hidden="true">
-          <span class="framework-playground__prompt-mark">$ &gt;</span>
-          <span class="framework-playground__prompt-command">{promptCommand}</span>
-        </p>
-      </div>
-    </div>
 
-    <aside class="framework-playground__side-column">
-      <p class="framework-playground__side-kicker">{text.operators}</p>
-      <p class="framework-playground__side-copy">{currentHint}</p>
-
-      <div class="framework-playground__alert-strip" aria-label={text.controls.alerts}>
-        <p class="framework-playground__alert-line" data-alert="dou" data-active={currentPhase.name === 'dou' || douBlockers > 0}>
-          <span>{text.alerts.dou.title}</span>
-          <strong>{douBlockers}</strong>
-        </p>
-        <p class="framework-playground__alert-line" data-alert="review" data-active={currentPhase.name === 'followup' || reviewWeakFits > 0}>
-          <span>{text.alerts.review.title}</span>
-          <strong>{reviewWeakFits}</strong>
-        </p>
+        <div class="metrics" aria-label="Board readout">
+          <div class="metrics__primary">
+            <span>{copy.board.filled}</span>
+            <strong>{filledCount} <i aria-hidden="true">/</i> {fillableCount}</strong>
+          </div>
+          <div>
+            <span>{copy.board.grooves}</span>
+            <strong>{grooveCount}</strong>
+          </div>
+          <div>
+            <span>{copy.board.marbles}</span>
+            <strong>{marbleCount}</strong>
+          </div>
+        </div>
       </div>
 
-      <section class="framework-playground__controls" aria-label={text.controls.actionPanel}>
-        {#if currentPhase.name === 'scaffold'}
-          <div class="framework-playground__controls-inner">
-            <div class="framework-playground__control-row">
-              <span class="framework-playground__control-caption">{text.controls.boardShape}</span>
-              <div class="framework-playground__shape-nav">
-                <button
-                  class="framework-playground__control-btn"
-                  type="button"
-                  aria-label={locale === 'pl' ? 'Poprzedni kształt planszy' : 'Previous board shape'}
-                  onclick={() => shiftBoardShape(-1)}
-                >
-                  &lt;
-                </button>
-                <span class="framework-playground__shape-label">{boardShapeLabel}</span>
-                <button
-                  class="framework-playground__control-btn"
-                  type="button"
-                  aria-label={locale === 'pl' ? 'Następny kształt planszy' : 'Next board shape'}
-                  onclick={() => shiftBoardShape(1)}
-                >
-                  &gt;
-                </button>
-              </div>
-            </div>
-            <div class="framework-playground__control-note">
-              {locale === 'pl'
-                ? 'Najpierw blokujemy granicę. Gęstość rowków należy do Workflow.'
-                : 'Lock the boundary first. Groove density belongs to Workflow.'}
-            </div>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.scaffold}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'init'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.init}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'workflow'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.density}: {grooveDensity.toFixed(1)} · {text.controls.metrics.grooves}: {visibleSlotCount}
-              </span>
-              <input
-                type="range"
-                min="0.5"
-                max="2"
-                step="0.1"
-                value={grooveDensity}
-                aria-label={text.controls.density}
-                style={`--range-pct:${densityPercent}%`}
-                oninput={handleDensityInput}
-              />
-            </label>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.workflow}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'marbles'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.operators}: {operatorCount}
-              </span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={operatorCount}
-                aria-label={text.controls.operators}
-                style={`--range-pct:${operatorPercent}%`}
-                oninput={handleOperatorInput}
-              />
-            </label>
-            <button
-              class="framework-playground__action-btn framework-playground__action-btn--muted"
-              type="button"
-              aria-label={text.controls.buttons.spawnOperators}
-              onclick={spawnOperatorBatch}
-            >
-              {text.controls.buttons.spawnOperators}
-            </button>
-            <button
-              class="framework-playground__action-btn"
-              type="button"
-              aria-label={text.controls.buttons.runConvergence}
-              disabled={convergenceRunning}
-              onclick={runConvergence}
-            >
-              {convergenceRunning ? text.controls.buttons.running : text.controls.buttons.runConvergence}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'followup'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.followup}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'dou'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.dou}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'decorate'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.decorate}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'hydrate'}
-          <div class="framework-playground__controls-inner">
-            <label class="framework-playground__control">
-              <span class="framework-playground__control-caption">
-                {text.controls.precisionFill}: {hydrateBatchSize}
-              </span>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="1"
-                value={hydrateBatchSize}
-                aria-label={text.controls.precisionFill}
-                style={`--range-pct:${hydratePercent}%`}
-                oninput={handleHydrateInput}
-              />
-            </label>
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.hydrate}
-            </button>
-          </div>
-        {:else if currentPhase.name === 'release'}
-          <div class="framework-playground__controls-inner">
-            <button class="framework-playground__action-btn" type="button" onclick={runPhaseAction}>
-              {text.controls.buttons.phaseAction.release}
-            </button>
-          </div>
-        {/if}
-      </section>
+      <div class="command">
+        <span>{copy.board.command}</span>
+        <code>$ {activePhase.command}</code>
+      </div>
 
-      <p class="framework-playground__side-kicker">{text.choosePhase}</p>
-      <div class="framework-playground__rail-shell">
-        <div class="framework-playground__rail framework-playground__rail--stack" role="tablist" aria-label={text.choosePhase}>
-          {#each phases as phase, index}
+      <div class="marble-picker" role="group" aria-label={copy.board.pickMarble}>
+        <span class="marble-picker__label">{copy.board.pickMarble}</span>
+        <div class="marble-picker__choices">
+          {#each PICK_TONES as toneKey}
             <button
-              bind:this={phaseButtons[index]}
-              class="framework-playground__chip"
-              class:is-active={index === currentPhaseIndex}
-              class:is-done={index < currentPhaseIndex}
-              data-tone={phase.tone}
-              data-tooltip={`${phase.title}. ${phase.description}`}
               type="button"
-              role="tab"
-              tabindex={index === currentPhaseIndex ? 0 : -1}
-              aria-selected={index === currentPhaseIndex}
-              aria-controls={`${componentId}-panel`}
-              aria-label={`${phase.label}. ${phase.title}. ${phase.description}`}
-              onclick={() => showPhase(index)}
-              onkeydown={(event) => handlePhaseKeydown(event, index)}
+              class={['marble-pick', `marble-pick--${toneKey}`, selectedTone === toneKey && 'marble-pick--active']}
+              aria-pressed={selectedTone === toneKey}
+              aria-label={toneKey}
+              onclick={() => { selectedTone = toneKey; }}
             >
-              <span class="framework-playground__chip-label">{phase.label}</span>
+              <span class={['marble-pick__sphere', `marble-pick__sphere--${toneKey}`]} aria-hidden="true"></span>
             </button>
           {/each}
         </div>
       </div>
+
+      <div class="primary-actions">
+        <button
+          type="button"
+          class="primary-actions__throw"
+          onclick={throwMarbles}
+          disabled={loopComplete}
+        >
+          <span class="primary-actions__chev" aria-hidden="true">▸</span>
+          {copy.board.throwRound}
+        </button>
+        <button
+          type="button"
+          class="primary-actions__reset"
+          onclick={resetLoop}
+        >
+          <span class="primary-actions__icon" aria-hidden="true">↻</span>
+          {copy.board.reset}
+        </button>
+      </div>
+    </main>
+
+    <aside class="control-panel" aria-label="Board controls">
+      <div class="converge-badge" aria-hidden="true">
+        <svg viewBox="0 0 120 120" class="converge-badge__ring">
+          <circle
+            cx="60"
+            cy="60"
+            r="54"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1"
+            stroke-dasharray="2 4"
+          />
+        </svg>
+        <span class="converge-badge__value">{convergence}%</span>
+        <span class="converge-badge__label">{copy.board.convergence}</span>
+      </div>
+
+      <div class="control-panel__top">
+        <span class="mode-dot"></span>
+        <span>{copy.top.mode}</span>
+      </div>
+
+      <section class="control-group">
+        <p>{copy.board.pickShape}</p>
+        <div class="shape-grid">
+          {#each (Object.keys(copy.shapes) as BoardShape[]) as shapeKey}
+            <button
+              type="button"
+              class={['shape-button', shape === shapeKey && 'shape-button--active']}
+              onclick={() => setShape(shapeKey)}
+            >
+              <span class={['shape-icon', `shape-icon--${shapeKey}`]}></span>
+              {copy.shapes[shapeKey]}
+            </button>
+          {/each}
+        </div>
+      </section>
+
+      <section class="control-group control-group--density">
+        <p>{copy.board.density}</p>
+        <div class="density-grid">
+          {#each [1, 2, 3] as level}
+            <button
+              type="button"
+              class={['density-button', density === level && 'density-button--active']}
+              onclick={() => setDensity(level)}
+            >
+              {level === 1 ? (locale === 'pl' ? 'Małe' : 'Low') : level === 2 ? (locale === 'pl' ? 'Średnie' : 'Medium') : (locale === 'pl' ? 'Duże' : 'High')}
+            </button>
+          {/each}
+        </div>
+      </section>
+
+      <details class="advanced-drawer">
+        <summary class="advanced-drawer__summary">
+          <span>{copy.board.advanced}</span>
+          <span class="advanced-drawer__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="advanced-drawer__body">
+          <section class="control-group">
+            <label>
+              <span>{copy.board.operators}</span>
+              <input type="range" min="2" max="9" bind:value={operatorCount} oninput={setOperators} />
+              <b>{operatorCount}</b>
+            </label>
+            <label>
+              <span>{copy.board.precision}</span>
+              <input type="range" min="35" max="92" bind:value={precision} oninput={setPrecision} />
+              <b>{precision}%</b>
+            </label>
+          </section>
+
+          <section class="operator-strip" aria-label="Operators">
+            {#each OPERATORS as operator}
+              <div class="operator-row">
+                <span>{copy.operators[operator].label}</span>
+                <em>{copy.operators[operator].kind}</em>
+              </div>
+            {/each}
+          </section>
+
+          <div class="actions">
+            <button type="button" class="action action--spawn" onclick={spawnOperators}>
+              {copy.board.spawn}
+            </button>
+            <button type="button" class="action action--converge" onclick={runConvergence}>
+              {running ? copy.board.runHint : copy.board.converge}
+            </button>
+            <div class="actions__secondary">
+              <button type="button" onclick={nextPhase}>{copy.board.next} →</button>
+            </div>
+          </div>
+        </div>
+      </details>
     </aside>
   </div>
 
-  <p class="framework-playground__sr-only" aria-live="polite">{liveMessage}</p>
-</div>
+  <p class="game__footer">{copy.hero.foot}</p>
+</section>
 
 <style>
-  :global(body.framework-page) {
-    min-height: 100%;
+  .game {
+    --ink: var(--v2-ink, #080807);
+    --ink-deep: #050504;
+    --paper: var(--v2-fg-on-dark, #f5f4ef);
+    --muted: var(--v2-fg-muted, rgba(245, 244, 239, 0.62));
+    --dim: rgba(245, 244, 239, 0.36);
+    --rule: rgba(245, 244, 239, 0.1);
+    --rule-soft: rgba(245, 244, 239, 0.06);
+    --rule-strong: rgba(245, 244, 239, 0.18);
+    --copper: var(--v2-accent, #cf6f4e);
+    --teal: var(--v2-accent-2, #3d7a72);
+    --mint: #a6c5bc;
+    min-height: calc(100vh - 72px);
+    height: calc(100vh - 72px);
+    color: var(--paper);
+    /*
+     * Atmospheric backdrop: radial light pool centred on the board,
+     * fading to deep ink at the edges. A subtle dot field replaces the
+     * old linear grid for less "dashboard overlay", more depth.
+     */
     background:
-      linear-gradient(180deg, rgba(11, 11, 13, 0.84) 0%, rgba(8, 9, 12, 0.94) 100%),
-      radial-gradient(circle at 18% 12%, rgba(184, 115, 51, 0.14), transparent 32%),
-      radial-gradient(circle at 82% 14%, rgba(212, 198, 171, 0.08), transparent 24%),
-      var(--site-paper-substrate);
-    background-attachment: scroll, scroll, scroll, scroll;
-  }
-
-  :global(.framework-page-shell) {
-    width: min(1220px, calc(100vw - 0.9rem));
-    height: auto;
-    min-height: 0;
-    margin: 0 auto;
-    padding: calc(var(--nav-height) + 0.65rem) 0.35rem clamp(4rem, 10vh, 5.75rem);
-    display: grid;
-    grid-template-rows: min-content;
-    gap: 0;
-    align-content: start;
-  }
-
-  .framework-playground {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    min-height: 0;
-    --framework-stage-height: clamp(16.25rem, 36svh, 24rem);
-    --framework-side-width: clamp(15.5rem, 22vw, 17.75rem);
-    height: auto;
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-lg);
-    padding: clamp(0.72rem, 0.95vw, 0.88rem);
-    background:
-      radial-gradient(circle at 20% 18%, rgba(184, 115, 51, 0.1), transparent 26%),
-      radial-gradient(circle at 82% 12%, rgba(163, 184, 199, 0.08), transparent 24%),
-      linear-gradient(180deg, rgba(18, 19, 23, 0.68) 0%, rgba(10, 10, 12, 0.82) 100%);
-    box-shadow: var(--shadow);
-    display: grid;
-    gap: clamp(0.7rem, 0.9vw, 0.92rem);
-    backdrop-filter: blur(18px) saturate(115%);
-    -webkit-backdrop-filter: blur(18px) saturate(115%);
-  }
-
-  .framework-playground__sr-heading {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .framework-playground__body {
-    min-height: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1.18fr) minmax(15.5rem, var(--framework-side-width));
-    grid-template-rows: auto minmax(0, 1fr);
-    grid-template-areas:
-      'press side'
-      'board side';
-    gap: clamp(0.75rem, 0.95vw, 1rem);
-    align-items: start;
-    align-content: start;
-    justify-content: center;
-    position: relative;
-    padding: 0 0.15rem 0 0.2rem;
-  }
-
-  .framework-playground__board-column {
-    display: contents;
-  }
-
-  .framework-playground__pressline {
-    grid-area: press;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    min-width: 0;
-    color: var(--steel-dark);
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .framework-playground__press-kicker {
-    font-family: var(--font-mono);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    font-size: 0.74rem;
-    color: var(--patina);
-  }
-
-  .framework-playground__press-copy {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .framework-playground__stage {
-    grid-area: board;
-    position: relative;
-    width: 100%;
-    height: var(--framework-stage-height);
-    min-height: 0;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--card-border);
-    background-image:
-      radial-gradient(circle at 50% 50%, rgba(34, 34, 31, 0.4) 0%, rgba(12, 12, 13, 0.85) 100%),
-      url('/presence/background-stone.webp');
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: multiply;
-    overflow: hidden;
-    box-shadow: inset 0 0 54px rgba(0, 0, 0, 0.46);
-  }
-
-  .framework-playground__canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-
-  .framework-playground__overlay {
-    position: absolute;
-    top: 0.95rem;
-    left: 0.95rem;
-    display: grid;
-    gap: 0.35rem;
-    min-width: 142px;
-    padding: 0.72rem 0.82rem;
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-md);
-    background: rgba(8, 9, 11, 0.74);
-    backdrop-filter: var(--blur);
-    box-shadow: var(--shadow);
-    z-index: 5;
-  }
-
-  .framework-playground__overlay span,
-  .framework-playground__overlay strong {
-    font-family: var(--font-mono);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .framework-playground__overlay span {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    color: var(--steel);
-    font-size: 0.66rem;
-  }
-
-  .framework-playground__overlay strong {
-    color: var(--stone-light);
-    font-size: 0.82rem;
-  }
-
-  .framework-playground__prompt {
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    width: fit-content;
-    max-width: calc(100% - 1.5rem);
-    margin: 0;
-    padding: 0.58rem 0.78rem;
-    border: 1px solid rgba(163, 184, 199, 0.14);
-    border-radius: 0.5rem;
-    background: rgba(7, 9, 12, 0.72);
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.22);
-    z-index: 5;
-  }
-
-  .framework-playground__prompt-mark {
-    color: var(--steel-dark);
-    flex-shrink: 0;
-  }
-
-  .framework-playground__prompt-command {
-    min-width: 0;
-    color: var(--stone-light);
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .framework-playground__side-column {
-    grid-area: side;
-    position: sticky;
-    top: calc(var(--nav-height) + 0.75rem);
-    width: auto;
-    height: auto;
-    min-height: 0;
-    max-height: calc(var(--framework-stage-height) + 4.5rem);
+      radial-gradient(
+        ellipse 70% 60% at 50% 38%,
+        rgba(245, 244, 239, 0.045) 0%,
+        rgba(245, 244, 239, 0.018) 38%,
+        transparent 72%
+      ),
+      radial-gradient(circle, rgba(245, 244, 239, 0.05) 1px, transparent 1.5px) 0 0 / 28px 28px,
+      radial-gradient(ellipse 100% 80% at 50% 50%, var(--ink) 30%, var(--ink-deep) 100%);
+    padding: 18px 32px 18px;
+    font-family: var(--v2-font-body, Inter, system-ui, sans-serif);
+    overflow: auto;
+    scrollbar-gutter: stable;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    gap: 0.65rem;
-    min-width: 0;
+    gap: 14px;
+  }
+
+  .game__chrome {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: baseline;
+    flex: 0 0 auto;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /*
+   * The global SiteNavV2 above already carries the Vibecrafted.
+   * wordmark, so this chrome only needs the figure label centred and
+   * the figure number end-aligned. The empty first column keeps the
+   * centre column truly centred without re-introducing a wordmark.
+   */
+  .game__chrome-center {
+    grid-column: 2;
+    justify-self: center;
+  }
+
+  .game__chrome-fig {
+    grid-column: 3;
+    justify-self: end;
+  }
+
+  .game__grid {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) minmax(560px, 1fr) minmax(260px, 320px);
+    gap: 32px;
+    min-height: 0;
+    flex: 1 1 auto;
+  }
+
+  /*
+   * Phase narrative (left column): one phase at a time. Hero copy on
+   * top sets the metaphor (throw → miss → settle). Below a hairline,
+   * the active phase carries its own eyebrow / verb / body / note.
+   * Prev/next buttons cycle through the five phases without giving
+   * the player a wall of cards to parse.
+   */
+  .phase-narrative {
+    min-height: 0;
     overflow: auto;
-    padding: 0.1rem 0.1rem 0.15rem 0.1rem;
-    overscroll-behavior: contain;
-    align-self: start;
-  }
-
-  .framework-playground__side-kicker {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--steel-dark);
-  }
-
-  .framework-playground__side-copy {
-    margin: 0;
-    color: var(--steel);
-    font-size: 0.76rem;
-    line-height: 1.4;
-    min-height: 2rem;
-  }
-
-  .framework-playground__alert-strip {
-    display: grid;
-    gap: 0.22rem;
-  }
-
-  .framework-playground__alert-line {
-    margin: 0;
+    padding: 4px 0 10px 0;
     display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding-left: 0.75rem;
-    border-left: 1px solid rgba(163, 184, 199, 0.16);
-    color: var(--steel-dark);
-    font-family: var(--font-mono);
-    font-size: 0.69rem;
-    letter-spacing: 0.08em;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .phase-narrative__kicker {
+    margin: 0;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
+    color: var(--copper);
   }
 
-  .framework-playground__alert-line strong {
-    color: var(--stone-light);
-    font-size: 0.78rem;
+  .phase-narrative__title {
+    margin: 0;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(34px, 3.6vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+    color: var(--paper);
   }
 
-  .framework-playground__alert-line[data-alert="dou"][data-active="true"] {
-    border-left-color: rgba(224, 85, 68, 0.78);
-    color: #ffb8ae;
+  .phase-narrative__lead {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 36ch;
   }
 
-  .framework-playground__alert-line[data-alert="review"][data-active="true"] {
-    border-left-color: rgba(184, 115, 51, 0.68);
-    color: var(--copper-bright);
+  .phase-narrative__rule {
+    border: 0;
+    border-top: 1px solid var(--rule-soft);
+    margin: 4px 0 0;
+    width: 100%;
   }
 
-  .framework-playground__controls {
-    margin-top: 0;
+  .phase-narrative__phase {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .phase-narrative__eyebrow {
+    margin: 0;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--copper);
+  }
+
+  .phase-narrative__verb {
+    margin: 0;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(26px, 2.8vw, 36px);
+    line-height: 1.1;
+    font-weight: 400;
+    color: var(--paper);
+  }
+
+  .phase-narrative__verb em {
+    font-style: italic;
+  }
+
+  .phase-narrative__body {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 38ch;
+  }
+
+  .phase-narrative__note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--dim);
+    font-style: italic;
+    max-width: 38ch;
+  }
+
+  .phase-narrative__note strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .phase-narrative__nav {
+    margin-top: auto;
+    padding-top: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .phase-narrative__navbtn {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 14px;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .phase-narrative__navbtn:hover:not(:disabled),
+  .phase-narrative__navbtn:focus-visible:not(:disabled) {
+    border-color: var(--copper);
+    color: var(--copper);
+    outline: none;
+  }
+
+  .phase-narrative__navbtn:disabled {
+    opacity: 0.32;
+    cursor: not-allowed;
+  }
+
+  .phase-narrative__step {
+    justify-self: center;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--dim);
+  }
+
+  .stage {
+    min-height: 0;
+    padding: 0;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    align-content: stretch;
+    gap: 14px;
     min-width: 0;
   }
 
-  .framework-playground__controls-inner {
+  .board-wrap {
+    min-height: 0;
+    align-self: stretch;
     display: grid;
-    gap: 0.72rem;
-    padding: 0.15rem 0 0.1rem;
+    grid-template-rows: 1fr auto;
+    gap: 14px;
+    align-content: stretch;
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
   }
 
-  .framework-playground__control {
+  /*
+   * Board: hairline frame, ink fill, with a visible dot field acting as
+   * the marble bedding. The dots show through to make slot positions
+   * legible without canvas drawing them — same role as the old grooves
+   * the operator was missing after the radial backdrop landed.
+   */
+  .board {
+    position: relative;
+    height: 100%;
+    min-height: clamp(320px, 44vh, 520px);
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+    background:
+      radial-gradient(
+        ellipse 70% 60% at 50% 50%,
+        rgba(245, 244, 239, 0.03) 0%,
+        rgba(2, 4, 5, 0) 68%
+      ),
+      rgba(2, 4, 5, 0.42);
+    box-shadow:
+      inset 0 0 36px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(245, 244, 239, 0.02);
+    overflow: hidden;
+    cursor: crosshair;
+  }
+
+  .board__canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .board__hud {
+    position: absolute;
+    top: 20px;
     display: grid;
-    gap: 0.35rem;
-  }
-
-  .framework-playground__control-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-
-  .framework-playground__control-caption {
-    color: var(--steel-edge);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
+    gap: 6px;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: var(--dim);
+    pointer-events: none;
   }
 
-  .framework-playground__control-note {
-    color: var(--steel-dark);
-    font-size: 0.8rem;
-    line-height: 1.4;
+  .board__hud b {
+    color: var(--paper);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
   }
 
-  .framework-playground__shape-nav {
+  .board__hud--left {
+    left: 24px;
+  }
+
+  .board__hud--right {
+    right: 24px;
+    text-align: right;
+    max-width: 240px;
+  }
+
+  /*
+   * Metrics: a quiet readout strip — no box, no fill. Hairline above
+   * the row separates it from the board without re-introducing a card.
+   */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    padding: 12px 4px 2px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .metrics div {
+    padding: 0 16px;
+    border-right: 1px solid var(--rule-soft);
     display: flex;
-    gap: 0.35rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .framework-playground__shape-label {
-    min-width: 5rem;
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-align: center;
+  .metrics div:first-child {
+    padding-left: 0;
+  }
+
+  .metrics div:last-child {
+    border-right: 0;
+  }
+
+  .metrics span {
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
+    color: var(--dim);
   }
 
-  .framework-playground__control-btn {
+  .metrics strong {
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(22px, 2.2vw, 28px);
+    font-weight: 400;
+    color: var(--mint);
+    line-height: 1;
+  }
+
+  /*
+   * Filled X/Y is the goal counter. It carries more weight than the
+   * other metrics so the player keeps an eye on what "winning" means.
+   */
+  .metrics__primary strong {
+    font-size: clamp(28px, 2.8vw, 38px);
+    color: var(--paper);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .metrics__primary strong i {
+    font-style: normal;
+    color: var(--dim);
+    font-size: 0.7em;
+  }
+
+  /*
+   * Command line: terminal-style readout, no panel chrome. A single
+   * hairline above keeps it tied to the board without boxing it in.
+   */
+  .command {
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: baseline;
+    padding: 10px 4px 4px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .command span {
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .command code {
+    overflow-wrap: anywhere;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    color: var(--mint);
+    font-size: 13px;
+  }
+
+  /*
+   * Marble picker: tone selection for the next throw. Three glass
+   * orbs in the brand palette (teal · steel · copper) sit centred
+   * above the throw row. The selected orb gets a hairline ring +
+   * mint accent so the player sees which colour is loaded next.
+   */
+  .marble-picker {
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 18px;
+    padding: 6px 4px 0;
+  }
+
+  .marble-picker__label {
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .marble-picker__choices {
+    display: inline-flex;
+    gap: 12px;
+  }
+
+  .marble-pick {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 180ms ease, transform 180ms ease;
+  }
+
+  .marble-pick:hover {
+    border-color: var(--rule-strong);
+  }
+
+  .marble-pick--active,
+  .marble-pick--active:hover {
+    border-color: var(--mint);
+    transform: scale(1.04);
+  }
+
+  .marble-pick:focus-visible {
+    outline: none;
+    border-color: var(--paper);
+  }
+
+  .marble-pick__sphere {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.45),
+      inset -2px -3px 6px rgba(0, 0, 0, 0.32),
+      inset 3px 4px 6px rgba(255, 255, 255, 0.18);
+  }
+
+  .marble-pick__sphere--teal {
+    background:
+      radial-gradient(circle at 32% 28%, #a6c5bc 0%, #3d7a72 38%, #1a3a36 100%);
+  }
+
+  .marble-pick__sphere--steel {
+    background:
+      radial-gradient(circle at 32% 28%, #f0ebde 0%, #c8c2b4 40%, #6f6a5e 100%);
+  }
+
+  .marble-pick__sphere--copper {
+    background:
+      radial-gradient(circle at 32% 28%, #f0c4a3 0%, #cf6f4e 40%, #5e2c1c 100%);
+  }
+
+  /*
+   * Primary actions: the Throw button is the player's main lever.
+   * Mint border ties it to the convergence accent; chevron arrow on
+   * the left echoes the mockup's "▸ NEXT LOOP" pill. Reset sits
+   * beside it as a quiet secondary so the player can start over
+   * without losing it in a drawer.
+   */
+  .primary-actions {
+    max-width: 1040px;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    padding: 4px 0 0;
+  }
+
+  .primary-actions__throw,
+  .primary-actions__reset {
+    min-height: 52px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    padding: 0;
-    border: 1px solid var(--card-border);
-    border-radius: 8px;
-    background: rgba(163, 184, 199, 0.05);
-    color: var(--stone-light);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .framework-playground__control-btn:hover,
-  .framework-playground__control-btn:focus-visible {
-    border-color: var(--copper-bright);
-    background: rgba(184, 115, 51, 0.15);
-    color: var(--copper-bright);
-    box-shadow: 0 0 15px rgba(184, 115, 51, 0.2);
-    outline: none;
-  }
-
-  .framework-playground__controls-inner input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(
-      to right,
-      var(--copper-bright) 0%,
-      var(--copper-bright) var(--range-pct, 0%),
-      rgba(163, 184, 199, 0.14) var(--range-pct, 0%),
-      rgba(163, 184, 199, 0.14) 100%
-    );
-    border-radius: 999px;
-    outline: none;
-    margin: 0.6rem 0;
-    cursor: pointer;
-  }
-
-  .framework-playground__controls-inner input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--stone-light);
-    border: 3px solid var(--copper-bright);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(184, 115, 51, 0.6);
-    transition: transform 0.1s ease;
-  }
-
-  .framework-playground__controls-inner input[type="range"]:active::-webkit-slider-thumb {
-    transform: scale(1.2);
-  }
-
-  .framework-playground__controls-inner input[type="range"]::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    background: var(--copper-bright);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 0 10px rgba(184, 115, 51, 0.4);
-  }
-
-  .framework-playground__action-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 0.72rem 0.95rem;
-    border: 1px solid rgba(184, 115, 51, 0.4);
-    border-radius: var(--radius-md);
-    background: rgba(184, 115, 51, 0.1);
-    color: var(--copper-bright);
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    gap: 12px;
+    border-radius: 2px;
+    background: transparent;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    letter-spacing: 0.26em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 0.5rem;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease,
+      background 180ms ease;
   }
 
-  .framework-playground__action-btn:disabled {
-    opacity: 0.56;
+  .primary-actions__throw {
+    padding: 0 28px;
+    border: 1px solid var(--mint);
+    color: var(--mint);
+  }
+
+  .primary-actions__throw:hover,
+  .primary-actions__throw:focus-visible {
+    background: rgba(166, 197, 188, 0.1);
+    color: #c5dbd3;
+    outline: none;
+  }
+
+  .primary-actions__chev {
+    color: var(--mint);
+    font-size: 14px;
+  }
+
+  .primary-actions__reset {
+    padding: 0 22px;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+  }
+
+  .primary-actions__reset:hover,
+  .primary-actions__reset:focus-visible {
+    border-color: var(--paper);
+    color: var(--paper);
+    outline: none;
+  }
+
+  .primary-actions__icon {
+    font-size: 14px;
+    color: var(--dim);
+  }
+
+  .primary-actions__throw:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
   }
 
-  .framework-playground__action-btn--muted {
-    border-color: rgba(163, 184, 199, 0.18);
-    background: rgba(163, 184, 199, 0.08);
-    color: var(--steel-edge);
+  /*
+   * Win state: filled === fillable. The badge brightens and gains a
+   * mint glow, the board picks up a faint mint inner halo, the throw
+   * button steps back, and reset becomes the primary mint pill —
+   * subtle enough to honour Monika's "no fanfare" brief, but clear
+   * enough that the player feels the loop close.
+   */
+  .game--complete .converge-badge {
+    color: #c5dbd3;
   }
 
-  .framework-playground__action-btn--muted:hover,
-  .framework-playground__action-btn--muted:focus-visible {
-    border-color: rgba(163, 184, 199, 0.3);
-    background: rgba(163, 184, 199, 0.12);
-    box-shadow: 0 4px 20px rgba(163, 184, 199, 0.12);
-    outline: none;
+  .game--complete .converge-badge__value,
+  .game--complete .converge-badge__label {
+    color: #c5dbd3;
+    text-shadow: 0 0 14px rgba(166, 197, 188, 0.55);
   }
 
-  .framework-playground__action-btn:hover,
-  .framework-playground__action-btn:focus-visible {
-    border-color: var(--copper-bright);
-    background: rgba(184, 115, 51, 0.2);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(184, 115, 51, 0.2);
-    outline: none;
+  .game--complete .board {
+    box-shadow:
+      inset 0 0 36px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(166, 197, 188, 0.2),
+      inset 0 0 80px rgba(166, 197, 188, 0.14);
+    border-color: rgba(166, 197, 188, 0.34);
   }
 
-  .framework-playground__rail-shell {
+  .game--complete .metrics__primary strong {
+    color: var(--mint);
+  }
+
+  .game--complete .primary-actions__reset {
+    border-color: var(--mint);
+    color: var(--mint);
+  }
+
+  .game--complete .primary-actions__reset:hover,
+  .game--complete .primary-actions__reset:focus-visible {
+    background: rgba(166, 197, 188, 0.1);
+    color: #c5dbd3;
+  }
+
+  .control-panel {
+    min-height: 0;
+    overflow: auto;
+    padding: 6px 0 10px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /*
+   * Convergence badge: the right column's hero. Round dotted ring
+   * houses the live percentage in serif, with a mono kicker beneath.
+   * No box, no fill — just light geometry on the ink.
+   */
+  .converge-badge {
     position: relative;
-    width: 100%;
-    min-width: 0;
+    align-self: center;
+    width: clamp(132px, 12vw, 158px);
+    height: clamp(132px, 12vw, 158px);
+    display: grid;
+    place-items: center;
+    color: var(--mint);
+    margin: 4px 0 8px;
   }
 
-  .framework-playground__rail {
+  .converge-badge__ring {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    min-width: 0;
-    overflow: visible;
-    padding: 0.15rem 0 0.35rem;
+    height: 100%;
+    transform: rotate(-90deg);
   }
 
-  .framework-playground__rail--stack {
+  .converge-badge__value {
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(34px, 3.4vw, 44px);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--mint);
+    letter-spacing: -0.01em;
+  }
+
+  .converge-badge__label {
+    position: absolute;
+    bottom: 28%;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 9px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--mint);
+    opacity: 0.78;
+  }
+
+  .control-panel__top {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .mode-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 8px rgba(166, 197, 188, 0.6);
+  }
+
+  /*
+   * Section blocks inside the right column: hairline top-rule instead
+   * of a full bordered card. Reads as scaffolding, not panels.
+   */
+  .control-group,
+  .operator-strip,
+  .phase-note {
+    padding: 14px 0 4px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .control-group:first-of-type {
+    border-top: 0;
+    padding-top: 4px;
+  }
+
+  /*
+   * Advanced drawer: power-user knobs (density, throw size, precision,
+   * full operator list, older spawn/converge/next-phase) live here
+   * collapsed by default. Native <details> handles toggle so it works
+   * without extra state and stays accessible by keyboard.
+   */
+  .advanced-drawer {
+    margin-top: 4px;
+  }
+
+  .advanced-drawer__summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 180ms ease;
+  }
+
+  .advanced-drawer__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .advanced-drawer__summary:hover {
+    color: var(--paper);
+  }
+
+  .advanced-drawer__chev {
+    transition: transform 220ms ease;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .advanced-drawer[open] .advanced-drawer__chev {
+    transform: rotate(180deg);
+    color: var(--copper);
+  }
+
+  .advanced-drawer__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 4px;
+  }
+
+  .control-group p,
+  .control-group label > span {
+    display: block;
+    margin: 0 0 12px;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .shape-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .shape-button {
+    min-height: 58px;
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    background: transparent;
+    color: var(--dim);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .shape-button:hover {
+    color: var(--muted);
+    border-color: var(--rule-strong);
+  }
+
+  .shape-button--active,
+  .shape-button--active:hover {
+    color: var(--paper);
+    border-color: var(--copper);
+    background: transparent;
+  }
+
+  /*
+   * Density picker mirrors the shape grid above it: 3 buttons, mono
+   * uppercase labels, copper accent on active. Kept on the surface
+   * so the player can ease the goal count without diving into the
+   * advanced drawer.
+   */
+  .density-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .density-button {
+    min-height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 2px;
+    border: 1px solid var(--rule-soft);
+    background: transparent;
+    color: var(--dim);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+
+  .density-button:hover {
+    color: var(--muted);
+    border-color: var(--rule-strong);
+  }
+
+  .density-button--active,
+  .density-button--active:hover {
+    color: var(--paper);
+    border-color: var(--copper);
+    background: transparent;
+  }
+
+  .shape-icon {
+    width: 30px;
+    height: 24px;
+    border: 2px dotted var(--copper);
+    display: block;
+  }
+
+  .shape-icon--ring {
+    border-radius: 50%;
+  }
+
+  .shape-icon--oval {
+    border-radius: 999px;
+    border-color: var(--dim);
+  }
+
+  .shape-icon--grid {
+    border: 0;
+    background:
+      radial-gradient(circle, var(--dim) 2px, transparent 3px) 0 0 / 10px 10px;
+  }
+
+  .control-group label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px 14px;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .control-group label > span {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+  }
+
+  .control-group input,
+  .control-group select {
+    grid-column: 1;
+    accent-color: var(--teal);
+  }
+
+  .control-group select {
+    width: 100%;
+    color: var(--paper);
+    background: rgba(245, 244, 239, 0.04);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .control-group b {
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    color: var(--paper);
+    min-width: 46px;
+    text-align: right;
+  }
+
+  .operator-strip {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.28rem 0.35rem;
+    gap: 6px 14px;
   }
 
-  .framework-playground__chip {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
-    min-height: 2.05rem;
-    padding: 0.42rem 0.5rem;
-    border: 1px solid rgba(163, 184, 199, 0.12);
-    border-radius: 999px;
-    background: rgba(17, 18, 22, 0.52);
-    box-shadow: none;
-    color: var(--stone-light);
-    cursor: pointer;
-    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  .operator-row {
+    display: block;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(245, 244, 239, 0.1);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 12px;
+    line-height: 1.25;
+    color: var(--paper);
   }
 
-  .framework-playground__chip:hover,
-  .framework-playground__chip:focus-visible {
-    border-color: rgba(184, 115, 51, 0.36);
-    background: rgba(24, 19, 15, 0.7);
-    outline: none;
+  .operator-row:nth-last-child(-n + 2) {
+    border-bottom: 0;
+    padding-bottom: 0;
   }
 
-  .framework-playground__chip.is-active {
-    border-color: rgba(184, 115, 51, 0.78);
-    background: rgba(26, 20, 15, 0.88);
-    color: var(--copper-bright);
+  .operator-row em {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 10px;
+    font-style: italic;
   }
 
-  .framework-playground__chip.is-done {
-    border-color: rgba(90, 138, 122, 0.24);
+  .actions {
+    display: grid;
+    gap: 12px;
   }
 
-  .framework-playground__chip[data-tone="patina"].is-active {
-    border-color: rgba(90, 138, 122, 0.72);
-    color: var(--patina);
-  }
-
-  .framework-playground__chip[data-tone="alert"].is-active {
-    border-color: rgba(224, 85, 68, 0.78);
-    color: #ffb8ae;
-  }
-
-  .framework-playground__chip-label {
-    font-family: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', monospace;
-    font-size: 0.64rem;
-    letter-spacing: 0.07em;
-    line-height: 1.15;
+  .action,
+  .actions__secondary button {
+    min-height: 44px;
+    border-radius: 2px;
+    border: 1px solid var(--rule-strong);
+    background: transparent;
+    color: var(--paper);
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    white-space: normal;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      color 180ms ease;
+  }
+
+  .actions__secondary button {
+    border-color: var(--rule);
+    color: var(--muted);
+  }
+
+  .action:hover,
+  .actions__secondary button:hover {
+    border-color: var(--paper);
+    color: var(--paper);
+  }
+
+  .action:focus-visible,
+  .actions__secondary button:focus-visible {
+    outline: 1px solid var(--paper);
+    outline-offset: 2px;
+  }
+
+  .action--spawn {
+    border-color: rgba(214, 120, 69, 0.82);
+    color: var(--copper);
+  }
+
+  .action--spawn:hover {
+    border-color: var(--copper);
+    background: rgba(214, 120, 69, 0.08);
+    color: #ffc28d;
+  }
+
+  .action--converge {
+    border-color: rgba(121, 217, 150, 0.75);
+    color: var(--mint);
+  }
+
+  .action--converge:hover {
+    border-color: var(--mint);
+    background: rgba(166, 197, 188, 0.08);
+    color: #c5dbd3;
+  }
+
+  .actions__secondary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .phase-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .phase-note strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--paper);
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-style: italic;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .game__footer {
+    flex: 0 0 auto;
+    margin: 0;
     text-align: center;
+    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--dim);
   }
 
-  .framework-playground__chip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + 0.55rem);
-    transform: translate(-50%, 0.35rem);
-    width: min(18rem, 26vw);
-    padding: 0.72rem 0.82rem;
-    border: 1px solid rgba(163, 184, 199, 0.16);
-    border-radius: 14px;
-    background: rgba(9, 10, 13, 0.88);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    color: var(--stone-light);
-    font-family: var(--font-head);
-    font-size: 0.82rem;
-    font-weight: 500;
-    line-height: 1.35;
-    text-transform: none;
-    letter-spacing: normal;
-    text-align: left;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 10;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-  }
-
-  .framework-playground__sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  .framework-playground__chip:hover::after,
-  .framework-playground__chip:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-
-  @media (max-width: 960px) {
-    :global(.framework-page-shell) {
-      width: min(100vw - 0.5rem, 1220px);
+  @media (max-width: 1180px) {
+    .game {
       height: auto;
-      min-height: 0;
-      padding: calc(var(--nav-height) + 0.55rem) 0.22rem 2rem;
-    }
-
-    .framework-playground {
-      --framework-stage-height: clamp(17rem, 46svh, 26rem);
-    }
-
-    .framework-playground__body {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 0.95rem;
-      padding: 0;
-    }
-
-    .framework-playground__pressline,
-    .framework-playground__stage,
-    .framework-playground__side-column {
-      grid-column: 1;
-    }
-
-    .framework-playground__pressline {
-      grid-row: 1;
-      margin-bottom: 0;
-    }
-
-    .framework-playground__stage {
-      grid-row: 2;
-      height: var(--framework-stage-height);
-      margin-top: 0;
-    }
-
-    .framework-playground__side-column {
-      grid-row: 3;
-      position: static;
-      width: auto;
-      max-height: none;
+      min-height: calc(100vh - 72px);
       overflow: visible;
-      padding: 0;
     }
 
-    .framework-playground__rail--stack {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.55rem;
+    .game__grid {
+      grid-template-columns: 1fr;
+      border: 0;
+      min-height: auto;
     }
 
-    .framework-playground__chip {
-      min-height: 2.65rem;
-      padding: 0.65rem 0.75rem;
-      justify-content: center;
-      border: 1px solid rgba(163, 184, 199, 0.12);
-      border-radius: var(--radius-md);
-      background: rgba(17, 18, 22, 0.82);
+    .stage {
+      min-height: auto;
+      grid-template-rows: auto auto auto;
     }
 
-    .framework-playground__chip:hover {
-      border-color: rgba(184, 115, 51, 0.28);
+    .board-wrap {
+      grid-template-rows: auto auto;
     }
 
-    .framework-playground__chip.is-active {
-      background: rgba(27, 20, 15, 0.92);
-      box-shadow: 0 0 0 1px rgba(184, 115, 51, 0.18);
+    .board {
+      min-height: 360px;
+      height: min(52vh, 460px);
     }
 
-    .framework-playground__chip::after {
-      left: 50%;
-      right: auto;
-      width: max-content;
-      max-width: min(26rem, 44vw);
-      transform: translate(-50%, 0.35rem);
+    .phase-narrative,
+    .control-panel {
+      padding: 16px 0;
+      border-top: 1px solid var(--rule-soft);
     }
 
-    .framework-playground__chip:hover::after,
-    .framework-playground__chip:focus-visible::after {
-      transform: translate(-50%, 0);
-    }
-  }
-
-  @media (max-width: 640px) {
-    :global(.framework-page-shell) {
-      width: min(100vw - 0.3rem, 1220px);
-      padding: calc(var(--nav-height) + 0.38rem) 0.06rem 1.35rem;
+    .phase-narrative {
+      max-width: 540px;
     }
 
-    .framework-playground {
-      --framework-stage-height: clamp(15rem, 41svh, 21rem);
-      padding: 0.62rem;
-      gap: 0.62rem;
+    .control-panel {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
     }
 
-    .framework-playground__overlay {
-      left: auto;
-      right: 0.7rem;
-      min-width: 124px;
+    .converge-badge {
+      grid-column: 1 / -1;
     }
 
-    .framework-playground__prompt {
-      left: 0.75rem;
-      right: 0.75rem;
-      width: auto;
+    .control-panel__top {
+      grid-column: 1 / -1;
     }
 
-    .framework-playground__rail {
-      overflow-x: auto;
-      padding: 0.1rem 0 0.45rem;
-      scroll-snap-type: x proximity;
-      -webkit-overflow-scrolling: touch;
+    .advanced-drawer {
+      grid-column: 1 / -1;
     }
 
-    .framework-playground__rail--stack {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 0.45rem;
-    }
-
-    .framework-playground__chip {
-      flex: 0 0 auto;
-      min-width: max-content;
-      min-height: 2.4rem;
-      padding: 0.42rem 0.5rem;
-      scroll-snap-align: start;
-    }
-
-    .framework-playground__chip-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-    }
-
-    .framework-playground__chip::after {
-      left: 0;
-      right: 0;
-      bottom: calc(100% + 0.55rem);
-      transform: translate(0, 0.35rem);
-      width: auto;
-      max-width: none;
-    }
-
-    .framework-playground__chip:hover::after,
-    .framework-playground__chip:focus-visible::after {
-      transform: translate(0, 0);
+    .operator-strip,
+    .actions,
+    .phase-note {
+      grid-column: 1 / -1;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .framework-playground *,
-    .framework-playground *::before,
-    .framework-playground *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
+  @media (max-width: 760px) {
+    .game {
+      padding: 16px;
+    }
+
+    .game__chrome {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .game__chrome-center,
+    .game__chrome-fig {
+      grid-column: 1;
+      justify-self: start;
+    }
+
+    .stage h1 {
+      font-size: 22px;
+    }
+
+    .board {
+      min-height: 320px;
+      height: 320px;
+    }
+
+    .board-wrap {
+      grid-template-rows: 320px auto;
+    }
+
+    .metrics,
+    .command,
+    .control-panel {
+      grid-template-columns: 1fr;
+    }
+
+    .command {
+      align-items: start;
+    }
+
+    .command code {
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .metrics div {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .metrics div:last-child {
+      border-bottom: 0;
+    }
+
+    .shape-grid,
+    .actions__secondary {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 1181px) and (max-height: 900px) {
+    .game {
+      gap: 10px;
+      padding-top: 14px;
+      padding-bottom: 14px;
+    }
+
+    .game__chrome {
+      padding-bottom: 10px;
+    }
+
+    .game__grid {
+      gap: 20px;
+      grid-template-columns: minmax(180px, 236px) minmax(500px, 1fr) minmax(250px, 304px);
+    }
+
+    .phase-rail {
+      gap: 8px;
+      padding-top: 14px;
+      padding-right: 14px;
+    }
+
+    .phase-card {
+      grid-template-columns: 38px 1fr;
+      min-height: 70px;
+      padding: 10px;
+    }
+
+    .phase-card__num {
+      font-size: 28px;
+    }
+
+    .phase-card strong {
+      font-size: 20px;
+    }
+
+    .phase-card span:last-child {
+      display: none;
+    }
+
+    .stage {
+      gap: 10px;
+      padding-top: 14px;
+    }
+
+    .stage h1 {
+      font-size: clamp(34px, 3.4vw, 42px);
+    }
+
+    .stage__intro > p:last-child {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .board {
+      height: clamp(280px, 36vh, 400px);
+    }
+
+    .board-wrap {
+      gap: 8px;
+    }
+
+    .control-panel {
+      gap: 12px;
+      padding-top: 14px;
+      padding-left: 14px;
+    }
+
+    .shape-button {
+      min-height: 52px;
+    }
+
+    .control-group p,
+    .control-group label > span {
+      margin-bottom: 9px;
+    }
+
+    .operator-row {
+      font-size: 11px;
+    }
+
+    .phase-note {
+      display: none;
+    }
+
+    .game__footer {
+      display: none;
     }
   }
 </style>
