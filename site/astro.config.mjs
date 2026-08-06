@@ -19,6 +19,7 @@ export default defineConfig({
     '/framework': '/en/framework/',
     '/install': '/en/install/',
     '/aicx': '/en/aicx/',
+    '/pilot': '/en/pilot/',
     '/quickstart': '/en/quickstart/',
     '/presence/aicx': '/en/aicx/',
     '/presence/faq': '/en/faq/',

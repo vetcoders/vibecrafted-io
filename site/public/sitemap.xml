@@ -268,4 +268,16 @@
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
+  <url>
+    <loc>https://vibecrafted.io/en/pilot/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/pilot/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/pilot/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/pilot/"/>
+  </url>
+  <url>
+    <loc>https://vibecrafted.io/pl/pilot/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vibecrafted.io/en/pilot/"/>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://vibecrafted.io/pl/pilot/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vibecrafted.io/en/pilot/"/>
+  </url>
 </urlset>

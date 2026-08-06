@@ -40,6 +40,7 @@
     { ...(navLabels.v2Anchors.marbles as AnchorCopy), href: `${langPrefix}/#marbles` },
     { ...(navLabels.v2Anchors.playground as AnchorCopy), href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
     { ...(navLabels.v2Anchors.dou as AnchorCopy), href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },
+    { ...(navLabels.v2Anchors.pricing as AnchorCopy), href: `${langPrefix}/#commercial` },
     { ...(navLabels.v2Anchors.faq as AnchorCopy), href: `${langPrefix}/faq/`, isPage: true, pageMatch: `${langPrefix}/faq/` },
   ]);
 

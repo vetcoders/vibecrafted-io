@@ -13,6 +13,8 @@ export const pl = {
     quickstart: "Szybki start",
     faq: "FAQ",
     dou: "DoU",
+    pricing: "Cennik",
+    pilot: "Pilot",
     get: "Pobierz",
     search: "Szukaj dokumentacji",
     searchAll: "Cała powierzchnia",
@@ -37,6 +39,7 @@ export const pl = {
       marbles: { label: "MARBLES", sub: "Konwergencja" },
       playground: { label: "PLAYGROUND", sub: "Wypróbuj" },
       dou: { label: "DoU", sub: "Audyt gotowości" },
+      pricing: { label: "CENNIK", sub: "Open · Fleet · Forge" },
       faq: { label: "FAQ", sub: "Pytania" },
     },
   },
@@ -100,6 +103,11 @@ export const pl = {
       title: "Vibecrafted · DoU — Definicja niezrobionego",
       description:
         "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+    },
+    pilot: {
+      title: "Vibecrafted · Zgłoś płatny pilot",
+      description:
+        "Płatny pilot Fleet w pełnej cenie seata. Named buying moment, spisane success criteria, ścieżka design-partner.",
     },
   },
   v2Hero: {

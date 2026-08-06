@@ -12,6 +12,8 @@ export const en = {
     quickstart: "Quick Start",
     faq: "FAQ",
     dou: "DoU",
+    pricing: "Pricing",
+    pilot: "Pilot",
     get: "Get",
     search: "Search docs",
     searchAll: "All surfaces",
@@ -36,6 +38,7 @@ export const en = {
       marbles: { label: "MARBLES", sub: "Convergence" },
       playground: { label: "PLAYGROUND", sub: "Try it" },
       dou: { label: "DoU", sub: "Readiness audit" },
+      pricing: { label: "PRICING", sub: "Open · Fleet · Forge" },
       faq: { label: "FAQ", sub: "Questions" },
     },
   },
@@ -96,6 +99,11 @@ export const en = {
       title: "Vibecrafted · DoU — The Definition of Undone",
       description:
         "The space between a working system and a product that strangers can discover, install, trust, and buy.",
+    },
+    pilot: {
+      title: "Vibecrafted · Request a paid pilot",
+      description:
+        "Paid Fleet pilot at full seat price. Named buying moment, written success criteria, design-partner path.",
     },
   },
   v2Hero: {
@@ -531,7 +539,7 @@ flowchart LR
             {
               questionHtml: "What if I need a broader commercial arrangement?",
               answerHtml:
-                "Use the contact form on this site (or the address in the repo license) and describe your team size and intended use. VetCoders reads every message and replies with the alternative licensing terms that fit — the LICENSE file stays the source of truth for what needs an arrangement. There is no self-serve pricing page yet; the contact route is the commercial path.",
+                "Use the contact form on this site (or the address in the repo license) and describe your team size and intended use. VetCoders reads every message and replies with the alternative licensing terms that fit — the LICENSE file stays the source of truth for what needs an arrangement. Open / Fleet / Forge tiers and the paid-pilot path live on the landing commercial surface; contact remains available for Forge and custom licensing.",
             },
           ],
         },
