@@ -419,6 +419,15 @@ const jsonLd = JSON.stringify({
     scroll-margin-top: 96px;
   }
 
+  /* Full-bleed sections own their nav clearance via --v2-section-padding-y-top
+   * (140px ≥ fixed nav), so an anchored section must land FLUSH — top edge at
+   * y=0, filling the viewport exactly nav-to-bottom. The blanket 96px margin
+   * above is for in-content anchors only; on sections it parked a strip of
+   * the previous section at the top of every anchor jump. */
+  body.v2-scope .v2-section[id] {
+    scroll-margin-top: 0;
+  }
+
   /* Reset for any element that might end up inside V2 content */
   body.v2-scope * {
     box-sizing: border-box;
