@@ -390,7 +390,8 @@ BUNDLE_JUNK_EXCLUDE_NAMES := \
 	'*.audit*.md' \
 	'*.backup' \
 	'*.out' \
-	aicx-dashboard.html
+	aicx-dashboard.html \
+	.env
 
 BUNDLE_RELEASE_EXCLUDE_NAMES := \
 	'vibecrafted-v*.tar.gz' \
@@ -489,6 +490,13 @@ bundle-build: bundle-preflight
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
 	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
+	  leaks=$$(find "$$TMP_DIR" -type f \( -name '.env' -o \( -name '.env.*' ! -name '*.example' \) \)) && \
+	  if [ -n "$$leaks" ]; then \
+	    echo "FATAL: secret-bearing env files in the public release payload (2026-08-10 tskey incident class):" >&2; \
+	    echo "$$leaks" >&2; \
+	    echo "This gate is unconditional — ALLOW_DIRTY_UPSTREAM does not bypass it." >&2; \
+	    exit 9; \
+	  fi && \
 	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
