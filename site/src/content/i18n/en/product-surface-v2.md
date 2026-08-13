@@ -4,7 +4,7 @@ title: "THE SURFACE"
 centerLabel: "REAL USAGE · VC-FRAME"
 
 headingHtml: 'This is the <em class="accent-2">product</em>'
-subtitle: "An operating runtime for multi-agent CLI workflows. Below is the operator cockpit — real frames from vc-frame, not mockups."
+subtitle: "An operating runtime for multi-agent CLI workflows. Below: the operator cockpit (vc-frame) and the control-plane desk (vc-server) — real frames, not mockups."
 
 shots:
   - id: start-here
@@ -21,6 +21,13 @@ shots:
     title: "Report · tokens · resume"
     body: "A settled run leaves a report, token counts, and a resume path. Settlement strip (f · x · n) lives with the board — not as decoration."
     alt: "vc-frame: session rail, finalized run report, Session Manager, f/x/n strip"
+  - id: control-plane
+    src: "/assets/product/03-server-control-plane.png"
+    label: "CONTROL PLANE"
+    windowTitle: "Vibecrafted server · control plane"
+    title: "Operator desk · runtime truth"
+    body: "vc-server in the browser: live runs, lifecycle decisions, transcripts, and scaffold artifacts over the same control plane the CLI writes. Read-only projection — alive / final / failed / attention come from retained snapshots, not from a dashboard's imagination."
+    alt: "Vibecrafted server control plane overview with live runs and runtime truth counters"
   - id: cockpit
     src: "/assets/product/03-vc-frame-cockpit.png"
     label: "COCKPIT"

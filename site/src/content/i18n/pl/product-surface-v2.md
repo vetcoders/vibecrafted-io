@@ -4,7 +4,7 @@ title: "POWIERZCHNIA"
 centerLabel: "REAL USAGE · VC-FRAME"
 
 headingHtml: 'To jest <em class="accent-2">produkt</em>'
-subtitle: "Runtime operacyjny multiagentowych CLI workflows. Poniżej kokpit operatora — prawdziwe kadry z vc-frame, nie mockupy."
+subtitle: "Runtime operacyjny multiagentowych CLI workflows. Poniżej: kokpit operatora (vc-frame) i biurko control plane (vc-server) — prawdziwe kadry, nie mockupy."
 
 shots:
   - id: start-here
@@ -21,6 +21,13 @@ shots:
     title: "Raport · tokeny · resume"
     body: "Zamknięty run zostawia raport, tokeny i ścieżkę resume. Strip settlement (f · x · n) należy do tablicy — nie do dekoracji."
     alt: "vc-frame: rail sesji, raport finalized run, Session Manager, strip f/x/n"
+  - id: control-plane
+    src: "/assets/product/03-server-control-plane.png"
+    label: "CONTROL PLANE"
+    windowTitle: "Vibecrafted server · control plane"
+    title: "Biurko operatora · runtime truth"
+    body: "vc-server w przeglądarce: live runs, decyzje lifecycle, transkrypty i artefakty scaffold nad tym samym control plane, który zapisuje CLI. Projekcja read-only — alive / final / failed / attention idą z zachowanych snapshotów, nie z wyobraźni dashboardu."
+    alt: "Przegląd control plane serwera Vibecrafted z live runs i licznikami runtime truth"
   - id: cockpit
     src: "/assets/product/03-vc-frame-cockpit.png"
     label: "KOKPIT"

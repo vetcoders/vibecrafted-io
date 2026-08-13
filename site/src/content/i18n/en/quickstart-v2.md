@@ -9,7 +9,7 @@
 
 # Section chrome from landingV2.quickstart
 title: "QUICKSTART"
-centerLabel: "INIT → SHIP · SIX THROWS"
+centerLabel: "INIT → SHIP · SIX COMMANDS"
 
 # Main heading — inline <em> kept as one string.
 headingHtml: "Start with the first <em>useful signal</em>"

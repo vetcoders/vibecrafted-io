@@ -16,7 +16,7 @@ centerLabel: "SCAFFOLD → RELEASE"
 headingHtml: 'Not a rewrite. A cadence.<br /><em class="accent-2">Every write earns a read</em>'
 
 # Subtitle under the heading — the pitch for the framework as a discipline.
-subtitle: "Eleven stages alternate Read and Write. Every write — implement, marbles, polarize — is immediately falsified by a read — review, audit, DoU. Marbles raises entropy to fill the cracks; Polarize cuts it back to one truth. Each stage runs its leg and hands the baton to the next, so nothing ships unchecked."
+subtitle: "Eleven stages alternate Read and Write. Every write — implement, marbles, polarize — is immediately falsified by a read — review, audit, DoU. Marbles loops fixes until the gates stop lying; Polarize picks one canonical behavior and makes code, tests, and docs agree on it. Each stage runs its leg and hands the baton to the next, so nothing ships unchecked."
 
 # Operators block — heading + sub above the six-operator row.
 operatorsHeadingHtml: "How the <em>pass</em> runs"
