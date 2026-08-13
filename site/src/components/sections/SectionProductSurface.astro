@@ -42,7 +42,9 @@ const section = entry.data as {
   installNote: string;
 };
 
-const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
+const installManifestEntry = await getEntry('i18n', `${lang}/install-manifest-v2`);
+if (!installManifestEntry) throw new Error(`Missing i18n entry: ${lang}/install-manifest-v2`);
+const nextTitle = installManifestEntry.data.title as string;
 const floatingAria =
   lang === 'pl'
     ? 'Dowód produktu — pływająca, skalowalna ramka'

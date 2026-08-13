@@ -35,16 +35,16 @@ const section = entry.data as {
   truthBody: string;
 };
 
-const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
-if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
-const nextTitle = quickstartEntry.data.title as string;
+const problemEntry = await getEntry('i18n', `${lang}/problem-v2`);
+if (!problemEntry) throw new Error(`Missing i18n entry: ${lang}/problem-v2`);
+const nextTitle = problemEntry.data.title as string;
 ---
 
 <SectionShell
-  number="06"
+  number="03"
   title={section.title}
   centerLabel={section.centerLabel}
-  figure="06 · DWG VC-006"
+  figure="03 · DWG VC-003"
   surface="ink"
   seam="to-ink"
   id="install-manifest"
@@ -78,7 +78,7 @@ const nextTitle = quickstartEntry.data.title as string;
     </aside>
   </div>
 
-  <SectionFooter nextNumber="06" nextTitle={nextTitle} surface="ink" lang={lang} />
+  <SectionFooter nextNumber="03" nextTitle={nextTitle} surface="ink" lang={lang} />
 </SectionShell>
 
 <style>

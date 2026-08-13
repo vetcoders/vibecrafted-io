@@ -1,31 +1,24 @@
 ---
-# Problem V2 — Vibe hangover, kruche szwy po sesji AI.
-#
-# Source of truth (do 2026-05-14): site/src/lib/i18n/pl.ts → landingV2.problem + v2Sections.problem
-# Renderowane przez: site/src/components/sections/SectionProblem.astro
-#
-# Etap A migracji: markdown istnieje równolegle z pl.ts.
-# Etap B (TBD przez parenta): komponent przepiąć na getEntry('i18n', 'pl/problem-v2').
+# Problem V2 — sekcja "The Problem".
+# Kontrakt głosu: skompresowany manifest (src/content/manifesto/pl.md — Vibe
+# Hangover). Copy strony kompresuje kanoniczny dokument, nie forkuje go:
+# te same cztery oskarżenia, te same prawdziwe liczby.
+# Renderuje: site/src/components/sections/SectionProblem.astro
 
-# Chrome z landingV2.problem (title + centerLabel renderowane w obwódce sekcji)
 title: "PROBLEM"
-centerLabel: "OBSERWACJE 2024–2026"
+centerLabel: "SZEŚĆ MIESIĘCY W TERENIE"
 
-# Treść sekcji z v2Sections.problem.
-# headingHtml: short statement (2 zdania) — false-precision "kompletne" vs "kruche".
-# Storytelling moment "Po pierwszym użytkowniku..." przeniesiony do body.
-# Nadmiar contentu z heading rozłożony w body + symptoms (editorial layout: column 1
-# narzuca wysokość, kolumny prawe wypełniają do tej wysokości; trzecia OK krótsza).
-headingHtml: 'Aplikacje po agentach wyglądają na <em class="accent-2">kompletne</em>.<br />Auth, dane, płatności i deploy są wciąż <em class="accent">kruche</em>'
-body: "Po pierwszym użytkowniku często okazuje się, że demo to nie produkt. Prawda wychodzi przy pierwszej instalacji na innym OS, pierwszym Stripe webhook'u, pierwszym security review albo nowym koledze w zespole — to oni pokazują, czego żaden prompt nie wziął na siebie."
+headingHtml: 'Sześć miesięcy naprawiania vibe-coded SaaS.<br />Za każdym razem zepsute są <em class="accent">te same cztery rzeczy</em>'
 
-# Pary objawów (label + body). Renderowane jako 2 kolumny pod heroem sekcji.
-# Bodies rozszerzone editorial-grade — wyrównanie do heading column height.
-# Krótkie zdania z rytmem + konkret scen ("siedem profili w prod", "Discord support
-# nie dashboard") zamiast abstrakcyjnych stwierdzeń.
+body: "To nie hejt na vibe coding — generowanie AI dowozi do launchu, a to znaczy więcej, niż większość inżynierów przyzna. Ale founder, który zbudował produkt w weekend, w końcu uderza w ścianę: deal enterprise staje, security review nie przechodzi, drugi developer odchodzi po tygodniu. To jest Vibe Hangover. Oto, co za każdym razem znajdujemy pod maską."
+
 symptoms:
-  - label: "Security review"
-    body: "Aplikacja działa. Auth ma dwie role: admin i user — ale w prod chodzi siedem profili, których nikt nie zmapował. Tokeny żyją gdzie popadnie: czasem w localStorage, czasem w cookie HTTP-only, czasem w obu naraz. Pierwsza rzecz na audycie: nikt nie wie, kto ma dostęp do czego. Druga: kiedy ktoś wyleci z zespołu, klucze zostają."
-  - label: "Ścieżka pieniędzy"
-    body: "Stripe działa. Dopóki nie przestanie. Webhook się wywala raz — nie ma retry, nie ma dead letter queue, nie ma alertu. Klient zauważa brakującą usługę szybciej niż system. Founder dowiaduje się z Discorda support, nie z dashboardu."
+  - label: "Auth na taśmę klejącą"
+    body: "Każdy użytkownik to admin albo user. Zero ról, zero row-level permissions, zero audit logu — a tokeny sesji w localStorage jak w 2019. Widzieliśmy, jak deal na $40k rocznie umiera w pierwszych dziesięciu minutach technicznego review. Produkt był solidny. Architektura krzyczała: projekt weekendowy."
+  - label: "Jedna God Table"
+    body: "Wszystko w jednym modelu na 35 kolumn. Działa — dopóki 10 tysięcy wierszy nie zamieni każdego page loadu w full-table scan. Jeden founder płacił Vercelowi $300 miesięcznie za funkcje, które timeoutowały na niezaindeksowanych zapytaniach i retry'owały w nieskończoność. Prawdziwe relacje i indeksy ścięły rachunek do $40. Ta sama apka, ten sam ruch."
+  - label: "Zero obsługi błędów"
+    body: "Gdy pęka jedna rzecz, kładzie się wszystko — po cichu. Handler webhooka wywalał się na edge case'ie rocznego billingu i jeden founder tracił ~8% płatności subskrypcyjnych przez dwa miesiące. Napisali o tym klienci. System — nigdy."
+  - label: "Push na maina i pacierz"
+    body: "Zero stagingu, zero testów, żywe klucze w repo. Jeden piątkowy deploy położył apkę na 11 godzin, bo migracja skasowała kolumnę, która wciąż była potrzebna. Użytkownicy przez weekend patrzyli w pusty ekran; odeszło piętnaście płacących kont."
 ---
