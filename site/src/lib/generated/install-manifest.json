@@ -1,6 +1,6 @@
 {
   "title": "\u2692 Vibecrafted.",
-  "version": "3.6.0",
+  "version": "3.5.0",
   "persist": true,
   "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
   "phases": [
@@ -51,7 +51,7 @@
         "- the Rust app/server binaries (voc, vc-admin, vc-server) as real files in ~/.local/bin"
       ],
       "commands": [
-        "bash -e -c 'bash scripts/install-foundations.sh\nbash \"$PWD/vibecrafted-core/vibecrafted_core/runtime/scripts/install-frontier-config.sh\" --source \"$PWD\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\npython3 scripts/vetcoders_install.py install --source \".\" --compact --non-interactive --mirror\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\nmake --no-print-directory install-python-tools\nmake --no-print-directory install-vendored-binaries\nmake --no-print-directory install-app-binaries\nmake --no-print-directory install-server\n'"
+        "bash -e -c 'bash scripts/install-foundations.sh\nbash runtime/scripts/install-frontier-config.sh --source \".\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\npython3 scripts/vetcoders_install.py install --source \".\" --compact --non-interactive --mirror\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\nmake --no-print-directory install-python-tools\nmake --no-print-directory install-vendored-binaries\nmake --no-print-directory install-app-binaries\nmake --no-print-directory install-server\n'"
       ]
     },
     {
