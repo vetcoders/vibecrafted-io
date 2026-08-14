@@ -21,16 +21,16 @@ DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 # `../vibecrafted`). The pointer is the first candidate; the rest of the
 # legacy candidates stay as fallback for environments that haven't seeded
 # the pointer yet. Explicit override always wins:
-#   make bundle-build UPSTREAM_ROOT=/path/to/VibeCrafted
+#   make bundle-build UPSTREAM_ROOT=/path/to/vibecrafted
 REPO_PARENT := $(abspath $(CURDIR)/..)
 FRAMEWORK_POINTER_FILE := $(CURDIR)/.framework
 FRAMEWORK_POINTER := $(strip $(shell [ -f "$(FRAMEWORK_POINTER_FILE)" ] && cat "$(FRAMEWORK_POINTER_FILE)" 2>/dev/null))
 FRAMEWORK_POINTER_ABS := $(if $(FRAMEWORK_POINTER),$(abspath $(CURDIR)/$(FRAMEWORK_POINTER)))
 UPSTREAM_ROOT_CANDIDATES := \
 	$(FRAMEWORK_POINTER_ABS) \
-	$(REPO_PARENT)/VibeCrafted \
+	$(REPO_PARENT)/Vibecrafted \
 	$(REPO_PARENT)/vibecrafted \
-	$(HOME)/Git/VibeCrafted \
+	$(HOME)/Git/Vibecrafted \
 	$(HOME)/Libraxis/vc-runtime/vibecrafted
 DETECTED_UPSTREAM_ROOT := $(firstword $(foreach dir,$(UPSTREAM_ROOT_CANDIDATES),$(if $(wildcard $(dir)/VERSION),$(dir))))
 UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTREAM_ROOT_CANDIDATES)))
@@ -156,7 +156,7 @@ help:
 	@printf "  \033[31m↺\033[0m  make restore       \033[2mUndo last install/uninstall\033[0m\n"
 	@printf "\n"
 	@printf "  ╭─────────────────────────────────────────╮\n"
-	@printf "  │ Vibecrafted with AI Agents by VetCoders │\n"
+	@printf "  │ Vibecrafted with AI Agents by Vetcoders │\n"
 	@printf "  ╰─────────────────────────────────────────╯\n"
 	@printf "\n"
 

@@ -109,7 +109,7 @@
       <a
         aria-label={githubLabel}
         class="nav-icon-link"
-        href="https://github.com/VetCoders/vibecrafted"
+        href="https://github.com/vetcoders/vibecrafted"
         rel="noopener noreferrer"
       >
         <svg aria-hidden="true" class="nav-icon" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@
         <a
           aria-label={githubLabel}
           class="nav-icon-link nav-link--mobile-item"
-          href="https://github.com/VetCoders/vibecrafted"
+          href="https://github.com/vetcoders/vibecrafted"
           rel="noopener noreferrer"
           onclick={handleLinkClick}
           style={`--nav-item-index: ${links.length + 3};`}

@@ -21,7 +21,7 @@ export const pl = {
     searchClose: "Zamknij wyszukiwanie",
     install: "Instaluj",
     vc: "VC",
-    vcLabel: "VetCoders",
+    vcLabel: "vetcoders",
     github: "GitHub",
     license: "Licencja (BSL 1.1)",
     security: "Bezpieczeństwo",
@@ -46,16 +46,16 @@ export const pl = {
   footer: {
     ariaLabel: "Stopka strony",
     brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-    byline: "with AI Agents by VetCoders",
+    byline: "with AI Agents by vetcoders",
     tagline:
       "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
-    copyright: "(c)2024-2026 VetCoders",
+    copyright: "(c)2024-2026 LibraxisAI",
     license: "BSL 1.1",
   },
   v2Chrome: {
     footer: {
       ariaLabel: "Stopka strony",
-      byline: "z agentami AI od VetCoders",
+      byline: "z agentami AI od vetcoders",
       tagline:
         "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
       quickstart: "SZYBKI START",
@@ -342,23 +342,23 @@ flowchart LR
       links: [
         { href: "/pl/faq/", label: "FAQ" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FOUNDATION.md",
           label: "Stack zależności",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/QUICK_START.md",
           label: "Szybki start w Markdownie",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
           label: "Kontrakt runtime",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "Bramka review ScreenScribe",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Matryca prawdy contentowej",
         },
       ],
@@ -545,7 +545,7 @@ flowchart LR
               questionHtml:
                 "Co jeśli potrzebuję szerszego modelu komercyjnego?",
               answerHtml:
-                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. VetCoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
+                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. Vetcoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
             },
           ],
         },
@@ -553,19 +553,19 @@ flowchart LR
       links: [
         { href: "/pl/quickstart/", label: "Szybki start" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
           label: "Pełne FAQ - markdown",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "Bramka review ScreenScribe",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Matryca prawdy contentowej",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE",
           label: "Licencja",
         },
       ],

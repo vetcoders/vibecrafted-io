@@ -23,50 +23,47 @@ interface Props {
 
 const { entries, currentSlug } = Astro.props as Props;
 
-type SectionKey = 'install' | 'architecture' | 'skills' | 'faq' | 'release' | 'other';
+type SectionKey = DocEntry['data']['section'];
 
 const SECTION_ORDER: SectionKey[] = [
-  'install',
-  'architecture',
+  'getting-started',
+  'concepts',
+  'cli',
+  'lifecycle',
+  'dispatch',
+  'server',
   'skills',
-  'release',
-  'faq',
-  'other',
+  'configuration',
+  'troubleshooting',
+  'reference',
 ];
 
 const SECTION_LABEL: Record<SectionKey, string> = {
-  install: 'Install',
-  architecture: 'Architecture',
+  'getting-started': 'Getting started',
+  concepts: 'Concepts',
+  cli: 'CLI',
+  lifecycle: 'Lifecycle',
+  dispatch: 'Dispatch',
+  server: 'Server',
   skills: 'Skills',
-  release: 'Release',
-  faq: 'FAQ',
-  other: 'Other',
+  configuration: 'Configuration',
+  troubleshooting: 'Troubleshooting',
+  reference: 'Reference',
 };
 
-// Group entries by section, preserving alphabetical-by-title order within
-// each group. We do not sort by mtime because docs are sourced from the
-// sibling repo and operator-edited; alphabetical is more stable for nav.
-const grouped: Record<SectionKey, DocEntry[]> = {
-  install: [],
-  architecture: [],
-  skills: [],
-  release: [],
-  faq: [],
-  other: [],
-};
+const grouped = Object.fromEntries(
+  SECTION_ORDER.map((section) => [section, []]),
+) as unknown as Record<SectionKey, DocEntry[]>;
 
 for (const entry of entries) {
   const section = entry.data.section as SectionKey;
-  if (grouped[section]) {
-    grouped[section].push(entry);
-  } else {
-    grouped.other.push(entry);
-  }
+  grouped[section].push(entry);
 }
 
 for (const section of SECTION_ORDER) {
-  grouped[section].sort((a, b) =>
-    a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+  grouped[section].sort(
+    (a, b) => a.data.order - b.data.order ||
+      a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
   );
 }
 ---
@@ -81,12 +78,13 @@ for (const section of SECTION_ORDER) {
         <h3 class="docs-nav__section-title">{SECTION_LABEL[section]}</h3>
         <ul class="docs-nav__list">
           {items.map((entry) => {
-            const isCurrent = entry.data.slug === currentSlug;
+            const slug = entry.id.split('/').at(-1) ?? entry.id;
+            const isCurrent = slug === currentSlug;
             return (
               <li class="docs-nav__item">
                 <a
                   class={isCurrent ? 'docs-nav__link is-current' : 'docs-nav__link'}
-                  href={`/docs/${entry.data.slug}/`}
+                  href={`/docs/${slug}/`}
                   aria-current={isCurrent ? 'page' : undefined}
                 >
                   {entry.data.title}

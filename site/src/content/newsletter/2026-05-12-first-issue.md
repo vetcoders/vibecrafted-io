@@ -3,7 +3,7 @@ title: "Issue 01 — vibecrafted v1.5 is shipping in public"
 date: "2026-05-12"
 summary: "First issue. Who we are, what vibecrafted actually is, and what to expect from this list. No marketing — just the cuts as they land."
 lesson: "Build in public, not in promise. Each issue ships when a real cut closes."
-github_link: "https://github.com/VetCoders/vibecrafted"
+github_link: "https://github.com/vetcoders/vibecrafted"
 ---
 
 ## What this list is
@@ -24,4 +24,4 @@ The framework was built by shipping with it. Three case studies — Loctree LSP,
 
 One issue per real cut. Length is whatever the cut needs — sometimes a paragraph, sometimes a full post. Always operator-voice. Always cross-linked to the actual commits and reports so you can verify the work yourself.
 
-Source on GitHub: [VetCoders/vibecrafted](https://github.com/VetCoders/vibecrafted). Reply to any issue and a human reads it.
+Source on GitHub: [vetcoders/vibecrafted](https://github.com/vetcoders/vibecrafted). Reply to any issue and a human reads it.

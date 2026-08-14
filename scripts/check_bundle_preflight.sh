@@ -160,7 +160,7 @@ pass 'dirty upstream blocks site-release before preview, build, sign, sync, site
 canonical_parent="$TMP_ROOT/canonical-parent"
 canonical_landing="$canonical_parent/vibecrafted-io"
 canonical_real="$canonical_parent/upstream-real"
-canonical_link="$canonical_parent/VibeCrafted"
+canonical_link="$canonical_parent/vibecrafted"
 canonical_output="$TMP_ROOT/canonical.out"
 mkdir -p "$canonical_landing"
 create_upstream_repo "$canonical_real"

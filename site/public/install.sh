@@ -433,7 +433,7 @@ if [[ -z "$archive_url" && -z "$archive_file" ]]; then
     vinfo "Resolved from channel ($ref): $archive_url"
   else
     # Fallback: source snapshot for pre-channel / pre-deploy kickoffs.
-    archive_url="https://github.com/vetcoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
+    archive_url="https://github.com/VetCoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
     vinfo "[note] Channel manifest not available — using GitHub source snapshot for ${ref}"
   fi
 fi
@@ -447,7 +447,7 @@ if [[ "$PLATFORM_OS" == "unsupported" ]]; then
   info "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. v1.x ships native Linux + macOS + WSL paths."
   info "On native Windows the installer must run inside WSL2:"
   info "    wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'"
-  info "Or open: https://github.com/vetcoders/vibecrafted/issues to track v2.x"
+  info "Or open: https://github.com/VetCoders/vibecrafted/issues to track v2.x"
   info "native Windows support."
   die "Unsupported platform: $(uname -s). Re-run inside WSL2."
 fi
@@ -572,14 +572,9 @@ fi
 [[ -n "$source_dir" ]] || die "Could not find extracted source directory"
 
 incoming_dir="$tools_dir/.incoming-$safe_ref-$$"
-manifest_helper="$source_dir/scripts/distribution_manifest.py"
-[[ -f "$manifest_helper" ]] || die "Distribution manifest missing: $manifest_helper"
 
 rm -rf "$incoming_dir"
-python3 "$manifest_helper" stage \
-  --source "$source_dir" \
-  --destination "$incoming_dir" \
-  --mirror >/dev/null
+mv "$source_dir" "$incoming_dir"
 rm -rf "$staged_dir"
 mv "$incoming_dir" "$staged_dir"
 ln -sfn "$staged_dir" "$current_link"

@@ -1,13 +1,13 @@
 ---
-import { Image } from 'astro:assets';
-import { ClientRouter } from 'astro:transitions';
-import CopyButton from '../components/CopyButton.svelte';
-import SearchShell from '../components/SearchShell.svelte';
-import SiteNav from '../components/SiteNav.svelte';
-import logo32 from '../assets/presence/logo-32.png';
-import { getTranslations, type Lang } from '../lib/i18n';
-import { getDocsSearchData } from '../lib/search/docs';
-import '../styles/global.css';
+import { Image } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
+import CopyButton from "../components/CopyButton.svelte";
+import SearchShell from "../components/SearchShell.svelte";
+import SiteNav from "../components/SiteNav.svelte";
+import logo32 from "../assets/presence/logo-32.png";
+import { getTranslations, type Lang } from "../lib/i18n";
+import { getDocsSearchData } from "../lib/search/docs";
+import "../styles/global.css";
 
 interface Props {
   title: string;
@@ -19,10 +19,10 @@ interface Props {
 
 const {
   title,
-  description = 'Orchestration runtime for CLI coding agents.',
-  lang = 'en',
-  ogImage = '/presence/og-image.png',
-  ogType = 'website',
+  description = "Orchestration runtime for CLI coding agents.",
+  lang = "en",
+  ogImage = "/presence/og-image.png",
+  ogType = "website",
 } = Astro.props as Props;
 
 const dict = getTranslations(lang);
@@ -30,27 +30,29 @@ const navLabels = dict.nav;
 const footer = dict.footer;
 const copyButton = dict.copyButton;
 
-const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
+const siteUrl = Astro.site?.href.replace(/\/$/, "") ?? "https://vibecrafted.io";
 
 function normalizeCanonicalPath(pathname: string) {
-  const normalized = pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
-  if (normalized === '/') return '/en/';
+  const normalized = pathname
+    .replace(/\/index\.html$/, "/")
+    .replace(/\.html$/, "/");
+  if (normalized === "/") return "/en/";
   return normalized;
 }
 
 const canonicalPath = normalizeCanonicalPath(Astro.url.pathname);
 const canonicalUrl = new URL(canonicalPath, siteUrl).href;
 const ogImageUrl = new URL(ogImage, siteUrl).href;
-const is404 = Astro.url.pathname.includes('404');
-const robotsContent = is404 ? 'noindex,follow' : 'index,follow';
+const is404 = Astro.url.pathname.includes("404");
+const robotsContent = is404 ? "noindex,follow" : "index,follow";
 
 const i18nMap: Record<string, string> = {
-  '/': '/pl/',
-  '/en/': '/pl/',
-  '/en/quickstart/': '/pl/quickstart/',
-  '/en/faq/': '/pl/faq/',
-  '/en/framework/': '/pl/framework/',
-  '/en/install/': '/pl/install/',
+  "/": "/pl/",
+  "/en/": "/pl/",
+  "/en/quickstart/": "/pl/quickstart/",
+  "/en/faq/": "/pl/faq/",
+  "/en/framework/": "/pl/framework/",
+  "/en/install/": "/pl/install/",
 };
 
 const i18nMapReverse: Record<string, string> = Object.fromEntries(
@@ -58,59 +60,69 @@ const i18nMapReverse: Record<string, string> = Object.fromEntries(
 );
 
 function getAlternates(path: string): { en: string; pl: string } | null {
-  const normalized = path.endsWith('/') ? path : `${path}/`;
+  const normalized = path.endsWith("/") ? path : `${path}/`;
   if (normalized in i18nMap) return { en: normalized, pl: i18nMap[normalized] };
-  if (normalized in i18nMapReverse) return { en: i18nMapReverse[normalized], pl: normalized };
+  if (normalized in i18nMapReverse)
+    return { en: i18nMapReverse[normalized], pl: normalized };
   return null;
 }
 
 const alternates = getAlternates(canonicalPath);
-const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
+const ogLocale = lang === "pl" ? "pl_PL" : "en_US";
 
 const jsonLd = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
+  "@context": "https://schema.org",
+  "@type": "WebPage",
   name: title,
   description,
   url: canonicalUrl,
   inLanguage: lang,
   isPartOf: {
-    '@type': 'WebSite',
-    name: 'Vibecrafted',
+    "@type": "WebSite",
+    name: "Vibecrafted",
     url: siteUrl,
     publisher: {
-      '@type': 'Organization',
-      name: 'VetCoders',
-      url: 'https://github.com/VetCoders',
+      "@type": "Organization",
+      name: "vetcoders",
+      url: "https://github.com/vetcoders",
     },
   },
 });
 
-const isPl = lang === 'pl';
-const normalizedPath = canonicalPath.endsWith('/') ? canonicalPath : `${canonicalPath}/`;
-const toggleHref = alternates ? (isPl ? alternates.en : alternates.pl) : (isPl ? '/' : '/pl/');
-const toggleHreflang = isPl ? 'en' : 'pl';
+const isPl = lang === "pl";
+const normalizedPath = canonicalPath.endsWith("/")
+  ? canonicalPath
+  : `${canonicalPath}/`;
+const toggleHref = alternates
+  ? isPl
+    ? alternates.en
+    : alternates.pl
+  : isPl
+    ? "/"
+    : "/pl/";
+const toggleHreflang = isPl ? "en" : "pl";
 const navPaths = {
-  home: isPl ? '/pl/' : '/en/',
-  framework: isPl ? '/pl/framework/' : '/en/framework/',
-  quickstart: isPl ? '/pl/quickstart/' : '/en/quickstart/',
-  faq: isPl ? '/pl/faq/' : '/en/faq/',
-  install: isPl ? '/pl/install/' : '/en/install/',
+  home: isPl ? "/pl/" : "/en/",
+  framework: isPl ? "/pl/framework/" : "/en/framework/",
+  quickstart: isPl ? "/pl/quickstart/" : "/en/quickstart/",
+  faq: isPl ? "/pl/faq/" : "/en/faq/",
+  install: isPl ? "/pl/install/" : "/en/install/",
 };
 
 const isHomePage = normalizedPath === navPaths.home;
-const isDocsPage = normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
+const isDocsPage =
+  normalizedPath === navPaths.quickstart || normalizedPath === navPaths.faq;
 const isFrameworkPage = normalizedPath === navPaths.framework;
 const showInstallBanner = isHomePage;
-const searchDefaultSection = normalizedPath === navPaths.faq ? 'faq' : 'all';
+const searchDefaultSection = normalizedPath === navPaths.faq ? "faq" : "all";
 
 // Preload all three search bundles server-side so the SearchShell client
 // component never imports astro:content (server-only). The bundles are
 // passed as props.
 const [searchDataAll, searchDataQuickstart, searchDataFaq] = await Promise.all([
-  getDocsSearchData(lang, 'all'),
-  getDocsSearchData(lang, 'quickstart'),
-  getDocsSearchData(lang, 'faq'),
+  getDocsSearchData(lang, "all"),
+  getDocsSearchData(lang, "quickstart"),
+  getDocsSearchData(lang, "faq"),
 ]);
 
 // V1 landing ids (#skills/#pipeline/#dou) no longer exist — the landing is V2.
@@ -120,25 +132,29 @@ const sectionLinks = {
   pipeline: `${navPaths.home}#framework`,
   skills: `${navPaths.home}#about`,
   marbles: `${navPaths.home}#marbles`,
-  dou: isPl ? '/pl/dou/' : '/en/dou/',
-  get: '#get',
+  dou: isPl ? "/pl/dou/" : "/en/dou/",
+  get: "#get",
 };
 
 const aboutHref = sectionLinks.skills;
 const runtimeHref = sectionLinks.pipeline;
-const vcHref = 'https://github.com/VetCoders';
+const vcHref = "https://github.com/vetcoders";
 
 const footerLinks = [
   { href: navPaths.quickstart, label: navLabels.quickstart },
   { href: navPaths.faq, label: navLabels.faq },
-  { href: 'https://github.com/VetCoders/vibecrafted', label: navLabels.github, external: true },
   {
-    href: 'https://github.com/VetCoders/vibecrafted/blob/main/LICENSE',
+    href: "https://github.com/vetcoders/vibecrafted",
+    label: navLabels.github,
+    external: true,
+  },
+  {
+    href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE",
     label: navLabels.license,
     external: true,
   },
   {
-    href: 'https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md',
+    href: "https://github.com/vetcoders/vibecrafted/blob/main/SECURITY.md",
     label: navLabels.security,
     external: true,
   },
@@ -149,172 +165,247 @@ const primaryLinks = [
   { href: runtimeHref, label: navLabels.runtime },
   { href: sectionLinks.marbles, label: navLabels.marbles },
   { href: sectionLinks.dou, label: navLabels.dou },
-  { href: navPaths.framework, label: navLabels.board, current: normalizedPath === navPaths.framework },
+  {
+    href: navPaths.framework,
+    label: navLabels.board,
+    current: normalizedPath === navPaths.framework,
+  },
 ];
-
 ---
 
-<!DOCTYPE html>
-<html lang={lang} class:list={[isDocsPage && 'subpage', isFrameworkPage && 'framework-subpage']}>
-<head>
+<!doctype html>
+<html
+  lang={lang}
+  class:list={[isDocsPage && "subpage", isFrameworkPage && "framework-subpage"]}
+>
+  <head>
     <ClientRouter />
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{title}</title>
-    <meta content={description} name="description">
-    <meta content={title} property="og:title">
-    <meta content={description} property="og:description">
-    <meta content={ogImageUrl} property="og:image">
-    <meta content="1536" property="og:image:width">
-    <meta content="1024" property="og:image:height">
-    <meta content="image/png" property="og:image:type">
-    <meta content={description ?? title} property="og:image:alt">
-    <meta content={ogType} property="og:type">
-    <meta content={canonicalUrl} property="og:url">
-    <meta content="Vibecrafted" property="og:site_name">
-    <meta content={ogLocale} property="og:locale">
-    {alternates && <meta content={lang === 'pl' ? 'en_US' : 'pl_PL'} property="og:locale:alternate" />}
-    <meta content="summary_large_image" name="twitter:card">
-    <meta content={title} name="twitter:title">
-    <meta content={description} name="twitter:description">
-    <meta content={ogImageUrl} name="twitter:image">
-    <meta content={description ?? title} name="twitter:image:alt">
-    <meta content="@VetCoders" name="twitter:site">
-    <meta content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE" name="google-site-verification">
-    <meta content={robotsContent} name="robots">
-    <meta content="#0d1117" name="theme-color">
+    <meta content={description} name="description" />
+    <meta content={title} property="og:title" />
+    <meta content={description} property="og:description" />
+    <meta content={ogImageUrl} property="og:image" />
+    <meta content="1536" property="og:image:width" />
+    <meta content="1024" property="og:image:height" />
+    <meta content="image/png" property="og:image:type" />
+    <meta content={description ?? title} property="og:image:alt" />
+    <meta content={ogType} property="og:type" />
+    <meta content={canonicalUrl} property="og:url" />
+    <meta content="Vibecrafted" property="og:site_name" />
+    <meta content={ogLocale} property="og:locale" />
+    {
+      alternates && (
+        <meta
+          content={lang === "pl" ? "en_US" : "pl_PL"}
+          property="og:locale:alternate"
+        />
+      )
+    }
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content={title} name="twitter:title" />
+    <meta content={description} name="twitter:description" />
+    <meta content={ogImageUrl} name="twitter:image" />
+    <meta content={description ?? title} name="twitter:image:alt" />
+    <meta content="@vetcoders" name="twitter:site" />
     <meta
-        http-equiv="Content-Security-Policy"
-        content={[
-          "default-src 'none'",
-          "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
-          "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-          "style-src-attr 'unsafe-inline'",
-          "img-src 'self' data:",
-          "font-src 'self' https://fonts.gstatic.com",
-          "connect-src 'self' https://plausible.io",
-          "frame-src 'none'",
-          "worker-src 'self'",
-          "manifest-src 'self'",
-          "base-uri 'self'",
-          "form-action 'self'",
-        ].join('; ')}
-    >
-    <link href={canonicalUrl} rel="canonical">
-    {alternates && <>
-      <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
-      <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
-      <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
-    </>}
-    <link href="/presence/favicon.ico" rel="icon" sizes="32x32">
-    <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png">
-    <link href="/presence/logo-128.png" rel="apple-touch-icon">
-    <link href="https://fonts.googleapis.com" rel="preconnect">
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+      content="T5B-vRPBGSbPiROhDSZPMplZ6bA5yCgT_3egIGQ8kIE"
+      name="google-site-verification"
+    />
+    <meta content={robotsContent} name="robots" />
+    <meta content="#0d1117" name="theme-color" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content={[
+        "default-src 'none'",
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "style-src-attr 'unsafe-inline'",
+        "img-src 'self' data:",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://plausible.io",
+        "frame-src 'none'",
+        "worker-src 'self'",
+        "manifest-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join("; ")}
+    />
+    <link href={canonicalUrl} rel="canonical" />
+    {
+      alternates && (
+        <>
+          <link
+            href={new URL(alternates.en, siteUrl).href}
+            hreflang="en"
+            rel="alternate"
+          />
+          <link
+            href={new URL(alternates.pl, siteUrl).href}
+            hreflang="pl"
+            rel="alternate"
+          />
+          <link
+            href={new URL(alternates.en, siteUrl).href}
+            hreflang="x-default"
+            rel="alternate"
+          />
+        </>
+      )
+    }
+    <link href="/presence/favicon.ico" rel="icon" sizes="32x32" />
+    <link
+      href="/presence/logo-64.png"
+      rel="icon"
+      sizes="64x64"
+      type="image/png"
+    />
+    <link href="/presence/logo-128.png" rel="apple-touch-icon" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
 
     <script is:inline type="application/ld+json" set:html={jsonLd} />
-    <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
-    <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
-</head>
-<body class:list={[isDocsPage && 'docs-page', isFrameworkPage && 'framework-page']}>
+    <script
+      is:inline
+      crossorigin="anonymous"
+      integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe"
+      src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"
+    ></script>
+    <script
+      is:inline
+      defer
+      data-domain="vibecrafted.io"
+      src="https://plausible.io/js/script.js"></script>
+  </head>
+  <body
+    class:list={[
+      isDocsPage && "docs-page",
+      isFrameworkPage && "framework-page",
+    ]}
+  >
     <a class="skip-link" href="#main-content">{navLabels.skip}</a>
 
     <div class="topbar">
-        <header class="nav-shell vt-site-topbar">
-            <a class="brand" href={navPaths.home}>
-                <span class="brand-mark vt-site-brand" transition:persist>
-                    <Image
-                        src={logo32}
-                        alt=""
-                        aria-hidden="true"
-                        class="brand-logo"
-                        width={24}
-                        height={24}
-                        densities={[1, 2]}
-                        format="webp"
-                    />
-                    <span class="brand-wordmark">Vibecrafted.</span>
-                </span>
-            </a>
-            <SiteNav
-                client:load
-                links={primaryLinks}
-                installHref={navPaths.install}
-                installLabel={navLabels.install}
-                vcHref={vcHref}
-                vcLabel={navLabels.vc}
-                vcTitle={navLabels.vcLabel}
-                toggleHref={toggleHref}
-                toggleLabel={navLabels.toggleShort}
-                toggleHreflang={toggleHreflang}
-                toggleLang={toggleHreflang}
-                githubLabel={navLabels.github}
-                menuLabel={navLabels.menu}
-                closeLabel={navLabels.closeMenu}
-                primaryNavLabel={navLabels.navPrimary}
+      <header class="nav-shell vt-site-topbar">
+        <a class="brand" href={navPaths.home}>
+          <span class="brand-mark vt-site-brand" transition:persist>
+            <Image
+              src={logo32}
+              alt=""
+              aria-hidden="true"
+              class="brand-logo"
+              width={24}
+              height={24}
+              densities={[1, 2]}
+              format="webp"
             />
-        </header>
+            <span class="brand-wordmark">Vibecrafted.</span>
+          </span>
+        </a>
+        <SiteNav
+          client:load
+          links={primaryLinks}
+          installHref={navPaths.install}
+          installLabel={navLabels.install}
+          vcHref={vcHref}
+          vcLabel={navLabels.vc}
+          vcTitle={navLabels.vcLabel}
+          toggleHref={toggleHref}
+          toggleLabel={navLabels.toggleShort}
+          toggleHreflang={toggleHreflang}
+          toggleLang={toggleHreflang}
+          githubLabel={navLabels.github}
+          menuLabel={navLabels.menu}
+          closeLabel={navLabels.closeMenu}
+          primaryNavLabel={navLabels.navPrimary}
+        />
+      </header>
     </div>
 
-    {showInstallBanner && (
-        <div class="curl-banner vt-site-install-banner" id="install-command-banner" transition:persist>
-            <code><span class="cb-g">$</span> curl -fsSL https://vibecrafted.io/install.sh | bash</code>
-            <CopyButton
-                client:visible
-                class="cb-copy"
-                textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash"
-                defaultLabel={copyButton.default}
-                copiedLabel={copyButton.copied}
-                errorLabel={copyButton.error}
-                defaultAriaLabel={copyButton.defaultAria}
-                copiedAriaLabel={copyButton.copiedAria}
-                errorAriaLabel={copyButton.errorAria}
-            />
+    {
+      showInstallBanner && (
+        <div
+          class="curl-banner vt-site-install-banner"
+          id="install-command-banner"
+          transition:persist
+        >
+          <code>
+            <span class="cb-g">$</span> curl -fsSL
+            https://vibecrafted.io/install.sh | bash
+          </code>
+          <CopyButton
+            client:visible
+            class="cb-copy"
+            textToCopy="curl -fsSL https://vibecrafted.io/install.sh | bash"
+            defaultLabel={copyButton.default}
+            copiedLabel={copyButton.copied}
+            errorLabel={copyButton.error}
+            defaultAriaLabel={copyButton.defaultAria}
+            copiedAriaLabel={copyButton.copiedAria}
+            errorAriaLabel={copyButton.errorAria}
+          />
         </div>
-    )}
+      )
+    }
 
-    <main class:list={['shell', isDocsPage && 'shell--docs', isFrameworkPage && 'shell--framework']} id="main-content">
-        <slot />
+    <main
+      class:list={[
+        "shell",
+        isDocsPage && "shell--docs",
+        isFrameworkPage && "shell--framework",
+      ]}
+      id="main-content"
+    >
+      <slot />
     </main>
 
     <footer class="footer-shell vt-site-footer" aria-label={footer.ariaLabel}>
-        <div class="footer-container">
-            <div class="footer-brand vt-site-footer-brand" transition:persist>
-                <Image
-                    src={logo32}
-                    alt=""
-                    aria-hidden="true"
-                    class="footer-logo"
-                    width={24}
-                    height={24}
-                    densities={[1, 2]}
-                    format="webp"
-                />
-                <span class="footer-title">{footer.brand}</span>
-            </div>
-            <p class="footer-tagline">{footer.tagline}</p>
-            <nav class="footer-links" aria-label={navLabels.navFooter}>
-                {footerLinks.map((link) => (
-                    <a href={link.href} rel={link.external ? 'noopener noreferrer' : undefined}>
-                        {link.label}
-                    </a>
-                ))}
-            </nav>
-            <p class="footer-copyright">{footer.copyright}</p>
+      <div class="footer-container">
+        <div class="footer-brand vt-site-footer-brand" transition:persist>
+          <Image
+            src={logo32}
+            alt=""
+            aria-hidden="true"
+            class="footer-logo"
+            width={24}
+            height={24}
+            densities={[1, 2]}
+            format="webp"
+          />
+          <span class="footer-title">{footer.brand}</span>
         </div>
+        <p class="footer-tagline">{footer.tagline}</p>
+        <nav class="footer-links" aria-label={navLabels.navFooter}>
+          {
+            footerLinks.map((link) => (
+              <a
+                href={link.href}
+                rel={link.external ? "noopener noreferrer" : undefined}
+              >
+                {link.label}
+              </a>
+            ))
+          }
+        </nav>
+        <p class="footer-copyright">{footer.copyright}</p>
+      </div>
     </footer>
 
     <SearchShell
-        client:load
-        transition:persist="search-shell"
-        lang={lang}
-        defaultSection={searchDefaultSection}
-        searchDataAll={searchDataAll}
-        searchDataQuickstart={searchDataQuickstart}
-        searchDataFaq={searchDataFaq}
+      client:load
+      transition:persist="search-shell"
+      lang={lang}
+      defaultSection={searchDefaultSection}
+      searchDataAll={searchDataAll}
+      searchDataQuickstart={searchDataQuickstart}
+      searchDataFaq={searchDataFaq}
     />
-</body>
+  </body>
 </html>
 
 <style is:global>
@@ -490,7 +581,7 @@ const primaryLinks = [
 
   .curl-banner code {
     color: var(--text-secondary);
-    font-family: 'SF Mono', 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
     font-size: 0.76rem;
     line-height: 1.45;
     overflow-wrap: anywhere;

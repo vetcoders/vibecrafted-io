@@ -8,7 +8,7 @@
     currentPath?: string;
     /** Path to the sister-language page (e.g. '/pl/' from '/en/'). */
     toggleHref?: string;
-    /** VetCoders GitHub org link (defaults to main org). */
+    /** Vetcoders GitHub org link (defaults to main org). */
     vcHref?: string;
     /** Vibecrafted repo link used by the GitHub icon. */
     githubHref?: string;
@@ -20,8 +20,8 @@
     lang = 'en',
     currentPath = '/',
     toggleHref = lang === 'pl' ? '/en/' : '/pl/',
-    vcHref = 'https://github.com/VetCoders',
-    githubHref = 'https://github.com/VetCoders/vibecrafted',
+    vcHref = 'https://github.com/vetcoders',
+    githubHref = 'https://github.com/vetcoders/vibecrafted',
     installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash',
   } = $props<Props>();
 

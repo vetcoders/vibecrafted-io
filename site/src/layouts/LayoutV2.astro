@@ -11,18 +11,18 @@
  * No nav/footer baked in — the page owns layout (handoff § 3.2: Nav is
  * absolute positioned inside Hero section, not a global top bar).
  */
-import { ClientRouter } from 'astro:transitions';
-import type { Lang } from '../lib/i18n';
-import SiteNavV2 from '../components/SiteNavV2.svelte';
-import SiteFooterV2 from '../components/SiteFooterV2.svelte';
-import SearchShellV2 from '../components/SearchShellV2.svelte';
-import SchemaOrg from '../components/SchemaOrg.astro';
-import NewsletterSignup from '../components/NewsletterSignup.astro';
-import ContactForm from '../components/ContactForm.astro';
-import { getDocsSearchData } from '../lib/search/docs';
-import { getLocaleAlternates, getAlternateLocale } from '../lib/seo/hreflang';
-import '../styles/tokens-v2.css';
-import '../styles/terminal-window.css';
+import { ClientRouter } from "astro:transitions";
+import type { Lang } from "../lib/i18n";
+import SiteNavV2 from "../components/SiteNavV2.svelte";
+import SiteFooterV2 from "../components/SiteFooterV2.svelte";
+import SearchShellV2 from "../components/SearchShellV2.svelte";
+import SchemaOrg from "../components/SchemaOrg.astro";
+import NewsletterSignup from "../components/NewsletterSignup.astro";
+import ContactForm from "../components/ContactForm.astro";
+import { getDocsSearchData } from "../lib/search/docs";
+import { getLocaleAlternates, getAlternateLocale } from "../lib/seo/hreflang";
+import "../styles/tokens-v2.css";
+import "../styles/terminal-window.css";
 
 interface Props {
   title: string;
@@ -53,10 +53,10 @@ interface Props {
 
 const {
   title,
-  description = 'Orchestration runtime for CLI coding agents.',
-  lang = 'en',
-  ogImage = '/presence/og-image.png',
-  ogType = 'website',
+  description = "Orchestration runtime for CLI coding agents.",
+  lang = "en",
+  ogImage = "/presence/og-image.png",
+  ogType = "website",
   hasHero = false,
   hideSearch = false,
   hideFooter = false,
@@ -68,18 +68,18 @@ const {
 // social-card size). Legacy static OG at `/presence/og-image.png` ships at
 // 1536×1024. Detect which family this page uses and emit matching dimensions
 // so Facebook/X/LinkedIn don't have to guess.
-const isDynamicOG = ogImage.startsWith('/og/');
-const ogImageWidth = isDynamicOG ? '1200' : '1536';
-const ogImageHeight = isDynamicOG ? '630' : '1024';
+const isDynamicOG = ogImage.startsWith("/og/");
+const ogImageWidth = isDynamicOG ? "1200" : "1536";
+const ogImageHeight = isDynamicOG ? "630" : "1024";
 
 const currentPath = Astro.url.pathname;
 
 function computeToggleHref(path: string, currentLang: Lang): string {
-  if (currentLang === 'pl') {
-    return path.replace(/^\/pl\//, '/en/').replace(/^\/pl$/, '/en/');
+  if (currentLang === "pl") {
+    return path.replace(/^\/pl\//, "/en/").replace(/^\/pl$/, "/en/");
   }
-  if (path === '/' || path === '') return '/pl/';
-  return path.replace(/^\/en\//, '/pl/').replace(/^\/en$/, '/pl/');
+  if (path === "/" || path === "") return "/pl/";
+  return path.replace(/^\/en\//, "/pl/").replace(/^\/en$/, "/pl/");
 }
 
 const toggleHref = computeToggleHref(currentPath, lang);
@@ -87,279 +87,377 @@ const toggleHref = computeToggleHref(currentPath, lang);
 const [searchDataAll, searchDataQuickstart, searchDataFaq] = hideSearch
   ? [null, null, null]
   : await Promise.all([
-      getDocsSearchData(lang, 'all'),
-      getDocsSearchData(lang, 'quickstart'),
-      getDocsSearchData(lang, 'faq'),
+      getDocsSearchData(lang, "all"),
+      getDocsSearchData(lang, "quickstart"),
+      getDocsSearchData(lang, "faq"),
     ]);
 
-const siteUrl = Astro.site?.href.replace(/\/$/, '') ?? 'https://vibecrafted.io';
-const canonicalPath = Astro.url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '/');
-const canonicalUrl = new URL(canonicalPath || '/', siteUrl).href;
+const siteUrl = Astro.site?.href.replace(/\/$/, "") ?? "https://vibecrafted.io";
+const canonicalPath = Astro.url.pathname
+  .replace(/\/index\.html$/, "/")
+  .replace(/\.html$/, "/");
+const canonicalUrl = new URL(canonicalPath || "/", siteUrl).href;
 const ogImageUrl = new URL(ogImage, siteUrl).href;
-const ogLocale = lang === 'pl' ? 'pl_PL' : 'en_US';
-const alternates = getLocaleAlternates(canonicalPath || '/');
+const ogLocale = lang === "pl" ? "pl_PL" : "en_US";
+const alternates = getLocaleAlternates(canonicalPath || "/");
 const alternateOgLocale = getAlternateLocale(lang);
 
 const jsonLd = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
+  "@context": "https://schema.org",
+  "@type": "WebPage",
   name: title,
   description,
   url: canonicalUrl,
   inLanguage: lang,
   isPartOf: {
-    '@type': 'WebSite',
-    name: 'Vibecrafted',
+    "@type": "WebSite",
+    name: "Vibecrafted",
     url: siteUrl,
     publisher: {
-      '@type': 'Organization',
-      name: 'VetCoders',
-      url: 'https://github.com/VetCoders',
+      "@type": "Organization",
+      name: "vetcoders",
+      url: "https://github.com/vetcoders",
     },
   },
 });
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang={lang}>
-<head>
-  <ClientRouter />
-  <meta charset="UTF-8" />
-  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>{title}</title>
-  <meta content={description} name="description" />
-  <meta content={title} property="og:title" />
-  <meta content={description} property="og:description" />
-  <meta content={ogImageUrl} property="og:image" />
-  <meta content={ogImageWidth} property="og:image:width" />
-  <meta content={ogImageHeight} property="og:image:height" />
-  <meta content="image/png" property="og:image:type" />
-  <meta content={description} property="og:image:alt" />
-  <meta content={ogType} property="og:type" />
-  <meta content={canonicalUrl} property="og:url" />
-  <meta content="Vibecrafted" property="og:site_name" />
-  <meta content={ogLocale} property="og:locale" />
-  {alternates && <meta content={alternateOgLocale} property="og:locale:alternate" />}
-  <meta content="summary_large_image" name="twitter:card" />
-  <meta content={title} name="twitter:title" />
-  <meta content={description} name="twitter:description" />
-  <meta content={ogImageUrl} name="twitter:image" />
-  <meta content={description} name="twitter:image:alt" />
-  <meta content="@VetCoders" name="twitter:site" />
-  <meta content="index,follow" name="robots" />
-  <meta content="#080807" name="theme-color" />
-  <meta
-    http-equiv="Content-Security-Policy"
-    content={[
-      "default-src 'none'",
-      "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "style-src-attr 'unsafe-inline'",
-      "img-src 'self' data:",
-      "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://plausible.io",
-      "frame-src 'none'",
-      "worker-src 'self'",
-      "manifest-src 'self'",
-      "base-uri 'self'",
-      "form-action 'self'",
-    ].join('; ')}
-  />
-  <link href={canonicalUrl} rel="canonical" />
-  {alternates && <>
-    <link href={new URL(alternates.en, siteUrl).href} hreflang="en" rel="alternate" />
-    <link href={new URL(alternates.pl, siteUrl).href} hreflang="pl" rel="alternate" />
-    <link href={new URL(alternates.en, siteUrl).href} hreflang="x-default" rel="alternate" />
-  </>}
-  <link href="/presence/favicon.ico" rel="icon" sizes="32x32" />
-  <link href="/presence/logo-64.png" rel="icon" sizes="64x64" type="image/png" />
-  <link href="/presence/logo-128.png" rel="apple-touch-icon" />
-  <link href="https://fonts.googleapis.com" rel="preconnect" />
-  <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <head>
+    <ClientRouter />
+    <meta charset="UTF-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{title}</title>
+    <meta content={description} name="description" />
+    <meta content={title} property="og:title" />
+    <meta content={description} property="og:description" />
+    <meta content={ogImageUrl} property="og:image" />
+    <meta content={ogImageWidth} property="og:image:width" />
+    <meta content={ogImageHeight} property="og:image:height" />
+    <meta content="image/png" property="og:image:type" />
+    <meta content={description} property="og:image:alt" />
+    <meta content={ogType} property="og:type" />
+    <meta content={canonicalUrl} property="og:url" />
+    <meta content="Vibecrafted" property="og:site_name" />
+    <meta content={ogLocale} property="og:locale" />
+    {
+      alternates && (
+        <meta content={alternateOgLocale} property="og:locale:alternate" />
+      )
+    }
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content={title} name="twitter:title" />
+    <meta content={description} name="twitter:description" />
+    <meta content={ogImageUrl} name="twitter:image" />
+    <meta content={description} name="twitter:image:alt" />
+    <meta content="@vetcoders" name="twitter:site" />
+    <meta content="index,follow" name="robots" />
+    <meta content="#080807" name="theme-color" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content={[
+        "default-src 'none'",
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "style-src-attr 'unsafe-inline'",
+        "img-src 'self' data:",
+        "font-src 'self' https://fonts.gstatic.com",
+        "connect-src 'self' https://plausible.io",
+        "frame-src 'none'",
+        "worker-src 'self'",
+        "manifest-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+      ].join("; ")}
+    />
+    <link href={canonicalUrl} rel="canonical" />
+    {
+      alternates && (
+        <>
+          <link
+            href={new URL(alternates.en, siteUrl).href}
+            hreflang="en"
+            rel="alternate"
+          />
+          <link
+            href={new URL(alternates.pl, siteUrl).href}
+            hreflang="pl"
+            rel="alternate"
+          />
+          <link
+            href={new URL(alternates.en, siteUrl).href}
+            hreflang="x-default"
+            rel="alternate"
+          />
+        </>
+      )
+    }
+    <link href="/presence/favicon.ico" rel="icon" sizes="32x32" />
+    <link
+      href="/presence/logo-64.png"
+      rel="icon"
+      sizes="64x64"
+      type="image/png"
+    />
+    <link href="/presence/logo-128.png" rel="apple-touch-icon" />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Allura&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <script is:inline type="application/ld+json" set:html={jsonLd} />
-  <SchemaOrg siteUrl={siteUrl} />
-  <script is:inline defer data-domain="vibecrafted.io" src="https://plausible.io/js/script.js"></script>
-  <script is:inline crossorigin="anonymous" integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe" src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
-  <script is:inline>
-    (() => {
-      if (window.__vcScrollFadeRuntime) return;
-      window.__vcScrollFadeRuntime = true;
+    <script is:inline type="application/ld+json" set:html={jsonLd} />
+    <SchemaOrg siteUrl={siteUrl} />
+    <script
+      is:inline
+      defer
+      data-domain="vibecrafted.io"
+      src="https://plausible.io/js/script.js"></script>
+    <script
+      is:inline
+      crossorigin="anonymous"
+      integrity="sha384-7Q8XaCgFJlm82NdMNnX7AIyZbdTjUre2eR4TpKK1Pko3zKXorgTIGVpnnLho+UAe"
+      src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"
+    ></script>
+    <script is:inline>
+      (() => {
+        if (window.__vcScrollFadeRuntime) return;
+        window.__vcScrollFadeRuntime = true;
 
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      let targets = [];
-      let ticking = false;
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+        let targets = [];
+        let ticking = false;
 
-      const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-      const sync = () => {
-        ticking = false;
+        const sync = () => {
+          ticking = false;
 
-        if (reduceMotion.matches) {
+          if (reduceMotion.matches) {
+            targets.forEach((target) => {
+              target.style.removeProperty("--scroll-fade-opacity");
+              target.style.removeProperty("--scroll-fade-y");
+            });
+            return;
+          }
+
+          const viewportHeight =
+            window.innerHeight || document.documentElement.clientHeight || 1;
+          const center = viewportHeight * 0.5;
+
           targets.forEach((target) => {
-            target.style.removeProperty('--scroll-fade-opacity');
-            target.style.removeProperty('--scroll-fade-y');
+            const rect = target.getBoundingClientRect();
+            const targetHeight = Math.max(
+              1,
+              Math.min(rect.height, viewportHeight),
+            );
+            const targetCenter = rect.top + rect.height * 0.5;
+            const centerDistance = Math.abs(targetCenter - center);
+            const centerFade =
+              1 -
+              clamp(
+                (centerDistance - viewportHeight * 0.18) /
+                  (viewportHeight * 0.42),
+                0,
+                1,
+              );
+            const visiblePx = clamp(
+              Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0),
+              0,
+              targetHeight,
+            );
+            const visibilityFade = clamp(visiblePx / targetHeight, 0, 1);
+            const opacity = clamp(
+              Math.max(centerFade, visibilityFade * 1.15),
+              0.08,
+              1,
+            );
+            const direction = targetCenter < center ? -1 : 1;
+            const offset = Math.round((1 - opacity) * 18 * direction);
+
+            target.style.setProperty(
+              "--scroll-fade-opacity",
+              opacity.toFixed(3),
+            );
+            target.style.setProperty("--scroll-fade-y", `${offset}px`);
           });
-          return;
+        };
+
+        const schedule = () => {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(sync);
+        };
+
+        const boot = () => {
+          targets = Array.from(document.querySelectorAll("[data-scroll-fade]"));
+          sync();
+        };
+
+        document.addEventListener("astro:page-load", boot);
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", schedule, { passive: true });
+        reduceMotion.addEventListener?.("change", schedule);
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", boot, { once: true });
+        } else {
+          boot();
         }
+      })();
 
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
-        const center = viewportHeight * 0.5;
+      (() => {
+        if (window.__vcSoftSectionSettleRuntime) return;
+        window.__vcSoftSectionSettleRuntime = true;
 
-        targets.forEach((target) => {
-          const rect = target.getBoundingClientRect();
-          const targetHeight = Math.max(1, Math.min(rect.height, viewportHeight));
-          const targetCenter = rect.top + rect.height * 0.5;
-          const centerDistance = Math.abs(targetCenter - center);
-          const centerFade = 1 - clamp((centerDistance - viewportHeight * 0.18) / (viewportHeight * 0.42), 0, 1);
-          const visiblePx = clamp(Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0), 0, targetHeight);
-          const visibilityFade = clamp(visiblePx / targetHeight, 0, 1);
-          const opacity = clamp(Math.max(centerFade, visibilityFade * 1.15), 0.08, 1);
-          const direction = targetCenter < center ? -1 : 1;
-          const offset = Math.round((1 - opacity) * 18 * direction);
+        const reduceMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+        const settled = new Set();
+        let idleTimer = 0;
+        let programmatic = false;
+        let userScrollIntent = false;
 
-          target.style.setProperty('--scroll-fade-opacity', opacity.toFixed(3));
-          target.style.setProperty('--scroll-fade-y', `${offset}px`);
-        });
-      };
+        const isLanding = () =>
+          document.body?.matches('.v2-scope[data-has-hero="true"]') &&
+          !reduceMotion.matches;
 
-      const schedule = () => {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(sync);
-      };
+        const markIntent = () => {
+          userScrollIntent = true;
+        };
 
-      const boot = () => {
-        targets = Array.from(document.querySelectorAll('[data-scroll-fade]'));
-        sync();
-      };
+        const getKey = (target, index) =>
+          target.id || target.dataset?.settleKey || `v2-frame-${index}`;
 
-      document.addEventListener('astro:page-load', boot);
-      window.addEventListener('scroll', schedule, { passive: true });
-      window.addEventListener('resize', schedule, { passive: true });
-      reduceMotion.addEventListener?.('change', schedule);
+        const settleIfClose = () => {
+          window.clearTimeout(idleTimer);
+          idleTimer = 0;
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot, { once: true });
-      } else {
-        boot();
-      }
-    })();
+          if (!isLanding() || !userScrollIntent || programmatic) return;
 
-    (() => {
-      if (window.__vcSoftSectionSettleRuntime) return;
-      window.__vcSoftSectionSettleRuntime = true;
+          const viewportHeight =
+            window.innerHeight || document.documentElement.clientHeight || 1;
+          const threshold = Math.min(220, viewportHeight * 0.22);
+          const candidates = Array.from(
+            document.querySelectorAll(".hero, .v2-section[id]"),
+          );
 
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-      const settled = new Set();
-      let idleTimer = 0;
-      let programmatic = false;
-      let userScrollIntent = false;
+          let best = null;
+          candidates.forEach((target, index) => {
+            const key = getKey(target, index);
+            if (settled.has(key)) return;
 
-      const isLanding = () =>
-        document.body?.matches('.v2-scope[data-has-hero="true"]') && !reduceMotion.matches;
+            const rect = target.getBoundingClientRect();
+            const distance = Math.abs(rect.top);
+            const visible =
+              Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+            const visibleRatio =
+              visible / Math.max(1, Math.min(rect.height, viewportHeight));
 
-      const markIntent = () => {
-        userScrollIntent = true;
-      };
+            if (
+              distance <= threshold &&
+              visibleRatio >= 0.48 &&
+              (!best || distance < best.distance)
+            ) {
+              best = { target, key, distance };
+            }
+          });
 
-      const getKey = (target, index) => target.id || target.dataset?.settleKey || `v2-frame-${index}`;
+          if (!best || best.distance < 8) return;
 
-      const settleIfClose = () => {
-        window.clearTimeout(idleTimer);
-        idleTimer = 0;
+          settled.add(best.key);
+          programmatic = true;
+          window.scrollTo({
+            top: window.scrollY + best.target.getBoundingClientRect().top,
+            behavior: "smooth",
+          });
+          window.setTimeout(() => {
+            programmatic = false;
+            userScrollIntent = false;
+          }, 420);
+        };
 
-        if (!isLanding() || !userScrollIntent || programmatic) return;
+        const scheduleSettle = () => {
+          if (!isLanding() || !userScrollIntent || programmatic) return;
+          window.clearTimeout(idleTimer);
+          idleTimer = window.setTimeout(settleIfClose, 150);
+        };
 
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 1;
-        const threshold = Math.min(220, viewportHeight * 0.22);
-        const candidates = Array.from(document.querySelectorAll('.hero, .v2-section[id]'));
+        const bootSettle = () => {
+          window.clearTimeout(idleTimer);
+          userScrollIntent = false;
+          programmatic = false;
+          settled.clear();
+        };
 
-        let best = null;
-        candidates.forEach((target, index) => {
-          const key = getKey(target, index);
-          if (settled.has(key)) return;
-
-          const rect = target.getBoundingClientRect();
-          const distance = Math.abs(rect.top);
-          const visible = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
-          const visibleRatio = visible / Math.max(1, Math.min(rect.height, viewportHeight));
-
-          if (distance <= threshold && visibleRatio >= 0.48 && (!best || distance < best.distance)) {
-            best = { target, key, distance };
+        window.addEventListener("wheel", markIntent, { passive: true });
+        window.addEventListener("touchmove", markIntent, { passive: true });
+        window.addEventListener("keydown", (event) => {
+          if (
+            [
+              "ArrowDown",
+              "ArrowUp",
+              "PageDown",
+              "PageUp",
+              "Home",
+              "End",
+              " ",
+            ].includes(event.key)
+          ) {
+            markIntent();
           }
         });
-
-        if (!best || best.distance < 8) return;
-
-        settled.add(best.key);
-        programmatic = true;
-        window.scrollTo({
-          top: window.scrollY + best.target.getBoundingClientRect().top,
-          behavior: 'smooth',
-        });
-        window.setTimeout(() => {
-          programmatic = false;
-          userScrollIntent = false;
-        }, 420);
-      };
-
-      const scheduleSettle = () => {
-        if (!isLanding() || !userScrollIntent || programmatic) return;
-        window.clearTimeout(idleTimer);
-        idleTimer = window.setTimeout(settleIfClose, 150);
-      };
-
-      const bootSettle = () => {
-        window.clearTimeout(idleTimer);
-        userScrollIntent = false;
-        programmatic = false;
-        settled.clear();
-      };
-
-      window.addEventListener('wheel', markIntent, { passive: true });
-      window.addEventListener('touchmove', markIntent, { passive: true });
-      window.addEventListener('keydown', (event) => {
-        if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
-          markIntent();
-        }
-      });
-      window.addEventListener('scroll', scheduleSettle, { passive: true });
-      document.addEventListener('astro:page-load', bootSettle);
-      bootSettle();
-    })();
-  </script>
-</head>
-<body class="v2-scope" data-lang={lang} data-has-hero={hasHero ? 'true' : 'false'}>
-  <SiteNavV2 client:load lang={lang} currentPath={currentPath} toggleHref={toggleHref} />
-  <main class:list={['v2-main', !hasHero && 'v2-main--subpage']}>
-    <slot />
-  </main>
-  {!hideFooter && !hideNewsletter && (
-    <div class="v2-newsletter-slot">
-      <NewsletterSignup variant="footer" lang={lang} />
-    </div>
-  )}
-  {!hideFooter && !hideContact && (
-    <div class="v2-contact-slot">
-      <ContactForm variant="footer" lang={lang} />
-    </div>
-  )}
-  {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
-  {!hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
-    <SearchShellV2
+        window.addEventListener("scroll", scheduleSettle, { passive: true });
+        document.addEventListener("astro:page-load", bootSettle);
+        bootSettle();
+      })();
+    </script>
+  </head>
+  <body
+    class="v2-scope"
+    data-lang={lang}
+    data-has-hero={hasHero ? "true" : "false"}
+  >
+    <SiteNavV2
       client:load
       lang={lang}
-      searchDataAll={searchDataAll}
-      searchDataQuickstart={searchDataQuickstart}
-      searchDataFaq={searchDataFaq}
+      currentPath={currentPath}
+      toggleHref={toggleHref}
     />
-  )}
-</body>
+    <main class:list={["v2-main", !hasHero && "v2-main--subpage"]}>
+      <slot />
+    </main>
+    {
+      !hideFooter && !hideNewsletter && (
+        <div class="v2-newsletter-slot">
+          <NewsletterSignup variant="footer" lang={lang} />
+        </div>
+      )
+    }
+    {
+      !hideFooter && !hideContact && (
+        <div class="v2-contact-slot">
+          <ContactForm variant="footer" lang={lang} />
+        </div>
+      )
+    }
+    {!hideFooter && <SiteFooterV2 client:load lang={lang} />}
+    {
+      !hideSearch && searchDataAll && searchDataQuickstart && searchDataFaq && (
+        <SearchShellV2
+          client:load
+          lang={lang}
+          searchDataAll={searchDataAll}
+          searchDataQuickstart={searchDataQuickstart}
+          searchDataFaq={searchDataFaq}
+        />
+      )
+    }
+  </body>
 </html>
 
 <style is:global>
@@ -377,7 +475,11 @@ const jsonLd = JSON.stringify({
     margin: 0;
     padding: 0;
     background:
-      radial-gradient(circle at 50% 18%, rgba(var(--v2-paper-rgb), 0.035), transparent 34rem),
+      radial-gradient(
+        circle at 50% 18%,
+        rgba(var(--v2-paper-rgb), 0.035),
+        transparent 34rem
+      ),
       var(--v2-ink);
     color: var(--v2-fg-on-dark);
     font-family: var(--v2-font-body);
@@ -395,11 +497,31 @@ const jsonLd = JSON.stringify({
     z-index: 120;
     pointer-events: none;
     background:
-      radial-gradient(circle at 14% 18%, rgba(var(--v2-paper-rgb), 0.18) 0 0.8px, transparent 1.35px),
-      radial-gradient(circle at 78% 62%, rgba(var(--v2-ink-rgb), 0.10) 0 0.75px, transparent 1.4px),
-      repeating-linear-gradient(0deg, rgba(var(--v2-paper-rgb), 0.045) 0 1px, transparent 1px 5px),
-      repeating-linear-gradient(90deg, rgba(var(--v2-ink-rgb), 0.028) 0 1px, transparent 1px 9px);
-    background-size: 17px 17px, 23px 23px, 100% 100%, 100% 100%;
+      radial-gradient(
+        circle at 14% 18%,
+        rgba(var(--v2-paper-rgb), 0.18) 0 0.8px,
+        transparent 1.35px
+      ),
+      radial-gradient(
+        circle at 78% 62%,
+        rgba(var(--v2-ink-rgb), 0.1) 0 0.75px,
+        transparent 1.4px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        rgba(var(--v2-paper-rgb), 0.045) 0 1px,
+        transparent 1px 5px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(var(--v2-ink-rgb), 0.028) 0 1px,
+        transparent 1px 9px
+      );
+    background-size:
+      17px 17px,
+      23px 23px,
+      100% 100%,
+      100% 100%;
     mix-blend-mode: soft-light;
     opacity: 0.32;
   }
@@ -454,7 +576,11 @@ const jsonLd = JSON.stringify({
   body.v2-scope .v2-main {
     display: block;
     background:
-      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 420px),
+      linear-gradient(
+        180deg,
+        rgba(var(--v2-paper-rgb), 0.035),
+        transparent 420px
+      ),
       var(--v2-ink);
   }
   body.v2-scope .v2-main--subpage {

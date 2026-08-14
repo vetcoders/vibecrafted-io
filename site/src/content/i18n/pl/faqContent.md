@@ -64,18 +64,18 @@ groups:
       - questionHtml: "Czy małe zespoły mogą używać 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. produkcyjnie?"
         answerHtml: "Tak. Ten grant pozwala pojedynczym deweloperom i zespołom mniejszym niż pięć osób używać frameworka w produkcji, o ile nie oferują konkurencyjnej usługi hostowanej ani rozwiązania osadzonego."
       - questionHtml: "Co jeśli potrzebuję szerszego modelu komercyjnego?"
-        answerHtml: "Jeśli potrzebujesz szerszych uprawnień komercyjnych, skontaktuj się z VetCoders. Przeczytaj warunki licencji i ustal właściwą ścieżkę."
+        answerHtml: "Jeśli potrzebujesz szerszych uprawnień komercyjnych, skontaktuj się z vetcoders. Przeczytaj warunki licencji i ustal właściwą ścieżkę."
 
 # Bottom canonical-sources link list.
 links:
   - href: "/pl/quickstart/"
     label: "Szybki start"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md"
     label: "Pełne FAQ - markdown"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md"
     label: "Bramka review ScreenScribe"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md"
     label: "Matryca prawdy contentowej"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE"
     label: "Licencja"
 ---

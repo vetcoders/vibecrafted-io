@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -19,6 +20,20 @@ SITE_PUBLIC = REPO_ROOT / "site" / "public"
 SITE_SRC = REPO_ROOT / "site" / "src"
 
 
+def resolve_product_root() -> Path:
+    override = os.environ.get("VIBECRAFTED_PRODUCT_ROOT")
+    if override:
+        return Path(override).expanduser().resolve()
+
+    pointer_file = REPO_ROOT / ".framework"
+    if pointer_file.exists():
+        pointer = pointer_file.read_text(encoding="utf-8").strip()
+        if pointer:
+            return (REPO_ROOT / pointer).resolve()
+
+    return (REPO_ROOT.parent / "vibecrafted").resolve()
+
+
 def read_version(bundle_root: Path) -> str:
     return (bundle_root / "VERSION").read_text(encoding="utf-8").strip()
 
@@ -35,6 +50,39 @@ def release_archive_name(version: str) -> str:
 def copy_file(src: Path, dst: Path) -> None:
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dst)
+
+
+def sync_windows_installer(
+    product_root: Path, site_public: Path, *, check: bool = False
+) -> dict[str, str]:
+    """Mirror the product-owned Windows handoff without creating a site fork."""
+    source = product_root / "install.ps1"
+    target = site_public / "install.ps1"
+
+    if not source.exists():
+        if check or not target.exists():
+            raise FileNotFoundError(
+                f"Canonical Windows installer missing at {source}. Set "
+                "VIBECRAFTED_PRODUCT_ROOT to the vibecrafted checkout."
+            )
+        print(
+            f"[sync] product checkout absent ({product_root}); reusing committed "
+            f"Windows installer mirror at {target}."
+        )
+    elif check:
+        if not target.exists() or source.read_bytes() != target.read_bytes():
+            raise RuntimeError(
+                f"Windows installer mirror drift: {target} must exactly match {source}. "
+                "Run scripts/sync_site_release_assets.py to refresh it."
+            )
+    else:
+        copy_file(source, target)
+
+    return {
+        "source": str(source),
+        "target": str(target),
+        "sha256": sha256_file(target),
+    }
 
 
 def sha256_file(path: Path) -> str:
@@ -317,7 +365,29 @@ def sync_site_release_assets(
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check-windows-installer",
+        action="store_true",
+        help="fail unless site/public/install.ps1 exactly matches the product repo",
+    )
+    args = parser.parse_args()
+
+    windows_installer = sync_windows_installer(
+        resolve_product_root(),
+        SITE_PUBLIC,
+        check=args.check_windows_installer,
+    )
+    if args.check_windows_installer:
+        print(
+            "Windows installer mirror is current:",
+            json.dumps(windows_installer, indent=2),
+        )
+        return
+
     synced = sync_site_release_assets()
+    synced["windows_installer"] = windows_installer["target"]
+    synced["windows_installer_sha256"] = windows_installer["sha256"]
     print(
         "Synced site release assets:",
         json.dumps(synced, indent=2),

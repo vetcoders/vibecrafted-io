@@ -1,6 +1,7 @@
 ---
 import WizardLayout from '../../layouts/WizardLayout.astro';
 import InstallerShell from '../../components/InstallerShell.svelte';
+import InstallReference from '../../components/InstallReference.astro';
 import installManifest from '../../lib/generated/install-manifest.json';
 ---
 
@@ -10,4 +11,5 @@ import installManifest from '../../lib/generated/install-manifest.json';
   lang="en"
 >
   <InstallerShell client:load lang="en" manifest={installManifest} />
+  <InstallReference />
 </WizardLayout>

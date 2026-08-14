@@ -31,7 +31,7 @@
       href="https://vetcoders.io"
       rel="noopener noreferrer"
       target="_blank"
-      aria-label="VetCoders — AI in service of the animal"
+      aria-label="Vetcoders — AI in service of the animal"
     >
       <img
         src="/vetcoders-message.png"
@@ -50,12 +50,12 @@
       <a href={`/${lang}/quickstart/`}>{footer.quickstart}</a>
       <a href={`/${lang}/faq/`}>{footer.faq}</a>
       <a href="/newsletter/">{lang === 'pl' ? 'Newsletter' : 'Newsletter'}</a>
-      <a href="https://github.com/VetCoders/vibecrafted" rel="noopener noreferrer" target="_blank">{footer.github}</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">{footer.license}</a>
-      <a href="https://github.com/VetCoders/vibecrafted/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">{footer.security}</a>
+      <a href="https://github.com/vetcoders/vibecrafted" rel="noopener noreferrer" target="_blank">{footer.github}</a>
+      <a href="https://github.com/vetcoders/vibecrafted/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">{footer.license}</a>
+      <a href="https://github.com/vetcoders/vibecrafted/blob/main/SECURITY.md" rel="noopener noreferrer" target="_blank">{footer.security}</a>
     </nav>
 
-    <p class="v2footer__copyright">(c)2024–2026 VetCoders</p>
+    <p class="v2footer__copyright">(c)2024–2026 LibraxisAI</p>
   </div>
 </footer>
 
@@ -159,7 +159,7 @@
     margin: 0;
   }
 
-  /* VetCoders signature — the AI <-> animal line-art (Creation of Adam, human
+  /* Vetcoders signature — the AI <-> animal line-art (Creation of Adam, human
      hand to dog paw) by a vetcoders.io link. White line-art on the dark footer;
      faint at rest, brightens on hover. The one spark is the point. */
   .v2footer__vetcoders {

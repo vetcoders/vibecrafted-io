@@ -10,11 +10,12 @@ vibecrafted.io {
 	encode zstd gzip
 
 	# Security headers. HSTS is the one Caddy must add (meta tags cannot carry it).
-	# CSP is delivered as a <meta http-equiv> from the site layout (LayoutV2.astro);
-	# promote it to a header only together with a drift check against that meta,
-	# or the two policies will silently diverge.
+	# Keep this response policy aligned with the meta fallback emitted by all
+	# Astro layouts. `unsafe-inline` is currently required by Astro/Svelte's
+	# generated inline bootstrap and reactive style attributes.
 	header {
 		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		Content-Security-Policy "default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://plausible.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://plausible.io; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"

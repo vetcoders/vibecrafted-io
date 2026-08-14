@@ -5,7 +5,7 @@
  * Lists all entries in the `docs` content collection grouped by section.
  * Brief one-line description per entry; click-through to `/docs/<slug>/`.
  *
- * Public-source-only — synced from `../vibecrafted/docs/` via
+ * Public-source-only — synced from `../vibecrafted/docs/public/` via
  * `scripts/sync-docs.sh`. No internal report identity, no operator paths.
  *
  * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
@@ -19,56 +19,60 @@ import { getCollection } from 'astro:content';
 
 const entries = await getCollection('docs');
 
-type SectionKey = 'install' | 'architecture' | 'skills' | 'release' | 'faq' | 'other';
+type SectionKey = (typeof entries)[number]['data']['section'];
 
 const SECTION_ORDER: SectionKey[] = [
-  'install',
-  'architecture',
+  'getting-started',
+  'concepts',
+  'cli',
+  'lifecycle',
+  'dispatch',
+  'server',
   'skills',
-  'release',
-  'faq',
-  'other',
+  'configuration',
+  'troubleshooting',
+  'reference',
 ];
 
 const SECTION_LABEL: Record<SectionKey, string> = {
-  install: 'Install',
-  architecture: 'Architecture',
-  skills: 'Skills reference',
-  release: 'Release',
-  faq: 'FAQ',
-  other: 'Other',
+  'getting-started': 'Getting started',
+  concepts: 'Concepts',
+  cli: 'CLI',
+  lifecycle: 'Lifecycle',
+  dispatch: 'Dispatch',
+  server: 'Server',
+  skills: 'Skills',
+  configuration: 'Configuration',
+  troubleshooting: 'Troubleshooting',
+  reference: 'Reference',
 };
 
 const SECTION_BLURB: Record<SectionKey, string> = {
-  install: 'How to put vibecrafted on a workstation and confirm the install is real.',
-  architecture: 'How the framework is shaped, why the seams sit where they do, and what each layer is allowed to know.',
-  skills: 'The vc-* skills — what each does, when to invoke it, and what truth it leaves behind.',
-  release: 'Release engineering and shipping discipline — turning "done in the repo" into "safe to deploy."',
-  faq: 'Questions people ask before they trust the framework. Honest answers, not marketing.',
-  other: 'Reference material that does not slot neatly into the other sections.',
+  'getting-started': 'Install Vibecrafted, verify the runtime, and complete your first workflow.',
+  concepts: 'The operating model: living trees, evidence, runtime generations, and delivery truth.',
+  cli: 'Command-line surfaces for health, status, updates, workflows, and receipts.',
+  lifecycle: 'The craft, converge, and ship stages that move a repository toward release.',
+  dispatch: 'How work is routed to agents and how completed runs settle.',
+  server: 'Local control-plane services, integrations, and operator interfaces.',
+  skills: 'The vc-* skills, when to invoke them, and the evidence they leave behind.',
+  configuration: 'Runtime and agent configuration contracts.',
+  troubleshooting: 'Diagnose install, runtime, and agent failures with concrete checks.',
+  reference: 'Stable contracts, schemas, security guidance, and terminology.',
 };
 
-const grouped: Record<SectionKey, typeof entries> = {
-  install: [],
-  architecture: [],
-  skills: [],
-  release: [],
-  faq: [],
-  other: [],
-};
+const grouped = Object.fromEntries(
+  SECTION_ORDER.map((section) => [section, []]),
+) as unknown as Record<SectionKey, typeof entries>;
 
 for (const entry of entries) {
   const section = entry.data.section as SectionKey;
-  if (grouped[section]) {
-    grouped[section].push(entry);
-  } else {
-    grouped.other.push(entry);
-  }
+  grouped[section].push(entry);
 }
 
 for (const section of SECTION_ORDER) {
-  grouped[section].sort((a, b) =>
-    a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
+  grouped[section].sort(
+    (a, b) => a.data.order - b.data.order ||
+      a.data.title.localeCompare(b.data.title, 'en', { sensitivity: 'base' }),
   );
 }
 
@@ -125,7 +129,7 @@ const totalCount = entries.length;
               <ol class="docs-index__list">
                 {items.map((entry) => (
                   <li class="docs-index__item">
-                    <a class="docs-index__card" href={`/docs/${entry.data.slug}/`}>
+                    <a class="docs-index__card" href={`/docs/${entry.id.split('/').at(-1) ?? entry.id}/`}>
                       <h3 class="docs-index__card-title">{entry.data.title}</h3>
                       <p class="docs-index__card-desc">{entry.data.description}</p>
                       <span class="docs-index__card-cta">

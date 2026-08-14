@@ -1,248 +1,221 @@
 #!/usr/bin/env bash
-# sync-docs.sh — Plan 15 (META_22 Wave 5).
+# Mirror the canonical public documentation catalog into the Astro site.
 #
-# Mirrors sibling-repo public docs into the Astro content collection at
-# `site/src/content/docs/`. Source of truth: ../vibecrafted/docs/*.md.
+# Source of truth: ../vibecrafted/docs/public/
+# Destination:     site/src/content/docs/
 #
-# Idempotent: skips files whose source mtime is older than or equal to the
-# existing destination mtime. Re-running on a clean tree is a no-op.
-#
-# Skip list (NOT mirrored):
-#   - THE_VIBE_HANGOVER.md      (already vendored as Plan 14 manifesto)
-#   - MARKETPLACE_LISTING.md    (operator-side launch playbook, not public docs)
-#   - SUBMISSION_FORMS.md       (operator-side directory submission tracker)
-#
-# Frontmatter is rewritten — we replace whatever the source carried with a
-# normalized shape consumed by the `docs` content collection in
-# `site/src/content.config.ts`:
-#
-#   ---
-#   title: "Human-readable title"
-#   description: "One-line snippet pulled from the first non-heading paragraph."
-#   slug: "lowercase-dash-slug"
-#   section: "install" | "architecture" | "skills" | "faq" | "release" | "other"
-#   syncedAt: "YYYY-MM-DD"
-#   sourcePath: "docs/<NAME>.md"
-#   ---
-#
-# Run manually: `bash scripts/sync-docs.sh`
-# Hook into builds: `pnpm run prebuild` already runs the legacy python sync; we
-# leave that path alone and document this as an operator-side cut.
-#
-# Exit codes:
-#   0  success (with possible no-op output)
-#   1  source dir missing or unreadable
-#   2  destination dir cannot be created
-#
-# Living Tree contract: this script only writes inside this repo. It never
-# touches `../vibecrafted/`. Source docs must be edited there; never edit the
-# generated mirror — your edits will be overwritten on the next sync.
+# The source hierarchy is preserved so future duplicate filenames cannot
+# silently overwrite one another. Public URLs remain basename-based, as required
+# by docs/public/_CONTRACT.md; duplicate basenames therefore fail validation.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-SOURCE_DIR="${REPO_ROOT}/../vibecrafted/docs"
+DEFAULT_SOURCE_DIR="${REPO_ROOT}/../vibecrafted/docs/public"
+SOURCE_DIR="${VIBECRAFTED_DOCS_SRC:-${DEFAULT_SOURCE_DIR}}"
 DEST_DIR="${REPO_ROOT}/site/src/content/docs"
-TODAY="$(date -u +%Y-%m-%d)"
+SITEMAP="${REPO_ROOT}/site/public/sitemap.xml"
+MODE="sync"
 
-# Allow override for testing.
-SOURCE_DIR="${VIBECRAFTED_DOCS_SRC:-${SOURCE_DIR}}"
+usage() {
+  printf 'usage: %s [--check | --if-present]\n' "$0"
+}
+
+case "${1:-}" in
+  "") ;;
+  --check) MODE="check" ;;
+  --if-present) MODE="if-present" ;;
+  -h|--help) usage; exit 0 ;;
+  *) usage >&2; exit 64 ;;
+esac
 
 if [[ ! -d "${SOURCE_DIR}" ]]; then
+  if [[ "${MODE}" == "if-present" ]]; then
+    printf 'sync-docs: source absent; using committed mirror (%s)\n' "${SOURCE_DIR}"
+    exit 0
+  fi
   printf 'sync-docs: source directory not found: %s\n' "${SOURCE_DIR}" >&2
   printf '  Set VIBECRAFTED_DOCS_SRC to override.\n' >&2
   exit 1
 fi
 
-mkdir -p "${DEST_DIR}" || {
-  printf 'sync-docs: cannot create destination: %s\n' "${DEST_DIR}" >&2
+if [[ "${DEST_DIR}" != "${REPO_ROOT}/site/src/content/docs" ]]; then
+  printf 'sync-docs: refusing unexpected destination: %s\n' "${DEST_DIR}" >&2
   exit 2
+fi
+
+STAGE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/vibecrafted-docs-sync.XXXXXX")"
+trap 'rm -rf "${STAGE_DIR}"' EXIT
+
+python3 - "${SOURCE_DIR}" "${STAGE_DIR}" <<'PY'
+from __future__ import annotations
+
+import ast
+import re
+import shutil
+import sys
+from pathlib import Path
+
+source = Path(sys.argv[1]).resolve()
+stage = Path(sys.argv[2]).resolve()
+allowed_sections = {
+    "getting-started", "concepts", "cli", "lifecycle", "dispatch",
+    "server", "skills", "configuration", "troubleshooting", "reference",
+}
+private_patterns = {
+    "/Users/": re.compile(r"/Users/"),
+    "/Volumes/vc-workspace": re.compile(r"/Volumes/vc-workspace"),
+    "~/Libraxis": re.compile(r"~/Libraxis"),
+    "private Tailscale address": re.compile(r"(?<![0-9])100(?:\.[0-9]{1,3}){3}(?![0-9])"),
+    "private hostname dragon": re.compile(r"(?<![A-Za-z0-9_-])dragon(?![A-Za-z0-9_-])", re.I),
+    "noncanonical local server": re.compile(r"localhost:3025"),
 }
 
-# Skip list — names match basenames in ${SOURCE_DIR}.
-SKIP=(
-  "THE_VIBE_HANGOVER.md"
-  "MARKETPLACE_LISTING.md"
-  "SUBMISSION_FORMS.md"
+def scalar(value: str) -> object:
+    value = value.strip()
+    if value.startswith(('"', "'")):
+        return ast.literal_eval(value)
+    if re.fullmatch(r"[0-9]+", value):
+        return int(value)
+    return value
+
+docs = sorted(
+    path for path in source.rglob("*.md")
+    if not path.name.startswith("_")
 )
+if not docs:
+    raise SystemExit("sync-docs: no eligible markdown files found")
 
-is_skipped() {
-  local name="$1"
-  local skip
-  for skip in "${SKIP[@]}"; do
-    if [[ "${name}" == "${skip}" ]]; then
-      return 0
-    fi
-  done
-  return 1
-}
+seen_basenames: dict[str, Path] = {}
+for path in docs:
+    rel = path.relative_to(source)
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*\.md", path.name):
+        raise SystemExit(f"sync-docs: invalid public basename: {rel}")
+    if path.name in seen_basenames:
+        raise SystemExit(
+            f"sync-docs: duplicate URL basename {path.name}: "
+            f"{seen_basenames[path.name]} and {rel}"
+        )
+    seen_basenames[path.name] = rel
 
-# Slug: lowercase, underscores -> dashes, drop extension.
-slugify() {
-  local name="$1"
-  name="${name%.md}"
-  name="${name,,}"
-  name="${name//_/-}"
-  printf '%s' "${name}"
-}
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    if not lines or lines[0] != "---":
+        raise SystemExit(f"sync-docs: missing frontmatter opener: {rel}")
+    try:
+        close = lines.index("---", 1)
+    except ValueError:
+        raise SystemExit(f"sync-docs: missing frontmatter closer: {rel}") from None
 
-# Title: read first markdown H1; fall back to humanized slug.
-extract_title() {
-  local file="$1"
-  local slug="$2"
-  local h1
-  h1="$(awk '/^# / { sub(/^# */, ""); print; exit }' "${file}")"
-  if [[ -n "${h1}" ]]; then
-    printf '%s' "${h1}"
-  else
-    # Humanize: dashes -> spaces, capitalize first letter of each word.
-    local humanized
-    humanized="$(printf '%s' "${slug}" | tr '-' ' ')"
-    printf '%s' "${humanized}"
-  fi
-}
+    metadata: dict[str, object] = {}
+    for line in lines[1:close]:
+        match = re.fullmatch(r"([a-zA-Z][a-zA-Z0-9_-]*):\s*(.+)", line)
+        if not match:
+            raise SystemExit(f"sync-docs: unsupported frontmatter line in {rel}: {line}")
+        key, raw = match.groups()
+        if key in metadata:
+            raise SystemExit(f"sync-docs: duplicate frontmatter key {key}: {rel}")
+        metadata[key] = scalar(raw)
 
-# Description: first non-empty, non-heading, non-frontmatter paragraph,
-# stripped of markdown noise and truncated to ~200 chars at a word boundary.
-extract_description() {
-  local file="$1"
-  local raw
-  raw="$(awk '
-    BEGIN { in_fm = 0; in_code = 0; first_seen = 0 }
-    NR == 1 && /^---[[:space:]]*$/ { in_fm = 1; next }
-    in_fm && /^---[[:space:]]*$/ { in_fm = 0; next }
-    in_fm { next }
-    /^```/ { in_code = !in_code; next }
-    in_code { next }
-    /^#/ { next }
-    /^>/ { next }
-    /^\|/ { next }
-    /^[[:space:]]*$/ { if (first_seen) exit; next }
-    /^!\[/ { next }
-    { first_seen = 1; print; }
-  ' "${file}" | tr '\n' ' ')"
+    expected = {"title", "description", "section", "order"}
+    if set(metadata) != expected:
+        raise SystemExit(
+            f"sync-docs: frontmatter keys for {rel} are {sorted(metadata)}; "
+            f"expected {sorted(expected)}"
+        )
+    if not isinstance(metadata["title"], str) or not metadata["title"].strip():
+        raise SystemExit(f"sync-docs: title must be non-empty: {rel}")
+    if not isinstance(metadata["description"], str) or not metadata["description"].strip():
+        raise SystemExit(f"sync-docs: description must be non-empty: {rel}")
+    if len(metadata["description"]) > 180:
+        raise SystemExit(f"sync-docs: description exceeds 180 chars: {rel}")
+    if metadata["section"] not in allowed_sections:
+        raise SystemExit(f"sync-docs: invalid section {metadata['section']!r}: {rel}")
+    if metadata["section"] != rel.parts[0]:
+        raise SystemExit(
+            f"sync-docs: section/path mismatch for {rel}: {metadata['section']!r}"
+        )
+    if not isinstance(metadata["order"], int):
+        raise SystemExit(f"sync-docs: order must be an integer: {rel}")
 
-  # Strip leading/trailing whitespace, collapse runs of whitespace.
-  raw="$(printf '%s' "${raw}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/[[:space:]]\{2,\}/ /g')"
+    body = "\n".join(lines[close + 1:])
+    heading = next((line[2:].strip() for line in lines[close + 1:] if line.startswith("# ")), None)
+    if heading != metadata["title"]:
+        raise SystemExit(
+            f"sync-docs: first H1 must match title in {rel}: "
+            f"{heading!r} != {metadata['title']!r}"
+        )
+    for label, pattern in private_patterns.items():
+        if pattern.search(body):
+            raise SystemExit(f"sync-docs: {label} rejected by public contract: {rel}")
 
-  # Strip simple markdown emphasis / link syntax for cleaner output.
-  # shellcheck disable=SC2016  # sed patterns are literal, not shell expansions.
-  raw="$(printf '%s' "${raw}" | sed -E -e 's/\*\*([^*]+)\*\*/\1/g' -e 's/\*([^*]+)\*/\1/g' -e 's/`([^`]+)`/\1/g' -e 's/\[([^]]+)\]\([^)]+\)/\1/g')"
+    target = stage / rel
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(path, target)
 
-  if [[ -z "${raw}" ]]; then
-    printf '%s' "Vibecrafted documentation."
-    return
-  fi
+print(f"sync-docs: validated={len(docs)}")
+PY
 
-  # Truncate to ~200 chars at a word boundary.
-  if (( ${#raw} > 200 )); then
-    raw="${raw:0:200}"
-    raw="${raw% *}…"
-  fi
+mirror_current=false
+if diff -qr "${STAGE_DIR}" "${DEST_DIR}" >/dev/null 2>&1; then
+  mirror_current=true
+elif [[ "${MODE}" == "check" ]]; then
+  printf 'sync-docs: mirror is stale\n' >&2
+  diff -qr "${STAGE_DIR}" "${DEST_DIR}" >&2 || true
+  exit 3
+else
+  mkdir -p "${DEST_DIR}"
+  rsync -a --delete --exclude '.DS_Store' "${STAGE_DIR}/" "${DEST_DIR}/"
+  printf 'sync-docs: published=%s pruned-stale=true source=%s\n' \
+    "$(find "${DEST_DIR}" -type f -name '*.md' | wc -l | tr -d ' ')" "${SOURCE_DIR}"
+fi
 
-  printf '%s' "${raw}"
-}
+python3 - "${STAGE_DIR}" "${SITEMAP}" "${MODE}" <<'PY'
+from __future__ import annotations
 
-# Section: classify by filename so the sidebar nav can group entries.
-classify_section() {
-  local name="$1"
-  case "${name}" in
-    INSTALL.md|QUICK_START.md|DOCKER.md|ZELLIJ.md|ITERM2.md)
-      printf 'install'
-      ;;
-    FOUNDATION.md|FRONTIER.md|PERCEPTION.md|WORKFLOWS.md)
-      printf 'architecture'
-      ;;
-    SKILLS.md|CONTRIBUTING-SKILLS.md)
-      printf 'skills'
-      ;;
-    FAQ.md|FAQ-ANSWERED.md)
-      printf 'faq'
-      ;;
-    RELEASE_KICKOFF.md)
-      printf 'release'
-      ;;
-    *)
-      printf 'other'
-      ;;
-  esac
-}
+import re
+import sys
+from pathlib import Path
 
-# Strip the first frontmatter block from a markdown body, if any.
-strip_frontmatter() {
-  local file="$1"
-  awk '
-    BEGIN { in_fm = 0; done = 0 }
-    NR == 1 && /^---[[:space:]]*$/ { in_fm = 1; next }
-    in_fm && /^---[[:space:]]*$/ { in_fm = 0; done = 1; next }
-    in_fm { next }
-    { print }
-  ' "${file}"
-}
+stage = Path(sys.argv[1])
+sitemap = Path(sys.argv[2])
+mode = sys.argv[3]
+start = "    <!-- BEGIN GENERATED DOCS -->"
+end = "    <!-- END GENERATED DOCS -->"
+slugs = sorted(path.stem for path in stage.rglob("*.md"))
 
-# Escape a value for safe inclusion in YAML double-quoted string.
-yaml_escape() {
-  local s="$1"
-  s="${s//\\/\\\\}"
-  s="${s//\"/\\\"}"
-  printf '%s' "${s}"
-}
+urls = [("docs", "weekly", "0.9")]
+urls.extend((f"docs/{slug}", "monthly", "0.8" if slug in {
+    "install", "quick-start", "build-from-source", "first-run", "update"
+} else "0.6") for slug in slugs)
 
-synced=0
-skipped=0
-unchanged=0
+blocks = [start]
+for route, frequency, priority in urls:
+    blocks.extend([
+        "    <url>",
+        f"        <loc>https://vibecrafted.io/{route}/</loc>",
+        f"        <changefreq>{frequency}</changefreq>",
+        f"        <priority>{priority}</priority>",
+        "    </url>",
+    ])
+blocks.append(end)
+expected = "\n".join(blocks)
 
-for src in "${SOURCE_DIR}"/*.md; do
-  [[ -e "${src}" ]] || continue
-  basename="$(basename "${src}")"
+text = sitemap.read_text(encoding="utf-8")
+pattern = re.compile(re.escape(start) + r".*?" + re.escape(end), re.S)
+match = pattern.search(text)
+if not match:
+    raise SystemExit("sync-docs: sitemap generated-docs markers are missing")
+if match.group(0) == expected:
+    print(f"sync-docs: sitemap current ({len(urls)} docs URLs)")
+elif mode == "check":
+    raise SystemExit("sync-docs: sitemap docs catalog is stale")
+else:
+    sitemap.write_text(pattern.sub(expected, text, count=1), encoding="utf-8")
+    print(f"sync-docs: sitemap published ({len(urls)} docs URLs)")
+PY
 
-  if is_skipped "${basename}"; then
-    skipped=$((skipped + 1))
-    continue
-  fi
-
-  slug="$(slugify "${basename}")"
-  dest="${DEST_DIR}/${slug}.md"
-
-  # Idempotency check — source unchanged since last sync, leave dest alone.
-  if [[ -f "${dest}" && "${src}" -ot "${dest}" ]]; then
-    unchanged=$((unchanged + 1))
-    continue
-  fi
-  if [[ -f "${dest}" && "${src}" -nt "${dest}" ]]; then
-    : # source newer — regenerate
-  elif [[ -f "${dest}" ]]; then
-    # mtimes equal -> skip
-    unchanged=$((unchanged + 1))
-    continue
-  fi
-
-  title="$(extract_title "${src}" "${slug}")"
-  description="$(extract_description "${src}")"
-  section="$(classify_section "${basename}")"
-
-  title_yaml="$(yaml_escape "${title}")"
-  desc_yaml="$(yaml_escape "${description}")"
-
-  {
-    printf -- '---\n'
-    printf 'title: "%s"\n' "${title_yaml}"
-    printf 'description: "%s"\n' "${desc_yaml}"
-    printf 'slug: "%s"\n' "${slug}"
-    printf 'section: "%s"\n' "${section}"
-    printf 'lang: "en"\n'
-    printf 'syncedAt: "%s"\n' "${TODAY}"
-    printf 'sourcePath: "docs/%s"\n' "${basename}"
-    printf -- '---\n\n'
-    strip_frontmatter "${src}"
-  } > "${dest}"
-
-  # Pin dest mtime to source mtime so subsequent runs see them as equal.
-  touch -r "${src}" "${dest}"
-
-  synced=$((synced + 1))
-done
-
-printf 'sync-docs: synced=%d unchanged=%d skipped=%d (source=%s)\n' \
-  "${synced}" "${unchanged}" "${skipped}" "${SOURCE_DIR}"
+if [[ "${mirror_current}" == "true" ]]; then
+  printf 'sync-docs: mirror current (%s files)\n' "$(find "${STAGE_DIR}" -type f -name '*.md' | wc -l | tr -d ' ')"
+fi
