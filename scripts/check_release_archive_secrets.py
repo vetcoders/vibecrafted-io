@@ -54,6 +54,18 @@ CONTENT_RULES: tuple[tuple[str, re.Pattern[bytes]], ...] = (
     ("private key block", re.compile(rb"-----BEGIN (?:[A-Z ]+ )?PRIVATE KEY-----")),
 )
 
+# Placeholders that appear inside the matched credential itself, e.g. the
+# upstream fixture `tskey-auth-FAKEFAKEFAKE` that proves the .env gate works.
+#
+# This deliberately keys on the matched token, not on the file path. A
+# "tests/ is exempt" rule would be a bypass: a real key pasted into a test
+# fixture is still a real key, and that is a plausible way to leak one.
+PLACEHOLDER_RE = re.compile(
+    rb"FAKE|EXAMPLE|PLACEHOLDER|REDACTED|DUMMY|SAMPLE|CHANGEME|YOUR[_-]?KEY|XXXX|"
+    rb"AAAAAAAA|0000000000|1234567890",
+    re.IGNORECASE,
+)
+
 
 class Finding:
     __slots__ = ("archive", "member", "rule")
@@ -93,7 +105,10 @@ def scan_archive(archive: Path) -> list[Finding]:
                 blob = handle.read(MEMBER_READ_LIMIT)
 
             for rule_name, pattern in CONTENT_RULES:
-                if pattern.search(blob):
+                if any(
+                    not PLACEHOLDER_RE.search(match.group(0))
+                    for match in pattern.finditer(blob)
+                ):
                     findings.append(
                         Finding(archive, name, f"live credential: {rule_name}")
                     )

@@ -432,10 +432,37 @@ BUNDLE_RELEASE_EXCLUDE_NAMES := \
 	'vibecrafted-signing.pub' \
 	channel
 
+# Top-level dot entries are keep-listed, not block-listed.
+#
+# Every payload leak this repo has had came from a blocklist that did not know
+# about a directory yet: `.env` in 2026-08-10, and on 2026-08-16 a 4.1.0 build
+# that carried 2.0 GB of `.loctree/` analysis cache (AICX-derived intent maps),
+# `.prview/`, and a `.antigravitycli/` symlink pointing into the operator's home
+# — in a payload whose actual product content is ~25 MB.
+#
+# A blocklist has to be updated every time somebody adopts a new tool. A
+# keep-list fails the other way: a new dot directory is excluded until someone
+# decides it belongs in the product. That is the direction the failure should
+# lean. These six are what the last clean published tarball (3.5.0) carried.
+BUNDLE_DOTENTRY_KEEP_NAMES := \
+	.dockerignore \
+	.github \
+	.gitignore \
+	.junie \
+	.loctignore \
+	.prettierignore
+
+# rsync applies the first matching rule, so the includes must precede the
+# anchored `/.*` exclude. The anchor keeps this to the transfer root; nested
+# dot directories stay covered by BUNDLE_JUNK_EXCLUDE_NAMES.
+BUNDLE_DOTENTRY_RULES := \
+	$(addprefix --include=/,$(BUNDLE_DOTENTRY_KEEP_NAMES)) \
+	--exclude='/.*'
+
 BUNDLE_EXCLUDE_NAMES := $(BUNDLE_JUNK_EXCLUDE_NAMES) $(BUNDLE_RELEASE_EXCLUDE_NAMES)
-BUNDLE_JUNK_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_JUNK_EXCLUDE_NAMES))
+BUNDLE_JUNK_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_JUNK_EXCLUDE_NAMES)) $(BUNDLE_DOTENTRY_RULES)
 BUNDLE_RELEASE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_RELEASE_EXCLUDE_NAMES))
-BUNDLE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_EXCLUDE_NAMES))
+BUNDLE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_EXCLUDE_NAMES)) $(BUNDLE_DOTENTRY_RULES)
 BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES := skills runtime
 BUNDLE_DIFF_EXCLUDES := $(addprefix -x ,$(BUNDLE_EXCLUDE_NAMES) $(BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES))
 
