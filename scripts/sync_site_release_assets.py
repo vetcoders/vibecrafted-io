@@ -146,8 +146,16 @@ def describe_platform_coverage(bundle_root: Path, archive_name: str) -> dict[str
     install builds its own foundations, which is slower, not broken.
     """
     vendor_root = bundle_root / "bin" / "vendor"
+    # A platform counts as vendored only if its directory actually holds a
+    # binary. An empty bin/vendor/<platform>/ is what a fully-skipped vendor
+    # pass leaves behind, and reporting that as vendored would be a lie the
+    # installer discovers only after download.
     available = (
-        {entry.name for entry in vendor_root.iterdir() if entry.is_dir()}
+        {
+            entry.name
+            for entry in vendor_root.iterdir()
+            if entry.is_dir() and any(child.is_file() for child in entry.iterdir())
+        }
         if vendor_root.is_dir()
         else set()
     )

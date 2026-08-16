@@ -65,10 +65,27 @@ FOUNDATION_VENDOR_SPECS := \
 	aicx:$(AICX_REPO):aicx \
 	aicx-mcp:$(AICX_REPO):aicx-mcp
 
+# Vendored foundation binaries are an install accelerator, never a requirement:
+# install.sh / install.ps1 build or fetch foundations when the bundle carries
+# none for the running host. So skipping is always safe, and shipping a binary
+# built from a moving source is not.
+#
+#   VENDOR_FOUNDATIONS=1     vendor from clean donors, skip dirty/missing ones
+#   VENDOR_FOUNDATIONS=0     ship an unvendored bundle
+#
+# Living Tree makes the dirty case ordinary, not exceptional — a sibling repo
+# usually has another agent's uncommitted work in it. A binary built from that
+# tree corresponds to no commit, so it cannot be attested by the release
+# receipt. Skip it and let channel/main.json report vendored_foundations:false.
+VENDOR_FOUNDATIONS ?= 1
+
 define VENDOR_FOUNDATION_BINARIES
 dest_root="$(1)"; \
 platform="$(HOST_VENDOR_PLATFORM)"; \
 vendor_dir="$$dest_root/bin/vendor/$$platform"; \
+if [ "$(VENDOR_FOUNDATIONS)" != "1" ]; then \
+	echo "[vendor] VENDOR_FOUNDATIONS=$(VENDOR_FOUNDATIONS); shipping an unvendored bundle"; \
+else \
 echo "Vendoring foundation binaries for $$platform -> $$vendor_dir"; \
 mkdir -p "$$vendor_dir"; \
 for spec in $(FOUNDATION_VENDOR_SPECS); do \
@@ -78,6 +95,11 @@ for spec in $(FOUNDATION_VENDOR_SPECS); do \
 	cargo_bin="$${rest##*:}"; \
 	if [ ! -d "$$repo" ]; then \
 		echo "[vendor] WARN: $$bin source repo missing: $$repo; skipping"; \
+		continue; \
+	fi; \
+	if git -C "$$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+	   && [ -n "$$(git -C "$$repo" status --porcelain --untracked-files=normal)" ]; then \
+		echo "[vendor] WARN: $$bin donor $$repo is dirty; a binary built there matches no commit — skipping"; \
 		continue; \
 	fi; \
 	src="$$repo/target/release/$$bin"; \
@@ -107,7 +129,9 @@ for bin in $(FOUNDATION_VENDOR_BINARIES); do \
 	if [ ! -x "$$vendor_dir/$$bin" ]; then \
 		echo "[vendor] WARN: staged $$bin absent from $$vendor_dir"; \
 	fi; \
-done
+done; \
+rmdir "$$vendor_dir" "$$dest_root/bin/vendor" 2>/dev/null || true; \
+fi
 endef
 
 .PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard release-archive-secret-gate site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
