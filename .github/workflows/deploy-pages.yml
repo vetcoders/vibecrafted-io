@@ -56,6 +56,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
+      # Fail before a single byte is staged for Pages. The 2026-08-10 tskey
+      # incident reached production through a committed tarball, so the gate
+      # has to run on what the repo carries, not on what a build would produce.
+      - name: Gate release archives for secrets
+        run: python3 scripts/check_release_archive_secrets.py
+
       - name: Install site dependencies
         working-directory: site
         run: pnpm install --frozen-lockfile

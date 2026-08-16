@@ -110,7 +110,7 @@ for bin in $(FOUNDATION_VENDOR_BINARIES); do \
 done
 endef
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard release-archive-secret-gate site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -305,11 +305,18 @@ init-hooks:
 # Site Management & Deployments
 # ============================================================================
 
+# Unconditional gate on the bytes this repo publishes. bundle-build already
+# refuses to *create* a leaking payload; this refuses to *ship* one, including
+# an archive that was committed before that gate existed or that a stale
+# framework/ re-synced into site/public. No bypass flag by design.
+release-archive-secret-gate:
+	@python3 scripts/check_release_archive_secrets.py
+
 site-dev:
 	@echo "Starting Astro dev server..."
 	@cd site && pnpm run dev --host
 
-site-build: site-release-assets-guard
+site-build: site-release-assets-guard release-archive-secret-gate
 	@echo "Installing site deps..."
 	@cd site && pnpm install --frozen-lockfile
 	@echo "Building static site..."
