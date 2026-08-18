@@ -7,12 +7,12 @@ export interface RevealOptions {
   visibleClass?: string;
 }
 
-const DEFAULTS: Required<Omit<RevealOptions, 'disabled'>> = {
+const DEFAULTS: Required<Omit<RevealOptions, "disabled">> = {
   delay: 0,
   once: true,
-  rootMargin: '0px 0px -8% 0px',
+  rootMargin: "0px 0px -8% 0px",
   threshold: 0.12,
-  visibleClass: 'visible',
+  visibleClass: "visible",
 };
 
 export function reveal(node: HTMLElement, options: RevealOptions = {}) {
@@ -22,13 +22,14 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
 
   function setVisible(visible: boolean) {
     node.classList.toggle(config.visibleClass, visible);
-    node.dataset.revealState = visible ? 'visible' : 'hidden';
+    node.classList.toggle("is-pending", !visible);
+    node.dataset.revealState = visible ? "visible" : "hidden";
   }
 
   function cleanup() {
     observer?.disconnect();
     observer = null;
-    motionQuery?.removeEventListener('change', restart);
+    motionQuery?.removeEventListener("change", restart);
     motionQuery = null;
   }
 
@@ -37,24 +38,26 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
 
     const shouldDisable =
       config.disabled ||
-      typeof window === 'undefined' ||
-      !('IntersectionObserver' in window);
+      typeof window === "undefined" ||
+      !("IntersectionObserver" in window);
 
     if (config.delay > 0) {
-      node.style.setProperty('--reveal-delay', `${config.delay}ms`);
+      node.style.setProperty("--reveal-delay", `${config.delay}ms`);
     } else {
-      node.style.removeProperty('--reveal-delay');
+      node.style.removeProperty("--reveal-delay");
     }
 
-    motionQuery = shouldDisable ? null : window.matchMedia('(prefers-reduced-motion: reduce)');
+    motionQuery = shouldDisable
+      ? null
+      : window.matchMedia("(prefers-reduced-motion: reduce)");
 
     if (shouldDisable || motionQuery?.matches) {
       setVisible(true);
       return;
     }
 
-    setVisible(false);
-
+    // Stay visible until the first IO tick. Hiding in CSS by default blanks
+    // print, readers, crawlers, and any viewport that never intersects.
     observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -64,7 +67,7 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
               observer?.disconnect();
               observer = null;
             }
-          } else if (!config.once) {
+          } else {
             setVisible(false);
           }
         }
@@ -72,11 +75,11 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
       {
         threshold: config.threshold,
         rootMargin: config.rootMargin,
-      }
+      },
     );
 
     observer.observe(node);
-    motionQuery?.addEventListener('change', restart);
+    motionQuery?.addEventListener("change", restart);
   }
 
   restart();
@@ -88,7 +91,8 @@ export function reveal(node: HTMLElement, options: RevealOptions = {}) {
     },
     destroy() {
       cleanup();
-      node.style.removeProperty('--reveal-delay');
+      node.style.removeProperty("--reveal-delay");
+      node.classList.remove("is-pending");
       delete node.dataset.revealState;
     },
   };

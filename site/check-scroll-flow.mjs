@@ -42,6 +42,56 @@ assert.match(
   /settled\.add\(best\.key\)/,
   'Section settle should be one-shot per frame, not a permanent scroll magnet.',
 );
+assert.doesNotMatch(
+  verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
+  /body\.v2-scope::before/,
+  'Page grain overlay must stay gone — consoles do not stamp scanlines.',
+);
+assert.doesNotMatch(
+  verticalScrollSurfaces['src/components/SectionShell.astro'],
+  /repeating-linear-gradient/,
+  'Section shell must not carry blueprint scanlines.',
+);
+assert.match(
+  verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
+  /@media print/i,
+  'LayoutV2 must hide decor and force reveal-visible in print.',
+);
+assert.match(
+  verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
+  /max-aspect-ratio:\s*1\/3/i,
+  'LayoutV2 must treat an extremely tall capture viewport as print.',
+);
+assert.match(
+  verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
+  /shouldSkipFade/,
+  'Scroll-fade runtime must refuse to dim content on print/capture viewports.',
+);
+assert.match(
+  verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'],
+  /data-decor/,
+  'Hero vignette must be marked decorative so print/capture can drop it.',
+);
+assert.doesNotMatch(
+  verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'],
+  /rgba\(\s*255\s*,\s*255\s*,\s*255/i,
+  'Hero vignette must not use opaque-failing white.',
+);
+assert.match(
+  read('src/components/Reveal.svelte'),
+  /data-reveal/,
+  'Reveal nodes must carry data-reveal for print/no-JS visibility.',
+);
+assert.match(
+  read('src/components/Reveal.svelte'),
+  /\.fade-up \{[\s\S]*opacity:\s*1/,
+  'Reveal must default visible; JS only adds the pending hide.',
+);
+assert.doesNotMatch(
+  read('src/components/Reveal.svelte'),
+  /\.fade-up \{\s*opacity:\s*0/,
+  'Reveal must not start at opacity 0.',
+);
 assert.match(
   verticalScrollSurfaces['src/styles/global.css'],
   /scroll-snap-type:\s*none/i,

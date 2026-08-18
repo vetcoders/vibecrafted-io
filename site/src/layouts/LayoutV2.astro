@@ -153,7 +153,7 @@ const jsonLd = JSON.stringify({
     <meta content={description} name="twitter:image:alt" />
     <meta content="@vetcoders" name="twitter:site" />
     <meta content="index,follow" name="robots" />
-    <meta content="#080807" name="theme-color" />
+    <meta content="#0a0a0b" name="theme-color" />
     <meta
       http-equiv="Content-Security-Policy"
       content={[
@@ -223,25 +223,34 @@ const jsonLd = JSON.stringify({
     ></script>
     <script is:inline>
       (() => {
+        document.documentElement.classList.add("js");
+      })();
+      (() => {
         if (window.__vcScrollFadeRuntime) return;
         window.__vcScrollFadeRuntime = true;
 
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         );
+        const captureViewport = window.matchMedia(
+          "print, (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce)",
+        );
         let targets = [];
         let ticking = false;
 
         const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+        const shouldSkipFade = () =>
+          reduceMotion.matches || captureViewport.matches;
+        const clearFade = (target) => {
+          target.style.removeProperty("--scroll-fade-opacity");
+          target.style.removeProperty("--scroll-fade-y");
+        };
 
         const sync = () => {
           ticking = false;
 
-          if (reduceMotion.matches) {
-            targets.forEach((target) => {
-              target.style.removeProperty("--scroll-fade-opacity");
-              target.style.removeProperty("--scroll-fade-y");
-            });
+          if (shouldSkipFade()) {
+            targets.forEach(clearFade);
             return;
           }
 
@@ -302,6 +311,7 @@ const jsonLd = JSON.stringify({
         window.addEventListener("scroll", schedule, { passive: true });
         window.addEventListener("resize", schedule, { passive: true });
         reduceMotion.addEventListener?.("change", schedule);
+        captureViewport.addEventListener?.("change", schedule);
 
         if (document.readyState === "loading") {
           document.addEventListener("DOMContentLoaded", boot, { once: true });
@@ -467,20 +477,14 @@ const jsonLd = JSON.stringify({
    * nav's semi-transparent background, and avoids any "white strip" between
    * nav and first section during view-transitions. */
   html:has(body.v2-scope) {
-    background: #080807;
+    background: #0a0a0b;
   }
 
   body.v2-scope {
     position: relative;
     margin: 0;
     padding: 0;
-    background:
-      radial-gradient(
-        circle at 50% 18%,
-        rgba(var(--v2-paper-rgb), 0.035),
-        transparent 34rem
-      ),
-      var(--v2-ink);
+    background: var(--v2-ink);
     color: var(--v2-fg-on-dark);
     font-family: var(--v2-font-body);
     font-size: 16px;
@@ -488,42 +492,6 @@ const jsonLd = JSON.stringify({
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-  }
-
-  body.v2-scope::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: 120;
-    pointer-events: none;
-    background:
-      radial-gradient(
-        circle at 14% 18%,
-        rgba(var(--v2-paper-rgb), 0.18) 0 0.8px,
-        transparent 1.35px
-      ),
-      radial-gradient(
-        circle at 78% 62%,
-        rgba(var(--v2-ink-rgb), 0.1) 0 0.75px,
-        transparent 1.4px
-      ),
-      repeating-linear-gradient(
-        0deg,
-        rgba(var(--v2-paper-rgb), 0.045) 0 1px,
-        transparent 1px 5px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        rgba(var(--v2-ink-rgb), 0.028) 0 1px,
-        transparent 1px 9px
-      );
-    background-size:
-      17px 17px,
-      23px 23px,
-      100% 100%,
-      100% 100%;
-    mix-blend-mode: soft-light;
-    opacity: 0.32;
   }
 
   /* Anchor links can glide, but vertical snap made the full-bleed views fight natural scrolling. */
@@ -575,13 +543,7 @@ const jsonLd = JSON.stringify({
    * view-transitions. */
   body.v2-scope .v2-main {
     display: block;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(var(--v2-paper-rgb), 0.035),
-        transparent 420px
-      ),
-      var(--v2-ink);
+    background: var(--v2-ink);
   }
   body.v2-scope .v2-main--subpage {
     padding-top: 72px;
@@ -607,20 +569,43 @@ const jsonLd = JSON.stringify({
     }
   }
 
-  body.v2-scope [data-scroll-fade] {
+  /* Visible without JS. The runtime only writes the fade variables. */
+  body.v2-scope [data-scroll-fade],
+  body.v2-scope [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  html.js body.v2-scope [data-scroll-fade] {
     opacity: var(--scroll-fade-opacity, 1);
     transform: translate3d(0, var(--scroll-fade-y, 0), 0);
     transition:
       opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
       transform 640ms cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    body.v2-scope [data-scroll-fade] {
-      opacity: 1;
-      transform: none;
-      transition: none;
+  @media print, (prefers-reduced-motion: reduce), (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce) {
+    body.v2-scope .hero::before,
+    body.v2-scope .hero__vignette,
+    body.v2-scope .v2-section::before,
+    body.v2-scope .v2-section::after,
+    body.v2-scope [data-decor] {
+      display: none !important;
+    }
+
+    body.v2-scope .hero,
+    body.v2-scope .v2-section {
+      height: auto !important;
+      min-height: 0 !important;
+    }
+
+    body.v2-scope [data-scroll-fade],
+    body.v2-scope [data-reveal],
+    html.js body.v2-scope [data-scroll-fade] {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
     }
   }
+
 </style>
