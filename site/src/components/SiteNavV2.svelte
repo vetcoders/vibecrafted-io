@@ -244,11 +244,11 @@
     padding: 14px 48px;
     gap: 24px;
     color: var(--fg-on-dark);
-    background: rgba(23, 22, 21, 0.9);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.11);
-    box-shadow: 0 12px 28px -28px rgba(0, 0, 0, 0.78);
+    background: rgba(10, 10, 11, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--v2-border, #27272a);
+    box-shadow: none;
   }
 
   /* ── Brand ───────────────────────────────────────────────── */
@@ -402,15 +402,15 @@
   .v2nav__install {
     appearance: none;
     background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
+    border: 1px solid var(--v2-border-strong, #3f3f46);
+    color: var(--fg-on-dark);
     padding: 8px 14px;
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: var(--v2-radius-sm, 8px);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -420,7 +420,7 @@
 
   .v2nav__install:hover,
   .v2nav__install:focus-visible {
-    background: rgba(var(--accent-rgb), 0.1);
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .v2nav__install-arrow {
@@ -439,11 +439,11 @@
     align-items: center;
     gap: 18px;
     padding: 14px 28px;
-    background: rgba(23, 22, 21, 0.94);
+    background: #121214;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--rule-dark);
-    border-radius: 2px;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-lg, 16px);
     opacity: 0;
     pointer-events: none;
     transition:

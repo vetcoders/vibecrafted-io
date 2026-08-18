@@ -67,17 +67,15 @@
   }
 
   .v2footer__inner {
-    border: 1px solid var(--rule-dark);
-    border-radius: 2px;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-lg, 16px);
     padding: 22px 28px 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     text-align: center;
-    background: rgba(14, 14, 12, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: #121214;
   }
 
   .v2footer__brand {
