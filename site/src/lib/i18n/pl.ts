@@ -1,6 +1,23 @@
 // Kanoniczne źródła publicznego copy są zmapowane w
 // docs/content-truth.manifest.json i opisane dla ludzi w
 // docs/runtime/CONTENT_TRUTH.md.
+import type { en } from "./en";
+
+// Deep shape of the EN dictionary with leaves widened to their primitive
+// types. `satisfies` against this makes `astro check` the parity gate:
+// a missing or extra PL key fails the build instead of returning
+// `undefined` at runtime. (Both dicts are `as const`, so `typeof en`
+// alone would demand identical literal strings — the widening is the point.)
+type CopyShape<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? readonly CopyShape<U>[]
+        : { [K in keyof T]: CopyShape<T[K]> };
+
 export const pl = {
   nav: {
     about: "O nas",
@@ -752,4 +769,4 @@ flowchart LR
       },
     },
   },
-} as const;
+} as const satisfies CopyShape<typeof en>;
