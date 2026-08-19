@@ -1,14 +1,41 @@
 ---
-import { getEntry, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import HeroSectionV2 from '../../components/sections/HeroSectionV2.svelte';
+import SectionProductSurface from '../../components/sections/SectionProductSurface.astro';
+import SectionProblem from '../../components/sections/SectionProblem.astro';
+import SectionShift from '../../components/sections/SectionShift.astro';
+import SectionFramework from '../../components/sections/SectionFramework.astro';
+import SectionOperator from '../../components/sections/SectionOperator.astro';
+import SectionInstallManifest from '../../components/sections/SectionInstallManifest.astro';
+import SectionQuickstart from '../../components/sections/SectionQuickstart.astro';
+import SectionReferences from '../../components/sections/SectionReferences.astro';
+import SectionEvidence from '../../components/sections/SectionEvidence.astro';
+import SectionCommercial from '../../components/sections/SectionCommercial.astro';
+import SectionEngineering from '../../components/sections/SectionEngineering.astro';
+import { getTranslations } from '../../lib/i18n';
 
-const entry = await getEntry('pages', 'en');
-if (!entry) {
-  throw new Error("Content entry not found: en");
-}
-const { Content } = await render(entry);
+const t = getTranslations('en');
+const page = t.v2Pages.landing;
+const hero = t.v2Hero;
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} lang="en">
-    <Content />
-</Layout>
+<LayoutV2
+  title={page.title}
+  description={page.description}
+  lang="en"
+  hasHero={true}
+  ogImage="/assets/product/02-start-here-map.png"
+>
+  <HeroSectionV2 client:load lang="en" hero={hero} />
+  <SectionProductSurface lang="en" />
+  <SectionInstallManifest lang="en" />
+  <SectionProblem lang="en" />
+  <SectionEngineering lang="en" />
+  <SectionShift lang="en" />
+  <SectionFramework lang="en" />
+  <SectionOperator lang="en" />
+  <SectionQuickstart lang="en" />
+  <SectionReferences lang="en" />
+  <SectionEvidence lang="en" />
+  <SectionCommercial lang="en" />
+</LayoutV2>

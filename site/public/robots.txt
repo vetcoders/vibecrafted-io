@@ -1,4 +1,39 @@
+# vibecrafted.io — orchestration method and runtime for CLI coding agents
+# Plan 18 (META_22): SEO + indexability + LLM-crawler explicit allow
+
 User-agent: *
+Allow: /
+Disallow: /_astro/
+Disallow: /draft/
+Disallow: /api/
+
+# LLM crawlers — we want discoverability for this product.
+# See /llms.txt for a dense factual index optimized for LLM ingestion.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Bytespider
 Allow: /
 
 Sitemap: https://vibecrafted.io/sitemap.xml

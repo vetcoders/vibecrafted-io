@@ -1,0 +1,35 @@
+{
+  "run_id": "just-235005-29284",
+  "prompt_id": "20260502_2350_perform-the-vc-justdo-skill-on-this-repository_20260502",
+  "agent": "codex",
+  "skill": "just",
+  "model": "unknown",
+  "status": "completed",
+  "repo": "/Users/polyversai/Libraxis/vc-runtime/vibecrafted-io",
+  "branch": "release/foundations-bundle-2026-05-02",
+  "implemented": [
+    "root and framework foundations release Makefile targets",
+    "foundation archive support in build_marketplace_bundle.py",
+    "release plugin MANIFEST.json generation",
+    "embedded install.sh",
+    "smoke-foundations verifier",
+    ".env.foundations.example",
+    "README release flow documentation",
+    "focused pytest coverage"
+  ],
+  "verification": {
+    "pytest_test_bundle": "passed",
+    "synthetic_foundations_pack_unsigned": "passed",
+    "synthetic_smoke_foundations": "passed",
+    "ruff": "passed",
+    "shellcheck_new_scripts": "passed",
+    "semgrep": "passed",
+    "make_check": "passed",
+    "make_test": "passed"
+  },
+  "known_boundaries": [
+    "live make foundations-build-unsigned is blocked until Phase A creates aicx release-bundle-only-binaries or dist/aicx-*-unsigned.tar.gz",
+    "signed foundations-release requires Apple notarization secrets and signed foundation artifacts"
+  ],
+  "commit_policy": "real diffs only; no push"
+}

@@ -1,13 +1,14 @@
 {
-  "updated_at": "2026-04-13",
+  "updated_at": "2026-08-13",
   "notes": [
     "This is a human-maintained truth map for public site surfaces.",
     "Statuses use: match, partial, contradiction, stale.",
-    "Canonical docs are the first stop; site copy should compress them, not fork them."
+    "Canonical docs are the first stop; site copy should compress them, not fork them.",
+    "Source paths point at the framework/ mirror (canonical runtime docs); consumers live under site/."
   ],
   "mappings": [
     {
-      "source": "docs/FOUNDATION.md",
+      "source": "framework/docs/FOUNDATION.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -30,7 +31,7 @@
       ]
     },
     {
-      "source": "docs/QUICK_START.md",
+      "source": "framework/docs/QUICK_START.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -53,7 +54,7 @@
       ]
     },
     {
-      "source": "docs/FAQ-ANSWERED.md",
+      "source": "framework/docs/FAQ-ANSWERED.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -70,7 +71,7 @@
       ]
     },
     {
-      "source": "docs/runtime/README.md",
+      "source": "framework/docs/runtime/README.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -87,7 +88,7 @@
       ]
     },
     {
-      "source": "docs/runtime/MANIFESTO_EN.md",
+      "source": "framework/docs/runtime/MANIFESTO_EN.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -98,7 +99,7 @@
       ]
     },
     {
-      "source": "docs/runtime/MANIFESTO_PL.md",
+      "source": "framework/docs/runtime/MANIFESTO_PL.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/pl.ts",
@@ -109,7 +110,7 @@
       ]
     },
     {
-      "source": "docs/runtime/CONTRACT.md",
+      "source": "framework/docs/runtime/CONTRACT.md",
       "consumers": [
         {
           "file": "site/src/lib/i18n/en.ts",
@@ -128,6 +129,46 @@
           "surface": "phase command examples",
           "status": "partial",
           "notes": "The playground uses public command-deck examples instead of whimsical prompt strings."
+        }
+      ]
+    },
+    {
+      "source": "vetcoders/vibecrafted:vibecrafted-server/README.md",
+      "consumers": [
+        {
+          "file": "site/src/content/i18n/en/install-manifest-v2.md",
+          "surface": "components.vc-server",
+          "status": "match",
+          "notes": "Read-only Leptos SSR + axum projection of ~/.vibecrafted/control_plane; binary vc-server via make install-server."
+        },
+        {
+          "file": "site/src/content/i18n/pl/install-manifest-v2.md",
+          "surface": "components.vc-server",
+          "status": "match",
+          "notes": "Polski bliźniak opisu vc-server."
+        },
+        {
+          "file": "site/src/content/i18n/en/product-surface-v2.md",
+          "surface": "shots.control-plane",
+          "status": "match",
+          "notes": "Real control-plane screenshot (03-server-control-plane.png), UI vocabulary from the live overview page."
+        }
+      ]
+    },
+    {
+      "source": "vetcoders/vc-slack:README.md",
+      "consumers": [
+        {
+          "file": "site/src/content/i18n/en/install-manifest-v2.md",
+          "surface": "components.vc-slack",
+          "status": "match",
+          "notes": "Universal Slack connector with agency: OAuth install, MCP tool surface, CLI, bounded multi-agent threads, operator-controlled scopes."
+        },
+        {
+          "file": "site/src/content/i18n/pl/install-manifest-v2.md",
+          "surface": "components.vc-slack",
+          "status": "match",
+          "notes": "Polski bliźniak opisu vc-slack."
         }
       ]
     }

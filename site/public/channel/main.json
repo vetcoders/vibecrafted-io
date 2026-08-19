@@ -1,8 +1,30 @@
 {
   "channel": "main",
-  "version": "1.3.0",
-  "archive_url": "https://vibecrafted.io/vibecrafted-v1.3.0.tar.gz",
-  "signature_url": "https://vibecrafted.io/vibecrafted-v1.3.0.tar.gz.sig",
+  "version": "4.1.0",
+  "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+  "signature_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
-  "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub"
+  "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
+  "platforms": {
+    "macos-arm64": {
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "vendored_foundations": false
+    },
+    "macos-x64": {
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "vendored_foundations": false
+    },
+    "linux-x64": {
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "vendored_foundations": false
+    },
+    "linux-arm64": {
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "vendored_foundations": false
+    },
+    "windows-x64": {
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "vendored_foundations": false
+    }
+  }
 }

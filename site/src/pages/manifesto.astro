@@ -1,0 +1,582 @@
+---
+/**
+ * manifesto.astro — unified bilingual manifesto route at `/manifesto/`.
+ *
+ * Plan 14 (META_22 io-side mirror). Renders the canonical EN "Vibe Hangover"
+ * manifesto + a curated PL stub. Both languages are rendered server-side
+ * into one static HTML page; the active language is selected by the
+ * `?lang=en|pl` query param via a tiny inline script + CSS toggle (same
+ * pattern as 404.astro). This keeps a single canonical URL indexable while
+ * supporting deep-links to either language.
+ *
+ * Anti-aesthetic gates honored per loctree-com BRAND.md doctrine:
+ *   - no pure #000 (uses --v2-ink → #080807)
+ *   - no gradient ornaments on text or hero
+ *   - no animated entrance / scroll-jack on this route
+ *   - no email gate, popup, or scroll-hijack on CTAs
+ */
+import LayoutV2 from '../layouts/LayoutV2.astro';
+import CopyButton from '../components/CopyButton.svelte';
+import { getManifestoContent } from '../lib/i18n/manifesto';
+
+const { Content: ContentEn, frontmatter: frontmatterEn } = await getManifestoContent('en');
+const { Content: ContentPl, frontmatter: frontmatterPl } = await getManifestoContent('pl');
+
+const installCommand = 'curl -fsSL https://vibecrafted.io/install.sh | bash';
+
+const labels = {
+  en: {
+    eyebrow: 'MANIFESTO',
+    fig: 'FIG. 14 · DWG VC-014',
+    homeHref: '/',
+    homeLabel: 'BACK TO MAIN',
+    toggle: 'Czytaj po polsku',
+    installLead: 'Install the framework',
+    installCopy: 'Copy',
+    installCopied: 'Copied',
+    installDocs: 'Or follow the guided installer',
+    docsHref: '/en/install/',
+    bottomLead: 'Ready to start the stabilization sprint?',
+    bottomCopy: 'Copy install command',
+    bottomCopied: 'Copied',
+    stubHint: '',
+  },
+  pl: {
+    eyebrow: 'MANIFEST',
+    fig: 'FIG. 14 · DWG VC-014',
+    homeHref: '/pl/',
+    homeLabel: 'WRÓĆ DO STRONY GŁÓWNEJ',
+    toggle: 'Read in English',
+    installLead: 'Zainstaluj framework',
+    installCopy: 'Kopiuj',
+    installCopied: 'Skopiowano',
+    installDocs: 'Albo przejdź instalatorem',
+    docsHref: '/pl/install/',
+    bottomLead: 'Gotowy zacząć stabilization sprint?',
+    bottomCopy: 'Kopiuj komendę instalacji',
+    bottomCopied: 'Skopiowano',
+    stubHint:
+      'Ten widok jest tymczasowym streszczeniem PL. Pełny manifest po polsku trafi tu po human-curated przekładzie.',
+  },
+} as const;
+
+// Page meta uses EN as the canonical default; the visible language is
+// swapped client-side by the query toggle. PL crawlers reach `?lang=pl`
+// via the toggle anchor and see the PL panel rendered.
+// <title> must carry the searchable ASCII brand; the styled glyph brand
+// (𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.) stays in the visible article heading only.
+const pageTitle = frontmatterEn.title.replace(/𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍\./gu, 'Vibecrafted');
+const pageDescription = frontmatterEn.description;
+const isPlStub = frontmatterPl.status === 'en-only-for-v1';
+---
+
+<LayoutV2
+  title={pageTitle}
+  description={pageDescription}
+  lang="en"
+  hasHero={false}
+  ogImage="/og/manifesto-en.png"
+>
+  <article class="manifesto" data-manifesto-root>
+    <div class="manifesto__inner">
+      <!-- ── EN panel ──────────────────────────────────────── -->
+      <div class="manifesto__panel" data-lang-panel="en">
+        <header class="manifesto__header">
+          <div class="manifesto__eyebrow-row">
+            <span class="manifesto__eyebrow">{labels.en.eyebrow}</span>
+            <div class="manifesto__top-actions">
+              <a class="manifesto__home" href={labels.en.homeHref}>
+                <span aria-hidden="true">←</span>
+                {labels.en.homeLabel}
+              </a>
+              <a
+                class="manifesto__lang-toggle"
+                href="/manifesto/?lang=pl"
+                rel="alternate"
+                hreflang="pl"
+                data-lang-switch="pl"
+              >
+                {labels.en.toggle}
+              </a>
+              <span class="manifesto__fig">{labels.en.fig}</span>
+            </div>
+          </div>
+          <div class="manifesto__rule" aria-hidden="true"></div>
+        </header>
+
+        <section class="manifesto__cta manifesto__cta--top" aria-label={labels.en.installLead}>
+          <p class="manifesto__cta-lead">{labels.en.installLead}</p>
+          <div class="manifesto__cta-row">
+            <code class="manifesto__cta-code">
+              <span class="manifesto__cta-prompt" aria-hidden="true">$</span>
+              {installCommand}
+            </code>
+            <CopyButton
+              client:load
+              textToCopy={installCommand}
+              class="manifesto__cta-copy"
+              defaultLabel={labels.en.installCopy}
+              copiedLabel={labels.en.installCopied}
+            />
+          </div>
+          <a class="manifesto__cta-docs" href={labels.en.docsHref}>
+            {labels.en.installDocs} <span aria-hidden="true">→</span>
+          </a>
+        </section>
+
+        <div class="manifesto__prose">
+          <ContentEn />
+        </div>
+
+        <section class="manifesto__cta manifesto__cta--bottom" aria-label={labels.en.bottomLead}>
+          <p class="manifesto__cta-lead">{labels.en.bottomLead}</p>
+          <div class="manifesto__cta-row">
+            <code class="manifesto__cta-code">
+              <span class="manifesto__cta-prompt" aria-hidden="true">$</span>
+              {installCommand}
+            </code>
+            <CopyButton
+              client:load
+              textToCopy={installCommand}
+              class="manifesto__cta-copy"
+              defaultLabel={labels.en.bottomCopy}
+              copiedLabel={labels.en.bottomCopied}
+            />
+          </div>
+          <a class="manifesto__cta-docs" href={labels.en.docsHref}>
+            {labels.en.installDocs} <span aria-hidden="true">→</span>
+          </a>
+        </section>
+      </div>
+
+      <!-- ── PL panel ──────────────────────────────────────── -->
+      <div class="manifesto__panel" data-lang-panel="pl" hidden>
+        <header class="manifesto__header">
+          <div class="manifesto__eyebrow-row">
+            <span class="manifesto__eyebrow">{labels.pl.eyebrow}</span>
+            <div class="manifesto__top-actions">
+              <a class="manifesto__home" href={labels.pl.homeHref}>
+                <span aria-hidden="true">←</span>
+                {labels.pl.homeLabel}
+              </a>
+              <a
+                class="manifesto__lang-toggle"
+                href="/manifesto/"
+                rel="alternate"
+                hreflang="en"
+                data-lang-switch="en"
+              >
+                {labels.pl.toggle}
+              </a>
+              <span class="manifesto__fig">{labels.pl.fig}</span>
+            </div>
+          </div>
+          <div class="manifesto__rule" aria-hidden="true"></div>
+        </header>
+
+        <section class="manifesto__cta manifesto__cta--top" aria-label={labels.pl.installLead}>
+          <p class="manifesto__cta-lead">{labels.pl.installLead}</p>
+          <div class="manifesto__cta-row">
+            <code class="manifesto__cta-code">
+              <span class="manifesto__cta-prompt" aria-hidden="true">$</span>
+              {installCommand}
+            </code>
+            <CopyButton
+              client:load
+              textToCopy={installCommand}
+              class="manifesto__cta-copy"
+              defaultLabel={labels.pl.installCopy}
+              copiedLabel={labels.pl.installCopied}
+            />
+          </div>
+          <a class="manifesto__cta-docs" href={labels.pl.docsHref}>
+            {labels.pl.installDocs} <span aria-hidden="true">→</span>
+          </a>
+        </section>
+
+        {isPlStub && (
+          <p class="manifesto__stub-hint" role="note">{labels.pl.stubHint}</p>
+        )}
+
+        <div class="manifesto__prose">
+          <ContentPl />
+        </div>
+
+        <section class="manifesto__cta manifesto__cta--bottom" aria-label={labels.pl.bottomLead}>
+          <p class="manifesto__cta-lead">{labels.pl.bottomLead}</p>
+          <div class="manifesto__cta-row">
+            <code class="manifesto__cta-code">
+              <span class="manifesto__cta-prompt" aria-hidden="true">$</span>
+              {installCommand}
+            </code>
+            <CopyButton
+              client:load
+              textToCopy={installCommand}
+              class="manifesto__cta-copy"
+              defaultLabel={labels.pl.bottomCopy}
+              copiedLabel={labels.pl.bottomCopied}
+            />
+          </div>
+          <a class="manifesto__cta-docs" href={labels.pl.docsHref}>
+            {labels.pl.installDocs} <span aria-hidden="true">→</span>
+          </a>
+        </section>
+      </div>
+    </div>
+  </article>
+</LayoutV2>
+
+<script is:inline>
+  // Server-side renders both EN and PL panels; this picks the active one from
+  // ?lang= and swaps without a hard reload. Preserves scroll position when
+  // the user toggles. Falls back to EN if param is missing/unknown.
+  (function () {
+    const apply = () => {
+      const root = document.querySelector('[data-manifesto-root]');
+      if (!root) return;
+
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get('lang');
+      const lang = requested === 'pl' ? 'pl' : 'en';
+
+      root.querySelectorAll('[data-lang-panel]').forEach((panel) => {
+        const isMatch = panel.getAttribute('data-lang-panel') === lang;
+        if (isMatch) {
+          panel.removeAttribute('hidden');
+        } else {
+          panel.setAttribute('hidden', '');
+        }
+      });
+
+      document.documentElement.setAttribute('lang', lang);
+    };
+
+    const intercept = (event) => {
+      const anchor = event.target instanceof Element ? event.target.closest('[data-lang-switch]') : null;
+      if (!anchor) return;
+      const target = anchor.getAttribute('data-lang-switch');
+      if (!target) return;
+      event.preventDefault();
+      const url = new URL(window.location.href);
+      if (target === 'en') {
+        url.searchParams.delete('lang');
+      } else {
+        url.searchParams.set('lang', target);
+      }
+      window.history.pushState({}, '', url);
+      apply();
+    };
+
+    document.addEventListener('astro:page-load', apply);
+    document.addEventListener('click', intercept);
+    window.addEventListener('popstate', apply);
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', apply, { once: true });
+    } else {
+      apply();
+    }
+  })();
+</script>
+
+<style>
+  .manifesto {
+    width: 100%;
+    background: var(--ink);
+    color: var(--fg-on-dark);
+    padding: 96px 0 128px;
+  }
+
+  .manifesto__inner {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+
+  .manifesto__eyebrow-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 24px;
+    padding-bottom: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .manifesto__rule {
+    height: 1px;
+    background: var(--rule-dark);
+    margin-bottom: 40px;
+  }
+
+  .manifesto__top-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  .manifesto__home,
+  .manifesto__lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fg-on-dark);
+    text-decoration: none;
+    opacity: 0.82;
+    transition:
+      color 0.15s ease,
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .manifesto__home:hover,
+  .manifesto__home:focus-visible,
+  .manifesto__lang-toggle:hover,
+  .manifesto__lang-toggle:focus-visible {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .manifesto__lang-toggle {
+    padding: 6px 10px;
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+  }
+
+  /* ── Install CTA ────────────────────────────────────────── */
+
+  .manifesto__cta {
+    margin: 0 0 56px;
+    padding: 24px 26px;
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+    background: rgba(14, 14, 12, 0.5);
+  }
+
+  .manifesto__cta--bottom {
+    margin: 72px 0 0;
+  }
+
+  .manifesto__cta-lead {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--fg-on-dark);
+    margin: 0 0 14px;
+  }
+
+  .manifesto__cta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  .manifesto__cta-code {
+    flex: 1 1 320px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid var(--rule-dark-soft);
+    border-radius: 2px;
+    background: rgba(8, 8, 7, 0.6);
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .manifesto__cta-prompt {
+    color: var(--accent);
+    user-select: none;
+  }
+
+  /* CopyButton (Svelte) gets these via the `class` prop */
+  :global(.manifesto__cta-copy) {
+    flex: 0 0 auto;
+    padding: 9px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  :global(.manifesto__cta-copy:hover),
+  :global(.manifesto__cta-copy:focus-visible) {
+    background: rgba(var(--accent-rgb), 0.08);
+  }
+
+  :global(.manifesto__cta-copy.is-copied) {
+    color: var(--accent-2);
+    border-color: var(--accent-2);
+  }
+
+  .manifesto__cta-docs {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-dim);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .manifesto__cta-docs:hover,
+  .manifesto__cta-docs:focus-visible {
+    color: var(--accent);
+  }
+
+  /* ── Stub hint (PL v1) ─────────────────────────────────── */
+
+  .manifesto__stub-hint {
+    margin: 0 0 40px;
+    padding: 14px 18px;
+    border-left: 2px solid var(--accent);
+    background: rgba(var(--accent-rgb), 0.04);
+    color: var(--fg-on-dark-dim);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* ── Long-form prose ───────────────────────────────────── */
+
+  .manifesto__prose {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--fg-on-dark);
+  }
+
+  .manifesto__prose :global(h1) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    color: var(--fg-on-dark);
+    margin: 0 0 40px;
+  }
+
+  .manifesto__prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.2;
+    color: var(--fg-on-dark);
+    margin: 56px 0 18px;
+  }
+
+  .manifesto__prose :global(h3) {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 20px;
+    color: var(--fg-on-dark);
+    margin: 36px 0 12px;
+  }
+
+  .manifesto__prose :global(p) {
+    margin: 0 0 22px;
+    color: var(--fg-on-dark);
+    max-width: 64ch;
+  }
+
+  .manifesto__prose :global(p em) {
+    color: var(--fg-on-dark-dim);
+    font-style: italic;
+  }
+
+  .manifesto__prose :global(p strong) {
+    color: var(--fg-on-dark);
+    font-weight: 600;
+  }
+
+  .manifesto__prose :global(p code),
+  .manifesto__prose :global(li code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    background: rgba(var(--accent-rgb), 0.10);
+    color: var(--fg-on-dark);
+  }
+
+  .manifesto__prose :global(hr) {
+    border: 0;
+    height: 1px;
+    background: var(--rule-dark);
+    margin: 48px 0;
+  }
+
+  .manifesto__prose :global(ul),
+  .manifesto__prose :global(ol) {
+    margin: 0 0 22px;
+    padding-left: 20px;
+    color: var(--fg-on-dark);
+  }
+
+  .manifesto__prose :global(li) {
+    margin-bottom: 8px;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+
+  @media (max-width: 720px) {
+    .manifesto {
+      padding: 64px 0 88px;
+    }
+
+    .manifesto__inner {
+      padding: 0 20px;
+    }
+
+    .manifesto__eyebrow-row {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .manifesto__top-actions {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+
+    .manifesto__cta-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .manifesto__cta-code {
+      flex: 1 1 auto;
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    .manifesto__prose {
+      font-size: 16px;
+    }
+  }
+</style>

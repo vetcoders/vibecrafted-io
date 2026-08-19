@@ -1,0 +1,311 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import PipelineHero from '../PipelineHero.svelte';
+import { getTranslations, type Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+// PipelineHero source-of-truth still lives in V1 sections.pipeline (TS dict)
+// — Framework V2 markdown carries only landing chrome + operator matrix.
+const dict = getTranslations(lang);
+const pipeline = dict.sections.pipeline;
+
+type FrameworkOperator = { num: string; name: string; kind: string };
+type FrameworkData = {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+  operatorsHeadingHtml: string;
+  operatorsSub: string;
+  cta: string;
+  operators: FrameworkOperator[];
+};
+
+const frameworkEntry = await getEntry('i18n', `${lang}/framework-v2`);
+if (!frameworkEntry) throw new Error(`Missing i18n entry: ${lang}/framework-v2`);
+const section = frameworkEntry.data as FrameworkData;
+
+const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
+const nextTitle = operatorEntry.data.title as string;
+
+const playgroundHref = `/${lang}/framework/`;
+---
+
+<SectionShell
+  number="04"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="04 · DWG VC-004"
+  surface="ink"
+  seam="soft"
+  id="framework"
+>
+  <div class="framework">
+    <h2 class="framework__intro-heading">
+      <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+    <p class="framework__subtitle">{section.subtitle}</p>
+
+    <div class="framework__pipeline">
+      <PipelineHero
+        client:visible
+        stages={pipeline.hero.stages}
+        source={pipeline.mermaidFull}
+        modalLabels={pipeline.mermaidModal}
+        controls={pipeline.controls}
+      />
+    </div>
+
+    <h3 class="framework__operators-heading">
+      <Fragment set:html={section.operatorsHeadingHtml} />
+      <span class="brand-dot">.</span>
+    </h3>
+    <p class="framework__operators-sub">{section.operatorsSub}</p>
+
+    <div class="framework__operators-grid">
+      {section.operators.map((operator) => (
+        <a
+          class="framework__op-card"
+          href={playgroundHref}
+          aria-label={`${operator.name} — ${section.cta}`}
+        >
+          <span class="framework__op-num">OP · {operator.num}</span>
+          <span class="framework__op-name">{operator.name}</span>
+          <span class="framework__op-kind">· {operator.kind}</span>
+        </a>
+      ))}
+    </div>
+
+    <a class="framework__cta" href={playgroundHref}>
+      <span class="framework__cta-label">
+        {section.cta}
+      </span>
+      <span class="framework__cta-arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+
+  <SectionFooter nextNumber="05" nextTitle={nextTitle} surface="ink" lang={lang} />
+</SectionShell>
+
+<style>
+  .framework__intro-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 18px;
+  }
+
+  .framework__intro-heading em.accent-2 {
+    font-style: italic;
+    color: var(--accent-2);
+  }
+
+  .framework__subtitle {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-dark-dim);
+    max-width: 60ch;
+    margin: 0 0 56px;
+  }
+
+  /*
+   * Pipeline hero shell — V2 re-skin via inheritable custom properties.
+   * PipelineHero.svelte reads each var() with a classic fallback chain, so
+   * defining them on this ancestor element propagates the V2 palette
+   * (rust accent, Instrument Serif, hairline rules, 2px radius) to every
+   * sub-element including the Expand modal.
+   */
+  .framework__pipeline {
+    margin: 0 0 96px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule-dark-soft);
+
+    --ph-stage-bg: transparent;
+    --ph-stage-bg-overlay: linear-gradient(180deg, rgba(245, 244, 239, 0.025) 0%, transparent 70%);
+    --ph-stage-border: var(--rule-dark);
+    --ph-stage-radius: 2px;
+
+    --ph-name-color: var(--fg-on-dark);
+    --ph-name-font: var(--font-display);
+    --ph-name-weight: 400;
+    --ph-subtitle-color: var(--fg-on-dark-dim);
+    --ph-subtitle-font: var(--font-mono);
+    --ph-index-color: var(--fg-on-dark-mute);
+    --ph-index-font: var(--font-mono);
+
+    --ph-connector-line: var(--rule-dark);
+    --ph-connector-arrow: var(--fg-on-dark-mute);
+
+    --ph-core-accent: var(--accent);
+    --ph-core-accent-bright: var(--accent);
+    --ph-core-border: rgba(var(--accent-rgb), 0.55);
+    --ph-core-inset: rgba(var(--accent-rgb), 0.32);
+    --ph-core-glow: rgba(var(--accent-rgb), 0.18);
+    --ph-core-bg-radial: rgba(var(--accent-rgb), 0.16);
+    --ph-core-name-color: var(--accent);
+    --ph-core-subtitle-color: rgba(var(--accent-rgb), 0.88);
+    --ph-core-shadow: rgba(0, 0, 0, 0.5);
+
+    --ph-btn-bg: transparent;
+    --ph-btn-border: var(--rule-dark);
+    --ph-btn-color: var(--fg-on-dark-dim);
+    --ph-btn-hover-color: var(--fg-on-dark);
+    --ph-btn-hover-border: var(--fg-on-dark-mute);
+    --ph-btn-accent-color: var(--accent);
+    --ph-btn-accent-bright: var(--accent);
+    --ph-btn-accent-bg: rgba(var(--accent-rgb), 0.08);
+    --ph-btn-accent-bg-hover: rgba(var(--accent-rgb), 0.14);
+    --ph-btn-accent-border: rgba(var(--accent-rgb), 0.4);
+    --ph-btn-radius: 2px;
+
+    --ph-source-bg: rgba(245, 244, 239, 0.03);
+    --ph-source-border: var(--rule-dark);
+    --ph-source-color: var(--fg-on-dark);
+    --ph-source-font: var(--font-mono);
+    --ph-source-radius: 2px;
+
+    --ph-tech-bg: rgba(245, 244, 239, 0.03);
+    --ph-tech-border: var(--rule-dark);
+    --ph-tech-color: var(--fg-on-dark);
+
+    --ph-modal-backdrop: rgba(14, 14, 12, 0.85);
+    --ph-modal-panel-bg: var(--ink);
+    --ph-modal-panel-border: var(--rule-dark);
+    --ph-modal-panel-radius: 2px;
+    --ph-modal-title-color: var(--fg-on-dark);
+    --ph-modal-close-bg: transparent;
+    --ph-modal-close-color: var(--fg-on-dark-dim);
+    --ph-modal-close-hover-bg: rgba(var(--accent-rgb), 0.12);
+
+    --ph-mmd-error-color: var(--accent);
+  }
+
+  .framework__operators-heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(26px, 2.8vw, 40px);
+    color: var(--fg-on-dark);
+    margin: 0 0 12px;
+  }
+
+  .framework__operators-heading em {
+    font-style: italic;
+  }
+
+  .framework__operators-sub {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--fg-on-dark-dim);
+    max-width: 52ch;
+    margin: 0 0 40px;
+  }
+
+  .framework__operators-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+  }
+
+  .framework__op-card {
+    border: 1px solid var(--rule-dark-soft);
+    padding: 18px 16px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      border-color 180ms ease,
+      background 180ms ease,
+      transform 180ms ease;
+  }
+
+  .framework__op-card:hover,
+  .framework__op-card:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.62);
+    background: rgba(var(--accent-rgb), 0.055);
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  .framework__op-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .framework__op-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-on-dark);
+  }
+
+  .framework__op-kind {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  @media (max-width: 900px) {
+    .framework__operators-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .framework__operators-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .framework__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 56px;
+    padding: 14px 22px;
+    border: 1px solid var(--rule-dark);
+    background: transparent;
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .framework__cta-arrow {
+    color: var(--accent);
+    transition: transform 220ms ease;
+  }
+
+  .framework__cta:hover,
+  .framework__cta:focus-visible {
+    border-color: var(--accent);
+    color: var(--accent);
+    outline: none;
+  }
+
+  .framework__cta:hover .framework__cta-arrow,
+  .framework__cta:focus-visible .framework__cta-arrow {
+    transform: translateX(4px);
+  }
+</style>

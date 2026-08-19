@@ -1,0 +1,25 @@
+[Unit]
+Description=Vibecrafted contact mailer (same-origin /api/contact → Resend)
+Documentation=https://github.com/vetcoders/vibecrafted-io
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Adjust to where you copied server.mjs + the env file:
+EnvironmentFile=/etc/vibecrafted/contact.env
+ExecStart=/usr/bin/node /opt/vibecrafted-contact/server.mjs
+Restart=on-failure
+RestartSec=3
+User=libraxis
+
+# Hardening — the service only needs loopback + outbound HTTPS to Resend.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+PrivateDevices=true
+RestrictAddressFamilies=AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

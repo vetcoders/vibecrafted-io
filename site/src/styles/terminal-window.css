@@ -1,0 +1,104 @@
+/**
+ * Realistic macOS-style window chrome for real product captures.
+ * Shared by hero + product surface gallery.
+ */
+.vc-termwin {
+  --vc-termwin-bar: #2a2d33;
+  --vc-termwin-bar-border: rgba(255, 255, 255, 0.08);
+  --vc-termwin-body: #0c0e12;
+  --vc-termwin-title: rgba(245, 244, 239, 0.72);
+  --vc-termwin-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--vc-termwin-body);
+  box-shadow: var(--vc-termwin-shadow);
+  border: 1px solid rgba(245, 244, 239, 0.1);
+}
+
+.vc-termwin__titlebar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 36px;
+  padding: 0 12px;
+  background: linear-gradient(180deg, #353841 0%, var(--vc-termwin-bar) 100%);
+  border-bottom: 1px solid var(--vc-termwin-bar-border);
+  user-select: none;
+}
+
+.vc-termwin__lights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.vc-termwin__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.25);
+}
+
+.vc-termwin__dot--close {
+  background: #ff5f57;
+}
+
+.vc-termwin__dot--min {
+  background: #febc2e;
+}
+
+.vc-termwin__dot--max {
+  background: #28c840;
+}
+
+.vc-termwin__title {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--vc-termwin-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 52px; /* balance traffic lights */
+}
+
+.vc-termwin__body {
+  position: relative;
+  background: var(--vc-termwin-body);
+  line-height: 0;
+}
+
+.vc-termwin__body img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.vc-termwin--hero {
+  border-radius: 11px;
+}
+
+.vc-termwin--hero .vc-termwin__titlebar {
+  height: 38px;
+}
+
+.vc-termwin--compact .vc-termwin__titlebar {
+  height: 32px;
+}
+
+.vc-termwin--compact .vc-termwin__dot {
+  width: 10px;
+  height: 10px;
+}
+
+.vc-termwin--compact .vc-termwin__title {
+  font-size: 10px;
+  padding-right: 48px;
+}

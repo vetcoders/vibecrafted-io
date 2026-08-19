@@ -1,0 +1,407 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+const entry = await getEntry('i18n', `${lang}/commercial-v2`);
+if (!entry) throw new Error(`Missing i18n entry: ${lang}/commercial-v2`);
+
+type Plan = {
+  id: string;
+  name: string;
+  price: string;
+  period: string;
+  desc: string;
+  cta: string;
+  href: string;
+  highlight: boolean;
+  features: string[];
+};
+
+type GateItem = { d: string; t: string; b: string };
+
+const section = entry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+  icpStrip: string;
+  limitsLabel: string;
+  limitsLead: string;
+  limits: string[];
+  plansLabel: string;
+  plans: Plan[];
+  gateLabel: string;
+  gateTitle: string;
+  gateLead: string;
+  gateCta: string;
+  gateCtaHref: string;
+  gateItems: GateItem[];
+};
+
+const nextTitle = 'FAQ';
+---
+
+<SectionShell
+  number="09"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="09 · DWG VC-009"
+  surface="ink"
+  seam="to-ink"
+  id="commercial"
+>
+  <div class="cm">
+    <p class="cm__icp">{section.icpStrip}</p>
+    <h2 class="cm__heading">
+      <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+    <p class="cm__subtitle">{section.subtitle}</p>
+
+    <div class="cm__limits" id="limits">
+      <div class="cm__limits-head">
+        <span class="cm__kicker">{section.limitsLabel}</span>
+        <p class="cm__limits-lead">{section.limitsLead}</p>
+      </div>
+      <ul class="cm__limits-list">
+        {section.limits.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="cm__plans" id="pricing" aria-label={section.plansLabel}>
+      {section.plans.map((plan) => (
+        <article class:list={['cm__plan', plan.highlight && 'cm__plan--hot']}>
+          {plan.highlight && (
+            <span class="cm__plan-badge">{lang === 'pl' ? 'Spear-tip' : 'Spear-tip'}</span>
+          )}
+          <header class="cm__plan-head">
+            <h3 class="cm__plan-name">{plan.name}</h3>
+            <div class="cm__plan-price">
+              <span class="cm__plan-amount">{plan.price}</span>
+              {plan.period && <span class="cm__plan-period">{plan.period}</span>}
+            </div>
+            <p class="cm__plan-desc">{plan.desc}</p>
+          </header>
+          <ul class="cm__plan-features">
+            {plan.features.map((f) => (
+              <li>{f}</li>
+            ))}
+          </ul>
+          <a
+            class:list={['cm__plan-cta', plan.highlight && 'cm__plan-cta--solid']}
+            href={plan.href}
+            rel={plan.href.startsWith('http') || plan.href.startsWith('mailto:') ? 'noopener noreferrer' : undefined}
+          >
+            {plan.cta}
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="cm__gate" id="gate">
+      <div class="cm__gate-copy">
+        <span class="cm__kicker">{section.gateLabel}</span>
+        <h3 class="cm__gate-title">{section.gateTitle}</h3>
+        <p class="cm__gate-lead">{section.gateLead}</p>
+        <a class="cm__plan-cta cm__plan-cta--solid" href={section.gateCtaHref}>{section.gateCta}</a>
+      </div>
+      <ol class="cm__gate-list">
+        {section.gateItems.map((item) => (
+          <li class="cm__gate-item">
+            <span class="cm__gate-d">{item.d}</span>
+            <div>
+              <strong class="cm__gate-t">{item.t}</strong>
+              <p class="cm__gate-b">{item.b}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="10" nextTitle={nextTitle} surface="ink" lang={lang} />
+</SectionShell>
+
+<style>
+  .cm__icp {
+    display: inline-block;
+    max-width: 52rem;
+    margin: 0 0 20px;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-sm, 8px);
+    background: #121214;
+    color: var(--fg-on-dark-dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    line-height: 1.45;
+  }
+
+  .cm__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-dark);
+    margin: 0 0 18px;
+  }
+
+  .cm__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .cm__subtitle {
+    max-width: 42rem;
+    margin: 0 0 40px;
+    color: var(--fg-on-dark-dim);
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    line-height: 1.55;
+  }
+
+  .cm__kicker {
+    display: block;
+    margin-bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .cm__limits {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.35rem;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-lg, 16px);
+    background: #121214;
+  }
+
+  .cm__limits-lead {
+    margin: 0;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .cm__limits-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .cm__limits-list li + li {
+    margin-top: 0.45rem;
+  }
+
+  .cm__plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.75rem;
+  }
+
+  .cm__plan {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.35rem 1.25rem 1.25rem;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-lg, 16px);
+    background: #121214;
+  }
+
+  .cm__plan--hot {
+    border-color: var(--v2-border-strong, #3f3f46);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .cm__plan-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .cm__plan-name {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark);
+  }
+
+  .cm__plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+
+  .cm__plan-amount {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    letter-spacing: -0.03em;
+    color: var(--fg-on-dark);
+  }
+
+  .cm__plan-period {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .cm__plan-desc {
+    margin: 0.55rem 0 0;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .cm__plan-features {
+    margin: 0;
+    padding-left: 1rem;
+    flex: 1;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .cm__plan-features li + li {
+    margin-top: 0.35rem;
+  }
+
+  .cm__plan-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--v2-border-strong, #3f3f46);
+    border-radius: var(--v2-radius-sm, 8px);
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: border-color 0.16s ease, background 0.16s ease;
+  }
+
+  .cm__plan-cta:hover,
+  .cm__plan-cta:focus-visible {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--fg-on-dark-mute);
+  }
+
+  .cm__plan-cta--solid {
+    border-color: var(--fg-on-dark);
+    background: var(--fg-on-dark);
+    color: var(--ink);
+  }
+
+  .cm__plan-cta--solid:hover,
+  .cm__plan-cta--solid:focus-visible {
+    background: #e4e4e7;
+    color: var(--ink);
+  }
+
+  .cm__gate {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 1.5rem;
+    padding: 1.4rem 1.35rem;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: var(--v2-radius-lg, 16px);
+    background: #121214;
+  }
+
+  .cm__gate-title {
+    margin: 0 0 0.7rem;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--fg-on-dark);
+  }
+
+  .cm__gate-lead {
+    margin: 0 0 1.1rem;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .cm__gate-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .cm__gate-item {
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: start;
+  }
+
+  .cm__gate-d {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    padding-top: 0.15rem;
+  }
+
+  .cm__gate-t {
+    display: block;
+    font-size: 0.95rem;
+    color: var(--fg-on-dark);
+    margin-bottom: 0.2rem;
+  }
+
+  .cm__gate-b {
+    margin: 0;
+    color: var(--fg-on-dark-dim);
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 960px) {
+    .cm__plans {
+      grid-template-columns: 1fr;
+    }
+
+    .cm__limits,
+    .cm__gate {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

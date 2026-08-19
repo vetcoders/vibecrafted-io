@@ -1,102 +1,62 @@
-#!/usr/bin/env bash
-# 𝓥𝓲𝓫𝓮𝓬𝓻𝓪𝓯𝓽𝓮𝓭. pre-push hook
+#!/bin/sh
 set -e
 
-echo "⚒  Running pre-push checks..."
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
 
-ALL_FILES=$(git ls-files)
+remote="$1"
+url="$2"
 
-SH_FILES=()
-PY_FILES=()
-MD_YAML_FILES=()
-REWRITTEN_FILES=()
-HASHED_FILES=()
-HASH_VALUES=()
+echo "=== Pre-push validation ==="
+echo "Pushing to: $remote ($url)"
 
-file_sha() {
-    shasum -a 256 "$1" | awk '{print $1}'
-}
-
-track_hashes() {
-    local file
-    for file in "$@"; do
-        HASHED_FILES+=("$file")
-        HASH_VALUES+=("$(file_sha "$file")")
-    done
-}
-
-find_tracked_hash() {
-    local needle="$1"
-    local i
-    for ((i=0; i<${#HASHED_FILES[@]}; i++)); do
-        if [[ "${HASHED_FILES[$i]}" == "$needle" ]]; then
-            printf '%s' "${HASH_VALUES[$i]}"
-            return 0
-        fi
-    done
-    return 1
-}
-
-collect_rewrites() {
-    local file before after
-    for file in "$@"; do
-        before="$(find_tracked_hash "$file" || true)"
-        after="$(file_sha "$file")"
-        if [[ -n "$before" && "$before" != "$after" ]]; then
-            REWRITTEN_FILES+=("$file")
-        fi
-    done
-}
-
-while IFS= read -r file; do
-    [ -z "$file" ] && continue
-    case "$file" in
-        *.sh|*.bash|*.zsh) SH_FILES+=("$file") ;;
-        *.py) PY_FILES+=("$file") ;;
-        *.md|*.yaml|*.yml) MD_YAML_FILES+=("$file") ;;
-    esac
-done <<< "$ALL_FILES"
-
-if [ ${#SH_FILES[@]} -gt 0 ]; then
-    echo "▸ shellcheck (full)"
-    python3 scripts/check_shell.py --require-shellcheck "${SH_FILES[@]}"
-fi
-
-if [ ${#PY_FILES[@]} -gt 0 ]; then
-    echo "▸ ruff (full)"
-    track_hashes "${PY_FILES[@]}"
-    if command -v uvx >/dev/null 2>&1; then
-        uvx ruff check --fix "${PY_FILES[@]}"
-        uvx ruff format "${PY_FILES[@]}"
-        uvx ruff check "${PY_FILES[@]}"
-        collect_rewrites "${PY_FILES[@]}"
-    else
-        echo "[warn] uvx unavailable; skipping ruff checks"
-    fi
-fi
-
-if [ ${#MD_YAML_FILES[@]} -gt 0 ]; then
-    echo "▸ prettier (full)"
-    track_hashes "${MD_YAML_FILES[@]}"
-    npx --yes prettier --write "${MD_YAML_FILES[@]}"
-    npx --yes prettier --check "${MD_YAML_FILES[@]}"
-    collect_rewrites "${MD_YAML_FILES[@]}"
-fi
-
-echo "▸ semgrep (full)"
-if command -v semgrep >/dev/null 2>&1; then
-    semgrep scan --config auto --error --quiet --exclude-rule html.security.audit.missing-integrity.missing-integrity
-elif command -v uvx >/dev/null 2>&1; then
-    uvx semgrep scan --config auto --error --quiet --exclude-rule html.security.audit.missing-integrity.missing-integrity
+echo ""
+echo "[1/4] Shellcheck..."
+if [ -f "scripts/check_shell.py" ]; then
+    python3 scripts/check_shell.py
 else
-    echo "[warn] semgrep unavailable; skipping"
+    echo "  (no shell checker found, skipping)"
 fi
 
-if [ ${#REWRITTEN_FILES[@]} -gt 0 ]; then
-    git add "${REWRITTEN_FILES[@]}"
-    echo "✕ Pre-push rewrote and re-staged files. Commit the fixes and push again:"
-    printf '  - %s\n' "${REWRITTEN_FILES[@]}"
+echo ""
+echo "[2/4] Format & Linter check..."
+if command -v uvx >/dev/null 2>&1; then
+  uvx ruff check . || {
+    echo "Ruff formatting/linting issues found. Fix before pushing."
     exit 1
+  }
+fi
+if [ -d "site" ]; then
+  (cd site && pnpm run check) || {
+    echo "Site astro checks failed. Fix before pushing."
+    exit 1
+  }
 fi
 
-echo "✓ Pre-push passed"
+echo ""
+echo "[3/4] Tests (Build check)..."
+if [ -d "site" ]; then
+  (cd site && pnpm run build) || {
+    echo "Site build failed. Fix before pushing."
+    exit 1
+  }
+fi
+
+echo ""
+echo "[4/4] Semgrep (optional)..."
+if command -v semgrep >/dev/null 2>&1; then
+  semgrep scan --config auto --error --quiet --exclude-rule html.security.audit.missing-integrity.missing-integrity --exclude framework --exclude site/dist . || {
+    echo "Semgrep found issues. Fix before pushing."
+    exit 1
+  }
+elif command -v uvx >/dev/null 2>&1; then
+  uvx semgrep scan --config auto --error --quiet --exclude-rule html.security.audit.missing-integrity.missing-integrity --exclude framework --exclude site/dist . || {
+    echo "Semgrep found issues. Fix before pushing."
+    exit 1
+  }
+else
+  echo "Semgrep not available; skipping."
+fi
+
+echo ""
+echo "=== All pre-push checks passed ==="

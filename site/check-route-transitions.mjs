@@ -13,17 +13,16 @@ const ROUTE_SMOKE_KEY = '__vc_route_smoke__';
 const CHROMIUM_BIN = process.env.CHROMIUM_BIN ?? 'chromium';
 
 const routeMatrix = [
-  { label: 'EN home → framework', expectedPath: '/en/framework/', selector: 'a[href="/en/framework/"]' },
-  { label: 'EN framework → quickstart', expectedPath: '/en/quickstart/', selector: 'a[href="/en/quickstart/"]' },
-  { label: 'EN quickstart → faq', expectedPath: '/en/faq/', selector: 'a[href="/en/faq/"]' },
-  { label: 'EN faq → install', expectedPath: '/en/install/', selector: 'a[href="/en/install/"]' },
-  { label: 'EN install → PL install', expectedPath: '/pl/install/', selector: 'a[href="/pl/install/"]' },
-  { label: 'PL install → PL home', expectedPath: '/pl/', selector: 'a.brand[href="/pl/"]' },
-  { label: 'PL home → framework', expectedPath: '/pl/framework/', selector: 'a[href="/pl/framework/"]' },
-  { label: 'PL framework → quickstart', expectedPath: '/pl/quickstart/', selector: 'a[href="/pl/quickstart/"]' },
-  { label: 'PL quickstart → faq', expectedPath: '/pl/faq/', selector: 'a[href="/pl/faq/"]' },
-  { label: 'PL faq → install', expectedPath: '/pl/install/', selector: 'a[href="/pl/install/"]' },
-  { label: 'PL install → EN install', expectedPath: '/en/install/', selector: 'a[href="/en/install/"]' },
+  { label: 'EN home → quickstart', expectedPath: '/en/quickstart/', selector: 'a[href="/en/quickstart/"]' },
+  { label: 'EN quickstart → framework', expectedPath: '/en/framework/', selector: 'a[href="/en/framework/"]' },
+  { label: 'EN framework → FAQ', expectedPath: '/en/faq/', selector: 'a[href="/en/faq/"]' },
+  { label: 'EN FAQ → DoU', expectedPath: '/en/dou/', selector: 'a[href="/en/dou/"]' },
+  { label: 'EN DoU → PL DoU', expectedPath: '/pl/dou/', selector: 'a[href="/pl/dou/"]' },
+  { label: 'PL DoU → FAQ', expectedPath: '/pl/faq/', selector: 'a[href="/pl/faq/"]' },
+  { label: 'PL FAQ → quickstart', expectedPath: '/pl/quickstart/', selector: 'a[href="/pl/quickstart/"]' },
+  { label: 'PL quickstart → framework', expectedPath: '/pl/framework/', selector: 'a[href="/pl/framework/"]' },
+  { label: 'PL framework → home', expectedPath: '/pl/', selector: 'a.brand[href="/pl/"], a.v2nav__brand[href="/pl/"]' },
+  { label: 'PL home → EN home', expectedPath: '/en/', selector: 'a[href="/en/"]' },
 ];
 
 function delay(ms) {
@@ -286,6 +285,10 @@ function expectedHome(pathname) {
 }
 
 function hasAllTransitionNames(surfaces) {
+  if (surfaces.mode === 'v2') {
+    return surfaces.topbarPresent && surfaces.brandPresent && (!surfaces.footerPresent || surfaces.footerLinks >= 5);
+  }
+
   return (
     surfaces.topbar === 'site-topbar' &&
     surfaces.brand === 'site-brand' &&
@@ -300,6 +303,12 @@ function hasStableFooterBrandIdentity(surfaces) {
     (surfaces.footerBrandClassName?.includes('vt-site-footer-brand') &&
       surfaces.footerBrandPersist === 'site-footer-brand')
   );
+}
+
+function hasExpectedBrandHref(pathname, surfaces) {
+  const expectedBrandHref = expectedHome(pathname);
+  if (surfaces.brandHref === expectedBrandHref) return true;
+  return surfaces.mode === 'v2' && !pathname.startsWith('/pl/') && surfaces.brandHref === '/';
 }
 
 async function main() {
@@ -403,12 +412,13 @@ async function main() {
               return {};
             }
           })();
-          const topbar = document.querySelector('.nav-shell, .wizard-shell__topbar');
-          const brand = document.querySelector('.brand-mark');
-          const brandLink = document.querySelector('.brand');
-          const footer = document.querySelector('.footer-shell');
-          const footerBrand = document.querySelector('.footer-brand');
+          const topbar = document.querySelector('.nav-shell, .wizard-shell__topbar, .v2nav');
+          const brand = document.querySelector('.brand-mark, .v2nav__brand-word');
+          const brandLink = document.querySelector('.brand, .v2nav__brand');
+          const footer = document.querySelector('.footer-shell, .v2footer');
+          const footerBrand = document.querySelector('.footer-brand, .v2footer__brand');
           const banner = document.querySelector('.curl-banner');
+          const isV2 = Boolean(document.querySelector('.v2nav, .v2footer'));
 
           return {
             path: location.pathname,
@@ -423,12 +433,16 @@ async function main() {
               banner: banner ? getComputedStyle(banner).viewTransitionName : null,
               bannerPresent: Boolean(banner),
               brand: brand ? getComputedStyle(brand).viewTransitionName : null,
+              brandPresent: Boolean(brand),
               brandHref: brandLink instanceof HTMLAnchorElement ? brandLink.getAttribute('href') : null,
               footer: footer ? getComputedStyle(footer).viewTransitionName : null,
+              footerPresent: Boolean(footer),
               footerBrandClassName: footerBrand instanceof HTMLElement ? footerBrand.className : null,
               footerBrandPersist: footerBrand instanceof HTMLElement ? footerBrand.dataset.astroTransitionPersist ?? null : null,
               footerBrand: footerBrand ? getComputedStyle(footerBrand).viewTransitionName : null,
-              footerLinks: document.querySelectorAll('.footer-links a').length,
+              footerLinks: document.querySelectorAll('.footer-links a, .v2footer__links a').length,
+              mode: isV2 ? 'v2' : 'legacy',
+              topbarPresent: Boolean(topbar),
               topbar: topbar ? getComputedStyle(topbar).viewTransitionName : null,
             },
             title: document.title,
@@ -515,7 +529,7 @@ async function main() {
       }
 
       const expectedBrandHref = expectedHome(snapshot.path);
-      if (snapshot.surfaces.brandHref !== expectedBrandHref) {
+      if (!hasExpectedBrandHref(snapshot.path, snapshot.surfaces)) {
         throw new Error(
           `${step.label} left the persistent brand link stale: expected ${expectedBrandHref}, got ${snapshot.surfaces.brandHref}`
         );

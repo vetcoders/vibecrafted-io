@@ -1,29 +1,40 @@
 {
   "name": "site",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.4.1",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
-    "prebuild": "python3 ../scripts/sync_site_release_assets.py",
+    "docs:sync": "bash ../scripts/sync-docs.sh",
+    "docs:check": "bash ../scripts/sync-docs.sh --check",
+    "prebuild": "bash ../scripts/sync-docs.sh --if-present && python3 ../scripts/sync_site_release_assets.py && python3 ../scripts/sync_manifest.py && python3 ../scripts/content_truth_report.py --format json > /dev/null",
     "dev": "astro dev",
-    "build": "astro check && astro build",
+    "build": "astro check && node check-i18n-parity.mjs && astro build && node check-v2-search.mjs && node check-scroll-flow.mjs && node --experimental-strip-types check-floating-frame.mjs && node check-product-frame.mjs",
     "check": "astro check",
+    "smoke:installer-close": "node check-installer-close.mjs",
     "smoke:routes": "node check-route-transitions.mjs",
+    "smoke:scroll-flow": "node check-scroll-flow.mjs",
+    "smoke:floating-frame": "node --experimental-strip-types check-floating-frame.mjs",
+    "smoke:product-frame": "node check-product-frame.mjs",
+    "smoke:v2-search": "node check-v2-search.mjs",
+    "smoke:i18n-parity": "node check-i18n-parity.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",
     "@astrojs/svelte": "^8.0.4",
+    "@resvg/resvg-js": "^2.6.2",
     "astro": "^6.1.5",
+    "satori": "^0.26.0",
     "sharp": "^0.34.5",
     "svelte": "^5.55.2",
     "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "devDependencies": {
-    "@astrojs/check": "^0.9.8"
+    "@astrojs/check": "^0.9.8",
+    "@types/node": "^25.7.0"
   }
 }

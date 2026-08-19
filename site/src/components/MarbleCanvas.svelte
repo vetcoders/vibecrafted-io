@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { getTranslations, type Lang } from '../lib/i18n';
+
   // ── Props ──────────────────────────────────────────────────────────
-  let { lang = 'en' } = $props<{ lang?: 'en' | 'pl' }>();
+  let { lang = 'en' } = $props<{ lang?: Lang }>();
 
   // ── Reactive DOM state ─────────────────────────────────────────────
   let marbleCount = $state(0);
@@ -11,11 +13,7 @@
   let reducedMotion = $state(false);
 
   // ── i18n labels (derived from prop, no DOM sniffing) ───────────────
-  let labels = $derived(
-    lang === 'pl'
-      ? { marbles: 'Marbles', converge: 'Konwergencja' }
-      : { marbles: 'Marbles', converge: 'Converge' }
-  );
+  let labels = $derived(getTranslations(lang).sections.marbleCanvas);
 
   // ═══════════════════════════════════════════════════════════════════
   // MARBLE FACTORY — sprite rendering (pure functions, no reactivity)
@@ -900,9 +898,10 @@
     position: relative;
     align-self: center;
     justify-self: end;
-    width: min(100%, 34rem);
+    width: var(--hero-canvas-max);
+    height: var(--hero-canvas-max);
+    max-width: 100%;
     aspect-ratio: 1;
-    max-height: var(--hero-canvas-max);
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--hero-canvas-surface);
@@ -910,8 +909,6 @@
     backdrop-filter: var(--hero-canvas-backdrop);
     -webkit-backdrop-filter: var(--hero-canvas-backdrop);
     box-shadow: var(--hero-canvas-shadow);
-    transform-origin: left center;
-    transform: perspective(1120px) rotateY(-14deg) scaleX(1.04);
   }
 
   .hero-canvas canvas {
@@ -947,20 +944,8 @@
 
   @media (max-width: 900px) {
     .hero-canvas {
-      max-height: var(--hero-canvas-mobile-max-height);
-      aspect-ratio: auto;
-      height: var(--hero-canvas-mobile-height);
-      width: 100%;
-      justify-self: stretch;
-      transform: none;
-      transform-origin: center;
+      display: none;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero-canvas {
-      transform: none;
-      transform-origin: center;
-    }
-  }
 </style>

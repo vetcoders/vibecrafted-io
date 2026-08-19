@@ -1,0 +1,193 @@
+---
+import LayoutV2 from '../layouts/LayoutV2.astro';
+---
+
+<LayoutV2
+  title="Pricing and licensing · Vibecrafted"
+  description="How Vibecrafted's Business Source License 1.1 works, which uses are granted, and how to discuss commercial terms."
+  lang="en"
+  hasHero={false}
+>
+  <article class="pricing-page">
+    <header class="pricing-page__hero">
+      <p class="pricing-page__eyebrow">Pricing · licensing</p>
+      <h1>Clear license terms before commercial pricing.</h1>
+      <p class="pricing-page__lead">
+        Vibecrafted is distributed under the Business Source License 1.1 with
+        an Additional Use Grant. Public price tiers have not been announced.
+        The repository license is the source of truth for what you can use
+        today and when you need a separate commercial arrangement.
+      </p>
+      <div class="pricing-page__actions">
+        <a class="pricing-page__action pricing-page__action--primary" href="mailto:hello@vetcoders.io?subject=Vibecrafted%20commercial%20licensing">
+          Discuss commercial terms
+        </a>
+        <a class="pricing-page__action" href="https://github.com/vetcoders/vibecrafted/blob/main/LICENSE">
+          Read the exact license
+        </a>
+      </div>
+    </header>
+
+    <section class="pricing-page__grid" aria-label="Licensing paths">
+      <article>
+        <p class="pricing-page__kicker">Granted use</p>
+        <h2>Use Vibecrafted under BSL 1.1</h2>
+        <p>
+          Non-production use is covered by BSL 1.1. The Additional Use Grant
+          also permits internal production use, and production use by
+          individual developers and teams of fewer than five people, provided
+          the use is not a competitive offering as defined by the license.
+        </p>
+      </article>
+
+      <article>
+        <p class="pricing-page__kicker">Commercial arrangement</p>
+        <h2>Contact us for excluded uses</h2>
+        <p>
+          If your intended use falls outside the current grant, the license
+          requires a commercial license or that you refrain from that use.
+          Tell us your team size, deployment model, and intended offering so
+          we can discuss terms for that specific use.
+        </p>
+      </article>
+    </section>
+
+    <section class="pricing-page__boundary" aria-labelledby="competitive-boundary">
+      <p class="pricing-page__kicker">The boundary</p>
+      <h2 id="competitive-boundary">Competitive hosted or embedded offerings</h2>
+      <p>
+        The Additional Use Grant excludes offering the Licensed Work to third
+        parties on a hosted or embedded basis in order to compete with
+        Vetcoders' paid versions. The exact definitions and exceptions are in
+        the LICENSE file; this page is a plain-language route into that
+        contract, not a substitute for it.
+      </p>
+    </section>
+
+    <footer class="pricing-page__closing">
+      <h2>Not sure which path fits?</h2>
+      <p>
+        Email <a href="mailto:hello@vetcoders.io?subject=Vibecrafted%20licensing%20question">hello@vetcoders.io</a>
+        with the use you have in mind. Public pricing is not yet published;
+        commercial terms are discussed directly.
+      </p>
+    </footer>
+  </article>
+</LayoutV2>
+
+<style>
+  .pricing-page {
+    width: min(100% - clamp(2rem, 8vw, 8rem), 74rem);
+    margin: 0 auto;
+    padding: clamp(5rem, 11vw, 9rem) 0 clamp(4rem, 9vw, 7rem);
+    color: var(--fg-on-dark);
+  }
+
+  .pricing-page__hero {
+    max-width: 58rem;
+  }
+
+  .pricing-page__eyebrow,
+  .pricing-page__kicker {
+    margin: 0 0 0.8rem;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .pricing-page h1,
+  .pricing-page h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+  }
+
+  .pricing-page h1 {
+    max-width: 54rem;
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 6.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+  }
+
+  .pricing-page h2 {
+    margin: 0 0 0.85rem;
+    font-size: clamp(1.65rem, 3vw, 2.55rem);
+    line-height: 1.1;
+  }
+
+  .pricing-page p {
+    color: var(--fg-on-dark-dim);
+    line-height: 1.7;
+  }
+
+  .pricing-page__lead {
+    max-width: 48rem;
+    margin: 1.6rem 0 0;
+    font-size: clamp(1rem, 1.8vw, 1.25rem);
+  }
+
+  .pricing-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .pricing-page__action {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--rule-dark);
+    color: var(--fg-on-dark);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .pricing-page__action--primary {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--ink);
+  }
+
+  .pricing-page__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: clamp(3rem, 8vw, 6rem);
+  }
+
+  .pricing-page__grid article,
+  .pricing-page__boundary {
+    padding: clamp(1.4rem, 4vw, 2.5rem);
+    border: 1px solid var(--rule-dark);
+    background: rgba(var(--v2-paper-rgb), 0.025);
+  }
+
+  .pricing-page__boundary {
+    margin-top: 1rem;
+    border-left-color: var(--accent);
+  }
+
+  .pricing-page__grid p,
+  .pricing-page__boundary p {
+    margin-bottom: 0;
+  }
+
+  .pricing-page__closing {
+    max-width: 46rem;
+    margin-top: clamp(3rem, 8vw, 6rem);
+  }
+
+  .pricing-page__closing a {
+    color: var(--accent);
+  }
+
+  @media (max-width: 760px) {
+    .pricing-page__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

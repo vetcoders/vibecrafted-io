@@ -1,0 +1,98 @@
+---
+/**
+ * SchemaOrg.astro — Plan 18 site-wide JSON-LD block.
+ *
+ * Emits three top-level schema.org graph nodes:
+ *   1. Organization (vetcoders, GitHub sameAs)
+ *   2. SoftwareApplication (Vibecrafted framework — DevTool, free)
+ *   3. WebSite (with SearchAction pointing at /en/faq?q={search_term_string})
+ *
+ * Co-exists with the per-page `WebPage` JSON-LD already emitted in
+ * LayoutV2.astro. Schema.org allows multiple `<script type="application/ld+json">`
+ * blocks per page; crawlers union the graphs. Keeping the per-page block
+ * separate means future per-page overrides (Article, FAQPage, BreadcrumbList)
+ * can land alongside without rewriting the site-wide identity.
+ *
+ * Validation: https://validator.schema.org/ (paste page HTML or URL after deploy).
+ * Anti-aesthetic: no marketing-tone copy, dense factual content, no tracking.
+ */
+interface Props {
+  siteUrl?: string;
+}
+
+const { siteUrl = "https://vibecrafted.io" } = Astro.props as Props;
+
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
+      name: "vetcoders",
+      url: siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl}/presence/logo-128.png`,
+        width: 128,
+        height: 128,
+      },
+      sameAs: ["https://github.com/vetcoders", "https://github.com/Loctree"],
+      description:
+        "Two veterinarians who built the vibecrafted framework by shipping with it. Orchestration runtime for CLI coding agents.",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${siteUrl}/#software`,
+      name: "Vibecrafted",
+      applicationCategory: "DeveloperApplication",
+      applicationSubCategory: "CLI coding agent orchestration",
+      operatingSystem: "macOS, Linux",
+      url: siteUrl,
+      downloadUrl: `${siteUrl}/install.sh`,
+      installUrl: `${siteUrl}/en/install/`,
+      softwareVersion: "3.4.0",
+      releaseNotes: `${siteUrl}/en/dou/`,
+      description:
+        "Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and /vc-ship — a whole project delivered A to Z.",
+      author: { "@id": `${siteUrl}/#organization` },
+      publisher: { "@id": `${siteUrl}/#organization` },
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+      },
+      license: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE",
+      featureList: [
+        "Skill-based AI agent orchestration",
+        "Parallel-truth audit pipeline",
+        "Definition-of-undone (DoU) gates",
+        "Marble loops for truth convergence",
+        "Native subagent dispatch with model parity",
+        "Loctree structural perception layer",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Vibecrafted",
+      description: "Orchestration runtime for CLI coding agents.",
+      publisher: { "@id": `${siteUrl}/#organization` },
+      inLanguage: ["en", "pl"],
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${siteUrl}/en/faq/?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
+};
+
+const jsonLd = JSON.stringify(graph);
+---
+
+<script is:inline type="application/ld+json" set:html={jsonLd} />

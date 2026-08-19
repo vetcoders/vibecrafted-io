@@ -5,7 +5,7 @@
 <h1 align="center">Ship AI-built software without the vibe hangover</h1>
 
 <p align="center">
-  <em>The release engine for AI-built software.</em><br>
+  <em>An orchestration method and runtime for CLI coding agents.</em><br>
   <em>It mapped itself, fixed itself, packaged itself, and built its own distribution path.</em>
 </p>
 
@@ -37,11 +37,11 @@ _(Read the full use case: [The 4 ways AI-coded MVPs break in production](docs/TH
 
 **We ship AI-built software.**
 
-𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is not another code generator. It is the release engine you run after AI has produced a repo and before a real user touches it. It forces that repo through perception, verification, convergence, install truth, packaging, and launch-readiness checks until a stranger can install it, trust it, and actually use it.
+𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. is not another code generator. It is the orchestration runtime you run after AI has produced a repo and before a real user touches it. It forces that repo through perception, verification, convergence, install truth, packaging, and launch-readiness checks until a stranger can install it, trust it, and actually use it.
 
 ---
 
-## The VetCoders Axioms
+## The Vetcoders Axioms
 
 1. **AI-Native, not AI-assisted:** We don't write the code. We craft the delivery.
 2. **Perception over Memory:** The agent must see the structural truth now, not rely on stale summaries.
@@ -96,29 +96,43 @@ The `` is not decoration. It is the mark.
 
 Non-destructive. Interactive. Transparent. Reversible.
 
-Prefer the guided browser path when you are onboarding a founder, PM, or less terminal-native operator:
-
-```bash
-curl -fsSL https://vibecrafted.io/install.sh | bash -s -- --gui
-```
-
-The guided path stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
-
-Use the direct compact path when you are scripting the install or you already know you want the terminal-only flow:
-
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
 
-Inside a local checkout, `make vibecrafted` now opens the same browser-based guided installer. `make install` stays as the direct non-interactive path.
+The bootstrap stages the local control plane, bootstraps the foundation layer, runs the same compact installer truth used by automation, and leaves a readable `START_HERE.md` behind.
 
-Prefer the terminal-native fallback? Run `make wizard` to keep the same trust-building cadence directly in the terminal.
+Inside a local checkout, `make vibecrafted` opens the terminal-native installer wizard and `make install` stays as the direct non-interactive path.
+
+Need the browser surface? Run `make wizard` to keep the same trust-building cadence directly in the browser.
 
 Verify:
 
 ```bash
 make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 ```
+
+## Building a release
+
+The root Makefile can now compose the full framework plugin with bundled
+foundation binaries:
+
+```bash
+source .env.foundations  # see .env.foundations.example
+make foundations-release
+ls dist/
+```
+
+For a local dry run without Apple secrets:
+
+```bash
+make foundations-release-unsigned
+```
+
+The signed path requires notarized aicx and loctree outputs. The unsigned path
+uses `dist/aicx-*-unsigned.tar.gz` and `dist/loctree-*-unsigned.tar.gz` from the
+foundation repos, then verifies the resulting plugin layout with
+`framework/distribution/smoke-foundations.sh`.
 
 ---
 
@@ -131,6 +145,16 @@ vibecrafted justdo codex --prompt "Add JWT authentication"
 ```
 
 Type `vibecrafted help` for the command deck, or `vc-` and hit tab once the shell helpers are installed.
+
+---
+
+## Roadmap
+
+Live experimental work that has not yet promoted to top-level skills:
+
+- **`vc-polarize` (Prism → Polarize gate)** — polarization workflow gated on a stable Loctree prism MCP release. The runner code, band-action map, and downstream consumers (vc-operator, aicx Context Corpus) have all landed; the marketplace promotion is held until the upstream `loctree-suite` plugin ships prism in a stable cut. See [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry, surface status table, and references.
+
+Stable workflows (already shipping in the framework): `vc-init`, `vc-scaffold`, `vc-workflow`, `vc-followup`, `vc-marbles`, `vc-prune`, `vc-dou`, `vc-decorate`, `vc-hydrate`, `vc-release`, `vc-implement`, `vc-justdo`, `vc-research`, `vc-review`, `vc-agents`, `vc-delegate`, `vc-partner`.
 
 ---
 
@@ -152,5 +176,5 @@ For enterprise: **info@vibecrafted.io**
 </p>
 
 <p align="center">
-  <sub>(c)2024-2026 VetCoders · <a href="https://vibecrafted.io">vibecrafted.io</a></sub>
+  <sub>(c)2024-2026 Vetcoders · <a href="https://vibecrafted.io">vibecrafted.io</a></sub>
 </p>

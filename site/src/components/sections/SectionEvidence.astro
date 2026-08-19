@@ -1,0 +1,180 @@
+---
+import { getEntry } from 'astro:content';
+import SectionShell from '../SectionShell.astro';
+import SectionFooter from '../SectionFooter.astro';
+import type { Lang } from '../../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+
+const evidenceEntry = await getEntry('i18n', `${lang}/evidence-v2`);
+if (!evidenceEntry) throw new Error(`Missing i18n entry: ${lang}/evidence-v2`);
+const section = evidenceEntry.data as {
+  title: string;
+  centerLabel: string;
+  headingHtml: string;
+  subtitle: string;
+  patterns: Array<{
+    num: string;
+    label: string;
+    headline: string;
+    observation: string;
+    source: string;
+    accent: string;
+  }>;
+};
+---
+
+<SectionShell
+  number="08"
+  title={section.title}
+  centerLabel={section.centerLabel}
+  figure="08 · DWG VC-008"
+  surface="paper"
+  seam="to-paper"
+  id="evidence"
+>
+  <div class="evidence">
+    <h2 class="evidence__heading">
+      <Fragment set:html={section.headingHtml} />
+      <span class="brand-dot">.</span>
+    </h2>
+    <p class="evidence__subtitle">{section.subtitle}</p>
+
+    <div class="evidence__grid">
+      {section.patterns.map((p) => (
+        <article class="evidence__card">
+          <div class="evidence__card-head">
+            <span class="evidence__card-num">PATTERN · {p.num}</span>
+            <span class={`evidence__card-tag evidence__card-tag--${p.accent}`}>{p.label}</span>
+          </div>
+          <h3 class="evidence__card-headline">
+            <em>{p.headline}</em>
+          </h3>
+          <p class="evidence__card-observation">{p.observation}</p>
+          <span class="evidence__card-source">{p.source}</span>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <SectionFooter nextNumber="09" nextTitle={lang === "pl" ? "KOMERCJA" : "COMMERCIAL"} surface="paper" lang={lang} />
+</SectionShell>
+
+<style>
+  .evidence__heading {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--fg-on-paper);
+    margin: 0 0 24px;
+  }
+
+  .evidence__heading em.accent {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .evidence__subtitle {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg-on-paper-dim);
+    max-width: 60ch;
+    margin: 0 0 72px;
+  }
+
+  .evidence__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .evidence__card {
+    border: 1px solid var(--rule-paper);
+    padding: 28px 26px;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border-radius: 2px;
+  }
+
+  .evidence__card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .evidence__card-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+  }
+
+  .evidence__card-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+
+  .evidence__card-tag--rust  { color: var(--accent); }
+  .evidence__card-tag--amber { color: var(--accent-amber); }
+  .evidence__card-tag--red   { color: var(--accent-red); }
+
+  .evidence__card-headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--fg-on-paper);
+    margin: 0;
+  }
+
+  .evidence__card-headline em {
+    font-style: italic;
+  }
+
+  .evidence__card-observation {
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--fg-on-paper-dim);
+    margin: 0;
+  }
+
+  .evidence__card-source {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-paper-mute);
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--rule-paper-soft);
+  }
+
+  @media (max-width: 900px) {
+    .evidence__grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .evidence__card {
+      padding: 24px 22px;
+    }
+  }
+</style>

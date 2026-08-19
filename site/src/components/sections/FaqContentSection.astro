@@ -1,32 +1,56 @@
 ---
-import { getTranslations, type Lang } from '../../lib/i18n';
+import { getEntry } from 'astro:content';
+import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
-const section = getTranslations(lang).sections.faqContent;
-const basePath = lang === 'pl' ? '/pl' : '/en';
-const ui = {
-    pathLabel: lang === 'pl' ? 'Ścieżka nauki' : 'Learning path',
-    pathLead:
-        lang === 'pl'
-            ? 'Najpierw ścieżka produktu, dopiero potem źródła.'
-            : 'Product path first, source material later.',
-    quickstart: lang === 'pl' ? 'Szybki start' : 'Quick Start',
-    foundation: lang === 'pl' ? 'Fundamenty' : 'Foundation',
-    overview: lang === 'pl' ? 'Przegląd' : 'Overview',
-    sourceLabel: lang === 'pl' ? 'Źródła kanoniczne' : 'Canonical sources',
-};
 
+const entry = await getEntry('i18n', `${lang}/faqcontent`);
+if (!entry) {
+    throw new Error(`FAQ content not found for lang=${lang}`);
+}
+
+interface FaqItem {
+    open?: boolean;
+    questionHtml: string;
+    answerHtml: string;
+}
+
+interface FaqGroup {
+    title: string;
+    items: FaqItem[];
+}
+
+interface FaqLink {
+    href: string;
+    label: string;
+}
+
+interface LearningPathBlock {
+    label: string;
+    lead: string;
+    quickstart: string;
+    foundation: string;
+    overview: string;
+}
+
+const data = entry.data;
+const groups = (data.groups ?? []) as FaqGroup[];
+const links = (data.links ?? []) as FaqLink[];
+const learningPathCopy = data.learningPath as LearningPathBlock;
+const sourceLabel = data.sourceLabel as string;
+
+const basePath = `/${lang}`;
 const learningPath = [
-    { href: `${basePath}/quickstart/`, label: ui.quickstart },
-    { href: `${basePath}/#foundation`, label: ui.foundation },
-    { href: `${basePath}/`, label: ui.overview },
+    { href: `${basePath}/quickstart/`, label: learningPathCopy.quickstart },
+    { href: `${basePath}/#foundation`, label: learningPathCopy.foundation },
+    { href: `${basePath}/`, label: learningPathCopy.overview },
 ];
 ---
 <Reveal client:load tag="section" id="faq-content">
     <div class="surface-path">
-        <p class="surface-path__label">{ui.pathLabel}</p>
-        <p class="surface-path__lead">{ui.pathLead}</p>
+        <p class="surface-path__label">{learningPathCopy.label}</p>
+        <p class="surface-path__lead">{learningPathCopy.lead}</p>
         <div class="surface-path__links">
             {learningPath.map((link) => (
                 <a href={link.href}>{link.label}</a>
@@ -35,11 +59,11 @@ const learningPath = [
     </div>
 
     <div class="faq-layout">
-        {section.groups.map((group, groupIndex) => (
+        {groups.map((group, groupIndex) => (
             <article class="faq-group">
                 <h2>{group.title}</h2>
                 {group.items.map((item, itemIndex) => {
-                    const isOpen = 'open' in item && item.open;
+                    const isOpen = item.open === true;
 
                     return (
                         <details class="faq-item" id={`faq-${groupIndex + 1}-${itemIndex + 1}`} open={isOpen}>
@@ -53,9 +77,9 @@ const learningPath = [
     </div>
 
     <details class="source-layer">
-        <summary>{ui.sourceLabel}</summary>
+        <summary>{sourceLabel}</summary>
         <div class="source-layer__content">
-            {section.links.map((link) => (
+            {links.map((link) => (
                 <a
                     href={link.href}
                     rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}

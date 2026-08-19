@@ -1,14 +1,13 @@
 ---
-import { getEntry, render } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-
-const entry = await getEntry('pages', 'en/quickstart');
-if (!entry) {
-  throw new Error("Content entry not found: en/quickstart");
-}
-const { Content } = await render(entry);
+import LayoutV2 from '../../layouts/LayoutV2.astro';
+import QuickstartPage from '../../components/sections/QuickstartPage.astro';
 ---
 
-<Layout title={entry.data.title} description={entry.data.description} lang="en">
-    <Content />
-</Layout>
+<LayoutV2
+  title="Vibecrafted · Quick Start"
+  description="From zero to your first Vibecrafted loop. Install the framework, verify the control plane, then run a real workflow inside a live repository."
+  lang="en"
+  hasHero={false}
+>
+  <QuickstartPage lang="en" />
+</LayoutV2>
