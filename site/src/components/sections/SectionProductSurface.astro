@@ -42,7 +42,9 @@ const section = entry.data as {
   installNote: string;
 };
 
-const nextTitle = lang === 'pl' ? 'OPERATOR' : 'THE OPERATOR';
+const installManifestEntry = await getEntry('i18n', `${lang}/install-manifest-v2`);
+if (!installManifestEntry) throw new Error(`Missing i18n entry: ${lang}/install-manifest-v2`);
+const nextTitle = installManifestEntry.data.title as string;
 const floatingAria =
   lang === 'pl'
     ? 'Dowód produktu — pływająca, skalowalna ramka'
@@ -124,7 +126,7 @@ const browseLabel = lang === 'pl' ? 'Przeglądaj zrzuty' : 'Browse captures';
   .ps__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(36px, 5vw, 72px);
+    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
     line-height: 1.06;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);

@@ -1,33 +1,24 @@
 ---
 # Problem V2 — "The Problem" section.
-#
-# Source of truth (until 2026-05-14): site/src/lib/i18n/en.ts → landingV2.problem + v2Sections.problem
+# Voice contract: compressed manifesto (src/content/manifesto/en.md — the
+# Vibe Hangover). Site copy compresses the canonical doc, it does not fork it:
+# the same four accusations, the same real numbers.
 # Rendered by: site/src/components/sections/SectionProblem.astro
-#
-# Phase A migration: markdown exists parallel to en.ts.
-# Phase B (TBD by parent): component switched to getEntry('i18n', 'en/problem-v2').
 
-# Section chrome from landingV2.problem
 title: "THE PROBLEM"
-centerLabel: "OBSERVED 2024–2026"
+centerLabel: "SIX MONTHS IN THE FIELD"
 
-# Heading: short two-sentence statement. False-precision "complete" vs "fragile".
-# Storytelling moment ("After the first user it turns out that...") moved into the
-# body. Editorial layout: column 1 (heading) sets the height; right columns fill to
-# that height with denser symptom content. Third column OK if shorter.
-headingHtml: 'Agent-built apps can look <em class="accent-2">complete</em>.<br />Auth, data, payments, and deploy are still <em class="accent">fragile</em>'
+headingHtml: 'Six months fixing vibe-coded SaaS.<br />The same <em class="accent">four things</em> are broken every time'
 
-# Lead body under the heading. Plain text. Concrete scene (first install on
-# someone else's machine) instead of abstract persona ("real users").
-body: "After the first user it usually turns out that a demo is not a product. The truth surfaces on the first install on someone else's machine, the first Stripe webhook, the first security review, or a new developer on the team — they show you what no prompt ever truly took on."
+body: "Not hating on vibe coding — AI generation gets you to launch, and that matters more than most engineers will admit. But the founder who built the product in a weekend eventually hits the wall: the enterprise deal stalls, the security review fails, the second developer quits in a week. This is the Vibe Hangover. Here is what we keep finding under the hood."
 
-# Symptoms list — short label + body pairs surfacing the most common gaps.
-# Editorial-grade density: longer concrete bodies match heading column height.
-# Concrete scenes ("seven profiles in prod", "support Discord not the dashboard")
-# instead of abstract statements.
 symptoms:
-  - label: "Security review"
-    body: "The app works. Auth has two roles: admin and user — but seven profiles run in prod, and nobody mapped them. Tokens live wherever they end up: localStorage sometimes, HTTP-only cookie sometimes, both at once sometimes. First thing in an audit: nobody can tell who has access to what. Second: when someone leaves the team, the keys stay."
-  - label: "Money path"
-    body: "Stripe works. Until it does not. A webhook fails once — no retry, no dead letter queue, no alert. The customer notices the missing service before the system does. The founder hears about it on the support Discord, not from the dashboard."
+  - label: "Auth held with tape"
+    body: "Every user is either admin or user. No roles, no row-level permissions, no audit log — and session tokens in localStorage like it's 2019. We watched a $40k annual deal die in the first ten minutes of the prospect's technical review. The product was solid. The architecture screamed weekend project."
+  - label: "One God Table"
+    body: "Everything in one 35-column model. Fine — until 10k rows make every page load a full-table scan. One founder paid Vercel $300 a month for functions timing out on unindexed queries and retrying forever. Real relations and indexes brought the bill to $40. Same app, same traffic."
+  - label: "No error handling"
+    body: "When one thing breaks, everything goes down — silently. A webhook handler crashed on an annual-billing edge case and one founder lost about 8% of subscription payments for two months. Customers emailed about it. The system never did."
+  - label: "Push to main and pray"
+    body: "No staging, no tests, live keys in the repo. One Friday deploy took an app down for 11 hours because a migration deleted a column that was still needed. Users saw a blank screen all weekend; fifteen paying accounts churned."
 ---

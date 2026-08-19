@@ -1,6 +1,23 @@
 // Kanoniczne źródła publicznego copy są zmapowane w
 // docs/content-truth.manifest.json i opisane dla ludzi w
 // docs/runtime/CONTENT_TRUTH.md.
+import type { en } from "./en";
+
+// Deep shape of the EN dictionary with leaves widened to their primitive
+// types. `satisfies` against this makes `astro check` the parity gate:
+// a missing or extra PL key fails the build instead of returning
+// `undefined` at runtime. (Both dicts are `as const`, so `typeof en`
+// alone would demand identical literal strings — the widening is the point.)
+type CopyShape<T> = T extends string
+  ? string
+  : T extends number
+    ? number
+    : T extends boolean
+      ? boolean
+      : T extends readonly (infer U)[]
+        ? readonly CopyShape<U>[]
+        : { [K in keyof T]: CopyShape<T[K]> };
+
 export const pl = {
   nav: {
     about: "O nas",
@@ -13,13 +30,15 @@ export const pl = {
     quickstart: "Szybki start",
     faq: "FAQ",
     dou: "DoU",
+    pricing: "Cennik",
+    pilot: "Pilot",
     get: "Pobierz",
     search: "Szukaj dokumentacji",
     searchAll: "Cała powierzchnia",
     searchClose: "Zamknij wyszukiwanie",
     install: "Instaluj",
     vc: "VC",
-    vcLabel: "VetCoders",
+    vcLabel: "vetcoders",
     github: "GitHub",
     license: "Licencja (BSL 1.1)",
     security: "Bezpieczeństwo",
@@ -37,22 +56,23 @@ export const pl = {
       marbles: { label: "MARBLES", sub: "Konwergencja" },
       playground: { label: "PLAYGROUND", sub: "Wypróbuj" },
       dou: { label: "DoU", sub: "Audyt gotowości" },
+      pricing: { label: "CENNIK", sub: "Open · Fleet · Forge" },
       faq: { label: "FAQ", sub: "Pytania" },
     },
   },
   footer: {
     ariaLabel: "Stopka strony",
     brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-    byline: "with AI Agents by VetCoders",
+    byline: "with AI Agents by vetcoders",
     tagline:
       "Od repo po agentach do wydania, które ktoś obcy może zainstalować.",
-    copyright: "(c)2024-2026 VetCoders",
+    copyright: "(c)2024-2026 LibraxisAI",
     license: "BSL 1.1",
   },
   v2Chrome: {
     footer: {
       ariaLabel: "Stopka strony",
-      byline: "z agentami AI od VetCoders",
+      byline: "z agentami AI od vetcoders",
       tagline:
         "Od repo wygenerowanego przez AI do produktu gotowego do wypuszczenia.",
       quickstart: "SZYBKI START",
@@ -100,6 +120,11 @@ export const pl = {
       title: "Vibecrafted · DoU — Definicja niezrobionego",
       description:
         "Brutalna przestrzeń między działającym systemem a produktem, który obcy mogą odkryć, zainstalować, któremu zaufają i za który zapłacą.",
+    },
+    pilot: {
+      title: "Vibecrafted · Zgłoś płatny pilot",
+      description:
+        "Płatny pilot Fleet w pełnej cenie seata. Named buying moment, spisane success criteria, ścieżka design-partner.",
     },
   },
   v2Hero: {
@@ -334,23 +359,23 @@ flowchart LR
       links: [
         { href: "/pl/faq/", label: "FAQ" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FOUNDATION.md",
           label: "Stack zależności",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/QUICK_START.md",
           label: "Szybki start w Markdownie",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
           label: "Kontrakt runtime",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "Bramka review ScreenScribe",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Matryca prawdy contentowej",
         },
       ],
@@ -537,7 +562,7 @@ flowchart LR
               questionHtml:
                 "Co jeśli potrzebuję szerszego modelu komercyjnego?",
               answerHtml:
-                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. VetCoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
+                "Skorzystaj z formularza kontaktowego na tej stronie (albo adresu z licencji w repo) i opisz wielkość zespołu oraz planowane użycie. Vetcoders czyta każdą wiadomość i odpowiada warunkami licencjonowania dopasowanymi do przypadku — plik LICENSE pozostaje źródłem prawdy o tym, co wymaga osobnej umowy. Nie ma jeszcze cennika samoobsługowego; ścieżką komercyjną jest kontakt.",
             },
           ],
         },
@@ -545,19 +570,19 @@ flowchart LR
       links: [
         { href: "/pl/quickstart/", label: "Szybki start" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
           label: "Pełne FAQ - markdown",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "Bramka review ScreenScribe",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Matryca prawdy contentowej",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE",
           label: "Licencja",
         },
       ],
@@ -744,4 +769,4 @@ flowchart LR
       },
     },
   },
-} as const;
+} as const satisfies CopyShape<typeof en>;

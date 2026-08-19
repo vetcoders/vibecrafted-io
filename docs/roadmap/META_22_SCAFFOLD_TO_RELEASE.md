@@ -3,8 +3,8 @@ name: vibecrafted-meta-22-scaffold-to-release-io-mirror
 description: io-side mirror of the canonical 22-plan meta-roadmap. Lists the 9 io-side plans inline + cross-cutting Plan 22 expectations. Full plan body + waves + dependency graph + TRACKER lives in `vibecrafted/docs/plans/META_22_SCAFFOLD_TO_RELEASE.md`.
 type: meta_roadmap_mirror
 canonical_source: ../../vibecrafted/docs/plans/META_22_SCAFFOLD_TO_RELEASE.md
-project: VetCoders/vibecrafted-io
-parent_repo: VetCoders/vibecrafted
+project: vetcoders/vibecrafted-io
+parent_repo: vetcoders/vibecrafted
 created: 2026-05-10
 sibling_existing: prism-polarize-gate.md (vc-polarize skill promotion gate, complementary scope)
 ---
@@ -17,7 +17,7 @@ sibling_existing: prism-polarize-gate.md (vc-polarize skill promotion gate, comp
 > the `vc-polarize` skill promotion, a complementary surface to this roadmap's
 > Plan 01).
 >
-> 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. with AI Agents by VetCoders (c)2024-2026 LibraxisAI
+> 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. with AI Agents by Vetcoders (c)2024-2026 LibraxisAI
 
 ---
 
@@ -90,7 +90,8 @@ LLM-discovery.
 #### Plan 19 — `newsletter-buttondown-community-surface`
 
 Buttondown markdown-first newsletter. Footer signup + archive at `/newsletter`
-+ RSS. No transactional email.
+
+- RSS. No transactional email.
 
 **Files:** `site/src/components/NewsletterSignup.astro` (NEW) · `site/src/pages/newsletter/index.astro` (NEW) · `site/src/pages/newsletter/[slug].astro` (NEW) · `scripts/buttondown-sync.sh` (NEW).
 
@@ -102,12 +103,12 @@ Buttondown markdown-first newsletter. Footer signup + archive at `/newsletter`
 
 Hypothetical tier shape (subject to Plan 01 polarize verdict):
 
-| Tier | Price | Includes |
-|---|---|---|
-| Solo | Free | Local install, 20 skills, foundations, single-machine AICX |
-| Pro | $9/mo | + Cloud Sync cross-machine + memex retrieval cross-session |
-| Team | $19.90/seat/mo | + multi-agent mesh + shared AICX corpus + zellij dashboard team mode |
-| Enterprise | Contact | + self-host bundle + SSO + audit log + SLA |
+| Tier       | Price          | Includes                                                             |
+| ---------- | -------------- | -------------------------------------------------------------------- |
+| Solo       | Free           | Local install, 20 skills, foundations, single-machine AICX           |
+| Pro        | $9/mo          | + Cloud Sync cross-machine + memex retrieval cross-session           |
+| Team       | $19.90/seat/mo | + multi-agent mesh + shared AICX corpus + zellij dashboard team mode |
+| Enterprise | Contact        | + self-host bundle + SSO + audit log + SLA                           |
 
 **Files:** `site/src/pages/pricing.astro` (NEW) · `site/src/content/pricing/tiers.md` (NEW) · `site/src/components/PricingTable.astro` (NEW).
 
@@ -130,13 +131,14 @@ flow → tier-gated state → webhook event dispatcher with signature verificati
 Run `/vc-polarize` over 5 vibecrafted product framings (local CLI · skill
 marketplace · Cloud Sync platform · enterprise release engine · manifesto +
 community brand). Emit:
+
 - Primary axis decision-of-record at `vibecrafted/docs/POLARIZE_v2.md` (canonical).
 - Cross-link at `vibecrafted-io/docs/roadmap/POLARIZE_v2.md`.
 - ICP + Anti-ICP one-paragraph each.
 - W2-W7 plan reprioritization (scope-up / scope-down / unchanged).
 
 **Sibling reference (existing):** `prism-polarize-gate.md` in this directory
-documents the vc-polarize *skill promotion* gate (blocked on stable Loctree
+documents the vc-polarize _skill promotion_ gate (blocked on stable Loctree
 0.10.0 plugin release). That gate is **complementary** to Plan 01:
 
 - `prism-polarize-gate.md` = "when does vc-polarize the skill become marketplace-grade?"
@@ -155,19 +157,21 @@ skill: DoU audit + Sentry + analytics + SEO + install smoke + Drew demo +
 v2.0 tag on both repos.
 
 **io-side deliverables:**
+
 - `site/src/pages/launch.astro` (announcement page)
 - `docs/LAUNCH_CHECKLIST.md` (operator runbook)
 - Public install path signature verified (`install.sh.sig` lives here)
 - Manifesto refresh + showcase update + newsletter blast within 1h of public availability
 
 **Sibling deliverables (vibecrafted side):**
+
 - `skills/vc-release/SKILL.md` v2 refresh
 - `CHANGELOG.md` v2.0 entry
 - `VERSION` bump
 - Sentry / analytics integration smoke
 
 **Drew demo handoff:** scheduled, executed, debrief recorded (kronika
-2026-05-08: *"Przełożyłem demo Drew. Musimy pędzić w skupieniu nie w pośpiechu"*
+2026-05-08: _"Przełożyłem demo Drew. Musimy pędzić w skupieniu nie w pośpiechu"_
 — this plan closes that postponement loop).
 
 ---
@@ -176,17 +180,17 @@ v2.0 tag on both repos.
 
 Edit inline before/after each plan; bump `last_updated` in frontmatter.
 
-| # | Plan | Status | Owner | Wave | Branch | Started | Completed | Report |
-|---|---|---|---|---|---|---|---|---|
-| 13 | landing-v2 | queued | — | W5 | — | — | — | `docs/roadmap/reports/13-landing-v2.md` |
-| 14 | manifesto-EN-PL | queued | — | W5 | — | — | — | `docs/roadmap/reports/14-manifesto.md` |
-| 15 | docs-site | queued | — | W5 | — | — | — | `docs/roadmap/reports/15-docs-site.md` |
-| 16 | showcase | queued | — | W5 | — | — | — | `docs/roadmap/reports/16-showcase.md` |
-| 17 | og-images | queued | — | W6 | — | — | — | `docs/roadmap/reports/17-og-images.md` |
-| 18 | seo-llms-txt | queued | — | W6 | — | — | — | `docs/roadmap/reports/18-seo.md` |
-| 19 | newsletter | queued | — | W6 | — | — | — | `docs/roadmap/reports/19-newsletter.md` |
-| 20 | pricing-tiers | queued | — | W7 | — | — | — | `docs/roadmap/reports/20-pricing.md` |
-| 21 | polar-sh-checkout | queued | — | W7 | — | — | — | `docs/roadmap/reports/21-checkout.md` |
+| #   | Plan              | Status | Owner | Wave | Branch | Started | Completed | Report                                  |
+| --- | ----------------- | ------ | ----- | ---- | ------ | ------- | --------- | --------------------------------------- |
+| 13  | landing-v2        | queued | —     | W5   | —      | —       | —         | `docs/roadmap/reports/13-landing-v2.md` |
+| 14  | manifesto-EN-PL   | queued | —     | W5   | —      | —       | —         | `docs/roadmap/reports/14-manifesto.md`  |
+| 15  | docs-site         | queued | —     | W5   | —      | —       | —         | `docs/roadmap/reports/15-docs-site.md`  |
+| 16  | showcase          | queued | —     | W5   | —      | —       | —         | `docs/roadmap/reports/16-showcase.md`   |
+| 17  | og-images         | queued | —     | W6   | —      | —       | —         | `docs/roadmap/reports/17-og-images.md`  |
+| 18  | seo-llms-txt      | queued | —     | W6   | —      | —       | —         | `docs/roadmap/reports/18-seo.md`        |
+| 19  | newsletter        | queued | —     | W6   | —      | —       | —         | `docs/roadmap/reports/19-newsletter.md` |
+| 20  | pricing-tiers     | queued | —     | W7   | —      | —       | —         | `docs/roadmap/reports/20-pricing.md`    |
+| 21  | polar-sh-checkout | queued | —     | W7   | —      | —       | —         | `docs/roadmap/reports/21-checkout.md`   |
 
 For cross-cutting plans 01 + 22, status lives in the canonical TRACKER at
 `vibecrafted/docs/plans/META_22_SCAFFOLD_TO_RELEASE.md` §7.
@@ -196,7 +200,7 @@ For cross-cutting plans 01 + 22, status lives in the canonical TRACKER at
 ## Coordination with sibling roadmaps
 
 - **`prism-polarize-gate.md`** (this directory): complementary surface,
-  documents vc-polarize *skill* promotion gate. Plan 01 of META_22 uses
+  documents vc-polarize _skill_ promotion gate. Plan 01 of META_22 uses
   vc-polarize as a tool; promotion-readiness of the skill is its own track.
 - **vibecrafted v2.0 launch** (Plan 22): both repos tag v2.0.0 simultaneously.
   CI gates ensure neither tags without the other.
@@ -207,7 +211,7 @@ For cross-cutting plans 01 + 22, status lives in the canonical TRACKER at
   `09-tier-gating-state.md`. No fork; pattern transfer.
 - **Brand source-of-truth**: loctree-com is upstream brand authority per
   kronika 2026-05-09 BRAND.md decision. vibecrafted-io vendors design tokens
-  + fonts from loctree-com.
+  - fonts from loctree-com.
 
 ---
 
@@ -219,6 +223,6 @@ For cross-cutting plans 01 + 22, status lives in the canonical TRACKER at
 
 ---
 
-*Canonical roadmap: `vibecrafted/docs/plans/META_22_SCAFFOLD_TO_RELEASE.md`.*
-*Read that file for full plan bodies, dependency graph, wave schedule, DoU,
-SoTA-grade definition, and cross-references.*
+_Canonical roadmap: `vibecrafted/docs/plans/META_22_SCAFFOLD_TO_RELEASE.md`._
+_Read that file for full plan bodies, dependency graph, wave schedule, DoU,
+SoTA-grade definition, and cross-references._

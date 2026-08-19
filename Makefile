@@ -21,16 +21,16 @@ DEPLOY_ROOT ?= /home/libraxis/vibecrafted-io
 # `../vibecrafted`). The pointer is the first candidate; the rest of the
 # legacy candidates stay as fallback for environments that haven't seeded
 # the pointer yet. Explicit override always wins:
-#   make bundle-build UPSTREAM_ROOT=/path/to/VibeCrafted
+#   make bundle-build UPSTREAM_ROOT=/path/to/vibecrafted
 REPO_PARENT := $(abspath $(CURDIR)/..)
 FRAMEWORK_POINTER_FILE := $(CURDIR)/.framework
 FRAMEWORK_POINTER := $(strip $(shell [ -f "$(FRAMEWORK_POINTER_FILE)" ] && cat "$(FRAMEWORK_POINTER_FILE)" 2>/dev/null))
 FRAMEWORK_POINTER_ABS := $(if $(FRAMEWORK_POINTER),$(abspath $(CURDIR)/$(FRAMEWORK_POINTER)))
 UPSTREAM_ROOT_CANDIDATES := \
 	$(FRAMEWORK_POINTER_ABS) \
-	$(REPO_PARENT)/VibeCrafted \
+	$(REPO_PARENT)/Vibecrafted \
 	$(REPO_PARENT)/vibecrafted \
-	$(HOME)/Git/VibeCrafted \
+	$(HOME)/Git/Vibecrafted \
 	$(HOME)/Libraxis/vc-runtime/vibecrafted
 DETECTED_UPSTREAM_ROOT := $(firstword $(foreach dir,$(UPSTREAM_ROOT_CANDIDATES),$(if $(wildcard $(dir)/VERSION),$(dir))))
 UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTREAM_ROOT_CANDIDATES)))
@@ -65,10 +65,27 @@ FOUNDATION_VENDOR_SPECS := \
 	aicx:$(AICX_REPO):aicx \
 	aicx-mcp:$(AICX_REPO):aicx-mcp
 
+# Vendored foundation binaries are an install accelerator, never a requirement:
+# install.sh / install.ps1 build or fetch foundations when the bundle carries
+# none for the running host. So skipping is always safe, and shipping a binary
+# built from a moving source is not.
+#
+#   VENDOR_FOUNDATIONS=1     vendor from clean donors, skip dirty/missing ones
+#   VENDOR_FOUNDATIONS=0     ship an unvendored bundle
+#
+# Living Tree makes the dirty case ordinary, not exceptional — a sibling repo
+# usually has another agent's uncommitted work in it. A binary built from that
+# tree corresponds to no commit, so it cannot be attested by the release
+# receipt. Skip it and let channel/main.json report vendored_foundations:false.
+VENDOR_FOUNDATIONS ?= 1
+
 define VENDOR_FOUNDATION_BINARIES
 dest_root="$(1)"; \
 platform="$(HOST_VENDOR_PLATFORM)"; \
 vendor_dir="$$dest_root/bin/vendor/$$platform"; \
+if [ "$(VENDOR_FOUNDATIONS)" != "1" ]; then \
+	echo "[vendor] VENDOR_FOUNDATIONS=$(VENDOR_FOUNDATIONS); shipping an unvendored bundle"; \
+else \
 echo "Vendoring foundation binaries for $$platform -> $$vendor_dir"; \
 mkdir -p "$$vendor_dir"; \
 for spec in $(FOUNDATION_VENDOR_SPECS); do \
@@ -78,6 +95,11 @@ for spec in $(FOUNDATION_VENDOR_SPECS); do \
 	cargo_bin="$${rest##*:}"; \
 	if [ ! -d "$$repo" ]; then \
 		echo "[vendor] WARN: $$bin source repo missing: $$repo; skipping"; \
+		continue; \
+	fi; \
+	if git -C "$$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+	   && [ -n "$$(git -C "$$repo" status --porcelain --untracked-files=normal)" ]; then \
+		echo "[vendor] WARN: $$bin donor $$repo is dirty; a binary built there matches no commit — skipping"; \
 		continue; \
 	fi; \
 	src="$$repo/target/release/$$bin"; \
@@ -107,10 +129,12 @@ for bin in $(FOUNDATION_VENDOR_BINARIES); do \
 	if [ ! -x "$$vendor_dir/$$bin" ]; then \
 		echo "[vendor] WARN: staged $$bin absent from $$vendor_dir"; \
 	fi; \
-done
+done; \
+rmdir "$$vendor_dir" "$$dest_root/bin/vendor" 2>/dev/null || true; \
+fi
 endef
 
-.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
+.PHONY: help vibecrafted check test install skills helpers setup-dev dry-run doctor list update uninstall restore migrate migrate-dry init-hooks bundle foundations foundations-check foundations-release foundations-release-unsigned foundations-build foundations-build-unsigned foundations-pack foundations-pack-unsigned foundations-verify foundations-clean site-dev site-preview site-build site-release-assets-guard release-archive-secret-gate site-deploy site-deploy-pages site-release bundle-preview bundle-preflight bundle-build bundle-sign content-truth
 
 help:
 	@printf "\n"
@@ -156,7 +180,7 @@ help:
 	@printf "  \033[31m↺\033[0m  make restore       \033[2mUndo last install/uninstall\033[0m\n"
 	@printf "\n"
 	@printf "  ╭─────────────────────────────────────────╮\n"
-	@printf "  │ Vibecrafted with AI Agents by VetCoders │\n"
+	@printf "  │ Vibecrafted with AI Agents by Vetcoders │\n"
 	@printf "  ╰─────────────────────────────────────────╯\n"
 	@printf "\n"
 
@@ -305,11 +329,18 @@ init-hooks:
 # Site Management & Deployments
 # ============================================================================
 
+# Unconditional gate on the bytes this repo publishes. bundle-build already
+# refuses to *create* a leaking payload; this refuses to *ship* one, including
+# an archive that was committed before that gate existed or that a stale
+# framework/ re-synced into site/public. No bypass flag by design.
+release-archive-secret-gate:
+	@python3 scripts/check_release_archive_secrets.py
+
 site-dev:
 	@echo "Starting Astro dev server..."
 	@cd site && pnpm run dev --host
 
-site-build: site-release-assets-guard
+site-build: site-release-assets-guard release-archive-secret-gate
 	@echo "Installing site deps..."
 	@cd site && pnpm install --frozen-lockfile
 	@echo "Building static site..."
@@ -390,7 +421,8 @@ BUNDLE_JUNK_EXCLUDE_NAMES := \
 	'*.audit*.md' \
 	'*.backup' \
 	'*.out' \
-	aicx-dashboard.html
+	aicx-dashboard.html \
+	.env
 
 BUNDLE_RELEASE_EXCLUDE_NAMES := \
 	'vibecrafted-v*.tar.gz' \
@@ -400,10 +432,37 @@ BUNDLE_RELEASE_EXCLUDE_NAMES := \
 	'vibecrafted-signing.pub' \
 	channel
 
+# Top-level dot entries are keep-listed, not block-listed.
+#
+# Every payload leak this repo has had came from a blocklist that did not know
+# about a directory yet: `.env` in 2026-08-10, and on 2026-08-16 a 4.1.0 build
+# that carried 2.0 GB of `.loctree/` analysis cache (AICX-derived intent maps),
+# `.prview/`, and a `.antigravitycli/` symlink pointing into the operator's home
+# — in a payload whose actual product content is ~25 MB.
+#
+# A blocklist has to be updated every time somebody adopts a new tool. A
+# keep-list fails the other way: a new dot directory is excluded until someone
+# decides it belongs in the product. That is the direction the failure should
+# lean. These six are what the last clean published tarball (3.5.0) carried.
+BUNDLE_DOTENTRY_KEEP_NAMES := \
+	.dockerignore \
+	.github \
+	.gitignore \
+	.junie \
+	.loctignore \
+	.prettierignore
+
+# rsync applies the first matching rule, so the includes must precede the
+# anchored `/.*` exclude. The anchor keeps this to the transfer root; nested
+# dot directories stay covered by BUNDLE_JUNK_EXCLUDE_NAMES.
+BUNDLE_DOTENTRY_RULES := \
+	$(addprefix --include=/,$(BUNDLE_DOTENTRY_KEEP_NAMES)) \
+	--exclude='/.*'
+
 BUNDLE_EXCLUDE_NAMES := $(BUNDLE_JUNK_EXCLUDE_NAMES) $(BUNDLE_RELEASE_EXCLUDE_NAMES)
-BUNDLE_JUNK_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_JUNK_EXCLUDE_NAMES))
+BUNDLE_JUNK_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_JUNK_EXCLUDE_NAMES)) $(BUNDLE_DOTENTRY_RULES)
 BUNDLE_RELEASE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_RELEASE_EXCLUDE_NAMES))
-BUNDLE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_EXCLUDE_NAMES))
+BUNDLE_EXCLUDES := $(addprefix --exclude=,$(BUNDLE_EXCLUDE_NAMES)) $(BUNDLE_DOTENTRY_RULES)
 BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES := skills runtime
 BUNDLE_DIFF_EXCLUDES := $(addprefix -x ,$(BUNDLE_EXCLUDE_NAMES) $(BUNDLE_COPY_DIRLINK_DIFF_EXCLUDE_NAMES))
 
@@ -489,6 +548,13 @@ bundle-build: bundle-preflight
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
 	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
+	  leaks=$$(find "$$TMP_DIR" -type f \( -name '.env' -o \( -name '.env.*' ! -name '*.example' \) \)) && \
+	  if [ -n "$$leaks" ]; then \
+	    echo "FATAL: secret-bearing env files in the public release payload (2026-08-10 tskey incident class):" >&2; \
+	    echo "$$leaks" >&2; \
+	    echo "This gate is unconditional — ALLOW_DIRTY_UPSTREAM does not bypass it." >&2; \
+	    exit 9; \
+	  fi && \
 	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \

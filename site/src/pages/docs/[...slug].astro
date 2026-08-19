@@ -3,7 +3,7 @@
  * docs/[...slug].astro — Plan 15 catch-all docs renderer.
  *
  * Renders entries from the `docs` content collection (mirrored from
- * `../vibecrafted/docs/` via `scripts/sync-docs.sh`). One route per doc:
+ * `../vibecrafted/docs/public/` via `scripts/sync-docs.sh`). One route per doc:
  *
  *   /docs/quick-start/   ←  src/content/docs/quick-start.md
  *   /docs/install/       ←  src/content/docs/install.md
@@ -30,7 +30,7 @@ import { getCollection, render } from 'astro:content';
 export async function getStaticPaths() {
   const entries = await getCollection('docs');
   return entries.map((entry) => ({
-    params: { slug: entry.data.slug },
+    params: { slug: entry.id.split('/').at(-1) ?? entry.id },
     props: { entry },
   }));
 }
@@ -38,6 +38,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const allDocs = await getCollection('docs');
+const entrySlug = entry.id.split('/').at(-1) ?? entry.id;
 
 // <title> must carry the searchable ASCII brand; the styled glyph brand
 // (𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.) stays in the visible h1 only.
@@ -81,22 +82,16 @@ const ogImagePath = '/og/docs-default.png';
         )}
 
         <p class="doc__synced">
-          <span class="doc__synced-label">Synced —</span>
-          <span class="doc__synced-value">{entry.data.syncedAt}</span>
-          {entry.data.sourcePath && (
-            <>
-              <span class="doc__synced-sep" aria-hidden="true">·</span>
-              <span class="doc__synced-source">
-                source: <code>{entry.data.sourcePath}</code>
-              </span>
-            </>
-          )}
+          <span class="doc__synced-label">Canonical source —</span>
+          <span class="doc__synced-source">
+            <code>docs/public/{entry.id}.md</code>
+          </span>
         </p>
       </header>
 
       <div class="doc__layout">
         <aside class="doc__nav-col" aria-label="Documentation nav">
-          <DocsSidebarNav entries={allDocs} currentSlug={entry.data.slug} />
+          <DocsSidebarNav entries={allDocs} currentSlug={entrySlug} />
         </aside>
 
         <div class="doc__prose">
@@ -201,10 +196,6 @@ const ogImagePath = '/og/docs-default.png';
   .doc__synced-label {
     color: var(--v2-accent, #c99a3b);
     margin-right: 6px;
-  }
-
-  .doc__synced-sep {
-    margin: 0 10px;
   }
 
   .doc__synced-source code {

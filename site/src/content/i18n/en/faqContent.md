@@ -66,18 +66,18 @@ groups:
       - questionHtml: "Can small teams use it in production?"
         answerHtml: "Yes. The Additional Use Grant allows individual developers and teams smaller than five people to use the framework in production as long as they are not offering a competitive hosted or embedded product."
       - questionHtml: "What if I need a broader commercial arrangement?"
-        answerHtml: "The license points to VetCoders for alternative licensing arrangements. Read the repo license for the exact terms and contact route before you commit to a broader rollout."
+        answerHtml: "The license points to Vetcoders for alternative licensing arrangements. Read the repo license for the exact terms and contact route before you commit to a broader rollout."
 
 # Bottom canonical-sources link list.
 links:
   - href: "/en/quickstart/"
     label: "Quick Start"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md"
     label: "Long-form Markdown FAQ"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md"
     label: "ScreenScribe Review Gate"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md"
     label: "Content Truth Matrix"
-  - href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE"
+  - href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE"
     label: "License"
 ---

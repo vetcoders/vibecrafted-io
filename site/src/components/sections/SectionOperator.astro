@@ -309,6 +309,11 @@ const nextTitle = quickstartEntry.data.title as string;
     /* Editorial doctrine (Maciej 2026-05-23): bullets column matches shot height. */
     align-items: stretch;
     margin-bottom: 96px;
+    /* View contract: nav MARBLES lands here, so this block must read as a
+     * full clean frame — viewport height minus the 96px anchor offset and a
+     * breathing strip at the bottom, never a random mid-section slice. */
+    min-height: calc(100svh - 176px);
+    align-content: center;
   }
 
   .op__shot-heading {

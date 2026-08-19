@@ -203,7 +203,7 @@ if [[ -z "$archive_url" && -z "$archive_file" ]]; then
     info "Resolved from channel ($ref): $archive_url"
   else
     # Fallback: source snapshot for pre-channel / pre-deploy kickoffs.
-    archive_url="https://github.com/VetCoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
+    archive_url="https://github.com/vetcoders/vibecrafted/archive/refs/heads/${ref}.tar.gz"
     info "[note] Channel manifest not available — using GitHub source snapshot for ${ref}"
   fi
 fi

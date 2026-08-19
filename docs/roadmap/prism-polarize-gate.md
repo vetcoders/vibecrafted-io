@@ -30,7 +30,7 @@ Until then, the skill is callable directly via the runner (`vetcoders.sh`) by op
 
 ## References
 
-- Vibecrafted runner band parser: [`vibecrafted/skills/vc-agents/shell/vetcoders.sh`](https://github.com/VetCoders/vibecrafted/blob/main/skills/vc-agents/shell/vetcoders.sh)
+- Vibecrafted runner band parser: [`vibecrafted/skills/vc-agents/shell/vetcoders.sh`](https://github.com/vetcoders/vibecrafted/blob/main/skills/vc-agents/shell/vetcoders.sh)
 - Loctree prism handler: [`loctree-suite/loctree_rs/src/cli/dispatch/handlers/prism.rs`](https://github.com/Loctree/loctree-suite/blob/main/loctree_rs/src/cli/dispatch/handlers/prism.rs)
-- vc-operator PolarizeBand: [`vc-operator/src/polarize.rs`](https://github.com/VetCoders/vibecrafted/tree/main/vc-operator)
+- vc-operator PolarizeBand: [`vc-operator/src/polarize.rs`](https://github.com/vetcoders/vibecrafted/tree/main/vc-operator)
 - Aicx Context Corpus contract: [`aicx/docs/CONTEXT_CORPUS.md`](https://github.com/Loctree/aicx/blob/main/docs/CONTEXT_CORPUS.md)

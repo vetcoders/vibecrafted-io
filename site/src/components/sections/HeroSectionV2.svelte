@@ -43,7 +43,13 @@
 </script>
 
 <section class={`hero hero--${lang}`} id="hero" aria-label={hero.ariaLabel}>
-  <div class="hero__vignette" aria-hidden="true"></div>
+  <div class="hero__vignette" data-decor aria-hidden="true"></div>
+  <div class="hero__rail" aria-hidden="true">
+    <span class="hero__rail-live"><i></i> live</span>
+    <span>vibecrafted-server</span>
+    <span>vc-slack</span>
+    <span>loctree · aicx</span>
+  </div>
 
   <div class="hero__visual" aria-hidden="true">
     <!-- Exactly one decorative chrome; body fill is edge-to-edge product capture (no window-in-window). -->
@@ -134,42 +140,50 @@
     height: 100vh;
     height: 100svh;
     min-height: 560px;
-    background:
-      radial-gradient(circle at 50% 24%, rgba(var(--v2-paper-rgb), 0.045), transparent 36rem),
-      linear-gradient(180deg, rgba(var(--v2-paper-rgb), 0.035), transparent 48%),
-      var(--ink);
+    background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
   }
 
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 20% 28%, rgba(var(--v2-paper-rgb), 0.11) 0 0.8px, transparent 1.45px),
-      radial-gradient(circle at 72% 64%, rgba(var(--v2-paper-rgb), 0.075) 0 0.7px, transparent 1.35px),
-      repeating-linear-gradient(90deg, rgba(var(--v2-paper-rgb), 0.024) 0 1px, transparent 1px 8px);
-    background-size:
-      19px 19px,
-      27px 27px,
-      100% 100%;
-    mix-blend-mode: screen;
-    opacity: 0.22;
+  .hero::before,
+  .hero__vignette {
+    display: none;
   }
 
-  .hero__vignette {
+  .hero__rail {
     position: absolute;
-    inset: 0;
-    z-index: 2;
-    background: radial-gradient(
-      ellipse 80% 60% at 50% 55%,
-      rgba(255, 255, 255, 0.04) 0%,
-      transparent 70%
-    );
-    pointer-events: none;
+    top: 76px;
+    left: clamp(32px, 4vw, 72px);
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .hero__rail > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: 999px;
+    background: #121214;
+  }
+
+  .hero__rail-live {
+    color: var(--fg-on-dark);
+  }
+
+  .hero__rail-live i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--v2-ok, #4ade80);
   }
 
   /* ── Real-usage window (single decorative chrome + edge-to-edge fill) ─ */
@@ -238,7 +252,7 @@
     font-weight: 400;
     font-size: min(clamp(46px, 7vw, 92px), 10.5vh);
     line-height: 1.02;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.03em;
     color: var(--fg-on-dark);
     margin: 0 0 32px;
   }
@@ -324,7 +338,7 @@
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: var(--v2-radius-sm, 8px);
     transition:
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
       background 0.15s ease,
@@ -341,6 +355,7 @@
     background: var(--fg-on-dark);
     color: var(--ink);
     border: 1px solid var(--fg-on-dark);
+    font-weight: 600;
   }
 
   .hero__cta--primary .hero__cta-arrow {
@@ -351,14 +366,15 @@
 
   .hero__cta--primary:hover,
   .hero__cta--primary:focus-visible {
-    background: var(--paper);
-    border-color: var(--paper);
+    background: #e4e4e7;
+    border-color: #e4e4e7;
+    color: var(--ink);
   }
 
   .hero__cta--ghost {
     background: transparent;
     color: var(--fg-on-dark);
-    border: 1px solid rgba(245, 244, 239, 0.28);
+    border: 1px solid var(--v2-border-strong, #3f3f46);
   }
 
   .hero__cta--ghost:hover,
@@ -471,6 +487,26 @@
 
   /* ── Responsive ──────────────────────────────────────────── */
 
+  @media print, (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce) {
+    .hero {
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .hero::before,
+    .hero__vignette {
+      display: none;
+    }
+  }
+
+  @supports not (mix-blend-mode: screen) {
+    .hero::before,
+    .hero__vignette {
+      display: none;
+    }
+  }
+
   @media (max-width: 900px) {
     .hero {
       height: auto;
@@ -496,6 +532,17 @@
 
     .hero__art-shade {
       background: linear-gradient(180deg, transparent 20%, var(--ink) 100%);
+    }
+
+    .hero__rail {
+      position: relative;
+      top: 0;
+      left: 0;
+      margin: 88px 24px 0;
+    }
+
+    .hero__rail > span:nth-child(n + 3) {
+      display: none;
     }
 
     .hero__overlay {

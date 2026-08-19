@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -19,6 +20,20 @@ SITE_PUBLIC = REPO_ROOT / "site" / "public"
 SITE_SRC = REPO_ROOT / "site" / "src"
 
 
+def resolve_product_root() -> Path:
+    override = os.environ.get("VIBECRAFTED_PRODUCT_ROOT")
+    if override:
+        return Path(override).expanduser().resolve()
+
+    pointer_file = REPO_ROOT / ".framework"
+    if pointer_file.exists():
+        pointer = pointer_file.read_text(encoding="utf-8").strip()
+        if pointer:
+            return (REPO_ROOT / pointer).resolve()
+
+    return (REPO_ROOT.parent / "vibecrafted").resolve()
+
+
 def read_version(bundle_root: Path) -> str:
     return (bundle_root / "VERSION").read_text(encoding="utf-8").strip()
 
@@ -35,6 +50,39 @@ def release_archive_name(version: str) -> str:
 def copy_file(src: Path, dst: Path) -> None:
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dst)
+
+
+def sync_windows_installer(
+    product_root: Path, site_public: Path, *, check: bool = False
+) -> dict[str, str]:
+    """Mirror the product-owned Windows handoff without creating a site fork."""
+    source = product_root / "install.ps1"
+    target = site_public / "install.ps1"
+
+    if not source.exists():
+        if check or not target.exists():
+            raise FileNotFoundError(
+                f"Canonical Windows installer missing at {source}. Set "
+                "VIBECRAFTED_PRODUCT_ROOT to the vibecrafted checkout."
+            )
+        print(
+            f"[sync] product checkout absent ({product_root}); reusing committed "
+            f"Windows installer mirror at {target}."
+        )
+    elif check:
+        if not target.exists() or source.read_bytes() != target.read_bytes():
+            raise RuntimeError(
+                f"Windows installer mirror drift: {target} must exactly match {source}. "
+                "Run scripts/sync_site_release_assets.py to refresh it."
+            )
+    else:
+        copy_file(source, target)
+
+    return {
+        "source": str(source),
+        "target": str(target),
+        "sha256": sha256_file(target),
+    }
 
 
 def sha256_file(path: Path) -> str:
@@ -83,7 +131,60 @@ def ensure_checksum_contract(
         )
 
 
-def write_channel_manifest(site_public: Path, version: str, archive_name: str) -> None:
+def describe_platform_coverage(bundle_root: Path, archive_name: str) -> dict[str, dict]:
+    """State, per platform, which archive to fetch and what it actually carries.
+
+    The runtime payload is platform-neutral: Python, shell, and Rust sources plus
+    the launchers. The only platform-specific bytes are the vendored foundation
+    binaries under `bin/vendor/<platform>/`, and those are an install accelerator,
+    not a requirement — install.sh / install.ps1 build or fetch foundations when
+    the bundle carries none for the running host.
+
+    So every platform is served by the same archive, and the honest thing to
+    publish is not three near-identical tarballs but one archive plus a truthful
+    statement of what each platform gets out of it. `vendored: false` means the
+    install builds its own foundations, which is slower, not broken.
+    """
+    vendor_root = bundle_root / "bin" / "vendor"
+    # A platform counts as vendored only if its directory actually holds a
+    # binary. An empty bin/vendor/<platform>/ is what a fully-skipped vendor
+    # pass leaves behind, and reporting that as vendored would be a lie the
+    # installer discovers only after download.
+    available = (
+        {
+            entry.name
+            for entry in vendor_root.iterdir()
+            if entry.is_dir() and any(child.is_file() for child in entry.iterdir())
+        }
+        if vendor_root.is_dir()
+        else set()
+    )
+
+    # os/arch as install.sh and install.ps1 resolve them, mapped to the
+    # bin/vendor/<platform> directory name the bundle would have to carry.
+    coverage = {
+        "macos-arm64": "darwin-arm64",
+        "macos-x64": "darwin-x64",
+        "linux-x64": "linux-x64",
+        "linux-arm64": "linux-arm64",
+        "windows-x64": "windows-x64",
+    }
+
+    return {
+        label: {
+            "archive_url": f"https://vibecrafted.io/{archive_name}",
+            "vendored_foundations": platform_dir in available,
+        }
+        for label, platform_dir in coverage.items()
+    }
+
+
+def write_channel_manifest(
+    site_public: Path,
+    version: str,
+    archive_name: str,
+    platforms: dict[str, dict] | None = None,
+) -> None:
     channel_dir = site_public / "channel"
     channel_dir.mkdir(parents=True, exist_ok=True)
     manifest = {
@@ -94,6 +195,11 @@ def write_channel_manifest(site_public: Path, version: str, archive_name: str) -
         "sha256_url": "https://vibecrafted.io/SHA256SUMS",
         "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
     }
+    # Additive only. Installers already in the wild read `archive_url` and stop
+    # there; an unknown key costs them nothing. Never move the canonical archive
+    # behind `platforms` — that would strand every 3.x install.
+    if platforms:
+        manifest["platforms"] = platforms
     (channel_dir / "main.json").write_text(
         json.dumps(manifest, indent=2) + "\n",
         encoding="utf-8",
@@ -304,7 +410,8 @@ def sync_site_release_assets(
         copy_file(src, dst)
 
     prune_stale_release_artifacts(site_public, archive_name)
-    write_channel_manifest(site_public, version, archive_name)
+    platforms = describe_platform_coverage(bundle_root, archive_name)
+    write_channel_manifest(site_public, version, archive_name, platforms)
     manifest_json = export_install_manifest(bundle_root, site_src)
 
     return {
@@ -313,11 +420,36 @@ def sync_site_release_assets(
         "bundle_dir": str(bundle_root),
         "public_dir": str(site_public),
         "manifest_json": str(manifest_json),
+        "platforms_vendored": sorted(
+            label for label, info in platforms.items() if info["vendored_foundations"]
+        ),
     }
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check-windows-installer",
+        action="store_true",
+        help="fail unless site/public/install.ps1 exactly matches the product repo",
+    )
+    args = parser.parse_args()
+
+    windows_installer = sync_windows_installer(
+        resolve_product_root(),
+        SITE_PUBLIC,
+        check=args.check_windows_installer,
+    )
+    if args.check_windows_installer:
+        print(
+            "Windows installer mirror is current:",
+            json.dumps(windows_installer, indent=2),
+        )
+        return
+
     synced = sync_site_release_assets()
+    synced["windows_installer"] = windows_installer["target"]
+    synced["windows_installer_sha256"] = windows_installer["sha256"]
     print(
         "Synced site release assets:",
         json.dumps(synced, indent=2),

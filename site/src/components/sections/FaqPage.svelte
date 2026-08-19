@@ -83,8 +83,8 @@
 <div class="faq-page">
   <header class="hero">
     <div class="hero-header">
-      <span>§ 06 · FAQ</span>
-      <span>FIG. 06 · DWG VC-006</span>
+      <span>06 · FAQ</span>
+      <span>docs</span>
     </div>
     <h1>{hero.title}</h1>
     <p class="hero-lead">
@@ -170,7 +170,7 @@
     color: var(--fg-on-dark);
     background: rgba(245, 244, 239, 0.06);
     padding: 1px 6px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius-sm, 8px);
   }
 
   .faq-page {
@@ -248,7 +248,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     text-decoration: none;
-    border-radius: 2px;
+    border-radius: var(--v2-radius-sm, 8px);
   }
 
   a.btn-primary {

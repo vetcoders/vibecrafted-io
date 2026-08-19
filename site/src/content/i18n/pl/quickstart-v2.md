@@ -10,7 +10,7 @@
 
 # Chrome z landingV2.quickstart
 title: "SZYBKI START"
-centerLabel: "INIT → SHIP · 6 RZUTÓW"
+centerLabel: "INIT → SHIP · 6 KOMEND"
 
 # Heading sekcji — zachowuje inline <em>.
 headingHtml: "Zacznij od pierwszego <em>użytecznego sygnału</em>"

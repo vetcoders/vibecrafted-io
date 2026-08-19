@@ -12,13 +12,15 @@ export const en = {
     quickstart: "Quick Start",
     faq: "FAQ",
     dou: "DoU",
+    pricing: "Pricing",
+    pilot: "Pilot",
     get: "Get",
     search: "Search docs",
     searchAll: "All surfaces",
     searchClose: "Close search",
     install: "Install",
     vc: "VC",
-    vcLabel: "VetCoders",
+    vcLabel: "vetcoders",
     github: "GitHub",
     license: "License (BSL 1.1)",
     security: "Security",
@@ -36,21 +38,22 @@ export const en = {
       marbles: { label: "MARBLES", sub: "Convergence" },
       playground: { label: "PLAYGROUND", sub: "Try it" },
       dou: { label: "DoU", sub: "Readiness audit" },
+      pricing: { label: "PRICING", sub: "Open · Fleet · Forge" },
       faq: { label: "FAQ", sub: "Questions" },
     },
   },
   footer: {
     ariaLabel: "Site footer",
     brand: "𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.",
-    byline: "with AI Agents by VetCoders",
+    byline: "with AI Agents by vetcoders",
     tagline: "From AI-generated repo to launch-ready product.",
-    copyright: "(c)2024-2026 VetCoders",
+    copyright: "(c)2024-2026 LibraxisAI",
     license: "BSL 1.1",
   },
   v2Chrome: {
     footer: {
       ariaLabel: "Site footer",
-      byline: "with AI Agents by VetCoders",
+      byline: "with AI Agents by vetcoders",
       tagline: "From AI-generated repo to launch-ready product.",
       quickstart: "Quick Start",
       faq: "FAQ",
@@ -96,6 +99,11 @@ export const en = {
       title: "Vibecrafted · DoU — The Definition of Undone",
       description:
         "The space between a working system and a product that strangers can discover, install, trust, and buy.",
+    },
+    pilot: {
+      title: "Vibecrafted · Request a paid pilot",
+      description:
+        "Paid Fleet pilot at full seat price. Named buying moment, written success criteria, design-partner path.",
     },
   },
   v2Hero: {
@@ -329,23 +337,23 @@ flowchart LR
       links: [
         { href: "/en/faq/", label: "Answered FAQ" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FOUNDATION.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FOUNDATION.md",
           label: "Foundation Stack",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/QUICK_START.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/QUICK_START.md",
           label: "Markdown Version",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTRACT.md",
           label: "Runtime Contract",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "ScreenScribe Review Gate",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Content Truth Matrix",
         },
       ],
@@ -531,7 +539,7 @@ flowchart LR
             {
               questionHtml: "What if I need a broader commercial arrangement?",
               answerHtml:
-                "Use the contact form on this site (or the address in the repo license) and describe your team size and intended use. VetCoders reads every message and replies with the alternative licensing terms that fit — the LICENSE file stays the source of truth for what needs an arrangement. There is no self-serve pricing page yet; the contact route is the commercial path.",
+                "Use the contact form on this site (or the address in the repo license) and describe your team size and intended use. Vetcoders reads every message and replies with the alternative licensing terms that fit — the LICENSE file stays the source of truth for what needs an arrangement. Open / Fleet / Forge tiers and the paid-pilot path live on the landing commercial surface; contact remains available for Forge and custom licensing.",
             },
           ],
         },
@@ -539,19 +547,19 @@ flowchart LR
       links: [
         { href: "/en/quickstart/", label: "Quick Start" },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/FAQ-ANSWERED.md",
           label: "Long-form Markdown FAQ",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/SCREENSCRIBE_REVIEW.md",
           label: "ScreenScribe Review Gate",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/docs/runtime/CONTENT_TRUTH.md",
           label: "Content Truth Matrix",
         },
         {
-          href: "https://github.com/VetCoders/vibecrafted/blob/main/LICENSE",
+          href: "https://github.com/vetcoders/vibecrafted/blob/main/LICENSE",
           label: "License",
         },
       ],
