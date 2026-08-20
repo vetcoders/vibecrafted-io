@@ -53,6 +53,21 @@ assert.doesNotMatch(
   'Section shell must not carry blueprint scanlines.',
 );
 assert.match(
+  verticalScrollSurfaces['src/components/SectionShell.astro'],
+  /height:\s*100dvh/,
+  'Landing sections are one viewport tall; they do not grow with content.',
+);
+assert.match(
+  read('src/styles/tokens-v2.css'),
+  /--v2-section-padding-y-top:\s*80px/,
+  'Section padding stays generous — do not crush it to force-fit height.',
+);
+assert.match(
+  read('src/styles/tokens-v2.css'),
+  /--v2-section-padding-y-bottom:\s*80px/,
+  'Section bottom padding stays 80px with the height frame.',
+);
+assert.match(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
   /@media print/i,
   'LayoutV2 must hide decor and force reveal-visible in print.',

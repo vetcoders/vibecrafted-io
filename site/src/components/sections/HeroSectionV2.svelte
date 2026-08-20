@@ -137,9 +137,9 @@
     position: relative;
     isolation: isolate;
     width: 100%;
-    height: 100vh;
-    height: 100svh;
-    min-height: 560px;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);

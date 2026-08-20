@@ -51,3 +51,4 @@ aicx-dashboard.html
 /shots
 /.loctree
 /framework
+*.jsonl

@@ -1,0 +1,1683 @@
+### FILE: vc-admin ###
+TYPE: Mach-O 64-bit executable arm64
+(binary — content skipped)
+
+----END vc-admin----
+
+### FILE: vc-agents ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-agents' "$@"
+
+----END vc-agents----
+
+### FILE: vc-audit ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-audit' "$@"
+
+----END vc-audit----
+
+### FILE: vc-cron ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-cron' "$@"
+
+----END vc-cron----
+
+### FILE: vc-dashboard ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' dashboard "$@"
+
+----END vc-dashboard----
+
+### FILE: vc-dashboard ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' dashboard "$@"
+
+----END vc-dashboard----
+
+### FILE: dashboard ###
+MISSING
+
+----END dashboard----
+
+### FILE: vc-decorate ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-decorate' "$@"
+
+----END vc-decorate----
+
+### FILE: vc-delegate ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-delegate' "$@"
+
+----END vc-delegate----
+
+### FILE: vc-dispatch ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' dispatch "$@"
+
+----END vc-dispatch----
+
+### FILE: vc-dispatch ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' dispatch "$@"
+
+----END vc-dispatch----
+
+### FILE: dispatch ###
+MISSING
+
+----END dispatch----
+
+### FILE: vc-dou ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-dou' "$@"
+
+----END vc-dou----
+
+### FILE: vc-followup ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-followup' "$@"
+
+----END vc-followup----
+
+### FILE: vc-frame ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame' "$@"
+
+----END vc-frame----
+
+### FILE: vc-git ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-git' "$@"
+
+----END vc-git----
+
+### FILE: vc-guard ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-guard' "$@"
+
+----END vc-guard----
+
+### FILE: vc-guardian ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-guardian' "$@"
+
+----END vc-guardian----
+
+### FILE: vc-help ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' help "$@"
+
+----END vc-help----
+
+### FILE: vc-help ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' help "$@"
+
+----END vc-help----
+
+### FILE: help ###
+MISSING
+
+----END help----
+
+### FILE: vc-hydrate ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-hydrate' "$@"
+
+----END vc-hydrate----
+
+### FILE: vc-implement ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-implement' "$@"
+
+----END vc-implement----
+
+### FILE: vc-init ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' init "$@"
+
+----END vc-init----
+
+### FILE: vc-init ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' init "$@"
+
+----END vc-init----
+
+### FILE: init ###
+MISSING
+
+----END init----
+
+### FILE: vc-intents ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-intents' "$@"
+
+----END vc-intents----
+
+### FILE: vc-justdo ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' justdo "$@"
+
+----END vc-justdo----
+
+### FILE: vc-justdo ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' justdo "$@"
+
+----END vc-justdo----
+
+### FILE: justdo ###
+MISSING
+
+----END justdo----
+
+### FILE: vc-loop ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-loop' "$@"
+
+----END vc-loop----
+
+### FILE: vc-marbles ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-marbles' "$@"
+
+----END vc-marbles----
+
+### FILE: vc-ownership ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-ownership' "$@"
+
+----END vc-ownership----
+
+### FILE: vc-partner ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-partner' "$@"
+
+----END vc-partner----
+
+### FILE: vc-paste ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-paste' "$@"
+
+----END vc-paste----
+
+### FILE: vc-polarize ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-polarize' "$@"
+
+----END vc-polarize----
+
+### FILE: vc-prune ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-prune' "$@"
+
+----END vc-prune----
+
+### FILE: vc-release ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-release' "$@"
+
+----END vc-release----
+
+### FILE: vc-research ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-research' "$@"
+
+----END vc-research----
+
+### FILE: vc-research-await ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-research-await' "$@"
+
+----END vc-research-await----
+
+### FILE: vc-research-synthesize ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-research-synthesize' "$@"
+
+----END vc-research-synthesize----
+
+### FILE: vc-resume ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' resume "$@"
+
+----END vc-resume----
+
+### FILE: vc-resume ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' resume "$@"
+
+----END vc-resume----
+
+### FILE: resume ###
+MISSING
+
+----END resume----
+
+### FILE: vc-review ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-review' "$@"
+
+----END vc-review----
+
+### FILE: vc-sandbox ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-sandbox' "$@"
+
+----END vc-sandbox----
+
+### FILE: vc-scaffold ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-scaffold' "$@"
+
+----END vc-scaffold----
+
+### FILE: vc-server ###
+TYPE: Mach-O 64-bit executable arm64
+(binary — content skipped)
+
+----END vc-server----
+
+### FILE: vc-server-supervisor ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-server-supervisor' "$@"
+
+----END vc-server-supervisor----
+
+### FILE: vc-server.wrapper-bak-0819 ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-server' "$@"
+
+----END vc-server.wrapper-bak-0819----
+
+### FILE: vc-ship ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-ship' "$@"
+
+----END vc-ship----
+
+### FILE: vc-slack ###
+TYPE: Bourne-Again shell script text executable, Unicode text, UTF-8 text
+#!/usr/bin/env bash
+# vc-slack — universal Slack connector + optional Vibecrafted fleet bridge.
+#
+# Agency CLI for models and operators:
+#   vc-slack oauth install|status|url
+#   vc-slack tools | vc-slack tool <name> '{json}'
+#   vc-slack mcp
+#   vc-slack <agent> <org>/<repo> <message>
+#   vc-slack agent send [--repo <org>/<repo>] <agent> <message>
+#   vc-slack post / history / whoami / signal / status / run
+#
+set -euo pipefail
+
+# Resolve package ROOT through symlinks (PATH install is often
+# ~/.local/bin/vc-slack -> <repo>/bin/vc-slack).
+_vc_slack_src="${BASH_SOURCE[0]:-$0}"
+while [[ -L "$_vc_slack_src" ]]; do
+  _vc_slack_dir="$(cd -P "$(dirname "$_vc_slack_src")" && pwd)"
+  _vc_slack_link="$(readlink "$_vc_slack_src")"
+  if [[ "$_vc_slack_link" != /* ]]; then
+    _vc_slack_src="$_vc_slack_dir/$_vc_slack_link"
+  else
+    _vc_slack_src="$_vc_slack_link"
+  fi
+done
+ROOT="$(cd -P "$(dirname "$_vc_slack_src")/.." && pwd)"
+export ROOT
+unset _vc_slack_src _vc_slack_dir _vc_slack_link
+
+# Agent-command installation must work from a packed/global install even when
+# the caller's cwd has no package.json and connector dependencies are absent.
+case "${1:-}" in
+  skill)
+    shift
+    skill_action="${1:-help}"
+    if [[ $# -gt 0 ]]; then shift; fi
+    case "$skill_action" in
+      install) exec node "${ROOT}/scripts/install-agent-command.mjs" --apply "$@" ;;
+      check) exec node "${ROOT}/scripts/install-agent-command.mjs" --check "$@" ;;
+      uninstall) exec node "${ROOT}/scripts/install-agent-command.mjs" --uninstall "$@" ;;
+      help|-h|--help) exec node "${ROOT}/scripts/install-agent-command.mjs" --help ;;
+      *) echo "usage: vc-slack skill install [--force] | check | uninstall" >&2; exit 2 ;;
+    esac
+    ;;
+  install-agent-command)
+    shift
+    exec node "${ROOT}/scripts/install-agent-command.mjs" --apply "$@"
+    ;;
+  check-agent-command)
+    shift
+    exec node "${ROOT}/scripts/install-agent-command.mjs" --check "$@"
+    ;;
+  uninstall-agent-command)
+    shift
+    exec node "${ROOT}/scripts/install-agent-command.mjs" --uninstall "$@"
+    ;;
+esac
+
+# Load selected keys via Node dotenv. Values cross the process boundary as
+# NUL-delimited data and are assigned with printf -v: no eval/source, and no
+# shell parsing of token or path contents.
+while IFS= read -r -d '' _vc_slack_key && IFS= read -r -d '' _vc_slack_value; do
+  printf -v "$_vc_slack_key" '%s' "$_vc_slack_value"
+  export "$_vc_slack_key"
+done < <(node --input-type=module <<NODE
+import "${ROOT}/src/runtime-env.js";
+const keys = [
+  "SLACK_APP_ID","SLACK_BOT_TOKEN","SLACK_APP_TOKEN","SLACK_SIGNING_SECRET",
+  "SLACK_CLIENT_ID","SLACK_CLIENT_SECRET","SLACK_USER_TOKEN",
+  "SLACK_REDIRECT_URI","SLACK_TOKEN_AUTH_METHOD","SLACK_BOT_SCOPES","SLACK_USER_SCOPES",
+  "SLACK_DEFAULT_CHANNEL","AGENTS_ROOM_CHANNEL_ID","AGENTS_ROOM_CHANNEL_NAME",
+  "VC_PLAYGROUND_CHANNEL_ID","SLACK_TEAM_ID","VC_SERVER_URL","SLACK_ALLOW_USERS",
+  "VIBECRAFTED_AGENT","VC_DEFAULT_AGENT","VC_SLACK_SERVER_URL_ORIGIN","VC_SLACK_DATA_DIR","VC_SLACK_AGENT_SOCKET",
+  "VC_SLACK_OAUTH_PORT","VC_SLACK_DRY_RUN","VC_FLEET_MODE",
+  "VC_SLACK_AGENT_TIMEOUT_MS",
+  "VC_PEER_REPOS_FILE","VC_PEER_REPOS_JSON",
+  "VC_CONSOLE_API_HOST","VC_CONSOLE_API_PORT","VC_CONSOLE_ALLOWED_ORIGINS","VC_CONSOLE_ALLOWED_HOSTS","VC_CONSOLE_TOKEN",
+  "VC_CONSOLE_UI_HOST","VC_CONSOLE_UI_PORT",
+  "VC_CONSOLE_PEER_TTL_SECONDS","VC_CONSOLE_HISTORY_LIMIT",
+  "VIBECRAFTED_BIN","VC_DISPATCH_DRY_RUN","VC_DISPATCH_COOLDOWN_MS",
+  "VC_DISPATCH_MAX_CONCURRENT","VC_PROGRESS_MIN_MS","VC_DISPATCH_SPAWN_MS"
+];
+for (const key of keys) {
+  const val = process.env[key];
+  if (val === undefined) continue;
+  process.stdout.write(key + "\0" + String(val) + "\0");
+}
+NODE
+)
+unset _vc_slack_key _vc_slack_value
+
+# Soft defaults — no Libraxis hard requirement for universal connector mode.
+CHANNEL_DEFAULT="${SLACK_DEFAULT_CHANNEL:-${AGENTS_ROOM_CHANNEL_ID:-}}"
+PLAYGROUND_DEFAULT="${VC_PLAYGROUND_CHANNEL_ID:-$CHANNEL_DEFAULT}"
+
+if [[ "${1:-}" == "--" ]]; then
+  shift
+fi
+cmd="${1:-}"
+shift || true
+
+# Commands that do not need a bot token / slack CLI
+case "$cmd" in
+  oauth)
+    sub="${1:-status}"
+    shift || true
+    case "$sub" in
+      status)
+        exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { storeStatus } from '${ROOT}/src/oauth/store.js';
+console.log(JSON.stringify(storeStatus(), null, 2));
+"
+        ;;
+      url|authorize)
+        mode="bot"
+        pkce=1
+        while [[ $# -gt 0 ]]; do
+          case "$1" in
+            --user) mode="user"; shift ;;
+            --bot) mode="bot"; shift ;;
+            --no-pkce) pkce=0; shift ;;
+            *) break ;;
+          esac
+        done
+        exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { authorizeFromEnv } from '${ROOT}/src/oauth/manager.js';
+const r = authorizeFromEnv({ mode: '${mode}', usePkce: ${pkce} === 1 });
+console.log(JSON.stringify({ url: r.url, state: r.state, redirect_uri: r.redirectUri, mode: r.mode, pkce: Boolean(r.pkce) }, null, 2));
+console.error('\\nOpen the url in a browser (or run: vc-slack oauth install)');
+"
+        ;;
+      install)
+        mode="bot"
+        while [[ $# -gt 0 ]]; do
+          case "$1" in
+            --user) mode="user"; shift ;;
+            --bot) mode="bot"; shift ;;
+            *) break ;;
+          esac
+        done
+        exec node --input-type=module <<NODE
+import "${ROOT}/src/runtime-env.js";
+import { spawn } from "node:child_process";
+import { authorizeFromEnv } from "${ROOT}/src/oauth/manager.js";
+import { runOAuthInstall } from "${ROOT}/src/oauth/server.js";
+
+const prepared = authorizeFromEnv({ mode: "${mode}", usePkce: true });
+console.error("Authorize URL:\\n" + prepared.url + "\\n");
+console.error("Listening for callback on " + prepared.redirectUri);
+console.error("Approve in the browser…");
+
+function openBrowser(url) {
+  const plat = process.platform;
+  const cmd = plat === "darwin" ? "open" : plat === "win32" ? "start" : "xdg-open";
+  try {
+    spawn(cmd, [url], { stdio: "ignore", detached: true }).unref();
+  } catch {
+    /* manual open */
+  }
+}
+
+const { install } = await runOAuthInstall({
+  mode: "${mode}",
+  usePkce: true,
+  openBrowser,
+});
+console.log(JSON.stringify({
+  ok: true,
+  team_id: install.team_id,
+  team_name: install.team_name,
+  has_bot_token: Boolean(install.bot_token),
+  has_user_token: Boolean(install.user_token),
+  bot_scopes: install.bot_scopes,
+  user_scopes: install.user_scopes,
+}, null, 2));
+NODE
+        ;;
+      exchange)
+        # Headless: code from redirect (for CI / custom callback hosts)
+        code=""
+        mode="bot"
+        verifier=""
+        while [[ $# -gt 0 ]]; do
+          case "$1" in
+            --code) code="$2"; shift 2 ;;
+            --user) mode="user"; shift ;;
+            --bot) mode="bot"; shift ;;
+            --code-verifier) verifier="$2"; shift 2 ;;
+            *) break ;;
+          esac
+        done
+        [[ -n "$code" ]] || { echo "usage: vc-slack oauth exchange --code <code> [--code-verifier v] [--user]" >&2; exit 2; }
+        CODE="$code" MODE="$mode" VERIFIER="$verifier" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { completeInstall } from '${ROOT}/src/oauth/manager.js';
+const install = await completeInstall({
+  code: process.env.CODE,
+  mode: process.env.MODE || 'bot',
+  codeVerifier: process.env.VERIFIER || undefined,
+});
+console.log(JSON.stringify({ ok: true, team_id: install.team_id, team_name: install.team_name }, null, 2));
+"
+        ;;
+      *)
+        echo "usage: vc-slack oauth status|url|install|exchange" >&2
+        exit 2
+        ;;
+    esac
+    ;;
+  tools|tool-list)
+    exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { listToolDefinitions } from '${ROOT}/src/connector/tools.js';
+console.log(JSON.stringify(listToolDefinitions(), null, 2));
+"
+    ;;
+  tool)
+    name="${1:-}"
+    shift || true
+    [[ -n "$name" ]] || { echo "usage: vc-slack tool <name> ['{json args}']" >&2; exit 2; }
+    args_json="${1-}"
+    if [[ -z "$args_json" ]]; then
+      args_json="{}"
+    fi
+    NAME="$name" ARGS="$args_json" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const args = JSON.parse(process.env.ARGS || '{}');
+const result = await callTool(process.env.NAME, args, {
+  dryRun: process.env.VC_SLACK_DRY_RUN === '1',
+});
+console.log(JSON.stringify(result, null, 2));
+"
+    ;;
+  agent)
+    sub="${1:-}"
+    shift || true
+    [[ "$sub" == "send" ]] || {
+      echo "usage: vc-slack agent send [--request-id ID] [--repo org/repo] <agent> <message>" >&2
+      exit 2
+    }
+    request_id=""
+    repository=""
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --request-id)
+          [[ $# -ge 2 ]] || { echo "--request-id requires a value" >&2; exit 2; }
+          request_id="$2"
+          shift 2
+          ;;
+        --repo|--repository)
+          [[ $# -ge 2 ]] || { echo "$1 requires a value" >&2; exit 2; }
+          repository="$2"
+          shift 2
+          ;;
+        --)
+          shift
+          break
+          ;;
+        -*)
+          echo "unknown flag: $1" >&2
+          exit 2
+          ;;
+        *)
+          break
+          ;;
+      esac
+    done
+    target_agent="${1:-}"
+    [[ -n "$target_agent" ]] || {
+      echo "usage: vc-slack agent send [--request-id ID] [--repo org/repo] <agent> <message>" >&2
+      exit 2
+    }
+    shift || true
+    message="${*:-}"
+    if [[ -z "$message" && ! -t 0 ]]; then
+      message="$(command cat)"
+    fi
+    [[ -n "$message" ]] || { echo "agent message is empty" >&2; exit 2; }
+    TARGET_AGENT="$target_agent" PEER_REPOSITORY="$repository" PEER_MESSAGE="$message" REQUEST_ID="$request_id" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { randomUUID } from 'node:crypto';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const requestId = process.env.REQUEST_ID || randomUUID();
+try {
+  const result = await callTool('vc_agent_send', {
+    agent: process.env.TARGET_AGENT,
+    ...(process.env.PEER_REPOSITORY ? { repository: process.env.PEER_REPOSITORY } : {}),
+    message: process.env.PEER_MESSAGE,
+    request_id: requestId,
+  }, {
+    dryRun: process.env.VC_SLACK_DRY_RUN === '1',
+  });
+  console.log(JSON.stringify(result, null, 2));
+} catch (error) {
+  const code = String(error?.code || 'agent_send_failed');
+  console.error(code + ': ' + String(error?.message || error) + ' · request_id=' + requestId);
+  process.exit(1);
+}
+"
+    ;;
+  repo)
+    sub="${1:-list}"
+    shift || true
+    case "$sub" in
+      pin)
+        slug="${1:-}"
+        pin_root="${2:-$PWD}"
+        [[ -n "$slug" ]] || { echo "usage: vc-slack repo pin <org/repo> [root]" >&2; exit 2; }
+        PEER_REPOSITORY="$slug" PEER_REPOSITORY_ROOT="$pin_root" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { pinRepository } from '${ROOT}/src/repository-map.js';
+try {
+  console.log(JSON.stringify(pinRepository(process.env.PEER_REPOSITORY, process.env.PEER_REPOSITORY_ROOT), null, 2));
+} catch (error) {
+  console.error(String(error?.code || 'repo_pin_failed') + ': ' + String(error?.message || error));
+  process.exit(1);
+}
+"
+        ;;
+      unpin)
+        slug="${1:-}"
+        [[ -n "$slug" ]] || { echo "usage: vc-slack repo unpin <org/repo>" >&2; exit 2; }
+        PEER_REPOSITORY="$slug" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { unpinRepository } from '${ROOT}/src/repository-map.js';
+try {
+  console.log(JSON.stringify(unpinRepository(process.env.PEER_REPOSITORY), null, 2));
+} catch (error) {
+  console.error(String(error?.code || 'repo_unpin_failed') + ': ' + String(error?.message || error));
+  process.exit(1);
+}
+"
+        ;;
+      resolve)
+        slug="${1:-}"
+        [[ -n "$slug" ]] || { echo "usage: vc-slack repo resolve <org/repo>" >&2; exit 2; }
+        PEER_REPOSITORY="$slug" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { createRepositoryResolver } from '${ROOT}/src/repository-map.js';
+try {
+  console.log(JSON.stringify(await createRepositoryResolver()(process.env.PEER_REPOSITORY), null, 2));
+} catch (error) {
+  console.error(String(error?.code || 'repo_resolve_failed') + ': ' + String(error?.message || error));
+  process.exit(1);
+}
+"
+        ;;
+      list)
+        exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { listRepositoryPins, repositoryMapFile } from '${ROOT}/src/repository-map.js';
+try {
+  console.log(JSON.stringify({ file: repositoryMapFile(), repositories: listRepositoryPins() }, null, 2));
+} catch (error) {
+  console.error(String(error?.code || 'repo_list_failed') + ': ' + String(error?.message || error));
+  process.exit(1);
+}
+"
+        ;;
+      *)
+        echo "usage: vc-slack repo pin|unpin|resolve|list" >&2
+        exit 2
+        ;;
+    esac
+    ;;
+  mcp)
+    exec node "$ROOT/src/connector/mcp.js"
+    ;;
+  console)
+    exec node "$ROOT/console/server.mjs"
+    ;;
+  connector-status)
+    exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { storeStatus, resolveBotToken } from '${ROOT}/src/oauth/store.js';
+import { loadConfig, hasSocketModeCreds, hasOAuthAppCreds } from '${ROOT}/src/config.js';
+const cfg = loadConfig();
+const bot = resolveBotToken();
+let auth = null;
+if (bot.token) {
+  try {
+    const { createSlackClient, authTest } = await import('${ROOT}/src/connector/client.js');
+    const { client } = createSlackClient({ kind: 'bot' });
+    auth = await authTest(client);
+  } catch (e) {
+    auth = { error: e instanceof Error ? e.message : String(e) };
+  }
+}
+console.log(JSON.stringify({
+  has_oauth_app: hasOAuthAppCreds(cfg),
+  has_socket_mode_env: hasSocketModeCreds(cfg),
+  bot_token_source: bot.source,
+  fleet_mode: cfg.fleetMode,
+  default_channel: cfg.defaultChannel || null,
+  auth,
+  store: storeStatus(),
+}, null, 2));
+"
+    ;;
+esac
+
+# Resolve bot token from env OR oauth store for classic commands
+if [[ -z "${SLACK_BOT_TOKEN:-}" ]]; then
+  SLACK_BOT_TOKEN="$(node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { resolveBotToken } from '${ROOT}/src/oauth/store.js';
+const r = resolveBotToken();
+if (r.token) process.stdout.write(r.token);
+" 2>/dev/null || true)"
+  export SLACK_BOT_TOKEN
+fi
+
+require_token() {
+  if [[ -z "${SLACK_BOT_TOKEN:-}" ]]; then
+    echo "No Slack bot token. Set SLACK_BOT_TOKEN or run: vc-slack oauth install" >&2
+    exit 1
+  fi
+}
+
+# Prefer connector tools (no slack CLI dependency) when slack CLI is missing
+SLACK_CMD="${SLACK_CMD:-$HOME/.slack/bin/slack}"
+if [[ ! -x "$SLACK_CMD" ]]; then
+  SLACK_CMD="$(command -v slack || true)"
+fi
+
+api() {
+  local method="$1"; shift
+  if [[ -n "${SLACK_CMD:-}" && -x "${SLACK_CMD}" ]]; then
+    "$SLACK_CMD" api "$method" --token="$SLACK_BOT_TOKEN" "$@"
+  else
+    # Pure HTTP fallback via Node + @slack/web-api
+    METHOD="$method" ARGS="$*" node --input-type=module <<'NODE'
+import { WebClient } from "@slack/web-api";
+const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+const method = process.env.METHOD;
+const raw = process.env.ARGS || "";
+const params = {};
+// parse key=value pairs
+const re = /(\w+)=((?:\"(?:\\.|[^\"])*\"|'[^']*'|[^\s]+))/g;
+let m;
+while ((m = re.exec(raw))) {
+  let v = m[2];
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+    v = v.slice(1, -1);
+  }
+  params[m[1]] = v;
+}
+const [ns, name] = method.split(".");
+const fn = client[ns]?.[name];
+if (typeof fn !== "function") {
+  console.error(JSON.stringify({ ok: false, error: `unknown_method:${method}` }));
+  process.exit(1);
+}
+const result = await fn(params);
+console.log(JSON.stringify(result));
+NODE
+  fi
+}
+
+resolve_channel() {
+  local c="${1:-$CHANNEL_DEFAULT}"
+  case "$c" in
+    "") echo "" ;;
+    agents-room|\#agents-room) echo "${AGENTS_ROOM_CHANNEL_ID:-$c}" ;;
+    playground|\#playground) echo "${PLAYGROUND_DEFAULT:-$c}" ;;
+    C*|D*|G*) echo "$c" ;;
+    *) echo "$c" ;;
+  esac
+}
+
+case "$cmd" in
+  whoami)
+    require_token
+    api auth.test | python3 -c 'import sys,json;d=json.loads(sys.stdin.read());print(json.dumps({k:d.get(k) for k in ("ok","team","user","user_id","bot_id","url")}, indent=2))'
+    ;;
+  post)
+    require_token
+    channel="${CHANNEL_DEFAULT}"
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --channel|-c) channel="$(resolve_channel "$2")"; shift 2 ;;
+        --) shift; break ;;
+        -*) echo "unknown flag $1" >&2; exit 2 ;;
+        *) break ;;
+      esac
+    done
+    text="${*:-}"
+    if [[ -z "$text" ]]; then
+      text="$(cat)"
+    fi
+    [[ -n "$text" ]] || { echo "empty message" >&2; exit 2; }
+    [[ -n "$channel" ]] || { echo "channel required (set SLACK_DEFAULT_CHANNEL or --channel)" >&2; exit 2; }
+    # Prefer connector tool path (handles #name resolution)
+    TEXT="$text" CHANNEL="$channel" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const r = await callTool('slack_post_message', {
+  channel: process.env.CHANNEL,
+  text: process.env.TEXT,
+});
+if (!r.ok) { console.error(JSON.stringify(r)); process.exit(1); }
+console.log(r.ts, r.channel);
+"
+    ;;
+  history)
+    require_token
+    limit=20
+    channel="${CHANNEL_DEFAULT}"
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --limit|-n) limit="$2"; shift 2 ;;
+        --channel|-c) channel="$(resolve_channel "$2")"; shift 2 ;;
+        *) break ;;
+      esac
+    done
+    [[ -n "$channel" ]] || { echo "channel required" >&2; exit 2; }
+    CHANNEL="$channel" LIMIT="$limit" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const r = await callTool('slack_channel_history', {
+  channel: process.env.CHANNEL,
+  limit: Number(process.env.LIMIT || 20),
+});
+if (!r.ok) { console.error(JSON.stringify(r)); process.exit(1); }
+for (const m of [...r.messages].reverse()) {
+  const who = m.user || m.bot_id || '?';
+  console.log(\`\${m.ts}  \${who}  \${(m.text || '(empty)').replace(/\\n/g, ' ')}\`);
+}
+"
+    ;;
+  file)
+    require_token
+    fid="${1:-}"
+    [[ -n "$fid" ]] || { echo "usage: vc-slack file <file_id|slack_file_url> [--save PATH]" >&2; exit 2; }
+    shift || true
+    save=""
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --save|-o) save="$2"; shift 2 ;;
+        *) shift ;;
+      esac
+    done
+    case "$fid" in
+      *files.slack.com*|*/files-pri/*|https://*)
+        fid="$(printf '%s' "$fid" | sed -E 's#.*/(F[A-Z0-9]+)(/.*)?#\1#')" ;;
+    esac
+    SAVE="$save" FID="$fid" TOKEN="$SLACK_BOT_TOKEN" python3 <<'PY'
+import json, os, sys, urllib.parse, urllib.request
+tok, fid, save = os.environ["TOKEN"], os.environ["FID"], os.environ.get("SAVE") or ""
+def api(method, **params):
+    url = f"https://slack.com/api/{method}?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {tok}"})
+    return json.load(urllib.request.urlopen(req))
+info = api("files.info", file=fid)
+if not info.get("ok"):
+    print(f"FAIL {info.get('error')}", file=sys.stderr); sys.exit(1)
+f = info["file"]
+url = f.get("url_private_download") or f.get("url_private")
+print(f"# {f.get('name')} · {f.get('mimetype')} · {f.get('size')}B", file=sys.stderr)
+req = urllib.request.Request(url, headers={"Authorization": f"Bearer {tok}"})
+data = urllib.request.urlopen(req).read()
+if data[:200].lstrip().lower().startswith(b"<a href") or b"<html" in data[:200].lower():
+    print("FAIL download returned HTML", file=sys.stderr); sys.exit(1)
+if save:
+    open(save, "wb").write(data)
+    print(f"saved {len(data)}B -> {save}", file=sys.stderr)
+else:
+    sys.stdout.buffer.write(data)
+PY
+    ;;
+  signal)
+    require_token
+    channel="${PLAYGROUND_DEFAULT:-$CHANNEL_DEFAULT}"
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --channel|-c) channel="$(resolve_channel "$2")"; shift 2 ;;
+        *) break ;;
+      esac
+    done
+    body="${*:-}"
+    [[ -n "$body" ]] || { echo "usage: vc-slack signal <text>" >&2; exit 2; }
+    [[ -n "$channel" ]] || { echo "channel required" >&2; exit 2; }
+    agent="${VIBECRAFTED_AGENT:-${AGENT:-unknown}}"
+    run_id="${VIBECRAFTED_RUN_ID:-${RUN_ID:-}}"
+    ts="$(date -u +%Y-%m-%dT%H:%MZ)"
+    text="*SIGNAL* · \`${agent}\`"
+    [[ -n "$run_id" ]] && text+=" · \`${run_id}\`"
+    text+=$'\n'"${body}"$'\n'_"${ts}"_
+    TEXT="$text" CHANNEL="$channel" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const r = await callTool('slack_post_message', { channel: process.env.CHANNEL, text: process.env.TEXT });
+if (!r.ok) { console.error(JSON.stringify(r)); process.exit(1); }
+console.log(r.ts, r.channel);
+"
+    ;;
+  status)
+    exec node "$ROOT/src/cli-status.js"
+    ;;
+  run)
+    rid="${1:-}"
+    [[ -n "$rid" ]] || { echo "usage: vc-slack run <run_id>" >&2; exit 2; }
+    exec node "$ROOT/src/cli-run.js" "$rid"
+    ;;
+  join)
+    require_token
+    channel="$(resolve_channel "${1:-$CHANNEL_DEFAULT}")"
+    [[ -n "$channel" ]] || { echo "channel required" >&2; exit 2; }
+    api conversations.join channel="$channel" | python3 -c '
+import sys,json
+d=json.loads(sys.stdin.read())
+print(d.get("ok"), d.get("error") or (d.get("channel") or {}).get("name"))
+'
+    ;;
+  ""|-h|--help|help)
+    cat <<'EOF'
+vc-slack — universal Slack connector (agency + optional Vibecrafted fleet)
+
+Connect / OAuth
+  vc-slack oauth status              # installs on disk (no secrets printed)
+  vc-slack oauth url [--user]        # print authorize URL
+  vc-slack oauth install [--user]    # local callback + browser install
+  vc-slack oauth exchange --code …   # headless code exchange
+  vc-slack connector-status          # env + store + auth.test
+
+AI tools (sprawczość)
+  vc-slack tools                     # list tool schemas
+  vc-slack tool slack_post_message '{"channel":"#general","text":"hi"}'
+  vc-slack claude vetcoders/vc-slack "message" # repo-scoped peer conversation
+  vc-slack agent send --repo vetcoders/vc-slack codex "message"
+  vc-slack repo pin vetcoders/vc-slack # pin cwd as bridge-owned repo root
+  vc-slack skill install             # install /vc-slack agent-host skill
+  vc-slack skill check               # verify stable owned skill + host links
+  vc-slack mcp                       # MCP stdio server for model hosts
+  vc-slack console                   # operator UI + bus, env-driven host (default :3848)
+
+Classic CLI
+  vc-slack whoami
+  vc-slack join [channel]
+  vc-slack post [--channel #name|C…] "message"
+  vc-slack history [--channel …] [--limit 20]
+  vc-slack file <file_id|url> [--save PATH]
+  vc-slack signal [--channel …] "peer payload"
+  vc-slack status                    # fleet omni-observer (optional)
+  vc-slack run <run_id>
+
+Env (minimum for OAuth install):
+  SLACK_CLIENT_ID, SLACK_CLIENT_SECRET
+  SLACK_REDIRECT_URI (default http://127.0.0.1:3847/oauth/callback)
+
+Env (tokens — or obtained via oauth install):
+  SLACK_BOT_TOKEN / SLACK_USER_TOKEN
+  SLACK_DEFAULT_CHANNEL
+
+Fleet extras (optional):
+  SLACK_APP_TOKEN, SLACK_SIGNING_SECRET  # Socket Mode bridge
+  VC_SERVER_URL, SLACK_ALLOW_USERS, AGENTS_ROOM_CHANNEL_ID
+  VC_SLACK_AGENT_SOCKET                 # local bridge IPC override
+  VC_SLACK_AGENT_TIMEOUT_MS             # local IPC result deadline (default 65000)
+  VC_PEER_REPOS_FILE                    # private org/repo → root pin map
+
+Token auth method (token exchange): SLACK_TOKEN_AUTH_METHOD=client_secret_basic
+EOF
+    ;;
+  oauth|tools|tool|agent|repo|mcp|console|connector-status|tool-list)
+    # handled above; if we fall through, re-exec shouldn't happen
+    ;;
+  *)
+    target_agent="$cmd"
+    repository="${1:-}"
+    shift || true
+    message="${*:-}"
+    if [[ -z "$message" && ! -t 0 ]]; then
+      message="$(command cat)"
+    fi
+    [[ -n "$target_agent" && -n "$repository" && -n "$message" ]] || {
+      echo "usage: vc-slack <agent> <org/repo> \"<message>\"" >&2
+      exit 2
+    }
+    TARGET_AGENT="$target_agent" PEER_REPOSITORY="$repository" PEER_MESSAGE="$message" exec node --input-type=module -e "
+import '${ROOT}/src/runtime-env.js';
+import { randomUUID } from 'node:crypto';
+import { callTool } from '${ROOT}/src/connector/tools.js';
+const requestId = randomUUID();
+try {
+  const result = await callTool('vc_agent_send', {
+    agent: process.env.TARGET_AGENT,
+    repository: process.env.PEER_REPOSITORY,
+    message: process.env.PEER_MESSAGE,
+    request_id: requestId,
+  }, { dryRun: process.env.VC_SLACK_DRY_RUN === '1' });
+  console.log(JSON.stringify(result, null, 2));
+} catch (error) {
+  const code = String(error?.code || 'agent_send_failed');
+  console.error(code + ': ' + String(error?.message || error) + ' · request_id=' + requestId);
+  process.exit(1);
+}
+"
+    ;;
+esac
+
+----END vc-slack----
+
+### FILE: vc-start ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-start' "$@"
+
+----END vc-start----
+
+### FILE: vc-terminal ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Volumes/vc-workspace/vetcoders/vibecrafted-suite/vibecrafted/dist/Vibecrafted.app/Contents/Helpers/vc-terminal.app/Contents/MacOS/alacritty' '--config-file' '/Users/polyversai/.config/vibecrafted/terminal-entry.toml' "$@"
+
+----END vc-terminal----
+
+### FILE: vc-theme ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-theme' "$@"
+
+----END vc-theme----
+
+### FILE: vc-tools ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Resolve symlinks portably (macOS + Linux) to find real repo root.
+target="$0"
+while [ -L "$target" ]; do
+  link_dir="$(cd -P "$(dirname "$target")" && pwd)"
+  target="$(readlink "$target")"
+  [[ "$target" != /* ]] && target="$link_dir/$target"
+done
+REPO_DIR="$(cd -P "$(dirname "$target")" && pwd)"
+
+cd "$REPO_DIR"
+exec pnpm run tui "$@"
+
+----END vc-tools----
+
+### FILE: vc-trust ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-trust' "$@"
+
+----END vc-trust----
+
+### FILE: vc-workflow ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-workflow' "$@"
+
+----END vc-workflow----
+
+### FILE: vibecrafted ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted' "$@"
+
+----END vibecrafted----
+
+### FILE: vibecrafted-compact-hook ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted-compact-hook' "$@"
+
+----END vibecrafted-compact-hook----
+
+### FILE: vibecrafted-iterm2-autolaunch ###
+TYPE: a /Users/polyversai/.local/share/uv/tools/vibecrafted-iterm2/bin/python3 script text executable, ASCII text
+#!/Users/polyversai/.local/share/uv/tools/vibecrafted-iterm2/bin/python3
+# -*- coding: utf-8 -*-
+import sys
+from vibecrafted_iterm2.install_autolaunch import main
+if __name__ == "__main__":
+    if sys.argv[0].endswith("-script.pyw"):
+        sys.argv[0] = sys.argv[0][:-11]
+    elif sys.argv[0].endswith(".exe"):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(main())
+
+----END vibecrafted-iterm2-autolaunch----
+
+### FILE: vibecrafted-mcp ###
+TYPE: a /Users/polyversai/.local/share/uv/tools/vibecrafted-mcp/bin/python3 script text executable, ASCII text
+#!/Users/polyversai/.local/share/uv/tools/vibecrafted-mcp/bin/python3
+# -*- coding: utf-8 -*-
+import sys
+from vibecrafted_mcp.server import main
+if __name__ == "__main__":
+    if sys.argv[0].endswith("-script.pyw"):
+        sys.argv[0] = sys.argv[0][:-11]
+    elif sys.argv[0].endswith(".exe"):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(main())
+
+----END vibecrafted-mcp----
+
+### FILE: vibecrafted-resume ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted-resume' "$@"
+
+----END vibecrafted-resume----
+
+### FILE: vibecrafted-server-web ###
+TYPE: Bourne-Again shell script text executable, ASCII text
+#!/bin/bash
+set -euo pipefail
+export XDG_CONFIG_HOME='/Users/polyversai/.config'
+export VIBECRAFTED_HOME='/Users/polyversai/.vibecrafted'
+export VIBECRAFTED_RUNTIME_HOME='/Users/polyversai/.local/share/vibecrafted'
+export VIBECRAFTED_RUNTIME_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_ROOT='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814'
+export VIBECRAFTED_PYTHON='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/python3'
+export VIBECRAFTED_VC_FRAME_BIN='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vc-frame'
+export VC_FRAME_CONFIG_DIR='/Users/polyversai/.config/vibecrafted/vc-frame'
+export PATH='/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin:/Users/polyversai/.local/bin:/Users/polyversai/.cargo/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin'
+exec '/Users/polyversai/.local/share/vibecrafted/releases/4.1.0+g237d2814/bin/vibecrafted-server-web' "$@"
+
+----END vibecrafted-server-web----
+
