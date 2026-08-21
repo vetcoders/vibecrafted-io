@@ -12,19 +12,19 @@ title: "THE OPERATOR"
 centerLabel: "INSTALL · HAND OFF · OBSERVE · 3.6.0"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
-headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
+headingHtml: 'Install. Then <em class="accent-2">send one job</em>'
 
 # Three install steps — terminal-shaped cards.
 installSteps:
   - step: "STEP 01"
     command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
-    note: "One local bootstrap from the published 3.6.0 artifact — not a private checkout."
+    note: "Puts the command on your PATH."
   - step: "STEP 02"
-    command: "$ vibecrafted doctor"
-    note: "Health check: foundations prebuilt-first, control plane staged, VERSION stamped."
+    command: '$ vibecrafted workflow claude -p "Read this repo and name the first fix."'
+    note: "A real agent, a real repo, a recorded run."
   - step: "STEP 03"
-    command: "$ vibecrafted init claude"
-    note: "First-context pass: Loctree map + AICX intent before any agent cuts code."
+    command: "$ vc-frame"
+    note: "Optional. The terminal where you watch the fleet."
 
 # Secondary heading for the "shared surface" half of the section.
 shotHeadingHtml: 'The repo gets a <em class="accent-2">shared surface</em>'

@@ -107,9 +107,9 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Runtime operacyjny multiagentowych CLI workflows.",
+      title: "Vibecrafted — puść Claude, Codex i Grok jedną komendą.",
       description:
-        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
+        "Runtime w terminalu dla agentów, których już używasz. Odpalasz Claude, Codex, Grok, Junie albo Agy, patrzysz na run i zostawiasz kwit.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -129,15 +129,15 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "RUNTIME OPERACYJNY · MULTIAGENTOWE CLI WORKFLOWS",
+    eyebrow: "CLAUDE · CODEX · GROK · JUNIE · AGY",
     heading: {
-      pre: "Runtime operacyjny",
-      mid: "dla multiagentowych",
-      accent: "CLI workflows.",
+      pre: "Puść agenta.",
+      mid: "Patrz na run.",
+      accent: "Zostaw kwit.",
     },
-    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
+    body: 'Masz już Claude Code, Codex albo Grok. Vibecrafted to komenda, która ich odpala, zapisuje run i rozlicza. Zawsze ten sam kształt.<code>vibecrafted workflow claude -p "Przeczytaj to repo i nazwij pierwszy prawdziwy fix."</code>',
     ctaPrimary: "INSTALUJ",
-    ctaSecondary: "QUICK START",
+    ctaSecondary: "SPRÓBUJ",
     telemetry: {
       marbles: "AGENCI",
       converge: "REPO",

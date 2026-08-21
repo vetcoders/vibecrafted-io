@@ -29,17 +29,17 @@ carousel:
   # `accent` switches the visual treatment for the late shipping steps.
   steps:
     - num: "01"
-      verb: "CHECK"
+      verb: "SEND"
       accent: "default"
       state: 0
       pct: "000"
-      title: "Check the local surface."
-      body: "Start with the boring signal: does the launcher know where it is, what is installed, and what needs attention?"
-      command: "$ vibecrafted doctor"
+      title: "Send one real job."
+      body: "After install, the first useful thing is a recorded run — not a health sermon."
+      command: '$ vibecrafted workflow claude -p "Read this repo and name the first fix."'
       lands:
-        - "INSTALL HEALTH"
-        - "FOUNDATION CHECK"
-        - "LAUNCHER TRUTH"
+        - "A LIVE AGENT"
+        - "A RECORDED RUN"
+        - "A RECEIPT"
     - num: "02"
       verb: "INIT"
       accent: "default"

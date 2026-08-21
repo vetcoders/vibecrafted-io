@@ -8,8 +8,8 @@
 title: "WHAT YOU INSTALL"
 centerLabel: "SIX COMPONENTS · ONE CONTROL PLANE"
 
-headingHtml: 'No mystery meat. <em class="accent-2">This is the machine</em>'
-subtitle: "One installer, six components, one directory of truth. Here is exactly what lands on your machine, where it lives, and which part of the mess each piece exists to kill."
+headingHtml: 'What lands on <em class="accent-2">your machine</em>'
+subtitle: "One installer. Six binaries. They all read and write the same directory."
 
 components:
   - name: "vibecrafted"

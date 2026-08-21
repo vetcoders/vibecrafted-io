@@ -6,7 +6,6 @@
     eyebrow: string;
     heading: {
       pre: string;
-      /** Optional middle line (block) between pre and accent. */
       mid?: string;
       accent: string;
     };
@@ -34,53 +33,17 @@
   const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
-  const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
-
-  // Static surface stats — not marble sim counters.
-  const teleAgents = '040';
-  const teleRepos = '008';
-  const teleLive = 'LIVE';
+  const playgroundTitle = $derived(
+    lang === 'pl' ? 'Symulator komend Vibecrafted' : 'Vibecrafted command playground',
+  );
 </script>
 
 <section class={`hero hero--${lang}`} id="hero" aria-label={hero.ariaLabel}>
   <div class="hero__vignette" data-decor aria-hidden="true"></div>
-  <div class="hero__rail" aria-hidden="true">
-    <span class="hero__rail-live"><i></i> live</span>
-    <span>vibecrafted-server</span>
-    <span>vc-slack</span>
-    <span>loctree · aicx</span>
-  </div>
 
-  <div class="hero__visual" aria-hidden="true">
-    <!-- Exactly one decorative chrome; body fill is edge-to-edge product capture (no window-in-window). -->
-    <div class="hero__window vc-termwin vc-termwin--hero">
-      <div class="vc-termwin__titlebar">
-        <span class="vc-termwin__lights">
-          <span class="vc-termwin__dot vc-termwin__dot--close"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--min"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--max"></span>
-        </span>
-        <span class="vc-termwin__title">Needs attention · Sessions — vc-frame</span>
-      </div>
-      <div class="vc-termwin__body">
-        <img
-          class="hero__art"
-          src="/assets/hero/real-usage.png"
-          alt="vc-frame operator layout: Start here map, sessions rail, Session Manager"
-          width="1600"
-          height="1000"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </div>
-    </div>
-    <div class="hero__art-shade"></div>
-  </div>
-
-  <div class="hero__overlay" data-scroll-fade>
+  <div class="hero__copy" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      <!-- Brand-dot is sentence terminator only — never mid-phrase after pre/mid. -->
       <span class="hero__heading-mark">{hero.heading.pre}</span>
       {#if hero.heading.mid}
         <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
@@ -98,37 +61,19 @@
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
       </a>
-      <a class="hero__cta hero__cta--ghost" href={docsHref}>
+      <a class="hero__cta hero__cta--ghost" href="#playground">
         {hero.ctaSecondary}
       </a>
     </div>
   </div>
 
-  <div class="hero__telemetry" data-scroll-fade>
-    <span class="hero__tele-legend">{hero.telemetryLegend}</span>
-    <span class="hero__tele-row">
-      <span class="hero__tele-label">{hero.telemetry.marbles}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleAgents}</span>
-    </span>
-    <span class="hero__tele-row">
-      <span class="hero__tele-label">{hero.telemetry.converge}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleRepos}</span>
-    </span>
-    <span class="hero__tele-row hero__tele-row--live">
-      <span class="hero__tele-label">{hero.telemetry.live}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleLive}</span>
-    </span>
-  </div>
-
-  <p class="hero__canvas-caption" data-scroll-fade>
-    {hero.canvasCaption}
-  </p>
-
-  <div class="hero__scroll" aria-hidden="true">
-    {hero.scroll} <span class="hero__scroll-arrow">↓</span>
+  <div class="hero__stage" id="playground">
+    <iframe
+      class="hero__playground"
+      src="/playground/index.html?embed=1"
+      title={playgroundTitle}
+      loading="eager"
+    ></iframe>
   </div>
 </section>
 
@@ -136,13 +81,19 @@
   .hero {
     position: relative;
     isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(32px, 5vw, 72px);
     width: 100%;
-    height: 100vh;
-    height: 100svh;
-    min-height: 560px;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    padding: 96px clamp(28px, 5vw, 80px) 56px;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
+    box-sizing: border-box;
   }
 
   .hero::before,
@@ -150,90 +101,13 @@
     display: none;
   }
 
-  .hero__rail {
-    position: absolute;
-    top: 76px;
-    left: clamp(32px, 4vw, 72px);
-    z-index: 3;
+  .hero__copy {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--fg-on-dark-mute);
-  }
-
-  .hero__rail > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: 999px;
-    background: #121214;
-  }
-
-  .hero__rail-live {
-    color: var(--fg-on-dark);
-  }
-
-  .hero__rail-live i {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--v2-ok, #4ade80);
-  }
-
-  /* ── Real-usage window (single decorative chrome + edge-to-edge fill) ─ */
-
-  .hero__visual {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .hero__window {
-    position: absolute;
-    right: clamp(16px, 3vw, 48px);
-    top: 50%;
-    transform: translateY(-52%);
-    width: min(58vw, 920px);
-  }
-
-  .hero__art {
-    display: block;
-    width: 100%;
-    height: auto;
-    vertical-align: top;
-    opacity: 0.98;
-    filter: contrast(1.02) saturate(0.95);
-  }
-
-  .hero__art-shade {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(90deg, var(--ink) 0%, rgba(7, 10, 14, 0.82) 26%, transparent 52%),
-      linear-gradient(180deg, rgba(7, 10, 14, 0.4) 0%, transparent 22%, transparent 78%, rgba(7, 10, 14, 0.7) 100%);
-  }
-
-  /* ── Text overlay ───────────────────────────────────────── */
-
-  .hero__overlay {
-    position: absolute;
-    left: clamp(32px, 4vw, 72px);
-    bottom: clamp(96px, 12vh, 128px);
-    max-width: min(62%, 780px);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .hero__overlay > * {
-    pointer-events: auto;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    z-index: 2;
+    max-width: 36rem;
   }
 
   .hero__eyebrow {
@@ -241,20 +115,20 @@
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 400;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin-bottom: 28px;
+    margin-bottom: 22px;
   }
 
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: min(clamp(46px, 7vw, 92px), 10.5vh);
-    line-height: 1.02;
+    font-size: clamp(2.1rem, 4.6vw, 4.2rem);
+    line-height: 1.05;
     letter-spacing: -0.03em;
     color: var(--fg-on-dark);
-    margin: 0 0 32px;
+    margin: 0 0 22px;
   }
 
   .hero__heading-mark,
@@ -262,38 +136,8 @@
     display: block;
   }
 
-  .hero__heading-mark {
-    width: fit-content;
-    color: var(--fg-on-dark);
-    text-shadow: 0 0 32px rgba(var(--v2-accent-rgb), 0.16);
-  }
-
   .hero__heading-dot {
     color: var(--accent);
-  }
-
-  .hero__heading-line {
-    max-width: 16ch;
-  }
-
-  .hero--en .hero__heading-line {
-    max-width: 14ch;
-  }
-
-  .hero--en .hero__heading-mark {
-    max-width: 22ch;
-  }
-
-  .hero--pl .hero__heading {
-    font-size: min(clamp(38px, 5.5vw, 72px), 9.5vh);
-  }
-
-  .hero--pl .hero__heading-line {
-    max-width: 18ch;
-  }
-
-  .hero--pl .hero__heading-mark {
-    max-width: 22ch;
   }
 
   .hero__heading em {
@@ -302,25 +146,26 @@
 
   .hero__body {
     font-family: var(--font-body);
-    font-size: clamp(14px, 1vw, 17px);
+    font-size: clamp(15px, 1.15vw, 17px);
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    max-width: 66ch;
-    margin: 0 0 40px;
-  }
-
-  .hero__body em {
-    font-style: normal;
-    color: var(--accent);
+    margin: 0 0 28px;
   }
 
   .hero__body :global(code) {
+    display: block;
+    margin-top: 14px;
     font-family: var(--font-mono);
-    font-size: 0.92em;
-    color: var(--accent);
+    font-size: 0.82em;
+    line-height: 1.45;
+    color: var(--fg-on-dark);
+    background: #121214;
+    border: 1px solid var(--v2-border, #27272a);
+    border-radius: 8px;
+    padding: 12px 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
-
-  /* ── CTAs ───────────────────────────────────────────────── */
 
   .hero__ctas {
     display: flex;
@@ -382,127 +227,41 @@
     border-color: var(--fg-on-dark);
   }
 
-  /* ── Live telemetry ──────────────────────────────────────── */
-
-  .hero__telemetry {
-    position: absolute;
-    right: clamp(32px, 4vw, 72px);
-    bottom: clamp(96px, 12vh, 128px);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--fg-on-dark-mute);
-    text-align: right;
+  .hero__stage {
+    justify-self: end;
+    align-self: center;
+    width: min(100%, 560px);
+    height: min(64vh, 620px);
+    min-width: 0;
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0a0a0b;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
   }
 
-  .hero__tele-legend {
+  .hero__playground {
     display: block;
-    max-width: 28ch;
-    margin-bottom: 10px;
-    margin-left: auto;
-    line-height: 1.45;
-    letter-spacing: 0.08em;
-    text-transform: none;
-    color: var(--fg-on-dark-dim);
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #0a0a0b;
   }
-
-  .hero__tele-row {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-  }
-
-  .hero__tele-label {
-    color: var(--fg-on-dark-mute);
-  }
-
-  .hero__tele-dot {
-    color: var(--fg-on-dark-mute);
-    opacity: 0.6;
-  }
-
-  .hero__tele-value {
-    color: var(--fg-on-dark);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hero__tele-row--live .hero__tele-value {
-    color: var(--accent);
-  }
-
-  .hero__canvas-caption {
-    position: absolute;
-    right: clamp(32px, 4vw, 72px);
-    top: clamp(112px, 14vh, 168px);
-    z-index: 3;
-    max-width: 30ch;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    line-height: 1.45;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    text-align: right;
-    color: var(--fg-on-dark-mute);
-  }
-
-  /* ── Scroll hint ─────────────────────────────────────────── */
-
-  .hero__scroll {
-    position: absolute;
-    left: 50%;
-    bottom: 28px;
-    transform: translateX(-50%);
-    z-index: 3;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--fg-on-dark-mute);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .hero__scroll-arrow {
-    font-size: 12px;
-    animation: hero-scroll-bob 2.2s ease-in-out infinite;
-  }
-
-  @keyframes hero-scroll-bob {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(3px);
-    }
-  }
-
-  /* ── Responsive ──────────────────────────────────────────── */
 
   @media print, (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce) {
     .hero {
       height: auto;
-      min-height: 0;
+      max-height: none;
       overflow: visible;
+      grid-template-columns: 1fr;
     }
 
     .hero::before,
     .hero__vignette {
       display: none;
     }
-  }
 
-  @supports not (mix-blend-mode: screen) {
-    .hero::before,
-    .hero__vignette {
+    .hero__stage {
       display: none;
     }
   }
@@ -510,82 +269,27 @@
   @media (max-width: 900px) {
     .hero {
       height: auto;
-      min-height: 640px;
-      padding-bottom: 48px;
+      max-height: none;
+      min-height: 100dvh;
+      grid-template-columns: 1fr;
+      padding: 96px 20px 28px;
+      gap: 24px;
     }
 
-    .hero__visual {
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 40vh;
-      min-height: 200px;
-    }
-
-    .hero__window {
-      right: 12px;
-      left: 12px;
-      top: 88px;
-      transform: none;
-      width: auto;
-      opacity: 0.9;
-    }
-
-    .hero__art-shade {
-      background: linear-gradient(180deg, transparent 20%, var(--ink) 100%);
-    }
-
-    .hero__rail {
-      position: relative;
-      top: 0;
-      left: 0;
-      margin: 88px 24px 0;
-    }
-
-    .hero__rail > span:nth-child(n + 3) {
-      display: none;
-    }
-
-    .hero__overlay {
-      position: relative;
-      left: 0;
-      bottom: 0;
-      margin: 120px 24px 32px;
+    .hero__copy {
       max-width: none;
     }
 
-    .hero__heading {
-      font-size: clamp(40px, 10vw, 72px);
-    }
-
-    .hero__telemetry {
-      position: relative;
-      right: 0;
-      bottom: 0;
-      margin: 0 24px 24px;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      gap: 20px;
-      text-align: left;
-    }
-
-    .hero__tele-row {
-      justify-content: flex-start;
-    }
-
-    .hero__tele-legend {
-      margin-left: 0;
+    .hero__stage {
+      justify-self: stretch;
       width: 100%;
-      max-width: none;
+      height: 52vh;
     }
+  }
 
-    .hero__canvas-caption {
-      position: relative;
-      right: 0;
-      top: 0;
-      margin: 0 24px 16px;
-      text-align: left;
-      max-width: none;
+  @media (prefers-reduced-motion: reduce) {
+    .hero__cta {
+      transition: none;
     }
   }
 </style>

@@ -80,7 +80,7 @@
   --v2-section-padding-y-top: 80px;
   --v2-section-padding-y-bottom: 80px;
   --v2-section-padding-x: 32px;
-  --v2-section-title: clamp(1.75rem, 2.6vw + 0.4vh, 2.75rem);
+  --v2-section-title: clamp(1.5rem, 2.4vw + 1.2cqh, 2.55rem);
   --v2-hero-min-height: 720px;
 
   --ink: var(--v2-ink);

@@ -1,0 +1,179 @@
+=== vibecrafted help ===
+⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.1.0+g237d2814 — release engine for AI-developed software
+─────────────────────────────────────────
+
+Usage:
+  vibecrafted <command> [args]
+  vibecrafted <skill> <agent> [-p <prompt> | -f <file>]
+
+Commands:
+  init [agent]         Orient an agent in this repo
+  <skill> <agent>      Run a workflow with an agent
+  resume <agent>       Continue a stopped run (--run-id) or a provider session
+  resume-session       Continue an exact provider session as a tracked run
+  status               Today's agent activity
+  doctor               Installation health — pass/fail
+  receipt              Delivery/runtime receipt (source ↔ installed)
+  settlements          Read-only f/x/n ledger query (summary|list|inspect)
+  update               Update to the latest release
+  help [topic|--all]   This deck · full reference
+
+Ship cycle:
+  scaffold → implement → review → workflow → followup → marbles → audit → polarize → dou → hydrate → release
+  More workflows: vibecrafted help --all
+
+Agents:  claude · codex · agy · junie · grok
+
+Examples:
+  vibecrafted init claude
+  vibecrafted implement codex -p "Ship dark mode"
+  vibecrafted marbles claude -p "Loop until clean"
+
+=== vibecrafted help --all ===
+
+[1m[38;5;173m⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.1.0+g237d2814[0m (Full Reference)
+[38;5;247m─────────────────────────────────────────[0m
+  Release engine for AI-developed software.
+  Install locally. Work from evidence.
+
+[1m=== PIPELINE (canonical order) ===[0m
+
+  [38;5;173mscaffold[0m   → Plan architecture from a vague idea
+  [38;5;173minit[0m       → Orient: history, eyes, verify
+  [38;5;173mworkflow[0m   → Examine → Research → Implement
+  [38;5;173mfollowup[0m   (vc-followup v2.2.0) → Audit post-implementation direction, gaps, and drift
+  [38;5;173mmarbles[0m    → Convergence loop (counterexample elimination)
+  [38;5;173maudit[0m      (vc-audit v1.0.0) → Plan-vs-code falsification with requirements matrix
+  [38;5;173mdou[0m        → Definition of Undone audit
+  [38;5;173mdecorate[0m   → Visual finishing and UX coherence
+  [38;5;173mhydrate[0m    → Packaging and go-to-market
+  [38;5;173mrelease[0m    → Ship to production
+
+[1m=== FIRST 5 MINUTES ===[0m
+
+  [36mvibecrafted init claude[0m
+  [36mvibecrafted gui[0m
+  [36mvibecrafted tui[0m
+  [36mvibecrafted workflow claude --prompt "Plan and implement <task>"[0m
+  [36mvibecrafted implement codex --prompt "Ship <task>"[0m
+  [36mvc-ship codex --prompt "Run the full lifecycle"[0m
+  [36mvibecrafted dou claude --prompt "Audit launch readiness"[0m
+  [36mvibecrafted decorate codex --prompt "Polish the release surface"[0m
+  [36mvibecrafted hydrate codex --prompt "Package the product"[0m
+  [36mvibecrafted release codex --prompt "Prepare release steps"[0m
+  Dashboard is optional. The plain-language guide lives at [36m/Users/polyversai/.vibecrafted/START_HERE.md[0m.
+
+[1m=== MODES (per agent) ===[0m
+
+  [36mvibecrafted <agent> implement[0m <plan.md>   Execute a plan file
+  [36mvibecrafted <agent> research[0m  <plan.md>   Single-agent research mode
+  [36mvibecrafted <agent> review[0m    <plan.md>   Review bounded code artifacts
+  [36mvibecrafted <agent> plan[0m      <plan.md>   Generate an implementation plan
+  [36mvibecrafted <agent> prompt[0m    <plan.md>   Free-form prompt with context
+  [36mvibecrafted <agent> observe[0m   --last      Check last agent report/transcript
+
+[1m=== RESEARCH (launcher) ===[0m
+
+  [36mvibecrafted research[0m [--prompt "text" | --file plan.md]   Launch Claude + codex + junie swarm
+  [2mEvery skill also installs a vc-<skill> shortcut.[0m
+
+[1m=== TELEMETRY ===[0m
+
+  [36mtelemetry smoke[0m [flags]                Smoke the headless marbles telemetry path
+  [36mvibecrafted telemetry smoke[0m [flags]    Same entrypoint through the main deck
+
+[1m=== OPERATOR SURFACE ===[0m
+
+  [36mvibecrafted dashboard[0m [layout]        Open/switch to a vc-frame dashboard
+  [36mvibecrafted loop[0m                      Interactive operator loop + async awaits
+  [36mvibecrafted cron[0m                      Cron-safe LOOP heartbeat + context capture
+  [36mvibecrafted ship[0m                      Start VC-Ship loop and dispatch a checkpoint
+  [36mvibecrafted dispatch[0m <file.toml>      Deterministic dispatch.v1 supervisor
+  [36mvibecrafted dispatch[0m run ...          Async lifecycle supervisor for one worker
+  [36mvibecrafted dashboard ls[0m              List active vc-frame sessions
+  [36mvibecrafted dashboard gc[0m [flags]      Prune dead/stale vc-frame sessions
+  [36mvibecrafted dashboard switch[0m <name>   Switch to session (vc-frame-native)
+  [36mvibecrafted start[0m [layout]            Alias for [36mvibecrafted dashboard[0m
+  [36mvibecrafted gui[0m                       Public/local-web launch + observe surface
+  [36mvibecrafted tui[0m                       Rust operator console over shared state
+  [36mvibecrafted server[0m <action>           Manage local control-plane viewer server
+
+[1m  Agents: claude · codex · agy · junie · grok[0m
+
+[1m=== ADDITIONAL SKILLS ===[0m
+
+  [38;5;173magents[0m     External fleet delegation contract via agent modes
+  [38;5;173mintents[0m    Plan-to-runtime truth audit
+  [38;5;173mimplement[0m  Autonomous end-to-end implementation (vc-implement)
+  [38;5;173mpartner[0m    Shared steering and executive reasoning with the user
+  [38;5;173mownership[0m  Full-spectrum operational ownership and delivery
+  [38;5;173mdelegate[0m   In-session native subagent delegation
+  [38;5;173mresearch[0m   Triple-agent research (claude + codex + junie)
+  [38;5;173mreview[0m     (vc-review v2.0.0) Bounded PR, branch, commit-range, or artifact-pack review
+  [38;5;173mprune[0m      Runtime/publish cone extraction
+  [38;5;173mtrust[0m      Post-hoc commit-claim falsification with f/x/n settlement projection
+  [38;5;173mguard[0m      In-flight gate enforcer: refuses continuation on trust block
+
+[1m=== MANAGEMENT ===[0m
+
+  [36mvibecrafted help[0m                      Compact command deck
+  [36mvibecrafted help --all[0m                This full reference
+  [36mvibecrafted init[0m [agent]              Interactive init session
+  [36mvibecrafted gui[0m                       Launch the localhost control plane
+  [36mvibecrafted tui[0m                       Launch the Rust operator console
+  [36mvibecrafted dispatch[0m <file.toml>      Deterministic dispatch.v1 supervisor
+  [36mvibecrafted dispatch[0m run ...          Async lifecycle supervisor for one worker
+  [36mvibecrafted telemetry smoke[0m [flags]  Smoke the marbles telemetry path
+  [36mvibecrafted resume[0m <agent> [flags]    Resume an existing agent session
+  [36mvibecrafted status[0m                    Today's agent activity
+  [36mvibecrafted update[0m                     Pull latest + reinstall
+  [36mvibecrafted doctor[0m                    Installation health check
+  [36mvibecrafted version[0m                   Print version
+  [36mvibecrafted uninstall[0m                 Reverse the install
+
+[1m=== ALIASES ===[0m
+
+  [2mstats[0m = status       [2mcheck[0m = doctor       [2mremove[0m = uninstall
+  [2mjustdo[0m = Just Do posture (not implement)  [2mvc-justdo[0m = same skill id
+
+[1m=== SKILL FLAGS (uniform contract) ===[0m
+
+  -p, --prompt <text>            Inline prompt
+  -f, --file <path.md>           Input file as prompt context
+  --count <n>                    Marbles / Polarize loop count (default: 3)
+  --depth <n>                    Marbles plan crawl depth (default: 3)
+  --session <id>                 Session ID for vibecrafted resume
+
+[1m=== GLOBAL OPTIONS ===[0m
+
+  --verbose                      Detailed output from all commands
+
+[1m=== INFRASTRUCTURE ===[0m
+
+  vibecrafted codex implement .vibecrafted/plans/my-plan.md
+  vibecrafted claude research .vibecrafted/plans/my-plan.md
+  vibecrafted agy review .vibecrafted/plans/my-plan.md   # (gemini deprecated)
+  vibecrafted codex observe --last
+  vibecrafted resume claude --session <id> --prompt "Continue the fix"
+
+[1m=== EXAMPLES ===[0m
+
+  vibecrafted init claude
+  vibecrafted gui
+  vibecrafted tui
+  vibecrafted dashboard workflow
+  vibecrafted dispatch analyzer-truth.dispatch.toml --doctor
+  vibecrafted dispatch run --run-id demo --root . --report report.md --transcript trace.log -- bash worker.sh
+  vibecrafted telemetry smoke --count 1 --no-watch
+  vibecrafted workflow claude --prompt "Plan and implement auth"
+  vibecrafted workflow claude --file /path/to/brief.md
+  vibecrafted intents codex --prompt "Audit what from the plan really landed"
+  vibecrafted marbles codex --count 3 --depth 3
+  vibecrafted implement codex --prompt "Ship the feature"
+  vibecrafted ownership codex --prompt "Take the repo from diagnosis to finished surface"
+  vibecrafted dou claude
+  vibecrafted decorate codex
+  vibecrafted hydrate codex
+  vibecrafted release codex
+  vibecrafted prune codex
+

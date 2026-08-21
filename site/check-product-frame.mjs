@@ -18,12 +18,12 @@ const product = read('src/components/sections/SectionProductSurface.astro');
 const floating = read('src/components/FloatingProductProof.svelte');
 const css = read('src/styles/terminal-window.css');
 
-// One titlebar layer in hero markup (not nested termwin shells)
-const heroTitlebars = (hero.match(/vc-termwin__titlebar/g) || []).length;
-assert.equal(heroTitlebars, 1, `Hero should have exactly one titlebar pattern, got ${heroTitlebars}`);
-
-const heroBodies = (hero.match(/vc-termwin__body/g) || []).length;
-assert.equal(heroBodies, 1, 'Hero should have one chrome body for the capture fill.');
+assert.match(hero, /src="\/playground\/index\.html\?embed=1"/, 'Hero pins the command playground.');
+assert.equal(
+  (hero.match(/vc-termwin__titlebar/g) || []).length,
+  0,
+  'Hero should not wrap the playground in fake window chrome.',
+);
 
 // Product surface: TerminalWindow for tiles + FloatingProductProof for lead
 assert.match(product, /import TerminalWindow from/);
@@ -45,4 +45,4 @@ assert.match(css, /\.vc-termwin__titlebar/);
 assert.match(css, /\.vc-termwin__dot--close/);
 assert.match(css, /\.vc-termwin__body img/);
 
-console.log('Product frame structure passed: single decorative chrome on hero + floating + tiles.');
+console.log('Product frame structure passed: playground on hero, chrome on floating + tiles.');

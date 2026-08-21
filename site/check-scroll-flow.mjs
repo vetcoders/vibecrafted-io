@@ -53,6 +53,21 @@ assert.doesNotMatch(
   'Section shell must not carry blueprint scanlines.',
 );
 assert.match(
+  verticalScrollSurfaces['src/components/SectionShell.astro'],
+  /height:\s*100dvh/,
+  'Landing sections are one viewport tall; they do not grow with content.',
+);
+assert.match(
+  read('src/styles/tokens-v2.css'),
+  /--v2-section-padding-y-top:\s*80px/,
+  'Section padding stays generous — do not crush it to force-fit height.',
+);
+assert.match(
+  read('src/styles/tokens-v2.css'),
+  /--v2-section-padding-y-bottom:\s*80px/,
+  'Section bottom padding stays 80px with the height frame.',
+);
+assert.match(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
   /@media print/i,
   'LayoutV2 must hide decor and force reveal-visible in print.',
@@ -114,8 +129,8 @@ assert.doesNotMatch(
 );
 assert.match(
   heroSection,
-  /vc-termwin__titlebar/,
-  'Hero product proof must keep a single decorative titlebar chrome.',
+  /src="\/playground\/index\.html\?embed=1"/,
+  'Hero pins the command playground, not a screenshot with fake chrome.',
 );
 assert.doesNotMatch(
   heroSection,
@@ -124,48 +139,48 @@ assert.doesNotMatch(
 );
 assert.match(
   englishCopy,
-  /pre:\s*"An operating runtime"/,
-  'English hero should lead with the operating-runtime definition.',
+  /pre:\s*"Send the job\."/,
+  'English hero should lead with the action, not the category label.',
 );
 assert.match(
   englishCopy,
-  /mid:\s*"for multi-agent cli"/,
-  'English hero should carry the multi-agent cli middle line.',
+  /mid:\s*"Watch the run\."/,
+  'English hero should name the live run.',
 );
 assert.match(
   englishCopy,
-  /accent:\s*"workflows\."/,
-  'English hero should close on the workflows accent beat.',
+  /accent:\s*"Keep the receipt\."/,
+  'English hero should close on the receipt.',
 );
 assert.match(
   polishCopy,
-  /pre:\s*"Runtime operacyjny"/,
-  'Polish hero should lead with the operating-runtime definition.',
+  /pre:\s*"Puść agenta\."/,
+  'Polish hero should lead with the action, not the category label.',
 );
 assert.match(
   polishCopy,
-  /mid:\s*"dla multiagentowych"/,
-  'Polish hero should carry the multiagentowych middle line.',
+  /mid:\s*"Patrz na run\."/,
+  'Polish hero should name the live run.',
 );
 assert.match(
   polishCopy,
-  /accent:\s*"CLI workflows\."/,
-  'Polish hero should close on the CLI workflows accent beat.',
+  /accent:\s*"Zostaw kwit\."/,
+  'Polish hero should close on the receipt.',
 );
 assert.match(
   englishCopy,
-  /orchestration method and runtime for CLI coding agents/,
-  'English hero should define Vibecrafted as CLI-agent orchestration.',
+  /You already have Claude Code, Codex, or Grok/,
+  'English hero should start from tools the reader already uses.',
 );
 assert.match(
   englishCopy,
-  /\/vc-ship/,
-  'English hero should name /vc-ship as the end-to-end pass.',
+  /vibecrafted workflow claude/,
+  'English hero should show the first useful command.',
 );
 assert.match(
   polishCopy,
-  /metoda i runtime orkiestracji agentów CLI/,
-  'Polish hero should define Vibecrafted as CLI-agent orchestration.',
+  /Masz już Claude Code, Codex albo Grok/,
+  'Polish hero should start from tools the reader already uses.',
 );
 assert.doesNotMatch(
   englishCopy,

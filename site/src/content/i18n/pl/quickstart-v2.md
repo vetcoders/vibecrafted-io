@@ -27,17 +27,17 @@ carousel:
   goToStep: "Przejdź do kroku {number}"
   steps:
     - num: "01"
-      verb: "CHECK"
+      verb: "PUŚĆ"
       accent: "default"
       state: 0
       pct: "000"
-      title: "Sprawdź lokalną powierzchnię."
-      body: "Zacznij od nudnego sygnału: czy launcher wie, gdzie jest, co ma zainstalowane i co wymaga uwagi?"
-      command: "$ vibecrafted doctor"
+      title: "Puść jedną prawdziwą robotę."
+      body: "Po instalacji pierwsza użyteczna rzecz to zapisany run — nie kazanie o zdrowiu."
+      command: '$ vibecrafted workflow claude -p "Przeczytaj to repo i nazwij pierwszy fix."'
       lands:
-        - "ZDROWIE INSTALACJI"
-        - "FOUNDATIONS"
-        - "PRAWDA LAUNCHERA"
+        - "ŻYWY AGENT"
+        - "ZAPISANY RUN"
+        - "KWIT"
     - num: "02"
       verb: "INIT"
       accent: "default"

@@ -8,8 +8,8 @@
 title: "CO INSTALUJESZ"
 centerLabel: "SZEŚĆ KOMPONENTÓW · JEDEN CONTROL PLANE"
 
-headingHtml: 'Zero mystery meat. <em class="accent-2">To jest ta maszyna</em>'
-subtitle: "Jeden installer, sześć komponentów, jeden katalog prawdy. Dokładnie to ląduje na Twojej maszynie — czym każda część jest, gdzie żyje i którą część bałaganu ma zabić."
+headingHtml: 'Co ląduje na <em class="accent-2">Twojej maszynie</em>'
+subtitle: "Jeden installer. Sześć binarek. Wszystkie czytają i piszą ten sam katalog."
 
 components:
   - name: "vibecrafted"

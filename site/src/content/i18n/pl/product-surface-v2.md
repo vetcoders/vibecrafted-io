@@ -3,8 +3,8 @@
 title: "POWIERZCHNIA"
 centerLabel: "REAL USAGE · VC-FRAME"
 
-headingHtml: 'To jest <em class="accent-2">produkt</em>'
-subtitle: "Runtime operacyjny multiagentowych CLI workflows. Poniżej: kokpit operatora (vc-frame) i biurko control plane (vc-server) — prawdziwe kadry, nie mockupy."
+headingHtml: 'Tu <em class="accent-2">widać robotę</em>'
+subtitle: "vc-frame to terminal, w którym siedzisz. vc-server to ta sama lista runów w przeglądarce."
 
 shots:
   - id: start-here

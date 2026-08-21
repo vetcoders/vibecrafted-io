@@ -1,221 +1,72 @@
 <section class="install-reference" aria-labelledby="install-reference-title">
-  <header class="install-reference__intro">
-    <p class="install-reference__eyebrow">Install reference · server rendered</p>
-    <h1 id="install-reference-title">Install Vibecrafted</h1>
-    <p>
-      Use the bootstrap on macOS, Linux, or inside WSL2 on Windows. The guided
-      installer above helps you review the same path; this reference remains
-      readable without JavaScript.
-    </p>
-  </header>
-
-  <div class="install-reference__table-wrap">
-    <table>
-      <caption>Current installation channels</caption>
-      <thead>
-        <tr>
-          <th scope="col">Channel</th>
-          <th scope="col">Platform</th>
-          <th scope="col">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Bootstrap</th>
-          <td>macOS, Linux, WSL2</td>
-          <td>Published and CI-gated</td>
-        </tr>
-        <tr>
-          <th scope="row">Source checkout</th>
-          <td>macOS, Linux, WSL2</td>
-          <td>Published</td>
-        </tr>
-        <tr>
-          <th scope="row">Container</th>
-          <td>Any Docker host</td>
-          <td>Published</td>
-        </tr>
-        <tr>
-          <th scope="row">Signed Vibecrafted.app DMG</th>
-          <td>macOS 14+, Apple silicon</td>
-          <td>Build path complete; publication pending</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="install-reference__grid">
-    <article>
-      <p class="install-reference__kicker">macOS and Linux</p>
-      <h2>Bootstrap today</h2>
-      <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash</code></pre>
-      <p>Prefer to inspect the script first:</p>
-      <pre><code>curl -fsSL https://vibecrafted.io/install.sh -o install.sh
-less install.sh
-bash install.sh</code></pre>
-    </article>
-
-    <article>
-      <p class="install-reference__kicker">Windows</p>
-      <h2>Install through WSL2</h2>
-      <p>Vibecrafted does not currently ship native Windows binaries.</p>
-      <pre><code>wsl --install
-wsl --status</code></pre>
-      <p>After WSL2 is ready, run the Linux bootstrap inside your distro:</p>
-      <pre><code>wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'</code></pre>
-      <p>
-        Or run the hosted PowerShell handoff. It checks WSL2 and prints the
-        exact next command; it does not install native Windows binaries:
-      </p>
-      <pre><code>iwr -useb https://vibecrafted.io/install.ps1 | iex</code></pre>
-    </article>
-
-    <article>
-      <p class="install-reference__kicker">Power users</p>
-      <h2>Build from source</h2>
-      <pre><code>git clone https://github.com/vetcoders/vibecrafted.git
-cd vibecrafted
-make install</code></pre>
-      <p>
-        The source checkout also carries build, test, release, and local guided
-        installer targets.
-      </p>
-    </article>
-
-    <article>
-      <p class="install-reference__kicker">Isolated runtime</p>
-      <h2>Use a container</h2>
-      <pre><code>docker build -t vetcoders/vibecrafted:local .
-docker run --rm -it -v "$PWD:/workspace" \
-  vetcoders/vibecrafted:local version</code></pre>
-    </article>
-  </div>
-
-  <aside class="install-reference__notice" aria-labelledby="dmg-status-title">
-    <p class="install-reference__kicker">macOS desktop app</p>
-    <h2 id="dmg-status-title">The signed DMG is not published yet</h2>
-    <p>
-      The signed and notarized DMG build path is complete, but the
-      <a href="https://github.com/vetcoders/vibecrafted/releases/latest">latest release</a>
-      does not yet carry a DMG. Use the bootstrap until a release lists the
-      artifact; do not plan around an unpublished download.
-    </p>
-  </aside>
+  <h1 id="install-reference-title">Install</h1>
+  <p class="install-reference__lead">macOS, Linux, and Windows. One command.</p>
+  <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash</code></pre>
+  <p class="install-reference__note">
+    Windows: <code>wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'</code>
+  </p>
 </section>
 
 <style>
+  :global(body.wizard-page:has(.live-wizard)) .install-reference {
+    display: none;
+  }
+
   .install-reference {
-    width: min(100% - clamp(1.9rem, 5vw, 4rem), 72rem);
-    margin: clamp(1.5rem, 4vw, 3rem) auto;
-    padding: clamp(1.25rem, 4vw, 3rem);
-    border: 1px solid rgba(245, 244, 239, 0.14);
-    background: rgba(8, 8, 7, 0.84);
-    color: rgba(245, 244, 239, 0.82);
-    font-family: var(--font-body, Inter, sans-serif);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    isolation: isolate;
+    width: min(100% - 2rem, 40rem);
+    margin: 3rem auto 4rem;
+    padding: 0;
+    color: var(--v2-fg-on-dark, #f4f4f5);
+    font-family: var(--v2-font-body, Inter, sans-serif);
   }
 
-  .install-reference__intro {
-    max-width: 48rem;
-    margin-bottom: 2rem;
-  }
-
-  .install-reference h1,
-  .install-reference h2 {
-    color: rgba(245, 244, 239, 0.96);
-    font-family: var(--font-head, Fraunces, serif);
-    font-weight: 400;
+  .install-reference > * {
+    display: block;
+    width: 100%;
+    float: none;
   }
 
   .install-reference h1 {
-    margin: 0 0 0.65rem;
-    font-size: clamp(2rem, 5vw, 4rem);
+    margin: 0 0 0.5rem;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    color: var(--v2-fg-on-dark, #f4f4f5);
   }
 
-  .install-reference h2 {
-    margin: 0 0 0.75rem;
-    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
-  }
-
-  .install-reference p {
-    line-height: 1.65;
-  }
-
-  .install-reference a {
-    color: #92c6b8;
-  }
-
-  .install-reference__eyebrow,
-  .install-reference__kicker {
-    margin: 0 0 0.55rem;
-    color: rgba(146, 198, 184, 0.88);
-    font-family: var(--font-mono, "JetBrains Mono", monospace);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .install-reference__table-wrap {
-    margin-bottom: 1.5rem;
-    overflow-x: auto;
-  }
-
-  .install-reference table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
-
-  .install-reference caption {
-    padding-bottom: 0.75rem;
-    color: rgba(245, 244, 239, 0.6);
-    text-align: left;
-  }
-
-  .install-reference th,
-  .install-reference td {
-    padding: 0.75rem;
-    border: 1px solid rgba(245, 244, 239, 0.12);
-    vertical-align: top;
-  }
-
-  .install-reference__grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .install-reference article,
-  .install-reference__notice {
-    padding: clamp(1rem, 3vw, 1.5rem);
-    border: 1px solid rgba(245, 244, 239, 0.12);
-    background: rgba(245, 244, 239, 0.025);
+  .install-reference__lead {
+    margin: 0 0 1.25rem;
+    color: var(--v2-fg-on-dark-dim, #a1a1aa);
+    line-height: 1.5;
   }
 
   .install-reference pre {
-    max-width: 100%;
-    margin: 0.85rem 0;
-    padding: 0.85rem;
+    margin: 0 0 1.25rem;
+    padding: 1rem 1.1rem;
     overflow-x: auto;
-    border: 1px solid rgba(146, 198, 184, 0.2);
-    background: #050505;
-    color: #d7eee7;
-    font: 0.78rem/1.6 var(--font-mono, "JetBrains Mono", monospace);
-    white-space: pre-wrap;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    background: #121214;
+    color: #f4f4f5;
+    font: 0.85rem/1.5 var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    white-space: pre;
   }
 
-  .install-reference__notice {
-    margin-top: 1rem;
-    border-color: rgba(212, 174, 92, 0.34);
+  .install-reference__note {
+    margin: 0 0 0.75rem;
+    color: var(--v2-fg-on-dark-mute, #71717a);
+    font-size: 0.92rem;
+    line-height: 1.55;
   }
 
-  @media (max-width: 760px) {
-    .install-reference__grid {
-      grid-template-columns: 1fr;
-    }
-
-    .install-reference th,
-    .install-reference td {
-      min-width: 9rem;
-    }
+  .install-reference code {
+    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.86em;
+    color: #d4d4d8;
   }
 </style>

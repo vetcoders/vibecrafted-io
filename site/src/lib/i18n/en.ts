@@ -86,9 +86,9 @@ export const en = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Operating runtime for multi-agent CLI workflows.",
+      title: "Vibecrafted — run Claude, Codex, and Grok from one command.",
       description:
-        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): peer dispatch from the TUI, a shared control plane, read/write cadence, and /vc-ship end-to-end.",
+        "A terminal runtime for the coding agents you already use. Dispatch Claude, Codex, Grok, Junie, or Agy, watch the run, and keep the receipt.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -108,15 +108,15 @@ export const en = {
   },
   v2Hero: {
     ariaLabel: "Hero",
-    eyebrow: "OPERATING RUNTIME · MULTI-AGENT CLI WORKFLOWS",
+    eyebrow: "CLAUDE · CODEX · GROK · JUNIE · AGY",
     heading: {
-      pre: "An operating runtime",
-      mid: "for multi-agent cli",
-      accent: "workflows.",
+      pre: "Send the job.",
+      mid: "Watch the run.",
+      accent: "Keep the receipt.",
     },
-    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchers that dispatch peer agents from the TUI, a shared control plane, and a read/write cadence. When you want one pass end-to-end, that is <code>/vc-ship</code>.",
+    body: 'You already have Claude Code, Codex, or Grok. Vibecrafted is the terminal command that launches them, records the run, and settles it. Same shape every time.<code>vibecrafted workflow claude -p "Read this repo and name the first fix."</code>',
     ctaPrimary: "INSTALL",
-    ctaSecondary: "QUICK START",
+    ctaSecondary: "TRY IT",
     telemetry: {
       marbles: "AGENTS",
       converge: "REPOS",
@@ -294,7 +294,7 @@ flowchart LR
     quickstartHero: {
       label: "Quick Start",
       title: "From zero to your first 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. loop.",
-      lead: "Install Vibecrafted, run doctor, then start one real workflow inside a live repository.",
+      lead: "Install Vibecrafted, then send one real job inside a live repository.",
       quote: "From AI-generated repo to launch-ready product.",
       primaryHref: "/en/",
       primaryLabel: "Back to Overview",

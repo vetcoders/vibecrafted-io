@@ -1,0 +1,130 @@
+[
+  {
+    "file": "vibecrafted-core/vibecrafted_core/guardian.py",
+    "role": "Single-process SSE consumer daemon that turns vibecrafted-server settlement events into durable triage jobs, operator notifications, and (only for trust-sourced needs-attention runs) guarded native resume requests."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflow.py",
+    "role": "Runtime core for a run's whole life: normalizes launch specs, spawns the dispatcher (headless subprocess or vc-frame tab), then stops, retries, blocks and natively resumes runs against the control plane."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/server_supervisor.py",
+    "role": "Single-file supervision plane for the vibecrafted server+guardian pair: owns an flock-based coordination lease, a content-hash build identity contract, macOS launchd LaunchAgent lifecycle, and the `vc-server-supervisor` CLI."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/runtime_receipt.py",
+    "role": "Builds the delivery/runtime receipt binding each fleet tool's owner/repo -> branch -> checkout SHA -> dirty -> installed SHA -> ahead/behind -> index generation; refuses to guess and never uses process cwd to identify a source root."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/spawn.py",
+    "role": "Helper library for the legacy shell-launcher lane: spawns agent CLI subprocesses, scrapes session id / token usage / cost / model out of their transcripts, and rewrites report+transcript+meta into the canonical dated artifact-store layout."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflow_runtime.py",
+    "role": "Parent-side supervised runtime for the research / marbles / polarize workflows: fans out child agent processes via AsyncSupervisor, collects their durable meta.json artifacts, applies research quorum rules, and writes the aggregated parent report + meta."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/supervisor.py",
+    "role": "Deterministic dispatch control plane: walks a Dispatch's cuts in order, gating each on the execution envelope, launching it through the existing workflow runtime, awaiting the process, checking the delivery contract, running declared verifiers, driving repair rounds, and recording tracker/journal/handoff/result artifacts."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/loop.py",
+    "role": "Two distinct surfaces under one CLI: the operator's self-paced iteration loop (start/status/next/cancel/complete backed by a markdown state file) and the dispatch-side await/spanko verbs that block on a worker run, verify it, and flip a tracker or hand off a recovery baton."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/model.py",
+    "role": "Declares the frozen dataclass vocabulary of a vibecrafted.dispatch.v1 plan and its run-time ledger; imported by dispatch cli, doctor, schema, supervisor and verify as the shared shape."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/vc_frame_delivery.py",
+    "role": "Owns vc-frame config delivery: materializes host-adapted config into the published runtime generation and wires both user-facing view projections at it, without ever creating or flipping the runtime-owned vibecrafted-current symlink."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/schema.py",
+    "role": "Turns `vibecrafted.dispatch.v1` TOML text into a fully validated typed Dispatch, collecting every structural/policy defect in one pass, and renders the exact prompt text and verifier commands a dispatched worker will receive."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/vc_frame_tab_gc.py",
+    "role": "Proof-gated garbage collector for vc-frame terminal tabs: loads durable v4 transfer proofs from the control plane, cross-checks them against a live typed tab inventory, and closes only tabs whose receipt, revision, session incarnation, and tab instance id all still agree \u2014 persisting a receipt for every outcome including refusals."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/cron.py",
+    "role": "Crontab-side heartbeat for the operator LOOP: reads loop state frontmatter, optionally shells out to `loct` and `aicx` for a timestamped context snapshot, conditionally runs a follow-up command behind an idle threshold and a hard-stop denylist, journals every tick to JSONL, and can print a ready-to-paste crontab line."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/__init__.py",
+    "role": "Fasada pakietu dispatch: jedyny publiczny punkt wej\u015bcia agreguj\u0105cy model danych (.model), parser/doctor schematu (.schema), supervisor wykonania (.supervisor) i warstw\u0119 weryfikacji (.verify); 30 re-eksport\u00f3w, zero w\u0142asnej logiki."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/agent_dispatch.py",
+    "role": "Pythonowy odpowiednik scripts/lib/spawn.sh egzekwuj\u0105cy aksjomat parytetu modelu przy delegacji; niesie te\u017c pomocnicze surface'y dispatchu (granularno\u015b\u0107 cutu, ekstrakcja session id, wsparcie sandboxa) niewymienione w nag\u0142\u00f3wkowym opisie 'Public surface'."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/runtime_paths.py",
+    "role": "Single resolver for every filesystem home the runtime writes to; each path is env-overridable so no caller ever hardcodes a user's layout."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/server_config.py",
+    "role": "Owns the operator-controlled [server] table in config.toml: strict load, strict validation, and seed-once semantics."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflows/registry.py",
+    "role": "Single source of truth for the 21 workflow definitions, the 11-stage vc-ship pipeline and the 12 per-stage manifests the lifecycle runner consumes."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/verify.py",
+    "role": "Deterministic verifier execution engine turning a cut's declared shell commands into a three-valued Verdict with captured evidence."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/doctor.py",
+    "role": "Package-side doctor aggregating installer findings with launcher/version identity, Codex MCP transport, LaunchAgent supervision and vc-frame config health checks."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/doctor.py",
+    "role": "Standalone dispatch-doctor CLI validating one dispatch TOML file into structured errors and non-fatal warnings."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/vc_frame_staging.py",
+    "role": "Stdlib-only, relative-import-free vc-frame config materialization shared by the installer before publishing a runtime and by the installed package afterwards."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflows/model.py",
+    "role": "Declares the frozen dataclasses and Literal aliases every workflow lookup, lifecycle manifest and capability payload is built from; pure types, no I/O."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/runtime/scripts/codex_stream_bridge.py",
+    "role": "Standalone stdin-to-transcript renderer run as a subprocess in the Codex launch path; deliberately tolerant so a malformed JSONL line never kills the live stream."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/delivery/doctor.py",
+    "role": "The delivery-doctor CLI plus its payload validators: proves an ExecutionEnvelope and a DeliveryProofContract are well-formed before a dispatch brief is trusted."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatch/cli.py",
+    "role": "Entrypoint for `vibecrafted dispatch`: validates a vibecrafted.dispatch.v1 TOML plan, then reports, dry-runs the rendered prompts, or hands the plan to the supervisor."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflows/__init__.py",
+    "role": "Pure re-export facade \u2014 every symbol the rest of core imports from vibecrafted_core.workflows (model types plus registry lookups) is enumerated here in __all__; contains no logic."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/runtime_transcript.py",
+    "role": "Writes and validates the <transcript>.manifest.json ownership proof that lets vc-frame recover a transcript without trusting a caller-supplied path."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/sandbox/msbserver_lifecycle.py",
+    "role": "Local msbserver daemon supervision: start, health-probe and stop, with PID-file bookkeeping under <vibecrafted_home>/sandbox."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/workflow_capabilities.py",
+    "role": "Serialises the typed workflow registry plus the live research selection into one versioned vibecrafted.workflow_capabilities.v1 payload; read-only by contract, launches and mutates nothing."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/telemetry.py",
+    "role": "Holds a hardcoded API price table for xAI/OpenAI model families and derives a USD cost estimate from token counts; it is a fallback used only when a provider stream reports tokens but no monetary cost \u2014 provider-reported cost always wins."
+  },
+  {
+    "file": "vibecrafted-core/vibecrafted_core/dispatcher.py",
+    "role": "The `python -m vibecrafted_core.dispatcher run` CLI: spawns one worker under AsyncSupervisor, validates its artifact contract, pushes terminal truth back into the owning lifecycle state, runs fail-open triage, and maps all of it onto a process exit code."
+  }
+]

@@ -3,8 +3,8 @@
 title: "THE SURFACE"
 centerLabel: "REAL USAGE · VC-FRAME"
 
-headingHtml: 'This is the <em class="accent-2">product</em>'
-subtitle: "An operating runtime for multi-agent CLI workflows. Below: the operator cockpit (vc-frame) and the control-plane desk (vc-server) — real frames, not mockups."
+headingHtml: 'Where you <em class="accent-2">watch the work</em>'
+subtitle: "vc-frame is the terminal you sit in. vc-server is the same run list in a browser."
 
 shots:
   - id: start-here

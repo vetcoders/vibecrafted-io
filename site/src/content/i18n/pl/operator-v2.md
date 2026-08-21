@@ -12,19 +12,19 @@ title: "OPERATOR"
 centerLabel: "INSTALUJ · PODAJ PAŁECZKĘ · OBSERWUJ"
 
 # Heading sekcji — zachowuje inline <em class="accent-2"> i <br />.
-headingHtml: 'Zainstaluj raz. Potem <em class="accent-2">podaj pałeczkę</em>'
+headingHtml: 'Zainstaluj. Potem <em class="accent-2">puść jedną robotę</em>'
 
 # 3 kroki instalacji — każdy ma step label, komendę i notkę.
 installSteps:
   - step: "KROK 01"
     command: "$ curl -fsSL vibecrafted.io/install.sh | bash"
-    note: "Jeden lokalny bootstrap. Instaluje komendy i otwiera prowadzony launcher."
+    note: "Kładzie komendę na PATH."
   - step: "KROK 02"
-    command: "$ vibecrafted doctor"
-    note: "Szybki health check, zanim agenci dotkną repo."
+    command: '$ vibecrafted workflow claude -p "Przeczytaj to repo i nazwij pierwszy fix."'
+    note: "Prawdziwy agent, prawdziwe repo, zapisany run."
   - step: "KROK 03"
-    command: "$ vibecrafted init claude"
-    note: "Pierwszy przelot kontekstowy realnym agentem w realnym repo."
+    command: "$ vc-frame"
+    note: "Opcjonalnie. Terminal, w którym patrzysz na flotę."
 
 # Heading bloku z screenshotem planszy — zachowuje inline <em class="accent-2">.
 shotHeadingHtml: 'Repo dostaje <em class="accent-2">wspólną powierzchnię</em>'
