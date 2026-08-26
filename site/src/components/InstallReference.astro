@@ -1,5 +1,6 @@
 ---
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 import CopyButton from './CopyButton.svelte';
 import type { Lang } from '../lib/i18n';
 
@@ -10,12 +11,27 @@ interface Props {
 const { lang = 'en' } = Astro.props as Props;
 const pl = lang === 'pl';
 
-const channel = JSON.parse(
-  readFileSync(new URL('../../public/channel/main.json', import.meta.url), 'utf8'),
-) as {
-  version: string;
-  archive_url: string;
-};
+function loadChannel() {
+  // Prerender chunks live under dist/.prerender/ — import.meta.url + ../../public
+  // resolves to dist/public/, which does not exist. Read from the site cwd instead.
+  const candidates = [
+    path.join(process.cwd(), 'public/channel/main.json'),
+    path.join(process.cwd(), 'site/public/channel/main.json'),
+  ];
+  for (const file of candidates) {
+    if (existsSync(file)) {
+      return JSON.parse(readFileSync(file, 'utf8')) as {
+        version: string;
+        archive_url: string;
+      };
+    }
+  }
+  throw new Error(
+    `channel/main.json not found (cwd=${process.cwd()}). Run site build from site/.`,
+  );
+}
+
+const channel = loadChannel();
 
 const version = channel.version;
 const archiveHref = `/vibecrafted-v${version}.tar.gz`;

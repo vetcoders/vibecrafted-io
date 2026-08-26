@@ -369,7 +369,8 @@ async function settleBeat(page, beat, expected, label) {
   const found = await page.evaluate(scrollToBeat(beat.id));
   assert.ok(found, `${label}: beat wrapper for ${beat.id} missing`);
   const startedAt = Date.now();
-  const snap = await waitFor(async () => {
+  await waitFor(async () => {
+
     const s = await page.evaluate(STAGE_SNAPSHOT);
     if (!s) return null;
     if (s.beat !== beat.id) return null;
