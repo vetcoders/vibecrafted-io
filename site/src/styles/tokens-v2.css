@@ -2,9 +2,13 @@
  * Landing V2 tokens — authority is the live consoles:
  *   vibecrafted-server/web/styles/tokens.css
  *   vc-slack-agent/console/src/styles.css
- * Graphite, compact, operational. Not editorial print / blueprint.
+ * Graphite, compact, operational. Plates share one 2px hairline
+ * (contact, framework, evidence). Pills stay 999px. Discs stay 50%.
+ * Do not invent a third radius for "cards". Components consume these
+ * vars — no raw px/hex/fallback chains on V2 surfaces.
  */
 
+html:has(body.v2-scope),
 .v2-scope {
   /* Surfaces — zinc graphite */
   --v2-black: #0a0a0b;
@@ -20,6 +24,7 @@
   --v2-fg-on-dark: #f4f4f5;
   --v2-fg-on-dark-dim: #a1a1aa;
   --v2-fg-on-dark-mute: #71717a;
+  --v2-fg-on-dark-hover: #e4e4e7;
 
   /* Paper is now an elevated dark panel, not cream. */
   --v2-fg-on-paper: #f4f4f5;
@@ -60,6 +65,13 @@
   --v2-paper-glass-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.45);
   --v2-paper-backdrop: blur(16px);
+  --v2-hero-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+
+  /* In-flow plates are hairline frames, not filled cards.
+     Overlays that must cover the page use --v2-paper-glass. */
+  --v2-plate: transparent;
+  --v2-input: var(--v2-ink);
+  --v2-input-focus: var(--v2-ink);
 
   /* Type — display voice stays editorial (Instrument Serif) on every h1/h2;
      body and UI chrome follow the consoles (Inter); mono is JetBrains Mono. */
@@ -71,9 +83,12 @@
   --v2-font-sans: var(--v2-font-body);
   --v2-font-script: var(--v2-font-body);
 
-  --v2-radius: 12px;
-  --v2-radius-sm: 8px;
-  --v2-radius-lg: 16px;
+  --v2-radius: 2px;
+  --v2-radius-sm: 2px;
+  --v2-radius-lg: 2px;
+  --v2-radius-pill: 999px;
+  --v2-radius-full: 50%;
+  --v2-radius-none: 0;
 
   --v2-max-width: 1152px;
   --v2-nav-height: 72px;
@@ -91,6 +106,7 @@
   --fg-on-dark: var(--v2-fg-on-dark);
   --fg-on-dark-dim: var(--v2-fg-on-dark-dim);
   --fg-on-dark-mute: var(--v2-fg-on-dark-mute);
+  --fg-on-dark-hover: var(--v2-fg-on-dark-hover);
   --fg-on-paper: var(--v2-fg-on-paper);
   --fg-on-paper-dim: var(--v2-fg-on-paper-dim);
   --fg-on-paper-mute: var(--v2-fg-on-paper-mute);
@@ -114,6 +130,7 @@
   --paper-glass-highlight: var(--v2-paper-glass-highlight);
   --paper-glass-shadow: var(--v2-paper-glass-shadow);
   --paper-backdrop: var(--v2-paper-backdrop);
+  --plate: var(--v2-plate);
   --font-display: var(--v2-font-display);
   --font-body: var(--v2-font-body);
   --font-mono: var(--v2-font-mono);
@@ -131,6 +148,7 @@
 }
 
 @media (max-width: 720px) {
+  html:has(body.v2-scope),
   .v2-scope {
     --v2-section-padding-y-top: 52px;
     --v2-section-padding-y-bottom: 52px;

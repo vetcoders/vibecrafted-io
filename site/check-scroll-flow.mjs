@@ -72,6 +72,46 @@ assert.match(
   /--v2-section-padding-y-bottom:\s*80px/,
   'Section bottom padding stays 80px with the height frame.',
 );
+const tokensV2 = read('src/styles/tokens-v2.css');
+assert.match(tokensV2, /--v2-radius:\s*2px/, 'Plate radius is the 2px hairline — one token, not a card scale.');
+assert.match(tokensV2, /--v2-radius-pill:\s*999px/, 'Pills stay 999px via token.');
+assert.match(tokensV2, /--v2-plate:\s*transparent/, 'In-flow plates are hairline frames, not filled cards.');
+
+const tokenConsumers = {
+  'src/components/sections/SectionInstallManifest.astro': read(
+    'src/components/sections/SectionInstallManifest.astro',
+  ),
+  'src/components/sections/SectionCommercial.astro': read(
+    'src/components/sections/SectionCommercial.astro',
+  ),
+  'src/components/sections/SectionEvidence.astro': read(
+    'src/components/sections/SectionEvidence.astro',
+  ),
+  'src/components/ContactForm.astro': read('src/components/ContactForm.astro'),
+  'src/components/NewsletterSignup.astro': read('src/components/NewsletterSignup.astro'),
+  'src/components/SiteFooterV2.svelte': read('src/components/SiteFooterV2.svelte'),
+  'src/components/SiteNavV2.svelte': read('src/components/SiteNavV2.svelte'),
+  'src/components/sections/HeroSectionV2.svelte': read(
+    'src/components/sections/HeroSectionV2.svelte',
+  ),
+};
+for (const [file, source] of Object.entries(tokenConsumers)) {
+  assert.doesNotMatch(
+    source,
+    /var\(--v2-radius-(?:sm|lg),\s*\d+px\)/,
+    `${file} must not fall back to the old 8/16 radius.`,
+  );
+  assert.doesNotMatch(
+    source,
+    /border-radius:\s*(?:8|10|12|16)px/,
+    `${file} must not hardcode a third card radius.`,
+  );
+  assert.doesNotMatch(
+    source,
+    /background:\s*#121214/,
+    `${file} must fill plates from tokens, not raw graphite.`,
+  );
+}
 assert.match(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
   /@media print/i,

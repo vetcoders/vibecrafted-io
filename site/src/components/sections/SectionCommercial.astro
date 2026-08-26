@@ -145,9 +145,9 @@ const nextTitle = 'FAQ';
     max-width: 52rem;
     margin: 0 0 10px;
     padding: 0.55rem 0.85rem;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-sm, 8px);
-    background: #121214;
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    background: var(--v2-plate);
     color: var(--fg-on-dark-dim);
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -158,7 +158,7 @@ const nextTitle = 'FAQ';
   .cm__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.08;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
@@ -194,9 +194,9 @@ const nextTitle = 'FAQ';
     gap: 1rem;
     margin-bottom: 10px;
     padding: 0.7rem 1rem;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
-    background: #121214;
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    background: var(--v2-plate);
   }
 
   .cm__limits-lead {
@@ -235,14 +235,14 @@ const nextTitle = 'FAQ';
     min-height: 0;
     overflow: hidden;
     padding: 0.85rem 1rem 0.8rem;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
-    background: #121214;
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    background: var(--v2-plate);
   }
 
   .cm__plan--hot {
-    border-color: var(--v2-border-strong, #3f3f46);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.45);
+    border-color: var(--v2-border-strong);
+    box-shadow: var(--v2-paper-glass-shadow);
   }
 
   .cm__plan-badge {
@@ -317,8 +317,8 @@ const nextTitle = 'FAQ';
     min-height: 36px;
     flex: 0 0 auto;
     padding: 0.55rem 1rem;
-    border: 1px solid var(--v2-border-strong, #3f3f46);
-    border-radius: var(--v2-radius-sm, 8px);
+    border: 1px solid var(--v2-border-strong);
+    border-radius: var(--v2-radius);
     color: var(--fg-on-dark);
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -342,7 +342,7 @@ const nextTitle = 'FAQ';
 
   .cm__plan-cta--solid:hover,
   .cm__plan-cta--solid:focus-visible {
-    background: #e4e4e7;
+    background: var(--fg-on-dark-hover);
     color: var(--ink);
   }
 
@@ -352,9 +352,9 @@ const nextTitle = 'FAQ';
     gap: 1.25rem;
     flex: 0 0 auto;
     padding: 0.9rem 1.1rem;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
-    background: #121214;
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    background: var(--v2-plate);
   }
 
   .cm__gate-title {

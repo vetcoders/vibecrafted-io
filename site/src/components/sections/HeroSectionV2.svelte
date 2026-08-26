@@ -113,11 +113,11 @@
     width: 100%;
     height: min(640px, calc(100dvh - 152px));
     min-height: 420px;
-    border: 1px solid #27272a;
-    border-radius: 10px;
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
     overflow: hidden;
-    background: #0a0a0b;
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+    background: var(--v2-ink);
+    box-shadow: var(--v2-hero-shadow);
   }
 
   .hero__eyebrow {
@@ -169,9 +169,9 @@
     font-size: 0.82em;
     line-height: 1.45;
     color: var(--fg-on-dark);
-    background: #121214;
-    border: 1px solid #27272a;
-    border-radius: 8px;
+    background: var(--v2-plate);
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
     padding: 10px 12px;
     white-space: pre-wrap;
     word-break: break-word;
@@ -193,7 +193,7 @@
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    border-radius: var(--v2-radius-sm, 8px);
+    border-radius: var(--v2-radius);
     transition:
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
       background 0.15s ease,
@@ -221,15 +221,15 @@
 
   .hero__cta--primary:hover,
   .hero__cta--primary:focus-visible {
-    background: #e4e4e7;
-    border-color: #e4e4e7;
+    background: var(--fg-on-dark-hover);
+    border-color: var(--fg-on-dark-hover);
     color: var(--ink);
   }
 
   .hero__cta--ghost {
     background: transparent;
     color: var(--fg-on-dark);
-    border: 1px solid #3f3f46;
+    border: 1px solid var(--v2-border-strong);
   }
 
   .hero__cta--ghost:hover,

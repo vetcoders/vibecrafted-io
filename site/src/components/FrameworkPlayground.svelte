@@ -1231,17 +1231,17 @@
 
 <style>
   .game {
-    --ink: var(--v2-ink, #080807);
-    --ink-deep: #050504;
-    --paper: var(--v2-fg-on-dark, #f5f4ef);
-    --muted: var(--v2-fg-muted, rgba(245, 244, 239, 0.62));
-    --dim: rgba(245, 244, 239, 0.36);
-    --rule: rgba(245, 244, 239, 0.1);
-    --rule-soft: rgba(245, 244, 239, 0.06);
-    --rule-strong: rgba(245, 244, 239, 0.18);
-    --copper: var(--v2-accent, #cf6f4e);
-    --teal: var(--v2-accent-2, #3d7a72);
-    --mint: #a6c5bc;
+    --ink: var(--v2-ink);
+    --ink-deep: var(--v2-ink);
+    --paper: var(--v2-fg-on-dark);
+    --muted: var(--v2-fg-on-dark-dim);
+    --dim: var(--v2-fg-on-dark-mute);
+    --rule: var(--v2-rule-dark);
+    --rule-soft: var(--v2-rule-dark-soft);
+    --rule-strong: var(--v2-border-strong);
+    --copper: var(--v2-copper);
+    --teal: var(--v2-accent);
+    --mint: var(--v2-ok);
     min-height: calc(100vh - 72px);
     height: calc(100vh - 72px);
     color: var(--paper);
@@ -1260,7 +1260,7 @@
       radial-gradient(circle, rgba(245, 244, 239, 0.05) 1px, transparent 1.5px) 0 0 / 28px 28px,
       radial-gradient(ellipse 100% 80% at 50% 50%, var(--ink) 30%, var(--ink-deep) 100%);
     padding: 18px 32px 18px;
-    font-family: var(--v2-font-body, Inter, system-ui, sans-serif);
+    font-family: var(--v2-font-body);
     overflow: auto;
     scrollbar-gutter: stable;
     display: flex;
@@ -1277,7 +1277,7 @@
     flex: 0 0 auto;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--rule);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1326,7 +1326,7 @@
 
   .phase-narrative__kicker {
     margin: 0;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1335,7 +1335,7 @@
 
   .phase-narrative__title {
     margin: 0;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(34px, 3.6vw, 52px);
     line-height: 1.05;
     letter-spacing: -0.005em;
@@ -1366,7 +1366,7 @@
 
   .phase-narrative__eyebrow {
     margin: 0;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1375,7 +1375,7 @@
 
   .phase-narrative__verb {
     margin: 0;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(26px, 2.8vw, 36px);
     line-height: 1.1;
     font-weight: 400;
@@ -1425,10 +1425,10 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--rule);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     background: transparent;
     color: var(--muted);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 14px;
     cursor: pointer;
     transition:
@@ -1450,7 +1450,7 @@
 
   .phase-narrative__step {
     justify-self: center;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
     color: var(--dim);
@@ -1488,7 +1488,7 @@
     position: relative;
     height: 100%;
     min-height: clamp(320px, 44vh, 520px);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule);
     background:
       radial-gradient(
@@ -1514,7 +1514,7 @@
     top: 20px;
     display: grid;
     gap: 6px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1568,7 +1568,7 @@
   }
 
   .metrics span {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1576,7 +1576,7 @@
   }
 
   .metrics strong {
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(22px, 2.2vw, 28px);
     font-weight: 400;
     color: var(--mint);
@@ -1618,7 +1618,7 @@
   }
 
   .command span {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1627,7 +1627,7 @@
 
   .command code {
     overflow-wrap: anywhere;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     color: var(--mint);
     font-size: 13px;
   }
@@ -1650,7 +1650,7 @@
   }
 
   .marble-picker__label {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.26em;
     text-transform: uppercase;
@@ -1669,7 +1669,7 @@
     place-items: center;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--v2-radius-pill);
     background: transparent;
     cursor: pointer;
     transition: border-color 180ms ease, transform 180ms ease;
@@ -1693,7 +1693,7 @@
   .marble-pick__sphere {
     width: 26px;
     height: 26px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.45),
       inset -2px -3px 6px rgba(0, 0, 0, 0.32),
@@ -1739,9 +1739,9 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     background: transparent;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     letter-spacing: 0.26em;
     text-transform: uppercase;
@@ -1867,7 +1867,7 @@
   }
 
   .converge-badge__value {
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(34px, 3.4vw, 44px);
     font-weight: 400;
     line-height: 1;
@@ -1878,7 +1878,7 @@
   .converge-badge__label {
     position: absolute;
     bottom: 28%;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 9px;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -1891,7 +1891,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 10px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1901,7 +1901,7 @@
   .mode-dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     background: var(--mint);
     box-shadow: 0 0 8px rgba(166, 197, 188, 0.6);
   }
@@ -1940,7 +1940,7 @@
     justify-content: space-between;
     padding: 12px 0;
     border-top: 1px solid var(--rule-soft);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1978,7 +1978,7 @@
   .control-group label > span {
     display: block;
     margin: 0 0 12px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -1996,11 +1996,11 @@
     display: grid;
     place-items: center;
     gap: 8px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-soft);
     background: transparent;
     color: var(--dim);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -2037,11 +2037,11 @@
     min-height: 38px;
     display: grid;
     place-items: center;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-soft);
     background: transparent;
     color: var(--dim);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -2071,11 +2071,11 @@
   }
 
   .shape-icon--ring {
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
   }
 
   .shape-icon--oval {
-    border-radius: 999px;
+    border-radius: var(--v2-radius-pill);
     border-color: var(--dim);
   }
 
@@ -2109,12 +2109,12 @@
     color: var(--paper);
     background: rgba(245, 244, 239, 0.04);
     border: 1px solid var(--rule);
-    border-radius: 6px;
+    border-radius: var(--v2-radius);
     padding: 10px 12px;
   }
 
   .control-group b {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     color: var(--paper);
     min-width: 46px;
     text-align: right;
@@ -2130,7 +2130,7 @@
     display: block;
     padding-bottom: 6px;
     border-bottom: 1px dashed rgba(245, 244, 239, 0.1);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     line-height: 1.25;
     color: var(--paper);
@@ -2157,11 +2157,11 @@
   .action,
   .actions__secondary button {
     min-height: 44px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-strong);
     background: transparent;
     color: var(--paper);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -2227,7 +2227,7 @@
     display: block;
     margin-bottom: 6px;
     color: var(--paper);
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-style: italic;
     font-size: 22px;
     font-weight: 400;
@@ -2238,7 +2238,7 @@
     flex: 0 0 auto;
     margin: 0;
     text-align: center;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     color: var(--dim);

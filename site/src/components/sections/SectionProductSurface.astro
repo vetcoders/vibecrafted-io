@@ -126,7 +126,7 @@ const browseLabel = lang === 'pl' ? 'Przeglądaj zrzuty' : 'Browse captures';
   .ps__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.06;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
@@ -211,10 +211,10 @@ const browseLabel = lang === 'pl' ? 'Przeglądaj zrzuty' : 'Browse captures';
   }
 
   .ps__install {
-    border: 1px solid rgba(245, 244, 239, 0.14);
-    border-radius: 4px;
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
     padding: 22px 24px;
-    background: rgba(245, 244, 239, 0.03);
+    background: var(--v2-plate);
   }
 
   .ps__install-lead {

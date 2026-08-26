@@ -247,7 +247,7 @@
     background: rgba(10, 10, 11, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--v2-border, #27272a);
+    border-bottom: 1px solid var(--v2-border);
     box-shadow: none;
   }
 
@@ -331,7 +331,7 @@
     color: rgba(var(--v2-paper-rgb), 0.82);
     background: rgba(23, 22, 21, 0.94);
     border: 1px solid rgba(var(--v2-paper-rgb), 0.18);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     padding: 5px 9px;
     box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.65);
     transition:
@@ -402,7 +402,7 @@
   .v2nav__install {
     appearance: none;
     background: transparent;
-    border: 1px solid var(--v2-border-strong, #3f3f46);
+    border: 1px solid var(--v2-border-strong);
     color: var(--fg-on-dark);
     padding: 8px 14px;
     font-family: var(--font-mono);
@@ -410,7 +410,7 @@
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    border-radius: var(--v2-radius-sm, 8px);
+    border-radius: var(--v2-radius);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -439,11 +439,11 @@
     align-items: center;
     gap: 18px;
     padding: 14px 28px;
-    background: #121214;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
+    background: var(--v2-paper-glass);
+    backdrop-filter: var(--v2-paper-backdrop);
+    -webkit-backdrop-filter: var(--v2-paper-backdrop);
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
     opacity: 0;
     pointer-events: none;
     transition:
@@ -495,7 +495,7 @@
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     cursor: pointer;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     white-space: nowrap;

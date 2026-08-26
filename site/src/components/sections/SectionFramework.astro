@@ -99,7 +99,7 @@ const playgroundHref = `/${lang}/framework/`;
   .framework__intro-heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.08;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
@@ -135,7 +135,7 @@ const playgroundHref = `/${lang}/framework/`;
     --ph-stage-bg: transparent;
     --ph-stage-bg-overlay: linear-gradient(180deg, rgba(245, 244, 239, 0.025) 0%, transparent 70%);
     --ph-stage-border: var(--rule-dark);
-    --ph-stage-radius: 2px;
+    --ph-stage-radius: var(--v2-radius);
 
     --ph-name-color: var(--fg-on-dark);
     --ph-name-font: var(--font-display);
@@ -168,13 +168,13 @@ const playgroundHref = `/${lang}/framework/`;
     --ph-btn-accent-bg: rgba(var(--accent-rgb), 0.08);
     --ph-btn-accent-bg-hover: rgba(var(--accent-rgb), 0.14);
     --ph-btn-accent-border: rgba(var(--accent-rgb), 0.4);
-    --ph-btn-radius: 2px;
+    --ph-btn-radius: var(--v2-radius);
 
     --ph-source-bg: rgba(245, 244, 239, 0.03);
     --ph-source-border: var(--rule-dark);
     --ph-source-color: var(--fg-on-dark);
     --ph-source-font: var(--font-mono);
-    --ph-source-radius: 2px;
+    --ph-source-radius: var(--v2-radius);
 
     --ph-tech-bg: rgba(245, 244, 239, 0.03);
     --ph-tech-border: var(--rule-dark);
@@ -183,7 +183,7 @@ const playgroundHref = `/${lang}/framework/`;
     --ph-modal-backdrop: rgba(14, 14, 12, 0.85);
     --ph-modal-panel-bg: var(--ink);
     --ph-modal-panel-border: var(--rule-dark);
-    --ph-modal-panel-radius: 2px;
+    --ph-modal-panel-radius: var(--v2-radius);
     --ph-modal-title-color: var(--fg-on-dark);
     --ph-modal-close-bg: transparent;
     --ph-modal-close-color: var(--fg-on-dark-dim);
@@ -219,9 +219,10 @@ const playgroundHref = `/${lang}/framework/`;
   }
 
   .framework__op-card {
-    border: 1px solid var(--rule-dark-soft);
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
     padding: 18px 16px;
-    background: transparent;
+    background: var(--v2-plate);
     display: flex;
     flex-direction: column;
     gap: 6px;

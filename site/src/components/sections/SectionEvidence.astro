@@ -68,7 +68,7 @@ const section = evidenceEntry.data as {
   .evidence__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.08;
     letter-spacing: -0.025em;
     color: var(--fg-on-paper);
@@ -102,7 +102,7 @@ const section = evidenceEntry.data as {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
   }
 
   .evidence__card-head {
@@ -127,7 +127,7 @@ const section = evidenceEntry.data as {
     text-transform: uppercase;
     padding: 3px 8px;
     border: 1px solid currentColor;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
   }
 
   .evidence__card-tag--rust  { color: var(--accent); }

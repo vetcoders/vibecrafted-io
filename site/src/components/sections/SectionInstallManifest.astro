@@ -91,7 +91,7 @@ const nextTitle = problemEntry.data.title as string;
   .im__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.08;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);
@@ -146,10 +146,10 @@ const nextTitle = problemEntry.data.title as string;
     height: 100%;
     min-height: 0;
     overflow: hidden;
-    padding: 16px 18px;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
-    background: #121214;
+    padding: 18px 16px;
+    border: 1px solid var(--rule-dark);
+    border-radius: var(--v2-radius);
+    background: var(--v2-plate);
   }
 
   .im__card-head {

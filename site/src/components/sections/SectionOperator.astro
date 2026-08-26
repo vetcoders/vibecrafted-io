@@ -190,7 +190,7 @@ const nextTitle = quickstartEntry.data.title as string;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     margin-bottom: 72px;
   }
 
@@ -238,9 +238,9 @@ const nextTitle = quickstartEntry.data.title as string;
   .op__cockpit-figure {
     margin: 0;
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     overflow: hidden;
-    background: var(--bg-ink, #0a1018);
+    background: var(--ink);
   }
 
   .op__cockpit-figure img {
@@ -362,7 +362,7 @@ const nextTitle = quickstartEntry.data.title as string;
     top: 14px;
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     background: var(--accent);
   }
 
@@ -402,7 +402,7 @@ const nextTitle = quickstartEntry.data.title as string;
   .op__practice {
     padding: 8px 12px;
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.18em;
