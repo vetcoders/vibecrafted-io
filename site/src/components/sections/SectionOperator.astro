@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import BoardPreview from '../BoardPreview.svelte';
@@ -11,7 +11,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+const operatorEntry = { data: await loadCopy('operator', lang) };
 if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
 const section = operatorEntry.data as {
   title: string;
@@ -62,7 +62,7 @@ type BoardPreviewData = {
   caption: string;
 };
 
-const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+const quickstartEntry = { data: await loadCopy('quickstart', lang) };
 if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
 const nextTitle = quickstartEntry.data.title as string;
 ---

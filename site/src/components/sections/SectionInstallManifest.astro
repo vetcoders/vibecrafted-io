@@ -3,9 +3,9 @@
  * Install manifest — "What you install" component inventory.
  * Voice contract: the manifesto (concrete, adult, zero mystery meat).
  * One card per installed component: what it is, what it kills, where it lives.
- * Content: src/content/i18n/{lang}/install-manifest-v2.md
+ * Content: site/content/install/{en,pl}.md
  */
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -16,7 +16,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const entry = await getEntry('i18n', `${lang}/install-manifest-v2`);
+const entry = { data: await loadCopy('install', lang) };
 if (!entry) throw new Error(`Missing i18n entry: ${lang}/install-manifest-v2`);
 
 const section = entry.data as {
@@ -35,8 +35,8 @@ const section = entry.data as {
   truthBody: string;
 };
 
-const problemEntry = await getEntry('i18n', `${lang}/problem-v2`);
-if (!problemEntry) throw new Error(`Missing i18n entry: ${lang}/problem-v2`);
+const problemEntry = { data: await loadCopy('about', lang) };
+if (!problemEntry) throw new Error(`Missing copy: content/about/${lang}.md`);
 const nextTitle = problemEntry.data.title as string;
 ---
 

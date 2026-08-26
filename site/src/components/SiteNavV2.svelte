@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { getTranslations, type Lang } from '../lib/i18n';
 
   interface Props {
@@ -35,10 +36,10 @@
   // a subpage navigates back to landing and then scrolls to the anchor.
   const anchors = $derived([
     { ...(navLabels.v2Anchors.about as AnchorCopy), href: `${langPrefix}/#about` },
-    { ...(navLabels.v2Anchors.runtime as AnchorCopy), href: `${langPrefix}/#framework` },
+    { ...(navLabels.v2Anchors.runtime as AnchorCopy), href: `${langPrefix}/#operator` },
     { ...(navLabels.v2Anchors.aicx as AnchorCopy), href: `${langPrefix}/aicx/`, isPage: true, pageMatch: `${langPrefix}/aicx/` },
     { ...(navLabels.v2Anchors.marbles as AnchorCopy), href: `${langPrefix}/#marbles` },
-    { ...(navLabels.v2Anchors.playground as AnchorCopy), href: `${langPrefix}/framework/`, isPage: true, pageMatch: `${langPrefix}/framework/` },
+    { ...(navLabels.v2Anchors.playground as AnchorCopy), href: `${langPrefix}/#playground` },
     { ...(navLabels.v2Anchors.dou as AnchorCopy), href: `${langPrefix}/dou/`, isPage: true, pageMatch: `${langPrefix}/dou/` },
     { ...(navLabels.v2Anchors.pricing as AnchorCopy), href: `${langPrefix}/#commercial` },
     { ...(navLabels.v2Anchors.faq as AnchorCopy), href: `${langPrefix}/faq/`, isPage: true, pageMatch: `${langPrefix}/faq/` },
@@ -55,6 +56,7 @@
   // without this panel a phone visitor has no route to the section pages.
   let mobileOpen = $state(false);
   let copied = $state(false);
+  let theme = $state<'light' | 'dark'>('dark');
   let copyTimer: ReturnType<typeof setTimeout> | null = null;
   let openTimer: ReturnType<typeof setTimeout> | null = null;
   let closeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -122,6 +124,30 @@
 
   const toggleLabel = $derived(lang === 'pl' ? 'EN' : 'PL');
   const toggleHreflang = $derived(lang === 'pl' ? 'en' : 'pl');
+
+  onMount(() => {
+    let current = document.documentElement.getAttribute('data-theme');
+    if (current !== 'light' && current !== 'dark') {
+      try {
+        const stored = localStorage.getItem('vc-theme');
+        current = stored === 'light' || stored === 'dark' ? stored : 'dark';
+      } catch {
+        current = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', current);
+    }
+    theme = current === 'light' ? 'light' : 'dark';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f3f1eb' : '#0a0a0b');
+  });
+
+  function toggleTheme() {
+    theme = theme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem('vc-theme', theme); } catch { /* ignore */ }
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f3f1eb' : '#0a0a0b');
+  }
 </script>
 
 <nav class="v2nav" aria-label={navLabels.navPrimary}>
@@ -148,7 +174,7 @@
       bind:this={installWrapperEl}
     >
       <a
-        href="/install"
+        href={`${langPrefix}/install/`}
         class="v2nav__install"
         aria-haspopup="true"
         aria-expanded={dropdownOpen}
@@ -182,6 +208,15 @@
     </div>
 
     <a class="v2nav__vc" href={vcHref} rel="noopener noreferrer" target="_blank">VC</a>
+
+    <button
+      class="v2nav__theme"
+      type="button"
+      onclick={toggleTheme}
+      aria-label={theme === 'light' ? 'Switch to dark' : 'Switch to light'}
+    >
+      {theme === 'light' ? 'DARK' : 'LIGHT'}
+    </button>
 
     <a
       class="v2nav__toggle"
@@ -244,7 +279,7 @@
     padding: 14px 48px;
     gap: 24px;
     color: var(--fg-on-dark);
-    background: rgba(10, 10, 11, 0.92);
+    background: color-mix(in srgb, var(--v2-ink) 92%, transparent);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--v2-border);
@@ -309,7 +344,7 @@
     display: block;
     font-size: 8px;
     letter-spacing: 0.12em;
-    color: rgba(var(--v2-paper-rgb), 0.44);
+    color: var(--fg-on-dark-mute);
     white-space: nowrap;
   }
 
@@ -328,12 +363,12 @@
     font-size: 9px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(var(--v2-paper-rgb), 0.82);
-    background: rgba(23, 22, 21, 0.94);
-    border: 1px solid rgba(var(--v2-paper-rgb), 0.18);
+    color: var(--fg-on-dark-dim);
+    background: var(--v2-paper-glass);
+    border: 1px solid var(--v2-border);
     border-radius: var(--v2-radius);
     padding: 5px 9px;
-    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.65);
+    box-shadow: 0 10px 24px -12px rgba(var(--v2-ink-rgb), 0.45);
     transition:
       opacity 0.14s ease,
       transform 0.14s ease;
@@ -344,7 +379,7 @@
   .v2nav__anchors .v2nav__anchor:focus-visible .v2nav__anchor-sub {
     opacity: 1;
     transform: translate(-50%, 0);
-    color: rgba(var(--v2-paper-rgb), 0.82);
+    color: var(--fg-on-dark);
   }
 
   .v2nav__anchor:hover,
@@ -355,7 +390,7 @@
   .v2nav__anchor:hover .v2nav__anchor-sub,
   .v2nav__anchor:focus-visible .v2nav__anchor-sub,
   .v2nav__anchor--active .v2nav__anchor-sub {
-    color: rgba(var(--v2-paper-rgb), 0.74);
+    color: var(--fg-on-dark-dim);
   }
 
   .v2nav__anchor::after {
@@ -420,7 +455,7 @@
 
   .v2nav__install:hover,
   .v2nav__install:focus-visible {
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in srgb, var(--fg-on-dark) 6%, transparent);
   }
 
   .v2nav__install-arrow {
@@ -510,7 +545,8 @@
   /* ── VC link + toggle + github ───────────────────────────── */
 
   .v2nav__vc,
-  .v2nav__toggle {
+  .v2nav__toggle,
+  .v2nav__theme {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
@@ -522,8 +558,18 @@
   .v2nav__vc:hover,
   .v2nav__vc:focus-visible,
   .v2nav__toggle:hover,
-  .v2nav__toggle:focus-visible {
+  .v2nav__toggle:focus-visible,
+  .v2nav__theme:hover,
+  .v2nav__theme:focus-visible {
     color: var(--fg-on-dark);
+  }
+
+  .v2nav__theme {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
   }
 
   .v2nav__github {
@@ -561,8 +607,8 @@
     flex-direction: column;
     padding: 6px 24px 14px;
     /* Solid paint — a translucent panel lets the hero headline bleed through the rows. */
-    background: rgb(23, 22, 21);
-    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.11);
+    background: var(--v2-ink);
+    border-bottom: 1px solid var(--v2-border);
   }
 
   .v2nav__mobile-anchor {
@@ -576,7 +622,7 @@
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
     padding: 11px 0;
-    border-bottom: 1px solid rgba(var(--v2-paper-rgb), 0.07);
+    border-bottom: 1px solid var(--v2-border);
   }
 
   .v2nav__mobile-anchor .v2nav__anchor-sub {

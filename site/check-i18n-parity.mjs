@@ -30,8 +30,19 @@ function git(...args) {
 
 const MIRRORS = [
   ['src/pages/en', 'src/pages/pl'],
-  ['src/content/i18n/en', 'src/content/i18n/pl'],
 ];
+
+const contentRoot = path.join(here, 'content');
+const sections = readdirSync(contentRoot, { withFileTypes: true })
+  .filter((e) => e.isDirectory())
+  .map((e) => e.name)
+  .sort();
+for (const section of sections) {
+  const dir = path.join(contentRoot, section);
+  const files = readdirSync(dir);
+  assert.ok(files.includes('en.md'), `content/${section}/en.md missing`);
+  assert.ok(files.includes('pl.md'), `content/${section}/pl.md missing`);
+}
 
 for (const [enDir, plDir] of MIRRORS) {
   const enFiles = walk(path.join(here, enDir));

@@ -29,6 +29,7 @@
  *   - "inline"  — bordered card for manifesto/showcase mid-prose inserts
  */
 import type { Lang } from '../lib/i18n';
+import { loadCopy } from '../lib/content';
 
 interface Props {
   lang?: Lang;
@@ -45,24 +46,14 @@ const {
   class: className,
 } = Astro.props as Props;
 
-// Inline copy — operator-voice, no marketing fluff. Translations live
-// behind a try/catch so missing i18n keys do not break the build (Plan 19
-// intentionally ships strings inline; future plans can lift into
-// src/lib/i18n/{en,pl}.ts once the surface stabilizes).
-const isPl = lang === 'pl';
-
-const labels = {
-  eyebrow: isPl ? 'NEWSLETTER' : 'NEWSLETTER',
-  lead: isPl
-    ? 'Otrzymuj wiadomości, kiedy vibecrafted dowozi.'
-    : 'Receive updates when vibecrafted ships.',
-  placeholder: isPl ? 'twoj@email.pl' : 'you@example.com',
-  cta: isPl ? 'Zapisz się' : 'Subscribe',
-  privacyNote: isPl
-    ? 'Brak trackerów. Brak popupów. Email lądowa na Buttondown — wypisanie się jednym klikiem.'
-    : 'No trackers. No popups. Buttondown-hosted — one-click unsubscribe.',
-  archiveCta: isPl ? 'Archiwum →' : 'Archive →',
-  archiveHref: '/newsletter/',
+const labels = (await loadCopy('newsletter', lang)) as {
+  eyebrow: string;
+  lead: string;
+  placeholder: string;
+  cta: string;
+  privacyNote: string;
+  archiveCta: string;
+  archiveHref: string;
 };
 
 const formAction = `https://buttondown.com/api/emails/embed-subscribe/${username}`;

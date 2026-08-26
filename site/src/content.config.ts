@@ -10,20 +10,14 @@ const pages = defineCollection({
   }),
 });
 
-// i18n collection — per-locale page sections. Each file is a logical section
-// (hero, pipeline, skills, ...) with redaction-friendly YAML frontmatter for
-// structured data and markdown body for long prose. Monika edits these
-// directly; type safety is enforced by zod on build.
+// i18n collection — one folder per section under site/content/<section>/{en,pl}.md
 const i18n = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/i18n" }),
+  loader: glob({ pattern: "*/*.md", base: "./content" }),
   schema: z.looseObject({
     // Shared optional fields — individual sections extend this loose object.
-    frameworkTitle: z.string().optional(),
+    title: z.string().optional(),
     lead: z.string().optional(),
     quote: z.string().optional(),
-    evidence: z.string().optional(),
-    quickstart: z.string().optional(),
-    quickstartHref: z.string().optional(),
   }),
 });
 

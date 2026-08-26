@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -23,14 +23,14 @@ type ShiftData = {
   proofItems: ProofItem[];
 };
 
-const shiftEntry = await getEntry('i18n', `${lang}/shift-v2`);
+const shiftEntry = { data: await loadCopy('shift', lang) };
 if (!shiftEntry) throw new Error(`Missing i18n entry: ${lang}/shift-v2`);
 const shift = shiftEntry.data as ShiftData;
 const todayItems = shift.todayItems;
 const vibecraftedItems = shift.vibecraftedItems;
 const proofItems = shift.proofItems;
 
-const frameworkEntry = await getEntry('i18n', `${lang}/framework-v2`);
+const frameworkEntry = { data: await loadCopy('framework', lang) };
 if (!frameworkEntry) throw new Error(`Missing i18n entry: ${lang}/framework-v2`);
 const nextTitle = frameworkEntry.data.title as string;
 ---

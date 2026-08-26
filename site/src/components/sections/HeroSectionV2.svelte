@@ -2,7 +2,7 @@
   import type { Lang } from '../../lib/i18n';
   import PlaygroundTui from '../PlaygroundTui.svelte';
 
-  interface HeroData {
+  export interface HeroData {
     ariaLabel: string;
     eyebrow: string;
     heading: {

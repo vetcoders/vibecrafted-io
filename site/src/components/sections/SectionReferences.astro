@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -10,7 +10,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 
-const referencesEntry = await getEntry('i18n', `${lang}/references-v2`);
+const referencesEntry = { data: await loadCopy('references', lang) };
 if (!referencesEntry) throw new Error(`Missing i18n entry: ${lang}/references-v2`);
 const section = referencesEntry.data as {
   title: string;
@@ -19,7 +19,7 @@ const section = referencesEntry.data as {
   subtitle: string;
 };
 
-const evidenceEntry = await getEntry('i18n', `${lang}/evidence-v2`);
+const evidenceEntry = { data: await loadCopy('evidence', lang) };
 if (!evidenceEntry) throw new Error(`Missing i18n entry: ${lang}/evidence-v2`);
 const nextTitle = evidenceEntry.data.title as string;
 

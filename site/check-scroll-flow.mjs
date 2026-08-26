@@ -19,6 +19,8 @@ const verticalScrollSurfaces = {
 const frameworkSection = read('src/components/sections/SectionFramework.astro');
 const englishCopy = read('src/lib/i18n/en.ts');
 const polishCopy = read('src/lib/i18n/pl.ts');
+const englishHero = read('content/hero/en.md');
+const polishHero = read('content/hero/pl.md');
 const heroSection = verticalScrollSurfaces['src/components/sections/HeroSectionV2.svelte'];
 
 for (const [file, source] of Object.entries(verticalScrollSurfaces)) {
@@ -183,37 +185,37 @@ assert.doesNotMatch(
   'Hero accent word must not be colored; the brand dot owns the accent.',
 );
 assert.match(
-  englishCopy,
+  englishHero,
   /pre:\s*"AI can write\."/,
   'English hero should lead with the writing problem, not the category label.',
 );
 assert.match(
-  englishCopy,
+  englishHero,
   /accent:\s*"Evidence decides\."/,
   'English hero should close on evidence, not a receipt slogan.',
 );
 assert.match(
-  polishCopy,
+  polishHero,
   /pre:\s*"AI potrafi pisać\."/,
   'Polish hero should lead with the writing problem, not the category label.',
 );
 assert.match(
-  polishCopy,
+  polishHero,
   /accent:\s*"Dowód rozstrzyga\."/,
   'Polish hero should close on evidence, not a receipt slogan.',
 );
 assert.match(
-  englishCopy,
+  englishHero,
   /structural vision, durable intent, and a mouth that posts/,
   'English hero should name sight, memory, and mouth — not a generic agent launcher.',
 );
 assert.match(
-  englishCopy,
+  englishHero,
   /loct impact · aicx search · \/vc grok send · vc justdo/,
   'English hero should show the four-cut commands.',
 );
 assert.match(
-  polishCopy,
+  polishHero,
   /wizję struktury, trwałą intencję i usta, które postują/,
   'Polish hero should name sight, memory, and mouth — not a generic agent launcher.',
 );
@@ -226,6 +228,81 @@ assert.doesNotMatch(
   polishCopy,
   /najtańsz|stawki frontier|wreszcie mówi/i,
   'Polish copy must not sell price axis or the retired "finally truth" beat.',
+);
+
+assert.match(
+  tokensV2,
+  /html\[data-theme="light"\]:has\(body\.v2-scope\)/,
+  'Light palette is a first-class token inversion of the same names.',
+);
+assert.match(
+  tokensV2,
+  /--v2-ink:\s*#f3f1eb/,
+  'Light ink is vc-frame paper, not a grey wash.',
+);
+assert.match(
+  tokensV2,
+  /color-scheme:\s*light/,
+  'Light theme must advertise color-scheme so native controls follow.',
+);
+
+const navV2 = read('src/components/SiteNavV2.svelte');
+assert.match(
+  navV2,
+  /href: `\$\{langPrefix\}\/#playground`/,
+  'PLAYGROUND routes to the in-document TUI, not the marble board.',
+);
+assert.match(
+  navV2,
+  /href: `\$\{langPrefix\}\/#operator`/,
+  'RUNTIME routes to the operator section.',
+);
+assert.match(
+  navV2,
+  /href: `\$\{langPrefix\}\/#about`/,
+  'ABOUT routes to the four-cut section.',
+);
+assert.match(
+  navV2,
+  /href=\{`\$\{langPrefix\}\/install\/`\}/,
+  'INSTALL is locale-prefixed, not a bare /install.',
+);
+assert.doesNotMatch(
+  navV2,
+  /rgba\(\s*10\s*,\s*10\s*,\s*11/,
+  'Nav chrome must paint from tokens so light mode is not a dark bar on paper.',
+);
+assert.doesNotMatch(
+  navV2,
+  /rgb\(\s*23\s*,\s*22\s*,\s*21/,
+  'Mobile nav panel must not hardcode the graphite fill.',
+);
+
+const aboutEn = read('content/about/en.md');
+const aboutPl = read('content/about/pl.md');
+assert.match(
+  aboutEn,
+  /four things/,
+  'ABOUT names the four missing cuts, not a SaaS hangover anecdote.',
+);
+assert.match(aboutEn, /No sight/);
+assert.match(aboutEn, /No memory/);
+assert.match(aboutEn, /No mouth/);
+assert.match(aboutEn, /No proof/);
+assert.doesNotMatch(
+  aboutEn,
+  /vibe-coded SaaS|ONE GOD TABLE|AUTH HELD WITH TAPE/i,
+  'ABOUT must not keep the consulting god-table copy.',
+);
+assert.match(
+  aboutPl,
+  /tych samych czterech rzeczy/,
+  'Polish ABOUT mirrors the four-cut rewrite.',
+);
+assert.doesNotMatch(
+  aboutPl,
+  /vibe-coded SaaS|JEDNA TABELA BOGA/i,
+  'Polish ABOUT must not keep the consulting god-table copy.',
 );
 
 console.log('Scroll flow smoke passed: soft settle, clickable operator tiles, hero dot, operating-runtime definition, and anti-price axis are intact.');

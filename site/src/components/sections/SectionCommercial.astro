@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -10,7 +10,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const entry = await getEntry('i18n', `${lang}/commercial-v2`);
+const entry = { data: await loadCopy('commercial', lang) };
 if (!entry) throw new Error(`Missing i18n entry: ${lang}/commercial-v2`);
 
 type Plan = {

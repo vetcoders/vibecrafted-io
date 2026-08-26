@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -10,7 +10,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const evidenceEntry = await getEntry('i18n', `${lang}/evidence-v2`);
+const evidenceEntry = { data: await loadCopy('evidence', lang) };
 if (!evidenceEntry) throw new Error(`Missing i18n entry: ${lang}/evidence-v2`);
 const section = evidenceEntry.data as {
   title: string;

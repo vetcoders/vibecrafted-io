@@ -16,6 +16,7 @@
  * Same-origin → CSP `connect-src 'self'` covers it; no external host needed.
  */
 import type { Lang } from '../lib/i18n';
+import { loadCopy } from '../lib/content';
 
 interface Props {
   lang?: Lang;
@@ -38,21 +39,17 @@ const {
   class: className,
 } = Astro.props as Props;
 
-const isPl = lang === 'pl';
-
-const labels = {
-  eyebrow: isPl ? 'KONTAKT' : 'CONTACT',
-  lead: isPl
-    ? 'Masz konkretny problem z dowiezieniem AI-owego softu do produkcji? Napisz, co próbujesz wdrożyć.'
-    : 'Stuck shipping AI-built software? Tell us what you are trying to get to production.',
-  email: isPl ? 'Twój e-mail' : 'Your email',
-  subject: isPl ? 'Temat' : 'Subject',
-  message: isPl ? 'Wiadomość' : 'Message',
-  cta: isPl ? 'Wyślij' : 'Send',
-  sending: isPl ? 'Wysyłanie…' : 'Sending…',
-  ok: isPl ? 'Wysłane. Odezwiemy się, jeśli to pasuje.' : "Sent. We'll reply if it's a fit.",
-  err: isPl ? 'Nie udało się wysłać. Spróbuj mejlem.' : 'Could not send. Try email instead.',
-  privacyPre: isPl ? 'Bez trackerów. Trafia wprost do skrzynki. Wolisz mejla? ' : 'No trackers. Goes straight to our inbox. Prefer email? ',
+const labels = (await loadCopy('contact', lang)) as {
+  eyebrow: string;
+  lead: string;
+  email: string;
+  subject: string;
+  message: string;
+  cta: string;
+  sending: string;
+  ok: string;
+  err: string;
+  privacyPre: string;
 };
 ---
 

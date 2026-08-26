@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import type { Lang } from '../../lib/i18n';
@@ -10,8 +10,8 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const problemEntry = await getEntry('i18n', `${lang}/problem-v2`);
-if (!problemEntry) throw new Error(`Missing i18n entry: ${lang}/problem-v2`);
+const problemEntry = { data: await loadCopy('about', lang) };
+if (!problemEntry) throw new Error(`Missing copy: content/about/${lang}.md`);
 const section = problemEntry.data as {
   title: string;
   centerLabel: string;
@@ -20,7 +20,7 @@ const section = problemEntry.data as {
   symptoms: Array<{ label: string; body: string }>;
 };
 
-const engineeringEntry = await getEntry('i18n', `${lang}/engineering-v2`);
+const engineeringEntry = { data: await loadCopy('engineering', lang) };
 if (!engineeringEntry) throw new Error(`Missing i18n entry: ${lang}/engineering-v2`);
 const nextTitle = engineeringEntry.data.title as string;
 ---

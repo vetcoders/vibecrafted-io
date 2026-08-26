@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import PipelineHero from '../PipelineHero.svelte';
@@ -27,11 +27,11 @@ type FrameworkData = {
   operators: FrameworkOperator[];
 };
 
-const frameworkEntry = await getEntry('i18n', `${lang}/framework-v2`);
+const frameworkEntry = { data: await loadCopy('framework', lang) };
 if (!frameworkEntry) throw new Error(`Missing i18n entry: ${lang}/framework-v2`);
 const section = frameworkEntry.data as FrameworkData;
 
-const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+const operatorEntry = { data: await loadCopy('operator', lang) };
 if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
 const nextTitle = operatorEntry.data.title as string;
 

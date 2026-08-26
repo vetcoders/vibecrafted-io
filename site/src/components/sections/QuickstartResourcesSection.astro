@@ -1,12 +1,12 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 
-const entry = await getEntry('i18n', `${lang}/quickstartresources`);
+const entry = { data: await loadCopy('quickstart-resources', lang) };
 if (!entry) {
     throw new Error(`Quickstart resources content not found for lang=${lang}`);
 }
