@@ -9,22 +9,22 @@
 
 # Chrome z landingV2.operator
 title: "OPERATOR"
-centerLabel: "INSTALUJ · PODAJ PAŁECZKĘ · OBSERWUJ"
+centerLabel: "WZROK · PAMIĘĆ · USTA"
 
 # Heading sekcji — zachowuje inline <em class="accent-2"> i <br />.
-headingHtml: 'Zainstaluj. Potem <em class="accent-2">puść jedną robotę</em>'
+headingHtml: 'Zainstaluj. Potem <em class="accent-2">zobacz, zapamiętaj, mów</em>'
 
 # 3 kroki instalacji — każdy ma step label, komendę i notkę.
 installSteps:
   - step: "KROK 01"
-    command: "$ curl -fsSL vibecrafted.io/install.sh | bash"
+    command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
     note: "Kładzie komendę na PATH."
   - step: "KROK 02"
-    command: '$ vibecrafted workflow claude -p "Przeczytaj to repo i nazwij pierwszy fix."'
-    note: "Prawdziwy agent, prawdziwe repo, zapisany run."
+    command: '$ loct impact src/auth.ts && aicx search "handoff"'
+    note: "Wzrok przed edycją. Trwała intencja po kompaktacji."
   - step: "KROK 03"
-    command: "$ vc-frame"
-    note: "Opcjonalnie. Terminal, w którym patrzysz na flotę."
+    command: '$ /vc grok send "Dokończ, aż to będzie daily-driver, nie demo."'
+    note: "Usta na busie. Tokeny zostają na hoście. Slack jest projektorem."
 
 # Heading bloku z screenshotem planszy — zachowuje inline <em class="accent-2">.
 shotHeadingHtml: 'Repo dostaje <em class="accent-2">wspólną powierzchnię</em>'
@@ -42,10 +42,10 @@ bullets:
 # Nawyki operatora — label + 4 hasła w stylu bannera.
 practicesLabel: "JAK TRZYMA SZTAFETA"
 practices:
-  - "JEDNO REPO, JEDNA POWIERZCHNIA"
-  - "KONTRAKT PRZED PROMPTEM"
-  - "DOWÓD PONAD NASTRÓJ"
-  - "NIEROZWIĄZANE ZOSTAJE WIDOCZNE"
+  - "STRUKTURA PRZED GENERACJĄ"
+  - "PAMIĘĆ PRZEŻYWA OKNO"
+  - "SLACK JEST PROJEKTOREM"
+  - "ZIELONE CI TO NIE WERDYKT"
 
 # BoardPreview — pełny snapshot planszy renderowany w prawej kolumnie sekcji.
 # Wszystkie podstruktury (boardRows, marblesLog, douItems, headers, tabs) zachowane 1:1.

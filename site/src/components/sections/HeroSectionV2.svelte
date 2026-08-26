@@ -34,7 +34,7 @@
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
   const playgroundTitle = $derived(
-    lang === 'pl' ? 'Symulator komend Vibecrafted' : 'Vibecrafted command playground',
+    lang === 'pl' ? 'Playground operatora' : 'Operator playground',
   );
 </script>
 

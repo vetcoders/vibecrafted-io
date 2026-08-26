@@ -9,10 +9,10 @@
 
 # Section chrome from landingV2.operator
 title: "THE OPERATOR"
-centerLabel: "INSTALL · HAND OFF · OBSERVE · 3.6.0"
+centerLabel: "SIGHT · MEMORY · MOUTH"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
-headingHtml: 'Install. Then <em class="accent-2">send one job</em>'
+headingHtml: 'Install. Then <em class="accent-2">see, remember, speak</em>'
 
 # Three install steps — terminal-shaped cards.
 installSteps:
@@ -20,11 +20,11 @@ installSteps:
     command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
     note: "Puts the command on your PATH."
   - step: "STEP 02"
-    command: '$ vibecrafted workflow claude -p "Read this repo and name the first fix."'
-    note: "A real agent, a real repo, a recorded run."
+    command: '$ loct impact src/auth.ts && aicx search "handoff"'
+    note: "Sight before the edit. Durable intent after compaction."
   - step: "STEP 03"
-    command: "$ vc-frame"
-    note: "Optional. The terminal where you watch the fleet."
+    command: '$ /vc grok send "Finish until this is a daily-driver, not a demo."'
+    note: "Mouth on the bus. Tokens stay on the host. Slack is a projector."
 
 # Secondary heading for the "shared surface" half of the section.
 shotHeadingHtml: 'The repo gets a <em class="accent-2">shared surface</em>'
@@ -42,10 +42,10 @@ bullets:
 # Operator habits — caps-locked tape running across the section.
 practicesLabel: "HOW THE RELAY HOLDS"
 practices:
-  - "ONE REPO, ONE SURFACE"
-  - "CONTRACT BEFORE PROMPT"
-  - "EVIDENCE OVER MOOD"
-  - "UNRESOLVED STAYS VISIBLE"
+  - "STRUCTURE BEFORE GENERATION"
+  - "MEMORY OUTLIVES THE WINDOW"
+  - "SLACK IS A PROJECTOR"
+  - "GREEN CI IS NOT A VERDICT"
 
 # Board preview — the interactive widget showing BOARD / MARBLES / DOU tabs.
 # Kept as one nested object to mirror the en.ts shape 1:1.

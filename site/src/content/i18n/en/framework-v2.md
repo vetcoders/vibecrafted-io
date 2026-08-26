@@ -9,42 +9,40 @@
 
 # Section chrome from landingV2.framework
 title: "THE FRAMEWORK"
-centerLabel: "SCAFFOLD → RELEASE"
+centerLabel: "MAP → PROVE"
 
 # Heading carries inline HTML (<br />, <em class="accent-2">). One string so
 # the component can render it via {@html ...}.
-headingHtml: 'Not a rewrite. A cadence.<br /><em class="accent-2">Every write earns a read</em>'
+headingHtml: 'Not a rewrite. A cadence.<br /><em class="accent-2">Map · Remember · Craft · Wire · Prove</em>'
 
 # Subtitle under the heading — the pitch for the framework as a discipline.
-subtitle: "Eleven stages alternate Read and Write. Every write — implement, marbles, polarize — is immediately falsified by a read — review, audit, DoU. Marbles loops fixes until the gates stop lying; Polarize picks one canonical behavior and makes code, tests, and docs agree on it. Each stage runs its leg and hands the baton to the next, so nothing ships unchecked."
+subtitle: "Five phases, four cuts of the same truth. Loctree maps before the edit. Aicx remembers after compaction. Agents ship under gates. vc-slack is the mouth — Slack is a projector. Marbles settle only what those four already made true. Green CI is not a product verdict."
 
 # Operators block — heading + sub above the six-operator row.
-operatorsHeadingHtml: "How the <em>pass</em> runs"
-operatorsSub: "Each workflow has one job. Read the repo, make the cut, test the real path, or audit what is still not ready. Names come later; the evidence comes first."
+operatorsHeadingHtml: "Four cuts. <em>One loop</em>"
+operatorsSub: "Sight, memory, mouth, hands. Names you can type. Evidence first — the board is the metaphor."
 
 # Primary CTA (links to /en/framework/ via the component).
-cta: "Open the Playground"
+cta: "Open the operator playground"
 
-# Six operators rendered as a row of cards. Order matters — it traces the
-# Scaffold → Release path through the framework.
-# Channel labels (3.6.0): prebuilt-first acquisition — npm / crates / PyPI before cargo.
+# Six operators rendered as a row of cards. Order traces Map → Prove.
 operators:
   - num: "00"
-    name: "loctree"
-    kind: "npm · STRUCTURE"
+    name: "Loctree"
+    kind: "SIGHT"
   - num: "01"
-    name: "aicx"
-    kind: "npm · MEMORY"
+    name: "Aicx"
+    kind: "MEMORY"
   - num: "02"
-    name: "prview"
-    kind: "crates · REVIEW"
+    name: "vc-slack"
+    kind: "MOUTH"
   - num: "03"
-    name: "ScreenScribe"
-    kind: "PyPI · EARS"
+    name: "Codescribe"
+    kind: "VOICE"
   - num: "04"
-    name: "vc-frame"
-    kind: "cockpit · RAIL"
+    name: "Vibecrafted"
+    kind: "HANDS"
   - num: "05"
-    name: "DoU"
-    kind: "GATE"
+    name: "Marbles"
+    kind: "PROOF"
 ---

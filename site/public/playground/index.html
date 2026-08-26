@@ -73,7 +73,7 @@ html.embed,html.embed body{height:100%;background:var(--ground)}
   </div>
   <div class="statusbar">
     <span class="lock">LOCK</span><span>PANE</span><span>TAB</span><span>MOVE</span>
-    <span class="right"><span id="stat-name">codescribe</span> · <span id="clock">20:57</span> · <span id="stat-state">live</span></span>
+    <span class="right"><span id="stat-name">loctree</span> · <span id="clock">20:57</span> · <span id="stat-state">live</span></span>
   </div>
 </div>
 
@@ -94,7 +94,7 @@ prune:"map runtime cone → separate live truth → cut proven dead → verify",
 dou:"crawl buyer surface → test install/trust → collect gaps → undone verdict",release:"prove readiness → build+sign → publish → rollback truth"};
 const MODES=["implement","research","review","plan","prompt","observe","await","stop","resume"];
 const DECK=["help","version","status","doctor","receipt","init","resume","update","uninstall","dashboard","loop","cron",
-"dispatch","server","gui","tui","telemetry","ship","clear",...Object.keys(SKILLS),...AGENTS];
+"dispatch","server","gui","tui","telemetry","ship","clear","surfaces","loct","loctree","aicx","slack","vc-slack","/vc",...Object.keys(SKILLS),...AGENTS];
 let runs=[], hist=[], hi=0, activeId=0, nextId=8;
 
 function clockNow(){
@@ -103,34 +103,30 @@ function clockNow(){
 }
 
 const sessions=[
-  {id:0, name:"codescribe", agent:"grok", group:"live", time:"20:57", faces:["grok","codex"], buf:""},
-  {id:2, name:"vibecrafted", agent:"grok", group:"live", time:"20:51", faces:["grok","Shell"], buf:""},
-  {id:3, name:"vc-release", agent:"claude", group:"idle", time:"19:12", faces:["Start here","Agents"], buf:""},
-  {id:4, name:"loctree", agent:"codex", group:"idle", time:"18:40", faces:["codex"], buf:""},
-  {id:5, name:"aicx", agent:"agy", group:"stale", time:"18:11", faces:["agy"], buf:""},
-  {id:6, name:"vista", agent:"junie", group:"idle", time:"17:02", faces:["junie"], buf:""},
-  {id:7, name:"channel", agent:"grok", group:"idle", time:"16:44", faces:["grok"], buf:""}
+  {id:0, name:"loctree", agent:"grok", group:"live", time:"20:57", faces:["sight"], buf:""},
+  {id:2, name:"aicx", agent:"codex", group:"live", time:"20:51", faces:["memory"], buf:""},
+  {id:3, name:"vc-slack", agent:"grok", group:"idle", time:"19:12", faces:["mouth"], buf:""},
+  {id:4, name:"vibecrafted", agent:"claude", group:"live", time:"18:40", faces:["hands"], buf:""},
+  {id:5, name:"codescribe", agent:"grok", group:"stale", time:"18:11", faces:["voice"], buf:""},
+  {id:6, name:"channel", agent:"grok", group:"idle", time:"16:44", faces:["prove"], buf:""}
 ];
 
-const SETTLEMENT=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>  <span class="d">4.1.0+g237d2814 · codescribe · grok</span>
+const SETTLEMENT=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>  <span class="d">4.1.0+g237d2814 · operator loop · grok</span>
 <span class="d">────────────────────────────────────────────────────────</span>
-<span class="d">==================== VIBECRAFTED LAUNCH RECEIPT ====================</span>
-run_id:     <span class="b">work-260821-205118-44102</span>
-agent:      grok
-skill:      workflow
-root:       /Volumes/vc-workspace/vetcoders/vibecrafted-suite/vibecrafted
-status:     <span class="g">report_validated</span>
-report:     ~/.vibecrafted/artifacts/workflow/work-260821-205118-44102_report.md
-observe:    <span class="b">vibecrafted grok observe --run-id work-260821-205118-44102</span>
-await:      <span class="b">vibecrafted grok await --run-id work-260821-205118-44102</span>
-<span class="d">=====================================================================</span>
-<span class="d">loct context — atlas 00–05 read to the end</span>
-<span class="d">slice() on the cut · impact() before delete</span>
-<span class="g">f</span>  GitHub MCP wired · install path holds · receipt written
+<span class="c bold">AI can write. Evidence decides.</span>
+<span class="d">Sight · Memory · Hands · Sprawczość</span>
 
-<span class="c bold">❯</span> vibecrafted workflow grok -p "Install GitHub MCP and leave a receipt."
+<span class="g">map</span>       <span class="b">loct impact src/auth.ts</span>
+<span class="d">          blast radius before the edit</span>
+<span class="g">remember</span>  <span class="b">aicx search "handoff"</span>
+<span class="d">          typed memory, not chat residue</span>
+<span class="g">craft</span>     <span class="b">vc justdo grok -p "ship the release"</span>
+<span class="d">          gates. green CI is not a verdict</span>
+<span class="g">wire</span>      <span class="b">/vc grok send "finish until daily-driver"</span>
+<span class="d">          Slack = projector. tokens stay on the host</span>
 
-<span class="d">settlement</span>  <span class="g">f</span>  <span class="d">· 4m 12s · 2 files · 0 gates red</span>`;
+<span class="g">f</span>  four cuts of the same truth · 0 gates red
+<span class="d">try</span> <span class="b">help</span> · <span class="b">surfaces</span> · <span class="b">loct</span> · <span class="b">aicx</span> · <span class="b">/vc grok send "…"</span>`;
 
 const STALE=`<span class="c bold">⚒  vibecrafted</span>  <span class="d">stale pane · last write 20:51</span>
 <span class="d">────────────────────────────────────────────────────────</span>
@@ -138,8 +134,12 @@ const STALE=`<span class="c bold">⚒  vibecrafted</span>  <span class="d">stale
 <span class="d">resume only as a NEW tracked job:</span>
 <span class="b">vibecrafted grok resume --run-id work-260821-183344-22011</span>`;
 
-const IDLE_PANE=`<span class="d">idle pane — type a command, or pick a live session in the rail.</span>
-<span class="d">try</span> <span class="b">help</span>  <span class="d">·</span>  <span class="b">workflow claude -p "Read this repo and name the first fix."</span>`;
+const IDLE_PANE=`<span class="d">operator pane — four cuts of the same truth.</span>
+<span class="d">sight</span>   <span class="b">loct impact src/auth.ts</span>
+<span class="d">memory</span>  <span class="b">aicx search "handoff"</span>
+<span class="d">mouth</span>   <span class="b">/vc grok send "finish until daily-driver"</span>
+<span class="d">hands</span>   <span class="b">justdo grok -p "ship with a receipt"</span>
+<span class="d">try</span> <span class="b">help</span> · <span class="b">surfaces</span>`;
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function put(html){const d=document.createElement("div");d.innerHTML=html;term.appendChild(d);term.scrollTop=term.scrollHeight}
@@ -207,7 +207,7 @@ function nowId(){const d=new Date();const p=n=>String(n).padStart(2,"0");
   return `work-${String(d.getFullYear()).slice(2)}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}-${10000+Math.floor(Math.random()*89999)}`}
 
 const CHATTER={
-  workflow:["loct context — atlas przeczytany do końca (00–05)","slice() na plikach celu, impact() przed cięciem","implement: cut wylądował, gates w toku","pytest -q … zielone"],
+  workflow:["loct impact — blast radius before the edit","aicx search — intent survived compaction","cut landed under gates, not vibes","/vc send queued · Slack is projector"],
   marbles:["L1: mapa pęknięć — 3 kandydaci","L1 fix + verify: 2/3 zamknięte","L2: kontrprzykład ubity, re-run gates","powierzchnia trzyma — settle"],
   prune:["runtime cone zdefiniowany","KEEP-RUNTIME 61 · DELETE-NOW 14 · FORGOTTEN-GEM 3","gates po fali: zielone","gems report zapisany"],
   generic:["vc-init: perception → intentions → ground truth","praca w toku…","artefakty zapisane do reports/","gates: zielone"]};
@@ -239,13 +239,31 @@ function startRun(skill,agent,promptTxt){
   if(promptTxt)run.lines.push(`prompt: ${promptTxt}`);
 }
 
-const HELP=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.1.0+g237d2814</span> — release engine for AI-developed software
+const SURFACES=`<span class="c bold">four cuts of the same truth</span>
+<span class="d">Sight · Memory · Hands · Sprawczość</span>
+  <span class="b">loctree</span>      sight    <span class="d">loct impact src/auth.ts</span>
+  <span class="b">aicx</span>         memory   <span class="d">aicx search "handoff"</span>
+  <span class="b">vc-slack</span>     mouth    <span class="d">/vc grok send "…"</span>
+  <span class="b">vibecrafted</span>  hands    <span class="d">justdo grok -p "ship"</span>
+<span class="d">Slack is a projector. The bus is the log. Green CI is not a verdict.</span>`;
+
+const HELP=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.1.0+g237d2814</span> — AI can write. Evidence decides.
+<span class="d">Sight · Memory · Hands · Sprawczość</span>
 <span class="d">─────────────────────────────────────────</span>
+Four cuts:
+  <span class="b">loct</span>     structural vision. AST, importers, blast radius.
+  <span class="b">aicx</span>     durable intent from raw agent sessions.
+  <span class="b">/vc</span>      mouth on the bus. Slack is a projector.
+  <span class="b">justdo</span>   hands under gates. Green CI is not a verdict.
+
 Usage:
-  vibecrafted &lt;command&gt; [args]
+  <span class="b">loct impact src/auth.ts</span>
+  <span class="b">aicx search "handoff"</span>
+  <span class="b">/vc grok send "finish until daily-driver"</span>
   vibecrafted &lt;skill&gt; &lt;agent&gt; [-p &lt;prompt&gt; | -f &lt;file&gt;]
 
 Commands:
+  <span class="b">surfaces</span>            Four cuts · real commands
   <span class="b">init [agent]</span>         Orient an agent in this repo
   <span class="b">&lt;skill&gt; &lt;agent&gt;</span>      Run a workflow with an agent
   <span class="b">resume &lt;agent&gt;</span>       Continue a stopped run or provider session
@@ -253,16 +271,22 @@ Commands:
   <span class="b">dashboard</span> · <span class="b">loop</span> · <span class="b">cron</span> · <span class="b">dispatch</span> · <span class="b">server</span> · <span class="b">gui</span> · <span class="b">tui</span>
 
 Ship cycle:
-  <span class="c">scaffold → implement → review → workflow → followup → marbles → audit → polarize → dou → hydrate → release</span>
+  <span class="c">map → remember → craft → wire → prove</span>
+  <span class="d">scaffold → implement → review → workflow → followup → marbles → audit → polarize → dou → hydrate → release</span>
 
 Agents:  ${AGENTS.join(" · ")}
-Daily family: <span class="b">vc-doctor · vc-status · vc-update · vc-receipt</span>
-Spróbuj: <span class="b">workflow codex -p "Ship dark mode"</span> · <span class="b">marbles claude -p "loop until clean"</span> · <span class="b">help marbles</span>`;
+Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx search "handoff"</span> · <span class="b">/vc grok send "ship it"</span>`;
 
 function helpTopic(t){
+  if(t==="loctree") t="loct";
+  if(t==="vc-slack"||t==="/vc") t="slack";
   if(SKILLS[t]){const[rw,v]=SKILLS[t];
     raw(`<span class="c bold">⚒  ${t}</span>\n<span class="d">─────────────────────────────</span>\n  version ${v} · <span class="${rw==="READ"?"g":"c"}">${rw}</span>\nUsage:\n  vibecrafted ${t} &lt;${AGENTS.join("|")}&gt; [flags]\n  vc-${t} &lt;agent&gt; [flags]${FLOWS[t]?`\nFlow:\n  ${FLOWS[t]}`:""}\nFlags: -p/--prompt · -f/--file · --prompt-stdin · --runtime · --root · --model · --json${t==="marbles"?" · --count · --depth\nControls: pause stop resume session inspect delete gc":""}`);return}
-  const T={resume:`Usage:\n  vibecrafted resume &lt;agent&gt; --run-id work-… | --session &lt;uuid&gt; | (AICX 48h pack)\nNigdy work-* do --session. --fork-session tylko claude.`,
+  const T={loct:`Usage:\n  loct impact &lt;path&gt;   blast radius before the edit\n  loct slice &lt;path&gt;    cut surface, importers live\n  loct dead            dead symbols listed, not guessed\nSight is not a vibe. Structure before generation.`,
+  aicx:`Usage:\n  aicx search "handoff"\nDurable intent from raw agent sessions. Typed memory, not chat residue.\nAdapters: Claude · Codex · Gemini · Junie · Grok.`,
+  slack:`Usage:\n  /vc &lt;agent&gt; send "…"\n  vc-slack mcp\nMouth, not scrape. OAuth + MCP + Socket Mode.\nTokens stay on the host. Slack = projector. fleet-bus = log.`,
+  surfaces:SURFACES,
+  resume:`Usage:\n  vibecrafted resume &lt;agent&gt; --run-id work-… | --session &lt;uuid&gt; | (AICX 48h pack)\nNigdy work-* do --session. --fork-session tylko claude.`,
   uninstall:`Usage:\n  vibecrafted uninstall [--dry-run]\nInwentarz → restore kit → cięcie. Od 82dbce90 dry-run znaczy suchy. Serio.`,
   server:`Usage:\n  vibecrafted server [start|stop|status|open|doctor] [--port 3024]\n  vibecrafted server service [install|start|stop|status|uninstall]`,
   dispatch:`Usage:\n  vibecrafted dispatch &lt;plan.dispatch.toml&gt; [--doctor|--dry-run|--json|--resume]\n  vibecrafted dispatch run --run-id … -- &lt;cmd&gt;`,
@@ -285,6 +309,14 @@ function findRun(args){
 function exec(text){
   const t=text.trim();if(!t)return;prompt_(t);
   hist.push(t);hi=hist.length;
+  if(t.startsWith("/vc")){
+    const m=t.match(/^\/vc\s+(\S+)\s+send\s+([\s\S]+)$/i);
+    if(!m){raw(`<span class="y">usage:</span> /vc &lt;agent&gt; send "…"  ·  agents: ${AGENTS.join(" · ")}`);return}
+    const ag=m[1].toLowerCase(); const msg=m[2].replace(/^["']|["']$/g,"");
+    if(!AGENTS.includes(ag)){raw(`<span class="y">unknown agent</span> \`${esc(ag)}\` — try /vc agents`);return}
+    raw(`<span class="c bold">*agent:${esc(ag)}*</span> <span class="d">· peer-bus · from operator</span>\n${esc(msg)}\n<span class="d">_via \`/vc ${esc(ag)} send\`_</span>\n<span class="g">ok</span> <span class="d">· dry_run sandbox · envelope queued · Slack is the projector, not the log</span>`);
+    return;
+  }
   let rest=t.replace(/^vibecrafted(?:\s+|$)/,"").replace(/^vc-/,"").trim();
   if(!rest) rest="help";
   const a=rest.split(/\s+/);let c=a[0];
@@ -294,9 +326,24 @@ function exec(text){
 
   if(c==="clear"){term.innerHTML="";return}
   if(c==="help"||c==="--help"||c==="-h"){a[1]&&a[1]!=="--all"?helpTopic(a[1]):raw(HELP);return}
+  if(c==="surfaces"||c==="surface"){raw(SURFACES);return}
+  if(c==="loct"||c==="loctree"){
+    const sub=a[1]||"impact";
+    raw(`<span class="c bold">loct ${esc(sub)}</span> <span class="d">· sight before the edit</span>\n<span class="d">atlas 00–05 · importers live · blast radius on ${esc(a[2]||"src/")}</span>\n<span class="g">slice()</span> on the cut · <span class="g">impact()</span> before delete · <span class="d">dead symbols listed, not guessed</span>`);
+    return;
+  }
+  if(c==="aicx"){
+    const q=t.replace(/^aicx(?:\s+search)?\s*/i,"").replace(/^["']|["']$/g,"")||"handoff";
+    raw(`<span class="c bold">aicx search</span> <span class="d">· durable intent, not chat residue</span>\n  <span class="b">${esc(q)}</span>\n<span class="d">adapters: Claude · Codex · Gemini · Junie · Grok</span>\n<span class="g">1 hit</span> <span class="d">· typed memory survived compaction · session pack 48h</span>`);
+    return;
+  }
+  if(c==="slack"||c==="vc-slack"){
+    raw(`<span class="c bold">vc-slack</span> <span class="d">· mouth, not scrape</span>\n  oauth install · mcp · /vc &lt;agent&gt; send\n<span class="d">tokens stay on the host. Slack = projector. fleet-bus = log.</span>\ntry <span class="b">/vc grok send "finish until daily-driver"</span>`);
+    return;
+  }
   if(c==="version"){line("vibecrafted 4.1.0+g237d2814 (simulator)");return}
   if(c==="status"||c==="stats"){cmdStatus();return}
-  if(c==="doctor"||c==="check"){raw(`<span class="g">✓</span> deck alive · <span class="g">✓</span> tools/vibecrafted-current → 4.1.0+ga7f262d9 · <span class="g">✓</span> 32 projekcje skilli\n<span class="g">✓</span> server plane: identity guard zgodny (prawdziwa binarka, nie wrapper)\nsummary: symulacja — na żywej maszynie: <span class="b">vc-doctor</span>`);return}
+  if(c==="doctor"||c==="check"){raw(`<span class="g">✓</span> sight loctree · <span class="g">✓</span> memory aicx · <span class="g">✓</span> mouth vc-slack · <span class="g">✓</span> hands vibecrafted\n<span class="g">✓</span> deck alive · tools/vibecrafted-current → 4.1.0+ga7f262d9\n<span class="d">green CI is not a product verdict. Slack is a projector.</span>\nsummary: simulation — live machine: <span class="b">vc-doctor</span>`);return}
   if(c==="receipt"){raw(`vetcoders/vibecrafted → fix/framework-fail-points-0819 @ <span class="c">16c44f8c</span> · dirty=no · installed=g237d2814 <span class="y">SOURCE_AHEAD_OF_INSTALLED</span>`);return}
   if(c==="settlements"||c==="resume-session"){raw(`<span class="c">⚒</span>  "${c}" is not in the command deck.`);return}
   if(c==="uninstall"||c==="remove"){
@@ -346,8 +393,7 @@ $("#new-sess").addEventListener("click",()=>{
 });
 
 sessions[0].buf=SETTLEMENT;
-sessions[1].buf=STALE;
-sessions.slice(2).forEach(s=>{s.buf=s.group==="stale"?STALE:IDLE_PANE});
+sessions.forEach((s,i)=>{ if(i===0) return; s.buf=s.group==="stale"?STALE:IDLE_PANE });
 term.innerHTML=SETTLEMENT;
 rail();
 if(!EMBED) input.focus();

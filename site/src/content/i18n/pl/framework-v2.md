@@ -9,38 +9,38 @@
 
 # Chrome z landingV2.framework
 title: "FRAMEWORK"
-centerLabel: "SCAFFOLD → RELEASE"
+centerLabel: "MAP → PROVE"
 
 # Treść sekcji z v2Sections.framework.
 # headingHtml zachowuje inline <em class="accent-2"> i <br />.
-headingHtml: 'Nie rewrite. Kadencja.<br /><em class="accent-2">Każdy zapis broni się odczytem</em>'
-subtitle: "Jedenaście etapów na przemian Read i Write. Każdy zapis — implement, marbles, polarize — jest natychmiast falsyfikowany przez odczyt — review, audit, DoU. Marbles pętli poprawki, aż bramki przestaną kłamać; Polarize wybiera jedno kanoniczne zachowanie i doprowadza kod, testy i docsy do zgody. Każdy etap biegnie swój odcinek i podaje pałeczkę następnemu, więc nic nie wychodzi niesprawdzone."
+headingHtml: 'Nie rewrite. Kadencja.<br /><em class="accent-2">Map · Remember · Craft · Wire · Prove</em>'
+subtitle: "Pięć faz, cztery cięcia tej samej prawdy. Loctree mapuje przed edycją. Aicx pamięta po kompaktacji. Agenci shipują pod bramkami. vc-slack to usta — Slack jest projektorem. Marbles osiadają tylko to, co te cztery już uczyniły prawdą. Zielone CI to nie werdykt produktowy."
 
 # Heading bloku operatorów — zachowuje inline <em>.
-operatorsHeadingHtml: "Jak działa <em>pass</em>"
-operatorsSub: "Każdy workflow ma jedno zadanie. Przeczytać repo, zrobić cięcie, sprawdzić realną ścieżkę albo nazwać to, co nadal nie jest gotowe. Nazwy przychodzą później; dowód pierwszy."
+operatorsHeadingHtml: "Cztery cięcia. <em>Jedna pętla</em>"
+operatorsSub: "Wzrok, pamięć, usta, ręce. Nazwy, które wpiszesz. Dowód pierwszy — plansza jest metaforą."
 
 # CTA do playgroundu.
-cta: "Otwórz Playground"
+cta: "Otwórz playground operatora"
 
 # Macierz operatorów — 6 pozycji, każda z numerem, nazwą i kategorią (kind).
 operators:
   - num: "00"
-    name: "loctree"
-    kind: "npm · STRUKTURA"
+    name: "Loctree"
+    kind: "WZROK"
   - num: "01"
-    name: "aicx"
-    kind: "npm · PAMIĘĆ"
+    name: "Aicx"
+    kind: "PAMIĘĆ"
   - num: "02"
-    name: "prview"
-    kind: "crates · REVIEW"
+    name: "vc-slack"
+    kind: "USTA"
   - num: "03"
-    name: "ScreenScribe"
-    kind: "PyPI · USZY"
+    name: "Codescribe"
+    kind: "GŁOS"
   - num: "04"
-    name: "vc-frame"
-    kind: "kokpit · RAIL"
+    name: "Vibecrafted"
+    kind: "RĘCE"
   - num: "05"
-    name: "DoU"
-    kind: "GATE"
+    name: "Marbles"
+    kind: "DOWÓD"
 ---

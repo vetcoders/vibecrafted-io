@@ -35,12 +35,17 @@ assert.match(
 assert.match(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
   /__vcSoftSectionSettleRuntime/,
-  'LayoutV2 should keep a soft one-shot section settle runtime.',
+  'LayoutV2 should keep the settle runtime flag so a later enable does not double-bind.',
 );
 assert.match(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
+  /Soft section-settle is disabled/,
+  'Section settle stays stubbed — it fought landing layout.',
+);
+assert.doesNotMatch(
+  verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
   /settled\.add\(best\.key\)/,
-  'Section settle should be one-shot per frame, not a permanent scroll magnet.',
+  'Live settle magnet must stay gone while the stub is in place.',
 );
 assert.doesNotMatch(
   verticalScrollSurfaces['src/layouts/LayoutV2.astro'],
@@ -139,48 +144,38 @@ assert.doesNotMatch(
 );
 assert.match(
   englishCopy,
-  /pre:\s*"Send the job\."/,
-  'English hero should lead with the action, not the category label.',
+  /pre:\s*"AI can write\."/,
+  'English hero should lead with the writing problem, not the category label.',
 );
 assert.match(
   englishCopy,
-  /mid:\s*"Watch the run\."/,
-  'English hero should name the live run.',
+  /accent:\s*"Evidence decides\."/,
+  'English hero should close on evidence, not a receipt slogan.',
+);
+assert.match(
+  polishCopy,
+  /pre:\s*"AI potrafi pisać\."/,
+  'Polish hero should lead with the writing problem, not the category label.',
+);
+assert.match(
+  polishCopy,
+  /accent:\s*"Dowód rozstrzyga\."/,
+  'Polish hero should close on evidence, not a receipt slogan.',
 );
 assert.match(
   englishCopy,
-  /accent:\s*"Keep the receipt\."/,
-  'English hero should close on the receipt.',
-);
-assert.match(
-  polishCopy,
-  /pre:\s*"Puść agenta\."/,
-  'Polish hero should lead with the action, not the category label.',
-);
-assert.match(
-  polishCopy,
-  /mid:\s*"Patrz na run\."/,
-  'Polish hero should name the live run.',
-);
-assert.match(
-  polishCopy,
-  /accent:\s*"Zostaw kwit\."/,
-  'Polish hero should close on the receipt.',
+  /structural vision, durable intent, and a mouth that posts/,
+  'English hero should name sight, memory, and mouth — not a generic agent launcher.',
 );
 assert.match(
   englishCopy,
-  /You already have Claude Code, Codex, or Grok/,
-  'English hero should start from tools the reader already uses.',
-);
-assert.match(
-  englishCopy,
-  /vibecrafted workflow claude/,
-  'English hero should show the first useful command.',
+  /loct impact · aicx search · \/vc grok send · vc justdo/,
+  'English hero should show the four-cut commands.',
 );
 assert.match(
   polishCopy,
-  /Masz już Claude Code, Codex albo Grok/,
-  'Polish hero should start from tools the reader already uses.',
+  /wizję struktury, trwałą intencję i usta, które postują/,
+  'Polish hero should name sight, memory, and mouth — not a generic agent launcher.',
 );
 assert.doesNotMatch(
   englishCopy,

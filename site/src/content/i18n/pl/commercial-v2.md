@@ -3,7 +3,7 @@
 
 title: "KOMERCJA"
 centerLabel: "OPEN · FLEET · FORGE"
-headingHtml: 'AI potrafi pisać. <em class="accent">Decyduje evidence</em>.'
+headingHtml: 'AI potrafi pisać. <em class="accent">Dowód rozstrzyga</em>.'
 subtitle: "Open core dla inżyniera, który odziedziczył zmianę z AI. Płatne piloty w pełnej cenie seata. Forge gdy regulacja."
 icpStrip: "Nie pierwszy vibe-coder — kupujący post-vibe cleanup. Technical founders i małe zespoły eng."
 

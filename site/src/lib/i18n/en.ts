@@ -86,9 +86,9 @@ export const en = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — run Claude, Codex, and Grok from one command.",
+      title: "Vibecrafted — AI can write. Evidence decides.",
       description:
-        "A terminal runtime for the coding agents you already use. Dispatch Claude, Codex, Grok, Junie, or Agy, watch the run, and keep the receipt.",
+        "Structural vision, durable intent, a Slack mouth, and gates. Loctree · Aicx · vc-slack · Vibecrafted.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -108,13 +108,13 @@ export const en = {
   },
   v2Hero: {
     ariaLabel: "Hero",
-    eyebrow: "CLAUDE · CODEX · GROK · JUNIE · AGY",
+    eyebrow: "SIGHT · MEMORY · HANDS · SPRAWCZOŚĆ",
     heading: {
-      pre: "Send the job.",
-      mid: "Watch the run.",
-      accent: "Keep the receipt.",
+      pre: "AI can write.",
+      mid: "",
+      accent: "Evidence decides.",
     },
-    body: 'You already have Claude Code, Codex, or Grok. Vibecrafted is the terminal command that launches them, records the run, and settles it. Same shape every time.<code>vibecrafted workflow claude -p "Read this repo and name the first fix."</code>',
+    body: 'A veterinary duo built what coding agents lacked: structural vision, durable intent, and a mouth that posts — with daily proof and a list of what still fails.<code>loct impact · aicx search · /vc grok send · vc justdo</code>',
     ctaPrimary: "INSTALL",
     ctaSecondary: "TRY IT",
     telemetry: {
