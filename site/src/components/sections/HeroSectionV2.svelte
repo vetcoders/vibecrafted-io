@@ -78,14 +78,14 @@
     position: relative;
     isolation: isolate;
     display: grid;
-    grid-template-columns: minmax(22rem, 34rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
     align-items: center;
-    gap: 40px 56px;
+    gap: 24px 32px;
     width: 100%;
     height: 100dvh;
     max-height: 100dvh;
     min-height: 0;
-    padding: 96px 48px 48px;
+    padding: 88px 32px 32px;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
@@ -104,15 +104,16 @@
     flex-direction: column;
     align-items: flex-start;
     min-width: 0;
-    max-width: 38rem;
+    max-width: 16rem;
   }
 
   .hero__stage {
     position: relative;
     z-index: 2;
+    min-width: 0;
     width: 100%;
-    height: min(640px, calc(100dvh - 152px));
-    min-height: 420px;
+    height: min(680px, calc(100dvh - 128px));
+    min-height: 360px;
     border: 1px solid var(--v2-border);
     border-radius: var(--v2-radius);
     overflow: hidden;
@@ -134,7 +135,7 @@
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    font-size: clamp(1.65rem, 2.6vw, 2.7rem);
     line-height: 1.05;
     letter-spacing: -0.03em;
     color: var(--fg-on-dark);
@@ -156,7 +157,7 @@
 
   .hero__body {
     font-family: var(--font-body);
-    font-size: clamp(14px, 1.05vw, 16px);
+    font-size: clamp(13px, 0.95vw, 15px);
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
     margin: 0 0 22px;
@@ -173,7 +174,8 @@
     border: 1px solid var(--v2-border);
     border-radius: var(--v2-radius);
     padding: 10px 12px;
-    white-space: pre-wrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
     word-break: break-word;
   }
 
@@ -254,14 +256,14 @@
     }
   }
 
-  @media (max-width: 960px) {
+  @media (max-width: 720px) {
     .hero {
       grid-template-columns: 1fr;
       height: auto;
       max-height: none;
       min-height: 100dvh;
-      padding: 88px 20px 40px;
-      gap: 28px;
+      padding: 88px 20px 32px;
+      gap: 20px;
       align-items: stretch;
     }
 
@@ -271,8 +273,8 @@
 
     .hero__stage {
       width: 100%;
-      height: 420px;
-      min-height: 360px;
+      height: min(62dvh, 560px);
+      min-height: 320px;
     }
   }
 

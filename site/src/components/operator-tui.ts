@@ -22,7 +22,14 @@ dou:"crawl buyer surface → test install/trust → collect gaps → undone verd
 const MODES=["implement","research","review","plan","prompt","observe","await","stop","resume"];
 const DECK=["help","version","status","doctor","receipt","init","resume","update","uninstall","dashboard","loop","cron",
 "dispatch","server","gui","tui","telemetry","ship","clear","surfaces","loct","loctree","aicx","slack","vc-slack","/vc",...Object.keys(SKILLS),...AGENTS];
-let runs=[], hist=[], hi=0, activeId=0, nextId=8;
+let runs=[], hist=[], hi=0, activeId=0, nextId=8, activeWs="agents", hwTimer=null;
+
+const WORKSPACES=[
+  {id:"start", label:"Start", key:"L"},
+  {id:"agents", label:"Agents"},
+  {id:"shell", label:"Shell"},
+  {id:"voc", label:"Voc"},
+];
 
 function clockNow(){
   const d=new Date(), p=n=>String(n).padStart(2,"0");
@@ -68,6 +75,19 @@ const IDLE_PANE=`<span class="d">operator pane — four cuts of the same truth.<
 <span class="d">hands</span>   <span class="b">justdo grok -p "ship with a receipt"</span>
 <span class="d">try</span> <span class="b">help</span> · <span class="b">surfaces</span>`;
 
+const VOC_PANE=`<span class="c bold">voc</span>  <span class="d">rust cockpit · mouth of the bus</span>
+<span class="d">────────────────────────────────────────────────────────</span>
+<span class="d">Slack is a projector. Tokens stay on the host.</span>
+<span class="b">/vc grok send "finish until daily-driver"</span>
+<span class="d">try</span> <span class="b">help</span> · <span class="b">surfaces</span> · <span class="b">/vc</span>`;
+
+const SHELL_PANE=`<span class="d">host · vibecrafted-suite/vibecrafted · operator loop</span>
+<span class="d">────────────────────────────────────────────────────────</span>
+<span class="d">try</span> <span class="b">loct impact src/auth.ts</span>
+     <span class="b">aicx search "handoff"</span>
+     <span class="b">/vc grok send "finish until daily-driver"</span>
+     <span class="b">vc justdo grok -p "ship the release"</span>`;
+
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function put(html){const d=document.createElement("div");d.innerHTML=html;term.appendChild(d);term.scrollTop=term.scrollHeight}
 function line(t,cls){put(cls?`<span class="${cls}">${esc(t)}</span>`:esc(t))}
@@ -76,16 +96,65 @@ function prompt_(cmdtext){put(`<span class="c bold">❯</span> ${esc(cmdtext)}`)
 function current(){return sessions.find(s=>s.id===activeId)}
 function saveBuf(){const s=current(); if(s) s.buf=term.innerHTML}
 
-function paintTabs(){
-  const el=$("#tabs"); el.innerHTML="";
-  sessions.forEach(s=>{
+function paintWs(){
+  const el=$("#ws-tabs"); if(!el) return;
+  el.innerHTML="";
+  WORKSPACES.forEach(w=>{
     const b=document.createElement("button");
-    b.type="button"; b.className=`tab ${s.group}${s.id===activeId?" on":""}`;
-    b.textContent=`#${s.id}`;
-    b.setAttribute("aria-selected", s.id===activeId?"true":"false");
-    b.onclick=()=>selectSession(s.id);
+    b.type="button";
+    b.className="ws-tab"+(w.id===activeWs?" on":"");
+    b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", w.id===activeWs?"true":"false");
+    const mark=document.createElement("span");
+    mark.className="mark";
+    mark.setAttribute("aria-hidden","true");
+    b.appendChild(mark);
+    if(w.key){
+      const k=document.createElement("span");
+      k.className="key";
+      k.textContent=w.key;
+      b.appendChild(k);
+    }
+    b.appendChild(document.createTextNode(w.label));
+    b.onclick=()=>selectWs(w.id);
     el.appendChild(b);
   });
+}
+
+function renderWs(){
+  const s=current();
+  if(activeWs==="start") term.innerHTML=SETTLEMENT;
+  else if(activeWs==="voc") term.innerHTML=VOC_PANE;
+  else if(activeWs==="shell") term.innerHTML=(s&&s.buf)?s.buf:SHELL_PANE;
+  else term.innerHTML=(s&&s.buf)?s.buf:IDLE_PANE;
+  term.scrollTop=0;
+}
+
+function selectWs(id){
+  if(id===activeWs) return;
+  if(activeWs==="agents"||activeWs==="shell") saveBuf();
+  activeWs=id;
+  renderWs();
+  paintWs();
+}
+
+function paintHw(){
+  const live=sessions.filter(s=>s.group==="live").length;
+  const cpu=8+Math.floor(Math.random()*24);
+  const mem=(3.1+Math.random()*1.6).toFixed(1);
+  const liveEl=$("#hw-live"); if(liveEl) liveEl.textContent="LIVE "+live;
+  const cpuEl=$("#hw-cpu"); if(cpuEl) cpuEl.textContent="CPU "+cpu+"%";
+  const memEl=$("#hw-mem"); if(memEl) memEl.textContent="MEM "+mem+"/16G";
+  const hEl=$("#hw-health");
+  if(hEl){
+    const hot=cpu>28;
+    hEl.textContent=hot?"HEALTH !!":"HEALTH ·";
+    hEl.className=hot?"hw-warn":"";
+  }
+}
+
+function paintTabs(){
+  paintWs();
 }
 
 function rail(){
@@ -111,13 +180,11 @@ function rail(){
   el.querySelectorAll(".sess[data-id]").forEach(n=>{
     n.addEventListener("click",()=>selectSession(Number(n.dataset.id)));
   });
-  paintTabs();
+  paintWs();
   const s=current();
-  if(s){
-    $("#stat-name").textContent=s.name;
-    $("#stat-state").textContent=s.group;
-    $("#clock").textContent=s.time;
-  }
+  const nameEl=$("#stat-name");
+  if(nameEl && s) nameEl.textContent=s.name;
+  paintHw();
 }
 
 function selectSession(id){
@@ -125,8 +192,8 @@ function selectSession(id){
   saveBuf();
   const s=sessions.find(x=>x.id===id); if(!s) return;
   activeId=id;
-  term.innerHTML=s.buf||IDLE_PANE;
-  term.scrollTop=term.scrollHeight;
+  if(activeWs==="start"||activeWs==="voc") activeWs="agents";
+  renderWs();
   rail();
 }
 
@@ -309,7 +376,7 @@ input.addEventListener("keydown",e=>{
     else if(hit.length>1)line(hit.join("  "),"d");}
 });
 root.addEventListener("click",e=>{
-  if(e.target.closest(".rail")||e.target.closest(".tabs")||e.target.closest(".new")) return;
+  if(e.target.closest(".rail")||e.target.closest(".chrome")||e.target.closest(".new")||e.target.closest(".tools")) return;
   if(!window.getSelection().toString()) input.focus();
 });
 $("#new-sess").addEventListener("click",()=>{
@@ -318,16 +385,29 @@ $("#new-sess").addEventListener("click",()=>{
   sessions.push({id,name:"session-"+id,agent:"grok",group:"idle",time:clockNow(),faces:["grok"],buf:IDLE_PANE});
   selectSession(id);
 });
+$("#composer").addEventListener("click",()=>{
+  input.value="Implement {feature}";
+  input.focus();
+  input.select();
+});
+$("#quickcmd").addEventListener("click",()=>{
+  input.value="";
+  input.focus();
+});
 
 sessions[0].buf=SETTLEMENT;
 sessions.forEach((s,i)=>{ if(i===0) return; s.buf=s.group==="stale"?STALE:IDLE_PANE });
 term.innerHTML=SETTLEMENT;
+activeWs="agents";
 rail();
+paintHw();
+hwTimer=setInterval(paintHw, 2400);
 if(!EMBED) input.focus();
   return {
     focus() { if (input) input.focus(); },
     destroy() {
       runs.forEach((r) => { if (r.timer) clearInterval(r.timer); });
+      if (hwTimer) clearInterval(hwTimer);
     },
   };
 }

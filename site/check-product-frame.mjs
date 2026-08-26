@@ -20,6 +20,19 @@ const css = read('src/styles/terminal-window.css');
 
 assert.match(hero, /PlaygroundTui/, 'Hero mounts the operator TUI in-document.');
 assert.doesNotMatch(hero, /<iframe/i, 'Hero must not nest an iframe — preview sandboxes kill nested frames.');
+assert.match(
+  hero,
+  /minmax\(0,\s*16rem\)/,
+  'Hero copy yields width so the TUI can breathe on a narrow preview.',
+);
+
+const tui = read('src/components/PlaygroundTui.svelte');
+assert.match(tui, /id="ws-tabs"/, 'TUI chrome has named workspace tabs, not #0 ticks.');
+assert.match(tui, /id="composer"/, 'TUI chrome exposes Composer.');
+assert.match(tui, /Quick cmd/, 'TUI chrome exposes Quick cmd.');
+assert.match(tui, /id="hw-cpu"/, 'TUI statusbar is a hardware monitor, not PANE/TAB/MOVE.');
+assert.match(tui, /id="hw-mem"/);
+assert.match(tui, /id="hw-health"/);
 assert.equal(
   (hero.match(/vc-termwin__titlebar/g) || []).length,
   0,
