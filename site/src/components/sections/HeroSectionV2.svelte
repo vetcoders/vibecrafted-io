@@ -42,21 +42,23 @@
   <div class="hero__vignette" data-decor aria-hidden="true"></div>
 
   <div class="hero__copy" data-scroll-fade>
-    <span class="hero__eyebrow">{hero.eyebrow}</span>
-    <h1 class="hero__heading">
-      <span class="hero__heading-mark">{hero.heading.pre}</span>
-      {#if hero.heading.mid}
-        <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
-      {/if}
-      <span class="hero__heading-line">
-        <em class="hero__heading-accent">{headingAccentWord}</em
-        >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
-          >{/if}
-      </span>
-    </h1>
-    <p class="hero__body">
-      {@html hero.body}
-    </p>
+    <div class="hero__text">
+      <span class="hero__eyebrow">{hero.eyebrow}</span>
+      <h1 class="hero__heading">
+        <span class="hero__heading-mark">{hero.heading.pre}</span>
+        {#if hero.heading.mid}
+          <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
+        {/if}
+        <span class="hero__heading-line">
+          <em class="hero__heading-accent">{headingAccentWord}</em
+          >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
+            >{/if}
+        </span>
+      </h1>
+      <p class="hero__body">
+        {@html hero.body}
+      </p>
+    </div>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -81,15 +83,15 @@
   .hero {
     position: relative;
     isolation: isolate;
-    display: grid;
-    grid-template-columns: minmax(0, 34rem) minmax(0, 1fr);
-    align-items: center;
-    gap: clamp(32px, 5vw, 72px);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     width: 100%;
     height: 100dvh;
     max-height: 100dvh;
     min-height: 0;
-    padding: 96px clamp(28px, 5vw, 80px) 56px;
+    padding: 80px 24px 72px;
+    gap: 20px;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
@@ -102,12 +104,41 @@
   }
 
   .hero__copy {
+    position: relative;
+    z-index: 3;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex: 0 0 auto;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px 40px;
     min-width: 0;
-    z-index: 2;
-    max-width: 36rem;
+  }
+
+  .hero__text {
+    min-width: 0;
+    max-width: 44rem;
+  }
+
+  .hero__stage {
+    position: relative;
+    flex: 0 0 auto;
+    align-self: center;
+    width: min(1080px, 100%);
+    height: 420px;
+    max-height: min(420px, calc(100dvh - 26rem));
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #0a0a0b;
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+  }
+
+  .hero__playground {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #0a0a0b;
   }
 
   .hero__eyebrow {
@@ -118,17 +149,17 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin-bottom: 22px;
+    margin-bottom: 10px;
   }
 
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(2.1rem, 4.6vw, 4.2rem);
-    line-height: 1.05;
+    font-size: clamp(1.7rem, 3.2vw, 3rem);
+    line-height: 1.08;
     letter-spacing: -0.03em;
     color: var(--fg-on-dark);
-    margin: 0 0 22px;
+    margin: 0 0 10px;
   }
 
   .hero__heading-mark,
@@ -146,31 +177,33 @@
 
   .hero__body {
     font-family: var(--font-body);
-    font-size: clamp(15px, 1.15vw, 17px);
-    line-height: 1.55;
+    font-size: clamp(14px, 1.05vw, 16px);
+    line-height: 1.5;
     color: var(--fg-on-dark-dim);
-    margin: 0 0 28px;
+    margin: 0;
   }
 
   .hero__body :global(code) {
     display: block;
-    margin-top: 14px;
+    margin-top: 10px;
     font-family: var(--font-mono);
     font-size: 0.82em;
     line-height: 1.45;
     color: var(--fg-on-dark);
     background: #121214;
-    border: 1px solid var(--v2-border, #27272a);
+    border: 1px solid #27272a;
     border-radius: 8px;
-    padding: 12px 14px;
+    padding: 10px 12px;
     white-space: pre-wrap;
     word-break: break-word;
   }
 
   .hero__ctas {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
+    flex: none;
+    padding-bottom: 2px;
   }
 
   .hero__cta {
@@ -219,7 +252,7 @@
   .hero__cta--ghost {
     background: transparent;
     color: var(--fg-on-dark);
-    border: 1px solid var(--v2-border-strong, #3f3f46);
+    border: 1px solid #3f3f46;
   }
 
   .hero__cta--ghost:hover,
@@ -227,42 +260,20 @@
     border-color: var(--fg-on-dark);
   }
 
-  .hero__stage {
-    justify-self: end;
-    align-self: center;
-    width: min(100%, 560px);
-    height: min(64vh, 620px);
-    min-width: 0;
-    border: 1px solid #27272a;
-    border-radius: 16px;
-    overflow: hidden;
-    background: #0a0a0b;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
-  }
-
-  .hero__playground {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: #0a0a0b;
-  }
-
   @media print, (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce) {
     .hero {
       height: auto;
       max-height: none;
       overflow: visible;
-      grid-template-columns: 1fr;
-    }
-
-    .hero::before,
-    .hero__vignette {
-      display: none;
+      display: block;
     }
 
     .hero__stage {
       display: none;
+    }
+
+    .hero__copy {
+      margin: 24px 0 48px;
     }
   }
 
@@ -271,19 +282,22 @@
       height: auto;
       max-height: none;
       min-height: 100dvh;
-      grid-template-columns: 1fr;
-      padding: 96px 20px 28px;
-      gap: 24px;
+      padding: 88px 16px 72px;
     }
 
     .hero__copy {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .hero__text {
       max-width: none;
     }
 
     .hero__stage {
-      justify-self: stretch;
       width: 100%;
-      height: 52vh;
+      height: 320px;
+      max-height: 320px;
     }
   }
 

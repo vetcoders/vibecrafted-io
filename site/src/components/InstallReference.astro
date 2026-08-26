@@ -1,72 +1,365 @@
+---
+import { readFileSync } from 'node:fs';
+import CopyButton from './CopyButton.svelte';
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props as Props;
+const pl = lang === 'pl';
+
+const channel = JSON.parse(
+  readFileSync(new URL('../../public/channel/main.json', import.meta.url), 'utf8'),
+) as {
+  version: string;
+  archive_url: string;
+};
+
+const version = channel.version;
+const archiveHref = `/vibecrafted-v${version}.tar.gz`;
+const cmd = 'curl -fsSL https://vibecrafted.io/install.sh | bash';
+const win = "wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'";
+const next =
+  'vibecrafted workflow claude -p "Read this repo and name the first fix."';
+const archiveName = `vibecrafted-v${version}.tar.gz`;
+---
+
 <section class="install-reference" aria-labelledby="install-reference-title">
-  <h1 id="install-reference-title">Install</h1>
-  <p class="install-reference__lead">macOS, Linux, and Windows. One command.</p>
-  <pre><code>curl -fsSL https://vibecrafted.io/install.sh | bash</code></pre>
-  <p class="install-reference__note">
-    Windows: <code>wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'</code>
-  </p>
+  <header class="install-reference__head">
+    <h1 id="install-reference-title">{pl ? 'Instalacja' : 'Install'}</h1>
+    <p class="install-reference__lead">
+      {pl
+        ? `macOS, Linux i Windows. Ten sam kanał ${version}.`
+        : `macOS, Linux, and Windows. Same ${version} channel.`}
+    </p>
+  </header>
+
+  <aside class="install-reference__got">
+    <h2>{pl ? 'W archiwum' : 'In the archive'}</h2>
+    <ul>
+      <li>CLI</li>
+      <li>vc-frame</li>
+      <li>{pl ? 'skille i kwity' : 'skills and receipts'}</li>
+      <li>macOS · Linux · Windows</li>
+    </ul>
+  </aside>
+
+  <div class="install-reference__os" role="tablist" aria-label={pl ? 'System' : 'Operating system'}>
+    <input type="radio" name="install-os" id="os-mac" checked />
+    <input type="radio" name="install-os" id="os-linux" />
+    <input type="radio" name="install-os" id="os-win" />
+    <div class="install-reference__tabs">
+      <label for="os-mac">macOS</label>
+      <label for="os-linux">Linux</label>
+      <label for="os-win">Windows</label>
+    </div>
+
+    <div class="panel panel-unix" data-for="mac linux">
+      <div class="install-reference__cmd">
+        <pre><code>{cmd}</code></pre>
+        <CopyButton
+          client:load
+          class="install-reference__copy"
+          textToCopy={cmd}
+          defaultLabel={pl ? 'Kopiuj' : 'Copy'}
+          copiedLabel={pl ? 'Skopiowano' : 'Copied'}
+        />
+      </div>
+      <p class="install-reference__or">{pl ? 'albo pobierz archiwum' : 'or download the archive'}</p>
+      <a class="install-reference__dl" href={archiveHref} download={archiveName}>
+        {pl ? `Pobierz ${archiveName}` : `Download ${archiveName}`}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="panel panel-win" data-for="win">
+      <div class="install-reference__cmd">
+        <pre><code>{win}</code></pre>
+        <CopyButton
+          client:load
+          class="install-reference__copy"
+          textToCopy={win}
+          defaultLabel={pl ? 'Kopiuj' : 'Copy'}
+          copiedLabel={pl ? 'Skopiowano' : 'Copied'}
+        />
+      </div>
+      <p class="install-reference__or">
+        {pl
+          ? 'WSL albo to samo archiwum POSIX — vc-frame jest w środku.'
+          : 'WSL, or the same POSIX archive — vc-frame is inside it.'}
+      </p>
+      <a class="install-reference__dl" href={archiveHref} download={archiveName}>
+        {pl ? `Pobierz ${archiveName}` : `Download ${archiveName}`}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="install-reference__next">
+    <h2>{pl ? 'Potem' : 'Then'}</h2>
+    <div class="install-reference__cmd">
+      <pre><code>{next}</code></pre>
+      <CopyButton
+        client:load
+        class="install-reference__copy"
+        textToCopy={next}
+        defaultLabel={pl ? 'Kopiuj' : 'Copy'}
+        copiedLabel={pl ? 'Skopiowano' : 'Copied'}
+      />
+    </div>
+  </div>
+
+  <aside class="install-reference__note">
+    <p>
+      {pl
+        ? 'Podpisany DMG (Vibecrafted.app) nie jest w tym kanale. Żywa droga to curl albo archiwum powyżej — CLI, vc-frame i runtime.'
+        : 'A signed DMG (Vibecrafted.app) is not in this channel. The live path is curl or the archive above — CLI, vc-frame, and the runtime.'}
+    </p>
+  </aside>
 </section>
 
 <style>
-  :global(body.wizard-page:has(.live-wizard)) .install-reference {
-    display: none;
-  }
-
   .install-reference {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    isolation: isolate;
-    width: min(100% - 2rem, 40rem);
-    margin: 3rem auto 4rem;
-    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(14rem, 0.7fr);
+    grid-template-areas:
+      "head got"
+      "os got"
+      "next got"
+      "note note";
+    column-gap: 3.5rem;
+    row-gap: 2rem;
+    align-items: start;
+    width: min(100% - 3rem, 64rem);
+    margin: 0 auto;
+    padding: 80px 0 64px;
+    min-height: calc(100dvh - 72px);
     color: var(--v2-fg-on-dark, #f4f4f5);
     font-family: var(--v2-font-body, Inter, sans-serif);
+    box-sizing: border-box;
   }
 
-  .install-reference > * {
-    display: block;
-    width: 100%;
-    float: none;
-  }
+  .install-reference__head { grid-area: head; }
+  .install-reference__os { grid-area: os; }
+  .install-reference__next { grid-area: next; }
+  .install-reference__note { grid-area: note; }
+  .install-reference__got { grid-area: got; }
 
-  .install-reference h1 {
+  .install-reference__head h1 {
     margin: 0 0 0.5rem;
     font-family: var(--v2-font-display, "Instrument Serif", serif);
-    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
     font-weight: 400;
     letter-spacing: -0.03em;
-    color: var(--v2-fg-on-dark, #f4f4f5);
   }
 
   .install-reference__lead {
-    margin: 0 0 1.25rem;
+    margin: 0;
     color: var(--v2-fg-on-dark-dim, #a1a1aa);
+    font-size: 1.05rem;
     line-height: 1.5;
   }
 
-  .install-reference pre {
+  .install-reference__os input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .install-reference__tabs {
+    display: flex;
+    gap: 0;
     margin: 0 0 1.25rem;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+  }
+
+  .install-reference__tabs label {
+    padding: 10px 18px;
+    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #a1a1aa;
+    cursor: pointer;
+    background: #121214;
+    border-right: 1px solid #27272a;
+  }
+
+  .install-reference__tabs label:last-child {
+    border-right: 0;
+  }
+
+  #os-mac:checked ~ .install-reference__tabs label[for='os-mac'],
+  #os-linux:checked ~ .install-reference__tabs label[for='os-linux'],
+  #os-win:checked ~ .install-reference__tabs label[for='os-win'] {
+    background: #f4f4f5;
+    color: #0a0a0b;
+  }
+
+  .panel {
+    display: none;
+  }
+
+  #os-mac:checked ~ .panel-unix,
+  #os-linux:checked ~ .panel-unix {
+    display: block;
+  }
+
+  #os-win:checked ~ .panel-win {
+    display: block;
+  }
+
+  .install-reference__cmd {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .install-reference pre {
+    margin: 0;
     padding: 1rem 1.1rem;
     overflow-x: auto;
     border: 1px solid #27272a;
     border-radius: 8px;
     background: #121214;
     color: #f4f4f5;
-    font: 0.85rem/1.5 var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
-    white-space: pre;
+    font: 0.88rem/1.5 var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .install-reference :global(.install-reference__copy) {
+    min-width: 7.5rem;
+    padding: 0 16px;
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    background: #121214;
+    color: #f4f4f5;
+    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .install-reference__or {
+    margin: 1rem 0 0.75rem;
+    color: #71717a;
+    font-size: 0.9rem;
+  }
+
+  .install-reference__dl {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border: 1px solid #3f3f46;
+    border-radius: 8px;
+    color: #f4f4f5;
+    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .install-reference__dl:hover,
+  .install-reference__dl:focus-visible {
+    border-color: #f4f4f5;
+  }
+
+  .install-reference__next h2 {
+    margin: 0 0 0.75rem;
+    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+
+  .install-reference__got {
+    padding: 1.4rem 1.5rem 1.5rem;
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    background: #121214;
+  }
+
+  .install-reference__got h2 {
+    margin: 0 0 0.9rem;
+    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #71717a;
+  }
+
+  .install-reference__got ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .install-reference__got li {
+    padding: 0.55rem 0;
+    border-top: 1px solid #27272a;
+    color: #f4f4f5;
+    font-size: 0.95rem;
+  }
+
+  .install-reference__got li:first-child {
+    border-top: 0;
+    padding-top: 0;
   }
 
   .install-reference__note {
-    margin: 0 0 0.75rem;
-    color: var(--v2-fg-on-dark-mute, #71717a);
-    font-size: 0.92rem;
+    padding-top: 0.25rem;
+    color: #71717a;
+    font-size: 0.9rem;
     line-height: 1.55;
+    max-width: 40rem;
   }
 
-  .install-reference code {
-    font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
-    font-size: 0.86em;
-    color: #d4d4d8;
+  .install-reference__note p {
+    margin: 0;
+  }
+
+  @media (max-width: 860px) {
+    .install-reference {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "head"
+        "os"
+        "next"
+        "got"
+        "note";
+    }
+  }
+
+  @media (max-width: 640px) {
+    .install-reference {
+      width: min(100% - 2rem, 64rem);
+      padding: 48px 0 48px;
+    }
+
+    .install-reference__cmd {
+      grid-template-columns: 1fr;
+    }
+
+    .install-reference__tabs {
+      width: 100%;
+    }
+
+    .install-reference__tabs {
+      display: flex;
+      width: 100%;
+    }
+
+    .install-reference__tabs label {
+      flex: 1;
+      text-align: center;
+    }
   }
 </style>
