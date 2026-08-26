@@ -76,8 +76,9 @@ const product = read('src/components/sections/SectionProductSurface.astro');
 const floating = read('src/components/FloatingProductProof.svelte');
 const termWin = read('src/components/TerminalWindow.astro');
 
-assert.match(hero, /src="\/playground\/index\.html\?embed=1"/, 'Hero pins the command playground.');
-assert.match(hero, /hero__playground/, 'Hero playground is an iframe, not a capture plate.');
+assert.match(hero, /PlaygroundTui/, 'Hero mounts the operator TUI in-document.');
+assert.match(hero, /hero__playground/, 'Hero playground host stays, without an iframe.');
+assert.doesNotMatch(hero, /<iframe/i, 'Hero must not nest an iframe.');
 assert.doesNotMatch(
   hero,
   /class="hero__shot"/,

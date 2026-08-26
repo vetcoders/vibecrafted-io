@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Lang } from '../../lib/i18n';
+  import PlaygroundTui from '../PlaygroundTui.svelte';
 
   interface HeroData {
     ariaLabel: string;
@@ -42,23 +43,21 @@
   <div class="hero__vignette" data-decor aria-hidden="true"></div>
 
   <div class="hero__copy" data-scroll-fade>
-    <div class="hero__text">
-      <span class="hero__eyebrow">{hero.eyebrow}</span>
-      <h1 class="hero__heading">
-        <span class="hero__heading-mark">{hero.heading.pre}</span>
-        {#if hero.heading.mid}
-          <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
-        {/if}
-        <span class="hero__heading-line">
-          <em class="hero__heading-accent">{headingAccentWord}</em
-          >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
-            >{/if}
-        </span>
-      </h1>
-      <p class="hero__body">
-        {@html hero.body}
-      </p>
-    </div>
+    <span class="hero__eyebrow">{hero.eyebrow}</span>
+    <h1 class="hero__heading">
+      <span class="hero__heading-mark">{hero.heading.pre}</span>
+      {#if hero.heading.mid}
+        <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
+      {/if}
+      <span class="hero__heading-line">
+        <em class="hero__heading-accent">{headingAccentWord}</em
+        >{#if headingAccentDot}<span class="hero__heading-dot">{headingAccentDot}</span
+          >{/if}
+      </span>
+    </h1>
+    <p class="hero__body">
+      {@html hero.body}
+    </p>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -69,13 +68,8 @@
     </div>
   </div>
 
-  <div class="hero__stage" id="playground">
-    <iframe
-      class="hero__playground"
-      src="/playground/index.html?embed=1"
-      title={playgroundTitle}
-      loading="eager"
-    ></iframe>
+  <div class="hero__stage hero__playground" id="playground" aria-label={playgroundTitle}>
+    <PlaygroundTui />
   </div>
 </section>
 
@@ -83,15 +77,15 @@
   .hero {
     position: relative;
     isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: minmax(22rem, 34rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 40px 56px;
     width: 100%;
     height: 100dvh;
     max-height: 100dvh;
     min-height: 0;
-    padding: 80px 24px 72px;
-    gap: 20px;
+    padding: 96px 48px 48px;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
@@ -107,38 +101,23 @@
     position: relative;
     z-index: 3;
     display: flex;
-    flex: 0 0 auto;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px 40px;
+    flex-direction: column;
+    align-items: flex-start;
     min-width: 0;
-  }
-
-  .hero__text {
-    min-width: 0;
-    max-width: 44rem;
+    max-width: 38rem;
   }
 
   .hero__stage {
     position: relative;
-    flex: 0 0 auto;
-    align-self: center;
-    width: min(1080px, 100%);
-    height: 420px;
-    max-height: min(420px, calc(100dvh - 26rem));
+    z-index: 2;
+    width: 100%;
+    height: min(640px, calc(100dvh - 152px));
+    min-height: 420px;
     border: 1px solid #27272a;
     border-radius: 10px;
     overflow: hidden;
     background: #0a0a0b;
     box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
-  }
-
-  .hero__playground {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    background: #0a0a0b;
   }
 
   .hero__eyebrow {
@@ -149,17 +128,17 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin-bottom: 10px;
+    margin-bottom: 14px;
   }
 
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(1.7rem, 3.2vw, 3rem);
-    line-height: 1.08;
+    font-size: clamp(2rem, 4.2vw, 3.4rem);
+    line-height: 1.05;
     letter-spacing: -0.03em;
     color: var(--fg-on-dark);
-    margin: 0 0 10px;
+    margin: 0 0 16px;
   }
 
   .hero__heading-mark,
@@ -178,14 +157,14 @@
   .hero__body {
     font-family: var(--font-body);
     font-size: clamp(14px, 1.05vw, 16px);
-    line-height: 1.5;
+    line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    margin: 0;
+    margin: 0 0 22px;
   }
 
   .hero__body :global(code) {
     display: block;
-    margin-top: 10px;
+    margin-top: 14px;
     font-family: var(--font-mono);
     font-size: 0.82em;
     line-height: 1.45;
@@ -202,8 +181,6 @@
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
-    flex: none;
-    padding-bottom: 2px;
   }
 
   .hero__cta {
@@ -277,27 +254,25 @@
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
     .hero {
+      grid-template-columns: 1fr;
       height: auto;
       max-height: none;
       min-height: 100dvh;
-      padding: 88px 16px 72px;
-    }
-
-    .hero__copy {
-      flex-direction: column;
+      padding: 88px 20px 40px;
+      gap: 28px;
       align-items: stretch;
     }
 
-    .hero__text {
+    .hero__copy {
       max-width: none;
     }
 
     .hero__stage {
       width: 100%;
-      height: 320px;
-      max-height: 320px;
+      height: 420px;
+      min-height: 360px;
     }
   }
 

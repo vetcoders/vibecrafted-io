@@ -134,8 +134,8 @@ assert.doesNotMatch(
 );
 assert.match(
   heroSection,
-  /src="\/playground\/index\.html\?embed=1"/,
-  'Hero pins the command playground, not a screenshot with fake chrome.',
+  /PlaygroundTui/,
+  'Hero mounts the operator TUI in-document, not a nested iframe or a screenshot.',
 );
 assert.doesNotMatch(
   heroSection,

@@ -18,7 +18,8 @@ const product = read('src/components/sections/SectionProductSurface.astro');
 const floating = read('src/components/FloatingProductProof.svelte');
 const css = read('src/styles/terminal-window.css');
 
-assert.match(hero, /src="\/playground\/index\.html\?embed=1"/, 'Hero pins the command playground.');
+assert.match(hero, /PlaygroundTui/, 'Hero mounts the operator TUI in-document.');
+assert.doesNotMatch(hero, /<iframe/i, 'Hero must not nest an iframe — preview sandboxes kill nested frames.');
 assert.equal(
   (hero.match(/vc-termwin__titlebar/g) || []).length,
   0,
