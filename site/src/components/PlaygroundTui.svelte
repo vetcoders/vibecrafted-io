@@ -8,8 +8,8 @@
   height: 100%;
   min-height: 0;
   container-type: size;
-  background: #0a0a0b;
-  color: #f4f4f5;
+  background: var(--ground);
+  color: var(--text);
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12.5px;
   line-height: 1.45;
@@ -30,9 +30,27 @@
   --sel: #27272a;
   --live: #4ade80;
   --accent: #c99a3b;
+  --overlay-shadow: rgba(10, 10, 11, 0.35);
   --radius: 2px;
   margin: 0;
   overflow: hidden;
+}
+:host([data-pg-theme="light"]) {
+  --ground: #f3f1eb;
+  --panel: #ebe7de;
+  --panel-2: #e2ddd3;
+  --line: #d4cfc4;
+  --text: #2c2a27;
+  --dim: #8a8278;
+  --mute: #5c564e;
+  --copper: #1a1917;
+  --green: #2f7d4a;
+  --red: #b42318;
+  --gold: #a16207;
+  --sel: #d4cfc4;
+  --live: #2f7d4a;
+  --accent: #8a6a32;
+  --overlay-shadow: rgba(44, 42, 39, 0.3);
 }
 .app {
   display: grid;
@@ -261,8 +279,8 @@
   max-width: 380px;
   border: 1px solid var(--accent);
   border-radius: var(--radius);
-  background: rgba(10, 10, 11, 0.94);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  background: var(--panel);
+  box-shadow: 0 10px 28px var(--overlay-shadow);
   padding: 8px 10px;
 }
 #panels-overlay.open { display: block; }
@@ -292,6 +310,100 @@
 }
 .panel-card:hover { border-color: var(--accent); }
 .panel-card .d { color: var(--dim); font-size: 11px; display: block; padding-top: 2px; }
+.float-overlay {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: none;
+  width: min(560px, 92%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: 0 10px 28px var(--overlay-shadow);
+  padding: 8px 12px 10px;
+}
+.float-overlay.open { display: block; }
+.float-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 11.5px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--line);
+}
+.float-head .hint { color: var(--dim); font-size: 11px; }
+.float-head .pin {
+  margin-left: auto;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--dim);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+}
+.float-head .pin.on { color: var(--accent); }
+.qc-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+.qc-row .qc-ps { color: var(--gold); font-weight: 600; }
+#qc-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  caret-color: var(--gold);
+}
+#cm-text {
+  width: 100%;
+  margin-top: 8px;
+  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  resize: vertical;
+  outline: none;
+  caret-color: var(--accent);
+}
+#cm-text:focus { border-color: var(--accent); }
+.cm-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+}
+.cm-actions button {
+  appearance: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--mute);
+  font: inherit;
+  font-size: 11.5px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.cm-actions button:hover { color: var(--text); border-color: var(--accent); }
+.cm-actions #cm-push { color: var(--accent); }
+.ws-tab.new-tab {
+  color: var(--dim);
+  font-size: 13px;
+  padding: 0 10px;
+}
+.ws-tab.new-tab:hover { color: var(--accent); }
 .inline {
   display: flex;
   gap: 8px;
@@ -358,6 +470,7 @@
     <span class="datum">⎮</span>
     <span class="lock-chip">⚿ L</span>
     <div class="ws" id="ws-tabs" role="tablist" aria-label="Guest organs"></div>
+    <button type="button" class="ws-tab new-tab" id="new-tab" title="New tab">+</button>
     <button type="button" class="voc-btn" id="voc-btn">Voc</button>
     <div class="tools">
       <button type="button" id="composer">✍ Composer</button>
@@ -365,7 +478,7 @@
       <button type="button" id="panels-btn">⿻ Panels 1</button>
       <span class="sep">·</span>
       <button type="button" id="quickcmd">❯_ Quick cmd</button>
-      <span class="sep">☾</span>
+      <button type="button" id="theme-btn" title="Console follows the page theme — click to go independent">☾</button>
     </div>
   </header>
   <aside class="rail">
@@ -387,6 +500,15 @@
     <div id="panels-overlay" aria-hidden="true">
       <div class="panels-head">⿻ Panels <span class="scope">Global</span> · Project <span class="pager">1/4 ←→</span></div>
       <button type="button" class="panel-card" data-goto="0">❖ kimi-code · Never Ask swarm<span class="d">K3 thinking: max · ctx 14% (139k/1M) · feat/npm-install [PR#84]</span></button>
+    </div>
+    <div id="quickcmd-overlay" class="float-overlay" aria-hidden="true">
+      <div class="float-head">❯_ Quick cmd <span class="hint">one shot — Enter runs, Esc closes</span><button type="button" class="pin" id="qc-pin">PIN ○</button></div>
+      <div class="qc-row"><span class="qc-ps">❯_</span><input id="qc-input" autocomplete="off" spellcheck="false" aria-label="quick command"></div>
+    </div>
+    <div id="composer-overlay" class="float-overlay" aria-hidden="true">
+      <div class="float-head">✍ Composer <span class="hint">draft here — push writes into the pane, Enter stays human</span><button type="button" class="pin" id="cm-close">✕</button></div>
+      <textarea id="cm-text" rows="5" spellcheck="false" aria-label="composer draft"></textarea>
+      <div class="cm-actions"><button type="button" id="cm-push">Push to pane ⏎</button><button type="button" id="cm-cancel">Esc</button></div>
     </div>
     <div class="inline"><span class="ps1">❯</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="command"></div>
   </div>

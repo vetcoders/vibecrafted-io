@@ -92,7 +92,46 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     activeWs = "agents",
     vocMode = false,
     panelsOpen = false,
+    qcOpen = false,
+    qcPinned = false,
+    cmOpen = false,
+    xtCount = 0,
     hwTimer = null;
+
+  /* Playground theme follows the page theme by default — no "you don't
+     support system theme" doubts. The ☾ button is the opt-in escape: it
+     flips the console independent of the page and sticks in localStorage;
+     clicking again returns to following. */
+  const host = root.getRootNode && root.getRootNode().host;
+  const PG_KEY = "vc-pg-theme";
+  const docTheme = () =>
+    document.documentElement.getAttribute("data-theme") === "light"
+      ? "light"
+      : "dark";
+  let pgTheme = localStorage.getItem(PG_KEY) || docTheme();
+
+  function paintTheme() {
+    if (host) host.setAttribute("data-pg-theme", pgTheme);
+    const independent = Boolean(localStorage.getItem(PG_KEY));
+    const tb = $("#theme-btn");
+    if (tb) {
+      tb.textContent = pgTheme === "dark" ? "☾" : "☼";
+      tb.title = independent
+        ? "Console theme is independent from the page — click to follow the page again"
+        : "Console follows the page theme — click to go independent";
+    }
+  }
+
+  const themeObserver = new MutationObserver(() => {
+    if (!localStorage.getItem(PG_KEY)) {
+      pgTheme = docTheme();
+      paintTheme();
+    }
+  });
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
 
   const WORKSPACES = [
     { id: "overview", label: "Overview" },
@@ -280,7 +319,7 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     const s = current();
     if (vocMode) term.innerHTML = VOC_PANE;
     else if (activeWs === "overview") term.innerHTML = OVERVIEW_PANE;
-    else if (activeWs === "shell")
+    else if (activeWs === "shell" || activeWs.startsWith("xt"))
       term.innerHTML = s && s.buf ? s.buf : SHELL_PANE;
     else term.innerHTML = s && s.buf ? s.buf : IDLE_PANE;
     term.scrollTop = 0;
@@ -289,7 +328,12 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
   function selectWs(id) {
     if (id === activeWs && !vocMode) return;
     vocMode = false;
-    if (activeWs === "agents" || activeWs === "shell") saveBuf();
+    if (
+      activeWs === "agents" ||
+      activeWs === "shell" ||
+      activeWs.startsWith("xt")
+    )
+      saveBuf();
     activeWs = id;
     renderWs();
     paintWs();
@@ -302,7 +346,12 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       paintWs();
       return;
     }
-    if (activeWs === "agents" || activeWs === "shell") saveBuf();
+    if (
+      activeWs === "agents" ||
+      activeWs === "shell" ||
+      activeWs.startsWith("xt")
+    )
+      saveBuf();
     vocMode = true;
     renderWs();
     paintWs();
@@ -915,13 +964,89 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
     });
   });
   $("#composer").addEventListener("click", () => {
-    input.value = "Implement {feature}";
-    input.focus();
-    input.select();
+    cmOpen = !cmOpen;
+    const ov = $("#composer-overlay");
+    if (ov) ov.classList.toggle("open", cmOpen);
+    if (cmOpen) {
+      const ta = $("#cm-text");
+      if (ta) ta.focus();
+    }
+  });
+  const closeComposer = () => {
+    cmOpen = false;
+    const ov = $("#composer-overlay");
+    if (ov) ov.classList.remove("open");
+  };
+  $("#cm-close").addEventListener("click", closeComposer);
+  $("#cm-cancel").addEventListener("click", closeComposer);
+  $("#cm-push").addEventListener("click", () => {
+    const ta = $("#cm-text");
+    const text = ta ? ta.value.trim() : "";
+    if (text) {
+      input.value = text;
+      input.focus();
+      if (ta) ta.value = "";
+    }
+    closeComposer();
   });
   $("#quickcmd").addEventListener("click", () => {
-    input.value = "";
-    input.focus();
+    qcOpen = !qcOpen;
+    const ov = $("#quickcmd-overlay");
+    if (ov) ov.classList.toggle("open", qcOpen);
+    if (qcOpen) {
+      const qi = $("#qc-input");
+      if (qi) qi.focus();
+    }
+  });
+  const closeQc = () => {
+    if (qcPinned) return;
+    qcOpen = false;
+    const ov = $("#quickcmd-overlay");
+    if (ov) ov.classList.remove("open");
+  };
+  $("#qc-pin").addEventListener("click", () => {
+    qcPinned = !qcPinned;
+    const pin = $("#qc-pin");
+    if (pin) {
+      pin.classList.toggle("on", qcPinned);
+      pin.textContent = qcPinned ? "PIN ●" : "PIN ○";
+    }
+  });
+  $("#qc-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const qi = $("#qc-input");
+      const text = qi ? qi.value.trim() : "";
+      if (text) {
+        exec(text);
+        if (qi) qi.value = "";
+      }
+      closeQc();
+      e.preventDefault();
+    } else if (e.key === "Escape") {
+      qcPinned = false;
+      const pin = $("#qc-pin");
+      if (pin) {
+        pin.classList.remove("on");
+        pin.textContent = "PIN ○";
+      }
+      closeQc();
+      e.preventDefault();
+    }
+  });
+  $("#new-tab").addEventListener("click", () => {
+    xtCount += 1;
+    WORKSPACES.push({ id: "xt" + xtCount, label: "shell [" + xtCount + "]" });
+    selectWs("xt" + xtCount);
+  });
+  $("#theme-btn").addEventListener("click", () => {
+    if (localStorage.getItem(PG_KEY)) {
+      localStorage.removeItem(PG_KEY);
+      pgTheme = docTheme();
+    } else {
+      pgTheme = pgTheme === "dark" ? "light" : "dark";
+      localStorage.setItem(PG_KEY, pgTheme);
+    }
+    paintTheme();
   });
 
   sessions[0].buf = SETTLEMENT;
@@ -933,6 +1058,7 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
   activeWs = "agents";
   rail();
   paintHw();
+  paintTheme();
   hwTimer = setInterval(paintHw, 2400);
   if (!EMBED) input.focus();
   return {
@@ -944,6 +1070,7 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
         if (r.timer) clearInterval(r.timer);
       });
       if (hwTimer) clearInterval(hwTimer);
+      themeObserver.disconnect();
     },
   };
 }
