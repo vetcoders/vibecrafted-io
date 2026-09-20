@@ -3,6 +3,7 @@ import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import BoardPreview from '../BoardPreview.svelte';
+import FrameAnatomy from '../FrameAnatomy.astro';
 import type { Lang } from '../../lib/i18n';
 
 interface Props {
@@ -97,14 +98,17 @@ const nextTitle = quickstartEntry.data.title as string;
       <div class="op__cockpit-copy">
         <span class="op__cockpit-kicker">VC-FRAME 0.46 · COCKPIT</span>
         <h3 class="op__cockpit-heading">
-          Session rail on every dispatch layout
+          Host chrome above, guest workspaces below
           <span class="brand-dot">.</span>
         </h3>
         <p class="op__cockpit-body">
-          The operator cockpit ships with the session-manager rail welded into
-          dashboard, marbles, operator, research, and workflow layouts. Tab
-          inventory stays honest; fleet settlement lives on the Mission Control
-          board — not the rail.
+          The Operator Frame is pinned host chrome — Dashboard, Active runs,
+          Config, Doctor, Projects — welded into every dispatch layout and
+          never moving with sessions. Workspaces below it are guests: they
+          flow with ⌘-arrows and die with their sessions, each carrying
+          Overview, Agents, and Shell organs. Voc is the host console, pulled
+          out of the guest tab row; Panels carry the interactive-agent layer,
+          global or project scope.
         </p>
       </div>
       <figure class="op__cockpit-figure">
@@ -118,17 +122,8 @@ const nextTitle = quickstartEntry.data.title as string;
         />
         <figcaption>vc-frame cockpit — live layout chrome, not a mock.</figcaption>
       </figure>
-      <figure class="op__cockpit-figure op__cockpit-figure--secondary">
-        <img
-          src="/assets/vc-frame/vc-frame-anatomy.png"
-          alt="vc-frame anatomy diagram of panes, rail, and layout structure"
-          width="1600"
-          height="900"
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption>Anatomy of the rail — where inventory lives.</figcaption>
-      </figure>
+      {/* Anatomy slot: live DOM, not a capture — the host/guest design target. */}
+      <FrameAnatomy />
     </div>
 
     {/* #marbles — nav MARBLES anchor lands on the board preview (BOARD /
