@@ -8,33 +8,35 @@
   height: 100%;
   min-height: 0;
   container-type: size;
-  background: var(--v2-ink, #0a0a0b);
-  color: var(--v2-fg-on-dark, #f4f4f5);
-  font-family: var(--v2-font-mono, "JetBrains Mono", ui-monospace, monospace);
+  background: #0a0a0b;
+  color: #f4f4f5;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12.5px;
   line-height: 1.45;
 }
 :host, :host * { box-sizing: border-box; }
 :host {
-  --ground: var(--v2-ink, #0a0a0b);
-  --panel: var(--v2-paper, #121214);
-  --line: var(--v2-border, #27272a);
-  --text: var(--v2-fg-on-dark, #f4f4f5);
-  --dim: var(--v2-fg-on-dark-mute, #71717a);
-  --mute: var(--v2-fg-on-dark-dim, #a1a1aa);
-  --copper: var(--v2-fg-on-dark-hover, #e4e4e7);
-  --green: var(--v2-ok, #4ade80);
-  --red: var(--v2-danger, #f87171);
-  --gold: var(--v2-warn, #fbbf24);
-  --sel: var(--v2-border, #27272a);
-  --live: var(--v2-ok, #4ade80);
-  --radius: var(--v2-radius, 2px);
+  --ground: #0a0a0b;
+  --panel: #121214;
+  --panel-2: #1a1a1e;
+  --line: #27272a;
+  --text: #f4f4f5;
+  --dim: #71717a;
+  --mute: #a1a1aa;
+  --copper: #e4e4e7;
+  --green: #4ade80;
+  --red: #f87171;
+  --gold: #fbbf24;
+  --sel: #27272a;
+  --live: #4ade80;
+  --accent: #c99a3b;
+  --radius: 2px;
   margin: 0;
   overflow: hidden;
 }
 .app {
   display: grid;
-  grid-template-columns: 168px minmax(0, 1fr);
+  grid-template-columns: 208px minmax(0, 1fr);
   grid-template-rows: 34px minmax(0, 1fr) 26px;
   height: 100%;
   min-height: 0;
@@ -52,13 +54,26 @@
   display: flex;
   align-items: center;
   flex: none;
-  padding: 0 12px;
+  padding: 0 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text);
   white-space: nowrap;
 }
-.brand .dot { color: var(--v2-accent, #c99a3b); }
+.brand .dot { color: var(--accent); }
+.datum { display: flex; align-items: center; color: var(--dim); padding: 0 2px; }
+.lock-chip {
+  display: flex;
+  align-items: center;
+  flex: none;
+  margin: 6px 4px 6px 2px;
+  padding: 0 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--mute);
+  font-size: 11px;
+  white-space: nowrap;
+}
 .ws {
   display: flex;
   align-items: stretch;
@@ -96,21 +111,31 @@
   flex: none;
 }
 .ws-tab.on .mark { background: currentColor; }
-.ws-tab .key {
-  font-size: 10px;
-  opacity: 0.7;
-  border: 1px solid currentColor;
-  border-radius: var(--radius);
-  padding: 0 4px;
-  line-height: 1.4;
-}
-.tools {
+.voc-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
   margin-left: auto;
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.voc-btn:hover { background: var(--panel-2); }
+.voc-btn.on { background: var(--text); color: var(--ground); font-weight: 600; }
+.tools {
   display: flex;
   align-items: center;
   gap: 2px;
   padding: 0 8px;
   flex: none;
+  border-left: 1px solid var(--line);
 }
 .tools button {
   appearance: none;
@@ -123,8 +148,10 @@
   padding: 4px 8px;
   cursor: pointer;
   border-radius: var(--radius);
+  white-space: nowrap;
 }
-.tools button:hover { color: var(--text); background: #1a1a1e; }
+.tools button:hover { color: var(--text); background: var(--panel-2); }
+.tools button.on { color: var(--accent); }
 .tools .sep { color: var(--dim); padding: 0 2px; }
 .rail {
   grid-column: 1;
@@ -141,14 +168,42 @@
   font-size: 10.5px;
   font-weight: 500;
   letter-spacing: 0.12em;
+  color: var(--text);
+}
+.rail-host { padding: 0 0 4px; }
+.host-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 11.5px;
+  padding: 3px 12px 3px 18px;
+  color: var(--mute);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.host-item:hover { color: var(--text); background: var(--panel-2); }
+.host-item .runs-n { color: var(--accent); }
+.rail-sep {
   color: var(--dim);
+  letter-spacing: 0.3em;
+  padding: 2px 12px 6px;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .rail-body { flex: 1; overflow-y: auto; padding: 0 0 8px; }
 .group { margin: 6px 0 2px; padding: 0 12px; font-size: 10px; letter-spacing: 0.14em; color: var(--dim); }
 .group .n { color: var(--mute); letter-spacing: 0; margin-left: 6px; }
 .sess { padding: 7px 12px 6px; cursor: pointer; border-left: 2px solid transparent; }
-.sess:hover { background: #1a1a1e; }
-.sess.on { background: #1a1a1e; border-left-color: var(--live); }
+.sess:hover { background: var(--panel-2); }
+.sess.on { background: var(--panel-2); border-left-color: var(--accent); }
+.sess.on .name { color: var(--accent); font-weight: 600; }
 .sess .row { display: flex; align-items: baseline; gap: 8px; }
 .sess .mark { width: 10px; flex: none; color: var(--dim); }
 .sess.live .mark { color: var(--green); }
@@ -169,10 +224,11 @@
   cursor: pointer;
   text-align: left;
 }
-.new:hover { border-color: var(--v2-border-strong, #3f3f46); color: var(--text); }
+.new:hover { border-color: #3f3f46; color: var(--text); }
 .workspace {
   grid-column: 2;
   grid-row: 2;
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -195,6 +251,47 @@
 #term .y { color: var(--gold); }
 #term .b { color: var(--mute); }
 #term .bold { font-weight: 600; }
+#panels-overlay {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 5;
+  display: none;
+  min-width: 280px;
+  max-width: 380px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: rgba(10, 10, 11, 0.94);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  padding: 8px 10px;
+}
+#panels-overlay.open { display: block; }
+.panels-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-size: 11px;
+  padding-bottom: 6px;
+}
+.panels-head .scope { color: var(--text); font-weight: 600; }
+.panels-head .pager { margin-left: auto; color: var(--mute); }
+.panel-card {
+  appearance: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  font-size: 11.5px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+.panel-card:hover { border-color: var(--accent); }
+.panel-card .d { color: var(--dim); font-size: 11px; display: block; padding-top: 2px; }
 .inline {
   display: flex;
   gap: 8px;
@@ -230,6 +327,14 @@
 }
 .statusbar > span { white-space: nowrap; }
 .statusbar .lock { color: var(--gold); font-weight: 600; }
+.statusbar .proj {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  color: var(--text);
+}
 .statusbar .hw-warn { color: var(--gold); }
 .statusbar .right { margin-left: auto; }
 @keyframes bl { 50% { opacity: 0; } }
@@ -249,31 +354,51 @@
 </style>
 <div class="app">
   <header class="chrome">
-    <span class="brand">Vibecrafted<span class="dot">.</span></span>
-    <div class="ws" id="ws-tabs" role="tablist" aria-label="Workspaces"></div>
+    <span class="brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="dot">.</span></span>
+    <span class="datum">⎮</span>
+    <span class="lock-chip">⚿ L</span>
+    <div class="ws" id="ws-tabs" role="tablist" aria-label="Guest organs"></div>
+    <button type="button" class="voc-btn" id="voc-btn">Voc</button>
     <div class="tools">
-      <button type="button" id="composer">Composer</button>
+      <button type="button" id="composer">✍ Composer</button>
       <span class="sep">·</span>
-      <button type="button" id="quickcmd">Quick cmd</button>
+      <button type="button" id="panels-btn">⿻ Panels 1</button>
+      <span class="sep">·</span>
+      <button type="button" id="quickcmd">❯_ Quick cmd</button>
+      <span class="sep">☾</span>
     </div>
   </header>
   <aside class="rail">
-    <div class="rail-head">SESSIONS</div>
+    <div class="rail-head">Operator Frame</div>
+    <div class="rail-host">
+      <button type="button" class="host-item" data-cmd="dashboard">⌂ Dashboard</button>
+      <button type="button" class="host-item" data-cmd="status">❖ Active runs · <span class="runs-n" id="runs-n">0</span></button>
+      <button type="button" class="host-item" data-cmd="doctor">⚙︎ Config</button>
+      <button type="button" class="host-item" data-cmd="doctor">· Doctor</button>
+      <button type="button" class="host-item" data-cmd="projects">✧ Projects</button>
+    </div>
+    <div class="rail-sep" aria-hidden="true">··············</div>
+    <div class="rail-head">Workspaces</div>
     <div class="rail-body" id="rail"></div>
-    <div class="rail-foot"><button class="new" id="new-sess" type="button">+ New session</button></div>
+    <div class="rail-foot"><button class="new" id="new-sess" type="button">[+] new workspace</button></div>
   </aside>
   <div class="workspace">
     <div id="term"></div>
+    <div id="panels-overlay" aria-hidden="true">
+      <div class="panels-head">⿻ Panels <span class="scope">Global</span> · Project <span class="pager">1/4 ←→</span></div>
+      <button type="button" class="panel-card" data-goto="0">❖ kimi-code · Never Ask swarm<span class="d">K3 thinking: max · ctx 14% (139k/1M) · feat/npm-install [PR#84]</span></button>
+    </div>
     <div class="inline"><span class="ps1">❯</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="command"></div>
   </div>
   <footer class="statusbar">
-    <span class="lock">LOCK</span>
+    <span class="lock">⌃g LOCK</span>
+    <span class="proj" id="stat-proj">loctree · ⎇integration/pr88-mega · PR#87 · +3.1k/−900</span>
     <span id="hw-live">LIVE 3</span>
     <span id="hw-cpu">CPU 14%</span>
     <span id="hw-mem">MEM 3.8/16G</span>
     <span id="hw-disk">DISK 12G</span>
     <span id="hw-health">HEALTH ·</span>
-    <span class="right"><span id="stat-name">loctree</span> · BASE</span>
+    <span class="right">BASE</span>
   </footer>
 </div>`;
 

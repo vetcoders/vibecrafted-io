@@ -209,14 +209,14 @@
   }
 
   .hero__cta--primary {
-    background: var(--fg-on-dark);
+    background: var(--accent);
     color: var(--ink);
-    border: 1px solid var(--fg-on-dark);
+    border: 1px solid var(--accent);
     font-weight: 600;
   }
 
   .hero__cta--primary .hero__cta-arrow {
-    color: var(--accent);
+    color: var(--ink);
     font-size: 14px;
     transform: translateY(-0.5px);
   }

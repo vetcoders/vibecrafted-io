@@ -102,12 +102,12 @@
     en: {
       top: {
         brand: 'Vibecrafted.',
-        center: 'Sight · Memory · Hands · Sprawczość',
+        center: 'Sight · Memory · Hands · Agency',
         fig: 'FIG. 06 · OPERATOR LOOP',
         mode: 'Operator mode'
       },
       hero: {
-        kicker: 'SIGHT · MEMORY · HANDS · SPRAWCZOŚĆ',
+        kicker: 'SIGHT · MEMORY · HANDS · AGENCY',
         title: 'AI can write. Evidence decides.',
         lead:
           'A veterinary duo built what coding agents lacked: structural vision, durable intent, and a mouth that posts — with daily proof and a list of what still fails.',
