@@ -52,3 +52,4 @@ aicx-dashboard.html
 /.loctree
 /framework
 *.jsonl
+/site/public
