@@ -64,7 +64,10 @@
   height: 41lh;
   transform-origin: top left;
   min-height: 0;
+  transition: opacity 260ms ease, filter 260ms ease;
 }
+.app.leaving { opacity: 0; filter: blur(5px); }
+@media (prefers-reduced-motion: reduce) { .app { transition: none; } }
 .chrome {
   grid-column: 1 / 3;
   display: flex;
@@ -83,8 +86,13 @@
   letter-spacing: 0.02em;
   color: var(--text);
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
 }
 .brand .dot { color: var(--accent); }
+.brand:hover, .brand:focus-visible { color: var(--accent); }
+.window-controls { width: 6ch; flex: none; display: flex; align-items: center; justify-content: center; gap: .8ch; }
+.window-controls i { display: block; width: .75ch; height: .75ch; border-radius: 50%; background: var(--dim); border: 1px solid var(--line); }
 .datum { display: flex; align-items: center; color: var(--dim); padding: 0 2px; }
 .lock-chip {
   display: flex;
@@ -231,14 +239,15 @@
 .sess.on .name { color: var(--accent); font-weight: 600; }
 .sess .row { display: flex; align-items: baseline; gap: 8px; }
 .sess .mark { width: 10px; flex: none; color: var(--dim); }
-.sess.live .mark { color: var(--green); }
-.sess.stale .mark { color: var(--gold); }
+.sess.on .mark { color: var(--accent); }
 .sess .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sess .meta { color: var(--dim); font-size: 11px; }
 .sess .disambiguator { color: var(--dim); font-size: 10px; padding: 1px 0 1px 20px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .sess .face { padding: 1px 0 0 20px; color: var(--dim); font-size: 11px; }
 .sess .face button { appearance: none; border: 0; background: none; color: inherit; font: inherit; padding: 0 7px 0 0; cursor: pointer; }
 .sess .face button:hover { color: var(--accent); }
+.process-spinner { display: inline-block; width: 1ch; color: var(--green); }
+.process-spinner::before { content: attr(data-frame); }
 .rail-foot { padding: 8px 12px 10px; border-top: 1px solid var(--line); }
 .new {
   width: 100%;
@@ -346,6 +355,12 @@
 }
 .panels-head .scope { color: var(--text); font-weight: 600; }
 .panels-head .pager { margin-left: auto; color: var(--mute); }
+.panels-scopes { display: flex; gap: 6px; padding: 4px 0 8px; }
+.panels-scopes button { flex: 1; appearance: none; border: 1px solid var(--line); background: transparent; color: var(--dim); font: inherit; font-size: 11px; padding: 4px; cursor: pointer; }
+.panels-scopes button.on { border-color: var(--accent); color: var(--accent); }
+.panels-scopes button[hidden] { display: none; }
+.panels-list { display: grid; gap: 5px; }
+.panels-empty { color: var(--dim); font-size: 11px; padding: 6px 2px; }
 .panel-card {
   appearance: none;
   display: block;
@@ -509,7 +524,8 @@
 </style>
 <div class="app" data-grid="170x41">
   <header class="chrome">
-    <span class="brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="dot">.</span></span>
+    <span class="window-controls" aria-hidden="true"><i></i><i></i><i></i></span>
+    <a class="brand" id="site-home" href="/en/" title="Back to Vibecrafted home">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="dot">.</span></a>
     <span class="datum">⎮</span>
     <span class="lock-chip">⚿ L</span>
     <div class="ws" id="ws-tabs" role="tablist" aria-label="Guest organs"></div>
@@ -541,8 +557,9 @@
   <div class="workspace">
     <div id="term"></div>
     <div id="panels-overlay" aria-hidden="true">
-      <div class="panels-head">⿻ Panels <span class="scope">Global</span> · Project <span class="pager">1/4 ←→</span></div>
-      <button type="button" class="panel-card" data-goto="0">❖ kimi-code · Never Ask swarm<span class="d">K3 thinking: max · ctx 14% (139k/1M) · feat/npm-install [PR#84]</span></button>
+      <div class="panels-head">⿻ Panels <span class="pager" id="panels-count"></span></div>
+      <div class="panels-scopes"><button type="button" data-panel-scope="global">Global</button><button type="button" data-panel-scope="project">Project</button></div>
+      <div class="panels-list" id="panels-list"></div>
     </div>
     <div id="quickcmd-overlay" class="float-overlay" aria-hidden="true">
       <div class="float-head">❯_ Quick cmd <span class="hint">one shot — Enter runs, Esc closes</span><button type="button" class="pin" id="qc-pin">PIN ○</button></div>

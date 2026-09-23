@@ -62,6 +62,18 @@
     width: 170ch;
     height: 41lh;
     transform-origin: top left;
+    transition:
+      opacity 260ms ease,
+      filter 260ms ease;
+  }
+  .app.leaving {
+    opacity: 0;
+    filter: blur(5px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .app {
+      transition: none;
+    }
   }
 
   /* ── Top bar — host chrome + guest organs ─────────────────── */
@@ -80,6 +92,27 @@
   .topbar .brand {
     color: var(--text);
     letter-spacing: 0.02em;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .topbar .brand:hover,
+  .topbar .brand:focus-visible {
+    color: var(--amber);
+  }
+  .window-controls {
+    width: 6ch;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.8ch;
+  }
+  .window-controls i {
+    display: block;
+    width: 0.75ch;
+    height: 0.75ch;
+    border-radius: 50%;
+    background: var(--dim);
+    border: 1px solid var(--line);
   }
   .topbar .vsep {
     color: var(--dim);
@@ -113,6 +146,10 @@
   .organ.on {
     color: var(--amber);
     border-bottom-color: var(--amber);
+  }
+  .organ.new-tab {
+    color: var(--dim);
+    padding: 0 8px;
   }
   .topbar .voc {
     margin-left: auto;
@@ -229,11 +266,8 @@
     flex: none;
     color: var(--dim);
   }
-  .ws.live .mark {
-    color: var(--green);
-  }
-  .ws.stale .mark {
-    color: var(--gold);
+  .ws.on .mark {
+    color: var(--amber);
   }
   .ws .name {
     flex: 1;
@@ -278,8 +312,13 @@
   .ws .face.live-face {
     color: var(--mute);
   }
-  .ws .face .spin {
+  .process-spinner {
     color: var(--green);
+    display: inline-block;
+    width: 1ch;
+  }
+  .process-spinner::before {
+    content: attr(data-frame);
   }
   .rail-foot {
     padding: 8px 12px 10px;
@@ -644,8 +683,8 @@
     width: 280px;
     border: 1px solid var(--amber);
     border-radius: 2px;
-    background: rgba(8, 8, 7, 0.96);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    background: var(--panel);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--ground) 55%, transparent);
     display: none;
     z-index: 5;
   }
@@ -680,6 +719,9 @@
   .scope.on {
     border-color: var(--amber);
     color: var(--amber);
+  }
+  .scope[hidden] {
+    display: none;
   }
   .panels-list {
     padding: 6px 10px 10px;
@@ -799,15 +841,6 @@
       opacity: 0;
     }
   }
-  .spin {
-    display: inline-block;
-    animation: sp 1s steps(8) infinite;
-  }
-  @keyframes sp {
-    to {
-      transform: rotate(360deg);
-    }
-  }
   ::selection {
     background: var(--sel);
   }
@@ -823,8 +856,7 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
-    .blink,
-    .spin {
+    .blink {
       animation: none;
     }
   }
@@ -837,7 +869,12 @@
 
 <div class="app" data-grid="170x41">
   <header class="topbar">
-    <span class="brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
+    <span class="window-controls" aria-hidden="true"
+      ><i></i><i></i><i></i
+    ></span>
+    <a class="brand" id="site-home" href="/en/" title="Back to Vibecrafted home"
+      >𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</a
+    >
     <span class="vsep">⎮</span>
     <span class="lock">⚿ L</span>
     <nav
@@ -897,7 +934,7 @@
 
     <div class="panels-overlay" id="panels">
       <div class="panels-head">
-        <span>⿻ Panels</span><span id="panels-pager">1/4 ←→</span>
+        <span>⿻ Panels</span><span id="panels-pager"></span>
       </div>
       <div class="panels-scopes">
         <div class="scope on" data-scope="global">Global</div>
@@ -1175,6 +1212,19 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
     usage: "Usage & costs",
   };
   let sampleWorkspaces = [];
+  const BRAILLE_FRAMES = ["⣸", "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
+  let brailleFrame = 0;
+  const processLabel = (value) => value.replace(/^(?:⣸ |❯_ )+/, "");
+  const processSpinner = () =>
+    '<span class="process-spinner" data-frame="⣸" aria-hidden="true"></span>';
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setInterval(() => {
+      brailleFrame = (brailleFrame + 1) % BRAILLE_FRAMES.length;
+      document.querySelectorAll(".process-spinner").forEach((node) => {
+        node.dataset.frame = BRAILLE_FRAMES[brailleFrame];
+      });
+    }, 110);
+  }
 
   const PANELS = {
     global: [
@@ -1242,12 +1292,13 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
       el.appendChild(b);
       return;
     }
-    ORGANS.forEach(([id, label]) => {
+    [...ORGANS, ...(current()?.extraTabs || [])].forEach(([id, label]) => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "organ" + (organ === id && !hostView ? " on" : "");
       b.textContent = (organ === id && !hostView ? "◉ " : "○ ") + label;
       b.onclick = () => {
+        saveBuf();
         hostView = null;
         organ = id;
         const s = current();
@@ -1256,6 +1307,26 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
       };
       el.appendChild(b);
     });
+    const add = document.createElement("button");
+    add.type = "button";
+    add.className = "organ new-tab";
+    add.textContent = "+";
+    add.title = "New Shell tab";
+    add.setAttribute("aria-label", "New Shell tab");
+    add.onclick = () => {
+      saveBuf();
+      const s = current();
+      if (!s) return;
+      s.extraTabs ||= [];
+      const id = `xt${s.extraTabs.length + 1}`;
+      s.extraTabs.push([id, `Shell [${s.extraTabs.length + 2}]`]);
+      s.tabBuffers ||= {};
+      s.tabBuffers[id] = IDLE_PANE;
+      organ = id;
+      s.organ = id;
+      render();
+    };
+    el.appendChild(add);
   }
 
   function paintRail() {
@@ -1271,7 +1342,7 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
     });
     workspaces.forEach((s) => {
       const on = s.id === activeId && !hostView ? " on" : "";
-      const mark = s.group === "live" ? "◉" : s.group === "stale" ? "◐" : "○";
+      const mark = on ? "◉" : "○";
       const num = String(s.id + 1).padStart(2, "0");
       const disambiguator =
         workspaces.filter((w) => w.name.toLowerCase() === s.name.toLowerCase())
@@ -1282,7 +1353,7 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
       if (on) {
         faces = `<button type="button" class="face" data-organ="overview">· Overview</button>`;
         faces += `<button type="button" class="face" data-organ="agents">· Agents${s.agents.length ? ` ·${s.agents.join("·")} +${s.agents.length - 1}` : " ·none"}</button>`;
-        faces += `<button type="button" class="face" data-organ="shell">· Shell${s.proc ? ` · ${esc(s.proc.replace(/^⣸ |^❯_ /, ""))}` : ""}</button>`;
+        faces += `<button type="button" class="face" data-organ="shell">· Shell${s.proc ? ` · ◉ ❯_ ${processSpinner()} ${esc(processLabel(s.proc))}` : ""}</button>`;
       }
       el.insertAdjacentHTML(
         "beforeend",
@@ -1325,10 +1396,20 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
   }
 
   function paintPanels() {
-    $("#panels-n").textContent = PANELS.global.length + PANELS.project.length;
+    const projectId = hostView ? null : current()?.id;
+    if (projectId == null) panelScope = "global";
+    const projectPanels = PANELS.project.filter((p) => p.ws === projectId);
+    $("#panels-n").textContent = PANELS.global.length + projectPanels.length;
+    $(".panels-scopes [data-scope=project]").hidden = projectId == null;
+    $("#panels-pager").textContent =
+      panelScope === "global"
+        ? `${PANELS.global.length} global`
+        : `${projectPanels.length} · ${current().name}`;
     const list = $("#panels-list");
     list.innerHTML = "";
-    PANELS[panelScope].forEach((p, i) => {
+    const visiblePanels =
+      panelScope === "global" ? PANELS.global : projectPanels;
+    visiblePanels.forEach((p) => {
       const row = document.createElement("div");
       row.className = "panel-row";
       row.innerHTML = `<span>❖ ${esc(p.name)}</span><span class="ps">${esc(p.note)}</span>`;
@@ -1341,17 +1422,11 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
           render();
           return;
         }
-        if (!current()) {
-          selectHost("projects");
-          return;
-        }
-        hostView = null;
-        organ = "shell";
-        current().organ = "shell";
-        render();
+        selectHost("voc");
       };
       list.appendChild(row);
     });
+    if (!visiblePanels.length) list.textContent = "No panels for this project.";
     document.querySelectorAll(".panels-scopes .scope").forEach((sc) => {
       sc.classList.toggle("on", sc.dataset.scope === panelScope);
       sc.onclick = () => {
@@ -1367,7 +1442,7 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
     <div class="ov-card"><span class="ov-k">Workspace</span><div class="ov-v">${esc(s.name)} <span class="d">· ${esc(s.branch)}</span></div></div>
     <div class="ov-card"><span class="ov-k">PR</span><div class="ov-v"><span class="a">${esc(s.pr)}</span>${s.diff ? ` · <span class="a">${esc(s.diff)}</span>` : ""}</div></div>
     <div class="ov-card"><span class="ov-k">Agents here</span><div class="ov-v">${s.agents.length ? s.agents.map((a) => `<span class="agent-chip live">${esc(a)}</span>`).join("") : '<span class="d">none active</span>'}</div></div>
-    <div class="ov-card"><span class="ov-k">Process</span><div class="ov-v">${s.proc ? `<span class="spin">⣸</span> ${esc(s.proc)}` : '<span class="d">idle</span>'}</div></div>`;
+    <div class="ov-card"><span class="ov-k">Process</span><div class="ov-v">${s.proc ? `${processSpinner()} ${esc(processLabel(s.proc))}` : '<span class="d">idle</span>'}</div></div>`;
     $("#ov-agents").innerHTML = `
     <div class="ov-card"><span class="ov-k">Interactive (Panels layer)</span><div class="ov-v">${
       PANELS.project
@@ -1389,7 +1464,8 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
     paintRail();
     paintProjection();
     const s = current();
-    const showShell = organ === "shell" && !hostView;
+    const showShell =
+      (organ === "shell" || organ.startsWith("xt")) && !hostView;
     term.classList.toggle(
       "host-mode",
       Boolean(hostView) || organ === "overview",
@@ -1402,13 +1478,17 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
       $("#term").style.display = "";
       $("#term").innerHTML = hostBuffer(hostView);
     } else if (showShell) {
-      $("#term").innerHTML = s.buf || IDLE_PANE;
+      $("#term").innerHTML =
+        organ === "shell"
+          ? s.buf || IDLE_PANE
+          : s.tabBuffers?.[organ] || IDLE_PANE;
       term.scrollTop = term.scrollHeight;
     }
     $("#pt-name").textContent = hostView
       ? `❖ ${hostView[0].toUpperCase() + hostView.slice(1)} — host surface`
-      : `❖ ${organ[0].toUpperCase() + organ.slice(1)} · ${s.name}`;
+      : `❖ ${s.extraTabs?.find(([id]) => id === organ)?.[1] || organ[0].toUpperCase() + organ.slice(1)} · ${s.name}`;
     if (s) paintOrganViews();
+    paintPanels();
   }
 
   function hostBuffer(h) {
@@ -1490,7 +1570,7 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
   function selectWorkspace(id) {
     if (id === activeId && !hostView) return;
     const s = current();
-    if (s && organ === "shell") s.buf = term.innerHTML;
+    if (s) saveBuf();
     const t = workspaces.find((x) => x.id === id);
     if (!t) return;
     activeId = id;
@@ -1505,7 +1585,12 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
   }
   function saveBuf() {
     const s = current();
-    if (s && organ === "shell" && !hostView) s.buf = term.innerHTML;
+    if (!s || hostView) return;
+    if (organ === "shell") s.buf = term.innerHTML;
+    else if (organ.startsWith("xt")) {
+      s.tabBuffers ||= {};
+      s.tabBuffers[organ] = term.innerHTML;
+    }
   }
 
   function nowId() {
@@ -1911,7 +1996,7 @@ Spróbuj: <span class="b">workflow kimi -p "Ship dark mode"</span> · <span clas
       e.target.closest(".panels-overlay")
     )
       return;
-    if (organ !== "shell" || hostView) return;
+    if ((organ !== "shell" && !organ.startsWith("xt")) || hostView) return;
     if (!window.getSelection().toString()) input.focus();
   });
   document.querySelectorAll(".host-item").forEach((n) => {
@@ -1995,6 +2080,17 @@ Spróbuj: <span class="b">workflow kimi -p "Ship dark mode"</span> · <span clas
     )
       ? "☼"
       : "☾";
+  });
+  $("#site-home").addEventListener("click", (e) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0)
+      return;
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    const destination = e.currentTarget.href;
+    $(".app").classList.add("leaving");
+    setTimeout(() => {
+      location.href = destination;
+    }, 260);
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

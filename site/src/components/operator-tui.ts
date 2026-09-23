@@ -92,6 +92,7 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     activeWs = "agents",
     hostRoute = "dashboard",
     panelsOpen = false,
+    panelScope = "global",
     qcOpen = false,
     qcPinned = false,
     cmOpen = false,
@@ -120,6 +121,18 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     { id: "agents", label: "Agents" },
     { id: "shell", label: "Shell" },
   ];
+  const BRAILLE_FRAMES = ["⣸", "⣾", "⣽", "⣻", "⢿", "⡿", "⣟", "⣯", "⣷"];
+  let brailleFrame = 0;
+  const brailleTimer = matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? undefined
+    : setInterval(() => {
+        brailleFrame = (brailleFrame + 1) % BRAILLE_FRAMES.length;
+        root
+          .querySelectorAll<HTMLElement>(".process-spinner")
+          .forEach((node) => {
+            node.dataset.frame = BRAILLE_FRAMES[brailleFrame];
+          });
+      }, 110);
 
   function clockNow() {
     const d = new Date(),
@@ -166,6 +179,7 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       time: "18:40",
       proj: "⎇stack/command-bridge · PR#96 · +231/−19",
       faces: ["Overview", "Agents", "Shell"],
+      proc: "cargo build",
       buf: "",
     },
     {
@@ -338,6 +352,60 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       term.innerHTML = s && s.shellBuf ? s.shellBuf : SHELL_PANE;
     else term.innerHTML = s && s.buf ? s.buf : IDLE_PANE;
     term.scrollTop = 0;
+    renderPanels();
+  }
+
+  function renderPanels() {
+    const project = hostRoute ? null : current();
+    if (!project) panelScope = "global";
+    const projectPanels = project
+      ? [
+          {
+            name: `${project.agent} · ${project.name}`,
+            note: project.proj,
+            id: project.id,
+          },
+        ]
+      : [];
+    const globalPanels = [
+      { name: "Operator console", note: "host · across projects" },
+      { name: "Fleet desk", note: "host · attention and runs" },
+    ];
+    const count = $("#panels-count");
+    if (count)
+      count.textContent =
+        panelScope === "global"
+          ? `${globalPanels.length} global`
+          : `${projectPanels.length} · ${project.name}`;
+    const trigger = $("#panels-btn");
+    if (trigger)
+      trigger.textContent = `⿻ Panels ${globalPanels.length + projectPanels.length}`;
+    root.querySelectorAll("[data-panel-scope]").forEach((button) => {
+      button.hidden = button.dataset.panelScope === "project" && !project;
+      button.classList.toggle("on", button.dataset.panelScope === panelScope);
+    });
+    const list = $("#panels-list");
+    if (!list) return;
+    list.replaceChildren();
+    const items = panelScope === "global" ? globalPanels : projectPanels;
+    if (!items.length) {
+      const empty = document.createElement("div");
+      empty.className = "panels-empty";
+      empty.textContent = "No panels for this project.";
+      list.appendChild(empty);
+    }
+    for (const item of items) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "panel-card";
+      button.dataset.panelTarget = item.id == null ? "host" : String(item.id);
+      button.textContent = `❖ ${item.name}`;
+      const note = document.createElement("span");
+      note.className = "d";
+      note.textContent = item.note;
+      button.appendChild(note);
+      list.appendChild(button);
+    }
   }
 
   function selectWs(id) {
@@ -470,7 +538,6 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     const liveRuns = runs.filter(
       (r) => r.state === "active" || r.state === "launching",
     );
-    const groups = ["live", "stale", "idle"];
     $("#workspace-count").textContent = String(sessions.length);
     root.querySelectorAll(".host-item[data-host]").forEach((item) => {
       item.classList.toggle("on", item.dataset.host === hostRoute);
@@ -479,59 +546,58 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
         item.dataset.host === hostRoute ? "page" : "false",
       );
     });
-    groups.forEach((g) => {
-      const items = sessions.filter((s) => s.group === g);
-      if (!items.length) return;
-      const label = g === "live" ? "LIVE" : g === "stale" ? "STALE" : "IDLE";
-      el.insertAdjacentHTML(
-        "beforeend",
-        `<div class="group">${label}<span class="n">${items.length}</span></div>`,
-      );
-      items.forEach((s) => {
-        const on = s.id === activeId && !hostRoute ? " on" : "";
-        const mark = s.group === "live" ? "●" : s.group === "stale" ? "◐" : "○";
-        const session = document.createElement("div");
-        session.className = `sess ${s.group}${on}`;
-        session.dataset.id = String(s.id);
-        const row = document.createElement("div");
-        row.className = "row";
-        for (const [className, value] of [
-          ["mark", mark],
-          ["name", s.name],
-          ["meta", s.time],
-        ]) {
-          const span = document.createElement("span");
-          span.className = className;
-          span.textContent = value;
-          row.appendChild(span);
-        }
-        session.appendChild(row);
-        if (
-          sessions.filter(
-            (other) => other.name.toLowerCase() === s.name.toLowerCase(),
-          ).length > 1
-        ) {
-          const rootLabel = document.createElement("div");
-          rootLabel.className = "disambiguator";
-          rootLabel.textContent = s.root || `/work/${s.name}`;
-          session.appendChild(rootLabel);
-        }
-        const faces = document.createElement("div");
-        faces.className = "face";
-        if (on) {
-          for (const face of s.faces) {
-            const organ = document.createElement("button");
-            organ.type = "button";
-            organ.dataset.organ = face.toLowerCase();
-            organ.textContent = `· ${face}`;
-            faces.appendChild(organ);
+    sessions.forEach((s) => {
+      const on = s.id === activeId && !hostRoute ? " on" : "";
+      const mark = on ? "◉" : "○";
+      const session = document.createElement("div");
+      session.className = `sess ${s.group}${on}`;
+      session.dataset.id = String(s.id);
+      const row = document.createElement("div");
+      row.className = "row";
+      for (const [className, value] of [
+        ["mark", mark],
+        ["name", s.name],
+        ["meta", s.time],
+      ]) {
+        const span = document.createElement("span");
+        span.className = className;
+        span.textContent = value;
+        row.appendChild(span);
+      }
+      session.appendChild(row);
+      if (
+        sessions.filter(
+          (other) => other.name.toLowerCase() === s.name.toLowerCase(),
+        ).length > 1
+      ) {
+        const rootLabel = document.createElement("div");
+        rootLabel.className = "disambiguator";
+        rootLabel.textContent = s.root || `/work/${s.name}`;
+        session.appendChild(rootLabel);
+      }
+      const faces = document.createElement("div");
+      faces.className = "face";
+      if (on) {
+        for (const face of s.faces) {
+          const organ = document.createElement("button");
+          organ.type = "button";
+          organ.dataset.organ = face.toLowerCase();
+          organ.textContent = `· ${face}`;
+          if (face === "Shell" && s.proc) {
+            organ.append(" · ◉ ❯_ ");
+            const spinner = document.createElement("span");
+            spinner.className = "process-spinner";
+            spinner.dataset.frame = BRAILLE_FRAMES[brailleFrame];
+            spinner.setAttribute("aria-hidden", "true");
+            organ.append(spinner, ` ${s.proc}`);
           }
-        } else {
-          faces.textContent = s.faces.map((face) => `· ${face}`).join(" ");
+          faces.appendChild(organ);
         }
-        session.appendChild(faces);
-        el.appendChild(session);
-      });
+      } else {
+        faces.textContent = s.faces.map((face) => `· ${face}`).join(" ");
+      }
+      session.appendChild(faces);
+      el.appendChild(session);
     });
     el.querySelectorAll(".sess[data-id]").forEach((n) => {
       n.addEventListener("click", (event) => {
@@ -616,6 +682,7 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       s.group = "live";
       s.agent = agent;
       s.time = clockNow();
+      s.proc = `${agent} ${skill}`;
     }
     rail();
     raw(
@@ -653,7 +720,10 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
         raw(
           `<span class="d">[${run.id}]</span> <span class="g">report_validated</span> — settlement <span class="${run.settle === "f" ? "g" : "y"}">${run.settle}</span> · raport: ${run.report}`,
         );
-        if (s) s.group = "live";
+        if (s) {
+          s.group = "live";
+          s.proc = "";
+        }
       }
       rail();
       step++;
@@ -1104,18 +1174,52 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
   $("#panels-btn").addEventListener("click", () => {
     panelsOpen = !panelsOpen;
     const ov = $("#panels-overlay");
-    if (ov) ov.classList.toggle("open", panelsOpen);
+    if (ov) {
+      ov.classList.toggle("open", panelsOpen);
+      ov.setAttribute("aria-hidden", String(!panelsOpen));
+    }
     const btn = $("#panels-btn");
     if (btn) btn.classList.toggle("on", panelsOpen);
   });
   $("#panels-overlay").addEventListener("click", (e) => {
-    const t = e.target.closest("[data-goto]");
+    const scope = e.target.closest("[data-panel-scope]");
+    if (scope) {
+      panelScope = scope.dataset.panelScope;
+      renderPanels();
+      return;
+    }
+    const t = e.target.closest("[data-panel-target]");
     if (!t) return;
     panelsOpen = false;
     $("#panels-overlay").classList.remove("open");
+    $("#panels-overlay").setAttribute("aria-hidden", "true");
     $("#panels-btn").classList.remove("on");
-    selectSession(Number(t.dataset.goto));
+    if (t.dataset.panelTarget === "host") selectHost("voc");
+    else selectSession(Number(t.dataset.panelTarget));
   });
+  const homeLink = $("#site-home");
+  if (homeLink) {
+    homeLink.href = window.location.pathname.startsWith("/pl/")
+      ? "/pl/"
+      : "/en/";
+    homeLink.addEventListener("click", (event) => {
+      if (
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+      )
+        return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      event.preventDefault();
+      const destination = homeLink.href;
+      $(".app").classList.add("leaving");
+      setTimeout(() => {
+        window.location.href = destination;
+      }, 260);
+    });
+  }
   root.querySelectorAll(".host-item[data-host]").forEach((n) => {
     n.addEventListener("click", () => {
       selectHost(n.dataset.host);
@@ -1245,6 +1349,7 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       if (input) input.focus();
     },
     destroy() {
+      if (brailleTimer) clearInterval(brailleTimer);
       runs.forEach((r) => {
         if (r.timer) clearInterval(r.timer);
       });

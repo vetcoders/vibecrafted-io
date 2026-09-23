@@ -50,6 +50,8 @@ second chrome owner, kills a process, or changes another client's route.
 
 The top row names the current context. On host views it shows `◉ Home` or
 the selected host view. On a guest it shows `○ Overview  ◉ Agents  ○ Shell`.
+The `+` for a new guest tab lives beside these tabs in the top row; it is not
+repeated under each workspace in the left rail.
 `Voc`, Composer, Panels and Quick cmd remain on the host side of the row.
 The bottom center projects the selected guest's project, branch/PR and
 diffstat; on Home it states `Operator Frame · no project selected`.
@@ -86,12 +88,15 @@ height approximate the terminal cell geometry; screenshots remain a visual
 reference, not a pixel parity receipt.
 
 The current client's selected row is shown with a persistent selection
-mark and text label, not color alone. Session liveliness is a separate
-symbol/text (`live`, `detached`, `stalled`). A hollow circle must never be
-the only explanation for a connected client. The product meaning of `◉`
-versus host projection remains under live Frame review; the simulator uses
-explicit `Viewing` and `Live` text rather than claiming that dispute is
-settled.
+mark and text label, not color alone. `●` and `○` serve as checked and
+unchecked selection markers; they never encode session liveness. On a host
+view all guest markers are hollow. A running pane process gets a changing
+Braille-dot glyph next to its command in the expanded workspace, as in the
+Founder's `⣸ cargo build` mockup from the 2026-09-19 Kimi session. The
+animation describes the pane process, regardless of whether it is an agent or
+a compiler. Agent attention can have a separate indicator; it must not reuse
+the workspace selection marker. The bottom `LIVE` count is the simulated run
+feed, not a count of selected workspaces.
 
 ## 4. The six required scenes
 
