@@ -1172,6 +1172,7 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
     doctor: "Doctor",
     projects: "Projects",
     voc: "Voc",
+    usage: "Usage & costs",
   };
   let sampleWorkspaces = [];
 
@@ -1467,10 +1468,21 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
         ) +
         `<section class="host-panel"><div class="host-panel-head"><div><span>OPEN WORKSPACES</span><h3>Return to a session</h3></div><span class="host-state">${workspaces.length} in rail</span></div>${workspaces.length ? workspaces.map(row).join("") : `<div class="host-empty"><strong>No workspaces open.</strong><p>Choose a repository below.</p></div>`}</section>` +
         `<section class="host-panel"><div class="host-panel-head"><div><span>PROJECT CATALOG / EXAMPLES</span><h3>Open another repository</h3></div></div>${PROJECT_CATALOG.map((p, i) => `<div class="host-list-row"><span class="host-list-icon">+</span><div class="host-list-copy"><strong>${esc(p.name)}</strong><small>${esc(p.root)} · ${esc(p.branch)}</small></div><button type="button" data-catalog="${i}">Open workspace ↗</button></div>`).join("")}</section>`;
+    } else if (h === "usage") {
+      body =
+        heading(
+          "Usage & costs",
+          "Retained run receipts across the host. Unknown usage stays unknown.",
+        ) +
+        `<div class="host-metrics">${metric("RECORDED RUNS", runs.length, "demo run receipts")}${metric("KNOWN TOKENS", "—", "no provider measurements")}${metric("USD / CREDITS", "— / —", "no measured cost")}${metric("COST UNKNOWN", runs.length ? runs.length : "—", "no cost source in demo runs")}</div>` +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>USAGE TELEMETRY</span><h3>Provider / model / usage / cost</h3></div><button type="button" data-host-route="runs">Open run feed →</button></div>${runs.length ? runs.map((r) => `<div class="host-list-row"><span class="host-list-icon">◇</span><div class="host-list-copy"><strong>${esc(r.agent)} / model unknown</strong><small>${esc(r.id)} · tokens unknown · cost unknown</small></div><span class="host-state">${esc(r.state)}</span></div>`).join("") : `<div class="host-empty"><strong>No telemetry receipts yet.</strong><p>The site has no connection to your control plane. A real run records provider usage and cost with their source; absent evidence is unknown, never $0.</p></div>`}</section>`;
     } else {
       body =
         heading("Voc", "The host console sees run state across projects.") +
         `<div class="host-metrics">${metric("ACTIVE RUNS", active.length, "from the shared feed")}${metric("WORKSPACES", workspaces.length, "guest sessions")}</div><section class="host-panel"><div class="host-panel-head"><div><span>GLOBAL CONSOLE</span><h3>Attention and history</h3></div><button type="button" data-host-route="runs">Open run feed →</button></div><div class="host-empty"><strong>${active.length ? `${active.length} active run(s)` : "No live runs loaded"}</strong><p>Open a workspace to launch a demo run; return here to follow it from the host.</p></div></section>`;
+    }
+    if (h === "dashboard" || h === "voc") {
+      body += `<section class="host-panel"><div class="host-panel-head"><div><span>USAGE / CANONICAL RUN RECEIPTS</span><h3>Usage & costs</h3></div><button type="button" data-host-route="usage">Open dashboard →</button></div><div class="host-empty"><strong>${runs.length ? `${runs.length} demo run(s) · cost unknown` : "No telemetry receipts yet"}</strong><p>Known tokens, USD, credits and unknown costs stay separate. This site displays example state only.</p></div></section>`;
     }
     return `<div class="host-screen"><div class="host-demo">SIMULATOR <span>· example state, no local runtime connection</span></div>${body}</div>`;
   }
@@ -1953,9 +1965,15 @@ Spróbuj: <span class="b">workflow kimi -p "Ship dark mode"</span> · <span clas
     $("#quick-overlay").hidden = true;
     e.target.value = "";
     if (
-      ["dashboard", "projects", "config", "doctor", "runs", "voc"].includes(
-        command,
-      )
+      [
+        "dashboard",
+        "projects",
+        "config",
+        "doctor",
+        "runs",
+        "voc",
+        "usage",
+      ].includes(command)
     ) {
       selectHost(command);
       return;

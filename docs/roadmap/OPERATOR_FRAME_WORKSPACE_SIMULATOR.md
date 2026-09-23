@@ -1,8 +1,8 @@
 # Operator Frame workspace simulator — complete design contract
 
 Status: target contract, 2026-09-23. The site simulator now renders host
-Dashboard, Active runs, Config, Doctor, Projects and Voc alongside guest
-workspaces. It can preview an empty host and restore example workspaces.
+Dashboard, Active runs, Config, Doctor, Projects, Voc and a Usage & costs
+projection alongside guest workspaces. It can preview an empty host and restore example workspaces.
 The installed Frame has not been verified against this contract, and the
 two site presentations still have separate renderers. This document supplements
 `HOMEPAGE_PRODUCT_STAGE_SPEC.md`; the nine-scene page choreography and its
