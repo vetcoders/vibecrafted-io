@@ -397,18 +397,46 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       items.forEach((s) => {
         const on = s.id === activeId ? " on" : "";
         const mark = s.group === "live" ? "●" : s.group === "stale" ? "◐" : "○";
-        const faces = `<div class="face">${s.faces.map((f) => "· " + esc(f)).join(" ")}</div>`;
-        el.insertAdjacentHTML(
-          "beforeend",
-          `<div class="sess ${s.group}${on}" data-id="${s.id}"><div class="row"><span class="mark">${mark}</span><span class="name">${esc(s.name)}</span><span class="meta">${esc(s.time)}</span></div>${faces}</div>`,
-        );
+        const session = document.createElement("div");
+        session.className = `sess ${s.group}${on}`;
+        session.dataset.id = String(s.id);
+        const row = document.createElement("div");
+        row.className = "row";
+        for (const [className, value] of [
+          ["mark", mark],
+          ["name", s.name],
+          ["meta", s.time],
+        ]) {
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = value;
+          row.appendChild(span);
+        }
+        session.appendChild(row);
+        const faces = document.createElement("div");
+        faces.className = "face";
+        faces.textContent = s.faces.map((face) => `· ${face}`).join(" ");
+        session.appendChild(faces);
+        el.appendChild(session);
       });
     });
     liveRuns.forEach((r) => {
-      el.insertAdjacentHTML(
-        "beforeend",
-        `<div class="sess live"><div class="row"><span class="mark">·</span><span class="name">${esc(r.agent)}</span><span class="meta">${esc(r.skill)}</span></div></div>`,
-      );
+      const session = document.createElement("div");
+      session.className = "sess live";
+      const row = document.createElement("div");
+      row.className = "row";
+      for (const [className, value] of [
+        ["mark", "·"],
+        ["name", r.agent],
+        ["meta", r.skill],
+      ]) {
+        const span = document.createElement("span");
+        span.className = className;
+        span.textContent = value;
+        row.appendChild(span);
+      }
+      session.appendChild(row);
+      el.appendChild(session);
     });
     el.querySelectorAll(".sess[data-id]").forEach((n) => {
       n.addEventListener("click", () => selectSession(Number(n.dataset.id)));
