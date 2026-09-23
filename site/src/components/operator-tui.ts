@@ -90,48 +90,30 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     activeId = 0,
     nextId = 8,
     activeWs = "agents",
-    vocMode = false,
+    hostRoute = "dashboard",
     panelsOpen = false,
     qcOpen = false,
     qcPinned = false,
     cmOpen = false,
-    xtCount = 0,
-    hwTimer = null;
+    xtCount = 0;
 
-  /* Playground theme follows the page theme by default — no "you don't
-     support system theme" doubts. The ☾ button is the opt-in escape: it
-     flips the console independent of the page and sticks in localStorage;
-     clicking again returns to following. */
+  /* The default simulator palette follows the installed VC Terminal theme.
+     A visitor can switch to the illustrative light palette explicitly. */
   const host = root.getRootNode && root.getRootNode().host;
   const PG_KEY = "vc-pg-theme";
-  const docTheme = () =>
-    document.documentElement.getAttribute("data-theme") === "light"
-      ? "light"
-      : "dark";
-  let pgTheme = localStorage.getItem(PG_KEY) || docTheme();
+  let pgTheme = localStorage.getItem(PG_KEY) || "dark";
 
   function paintTheme() {
     if (host) host.setAttribute("data-pg-theme", pgTheme);
-    const independent = Boolean(localStorage.getItem(PG_KEY));
     const tb = $("#theme-btn");
     if (tb) {
       tb.textContent = pgTheme === "dark" ? "☾" : "☼";
-      tb.title = independent
-        ? "Console theme is independent from the page — click to follow the page again"
-        : "Console follows the page theme — click to go independent";
+      tb.title =
+        pgTheme === "dark"
+          ? "Preview illustrative light palette"
+          : "Return to VC Terminal palette";
     }
   }
-
-  const themeObserver = new MutationObserver(() => {
-    if (!localStorage.getItem(PG_KEY)) {
-      pgTheme = docTheme();
-      paintTheme();
-    }
-  });
-  themeObserver.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["data-theme"],
-  });
 
   const WORKSPACES = [
     { id: "overview", label: "Overview" },
@@ -208,6 +190,22 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     },
   ];
 
+  const PROJECT_CATALOG = [
+    { name: "Operator", root: "/work/operator", branch: "main" },
+    { name: "Workflow", root: "/work/workflow", branch: "main" },
+    { name: "Research", root: "/work/research", branch: "main" },
+    { name: "Vibecrafted", root: "/work/second/vibecrafted", branch: "main" },
+  ];
+  const HOST_TITLES = {
+    dashboard: "Dashboard",
+    runs: "Active runs",
+    config: "Config",
+    doctor: "Doctor",
+    projects: "Projects",
+    voc: "Voc",
+  };
+  let sampleSessions = [];
+
   const SETTLEMENT = `<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>  <span class="d">Operator Frame · host above, guests below · simulator</span>
 <span class="d">────────────────────────────────────────────────────────</span>
 <span class="c bold">AI can write. Evidence decides.</span>
@@ -281,22 +279,33 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
   }
   function saveBuf() {
     const s = current();
-    if (s) s.buf = term.innerHTML;
+    if (!s || hostRoute || activeWs === "overview") return;
+    if (activeWs === "agents") s.buf = term.innerHTML;
+    else s.shellBuf = term.innerHTML;
   }
 
   function paintWs() {
     const el = $("#ws-tabs");
     if (!el) return;
     el.innerHTML = "";
-    WORKSPACES.forEach((w) => {
+    if (hostRoute) {
+      const home = document.createElement("button");
+      home.type = "button";
+      home.className = "ws-tab on";
+      home.textContent = `◉ ${HOST_TITLES[hostRoute]}`;
+      home.onclick = () => selectHost("dashboard");
+      el.appendChild(home);
+      $("#new-tab").hidden = true;
+      $("#voc-btn").classList.toggle("on", hostRoute === "voc");
+      return;
+    }
+    $("#new-tab").hidden = false;
+    [...WORKSPACES, ...(current()?.extraTabs || [])].forEach((w) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "ws-tab" + (w.id === activeWs && !vocMode ? " on" : "");
+      b.className = "ws-tab" + (w.id === activeWs ? " on" : "");
       b.setAttribute("role", "tab");
-      b.setAttribute(
-        "aria-selected",
-        w.id === activeWs && !vocMode ? "true" : "false",
-      );
+      b.setAttribute("aria-selected", w.id === activeWs ? "true" : "false");
       const mark = document.createElement("span");
       mark.className = "mark";
       mark.setAttribute("aria-hidden", "true");
@@ -312,67 +321,131 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       el.appendChild(b);
     });
     const vb = $("#voc-btn");
-    if (vb) vb.classList.toggle("on", vocMode);
+    if (vb) vb.classList.remove("on");
   }
 
   function renderWs() {
     const s = current();
-    if (vocMode) term.innerHTML = VOC_PANE;
-    else if (activeWs === "overview") term.innerHTML = OVERVIEW_PANE;
+    term.classList.toggle(
+      "host-mode",
+      Boolean(hostRoute) || activeWs === "overview",
+    );
+    $(".inline").hidden = Boolean(hostRoute);
+    if (hostRoute) term.innerHTML = hostScreen(hostRoute);
+    else if (activeWs === "overview") term.innerHTML = guestOverview(s);
     else if (activeWs === "shell" || activeWs.startsWith("xt"))
-      term.innerHTML = s && s.buf ? s.buf : SHELL_PANE;
+      term.innerHTML = s && s.shellBuf ? s.shellBuf : SHELL_PANE;
     else term.innerHTML = s && s.buf ? s.buf : IDLE_PANE;
     term.scrollTop = 0;
   }
 
   function selectWs(id) {
-    if (id === activeWs && !vocMode) return;
-    vocMode = false;
+    if (id === activeWs && !hostRoute) return;
     if (
       activeWs === "agents" ||
       activeWs === "shell" ||
       activeWs.startsWith("xt")
     )
       saveBuf();
+    hostRoute = null;
     activeWs = id;
+    if (current()) current().activeWs = id;
     renderWs();
-    paintWs();
+    rail();
   }
 
   function toggleVoc() {
-    if (vocMode) {
-      vocMode = false;
-      renderWs();
-      paintWs();
-      return;
-    }
-    if (
-      activeWs === "agents" ||
-      activeWs === "shell" ||
-      activeWs.startsWith("xt")
-    )
-      saveBuf();
-    vocMode = true;
+    selectHost(hostRoute === "voc" ? "dashboard" : "voc");
+  }
+
+  function selectHost(route) {
+    saveBuf();
+    hostRoute = route;
     renderWs();
-    paintWs();
+    rail();
+  }
+
+  function guestOverview(s) {
+    if (!s) return "";
+    return `<div class="host-screen"><div class="host-demo">SIMULATOR <span>· example workspace</span></div><div class="host-heading"><div><span class="host-eyebrow">WORKSPACE / OVERVIEW</span><h2>${esc(s.name)}</h2><p>${esc(s.root || `/work/${s.name}`)} · ${esc(s.proj)}</p></div></div><div class="host-metrics"><div class="host-metric"><span>SESSION</span><strong>${esc(s.group)}</strong><small>guest in this Frame</small></div><div class="host-metric"><span>ACTIVE RUNS</span><strong>${runs.filter((r) => r.wsId === s.id && (r.state === "active" || r.state === "launching")).length}</strong><small>owned by this workspace</small></div></div><div class="host-columns"><section class="host-panel"><div class="host-panel-head"><div><span>01 / WORK HERE</span><h3>Guest organs</h3></div></div><div class="host-check"><span class="host-good">○</span><div><strong>Agents</strong><small>Agents and dispatched work for this project</small></div></div><div class="host-check"><span class="host-good">○</span><div><strong>Shell</strong><small>Workspace owned command pane and scrollback</small></div></div></section><section class="host-panel"><div class="host-panel-head"><div><span>02 / HOST</span><h3>One level above</h3></div><button type="button" data-host-route="dashboard">Dashboard →</button></div><p class="host-panel-note">Return to the Operator Frame without closing this session. Other projects stay in the rail.</p></section></div></div>`;
+  }
+
+  function hostScreen(route) {
+    const active = runs.filter(
+      (r) => r.state === "active" || r.state === "launching",
+    );
+    const rootOf = (s) => s.root || `/work/${s.name}`;
+    const projectRow = (s) =>
+      `<div class="host-list-row"><span class="host-list-icon">◇</span><div class="host-list-copy"><strong>${esc(s.name)}</strong><small>${esc(rootOf(s))} · ${esc(s.proj)}</small></div><span class="host-state">${esc(s.group)}</span><button type="button" data-session="${s.id}">Open ↗</button></div>`;
+    const heading = (title, subtitle, action = "") =>
+      `<div class="host-heading"><div><span class="host-eyebrow">OPERATOR FRAME / ${esc(title.toUpperCase())}</span><h2>${esc(title)}</h2><p>${esc(subtitle)}</p></div>${action}</div>`;
+    const metric = (label, value, note) =>
+      `<div class="host-metric"><span>${esc(label)}</span><strong>${esc(String(value))}</strong><small>${esc(note)}</small></div>`;
+    const openProjects = `<button type="button" class="host-primary" data-host-route="projects">Open project ↗</button>`;
+    let content = "";
+
+    if (route === "dashboard") {
+      const scenarioAction = sessions.length
+        ? `<button type="button" data-scenario="empty">Preview empty host</button>`
+        : `<button type="button" data-scenario="sample">Restore sample fleet</button>`;
+      content =
+        heading(
+          "Dashboard",
+          "One host for every workspace. Choose a project, then return here without losing its session.",
+          `<div class="host-heading-actions">${scenarioAction}${openProjects}</div>`,
+        ) +
+        `<div class="host-metrics">${metric("WORKSPACES", sessions.length, "guest sessions in the rail")}${metric("ACTIVE RUNS", active.length, "same feed as the rail")}${metric("NEEDS ATTENTION", runs.filter((r) => r.state === "stopped").length, "stopped demo runs")}${metric("FRAME", "READY", "example host state")}</div>` +
+        `<div class="host-columns"><section class="host-panel"><div class="host-panel-head"><div><span>01 / CONTINUE WORK</span><h3>Your workspaces</h3></div><button type="button" data-host-route="projects">All projects →</button></div>${sessions.length ? sessions.slice(0, 4).map(projectRow).join("") : `<div class="host-empty"><strong>No project workspace is open.</strong><p>The host still has a Dashboard, Config, Doctor, Projects and Voc. Open a project to create the first guest.</p><button type="button" data-host-route="projects">Open project →</button></div>`}</section><section class="host-panel"><div class="host-panel-head"><div><span>02 / RUNTIME</span><h3>Host status</h3></div><button type="button" data-host-route="doctor">Open Doctor →</button></div><div class="host-check"><span class="host-good">●</span><div><strong>Frame host ready</strong><small>Demo projection · client can switch views</small></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Workspaces stay attached</strong><small>Navigation changes only this client's view</small></div></div><div class="host-check"><span class="host-muted">○</span><div><strong>No real machine checks</strong><small>This site does not read your local runtime</small></div></div></section></div>`;
+    } else if (route === "runs") {
+      content =
+        heading(
+          "Active runs",
+          "The host feed connects every run to its owning workspace.",
+        ) +
+        `<div class="host-metrics">${metric("IN PROGRESS", active.length, "launching or active")}${metric("NEEDS ATTENTION", runs.filter((r) => r.state === "stopped").length, "stopped")}${metric("HISTORY", runs.filter((r) => r.state === "report_validated").length, "settled in this demo")}</div>` +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>RUN FEED</span><h3>Across workspaces</h3></div></div>${runs.length ? runs.map((r) => `<div class="host-list-row"><span class="host-list-icon">↗</span><div class="host-list-copy"><strong>${esc(r.agent)} / ${esc(r.skill)}</strong><small>${esc(r.id)} · ${esc(sessions.find((s) => s.id === r.wsId)?.name || "workspace")}</small></div><span class="host-state">${esc(r.state)}</span><button type="button" data-session="${r.wsId}">Open workspace ↗</button></div>`).join("") : `<div class="host-empty"><strong>No agent runs in this demo yet.</strong><p>Open a workspace and start a demo run from its Shell. It will appear here and in the rail count.</p><button type="button" data-host-route="projects">Choose a workspace →</button></div>`}</section>`;
+    } else if (route === "config") {
+      content =
+        heading(
+          "Config",
+          "The settings a host would expose, with a visible source for each value.",
+        ) +
+        `<div class="host-columns"><section class="host-panel"><div class="host-panel-head"><div><span>HOST / EXAMPLE VALUES</span><h3>Runtime</h3></div></div><div class="host-setting"><span>Host identity</span><strong>Operator Frame</strong><small>Source: simulator fixture</small></div><div class="host-setting"><span>Client view</span><strong>Local Frame</strong><small>Source: simulator fixture</small></div><div class="host-setting"><span>Workspace restore</span><strong>Enabled</strong><small>Source: target contract</small></div></section><section class="host-panel"><div class="host-panel-head"><div><span>BOUNDARIES</span><h3>Ownership</h3></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Host owns navigation</strong><small>Dashboard, Config, Doctor, Projects and Voc</small></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Guests own their organs</strong><small>Overview, Agents and Shell per workspace</small></div></div><div class="host-check"><span class="host-muted">○</span><div><strong>Local config stays private</strong><small>No machine settings are read by this page</small></div></div></section></div>`;
+    } else if (route === "doctor") {
+      content =
+        heading(
+          "Doctor",
+          "Named checks and next actions. These are example checks, not a diagnosis of this machine.",
+        ) +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>SIMULATED CHECKS</span><h3>Frame readiness</h3></div><span class="host-state">3 example checks</span></div><div class="host-check"><span class="host-good">✓</span><div><strong>Host route is available</strong><small>Dashboard and host views remain accessible with zero workspaces.</small></div><span class="host-state">PASS</span></div><div class="host-check"><span class="host-good">✓</span><div><strong>Guest isolation</strong><small>Switching host views does not erase workspace state.</small></div><span class="host-state">PASS</span></div><div class="host-check"><span class="host-muted">○</span><div><strong>Installed runtime</strong><small>Not connected to this website. Run vc-doctor on your own machine.</small></div><span class="host-state">NOT CHECKED</span></div></section>`;
+    } else if (route === "projects") {
+      content =
+        heading(
+          "Projects",
+          "A project in the catalog becomes a rail workspace only when opened.",
+        ) +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>OPEN WORKSPACES</span><h3>Return to a session</h3></div><span class="host-state">${sessions.length} in rail</span></div>${sessions.map(projectRow).join("")}</section>` +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>PROJECT CATALOG / EXAMPLES</span><h3>Open another repository</h3></div></div>${PROJECT_CATALOG.map((p, i) => `<div class="host-list-row"><span class="host-list-icon">+</span><div class="host-list-copy"><strong>${esc(p.name)}</strong><small>${esc(p.root)} · ${esc(p.branch)}</small></div><button type="button" data-catalog="${i}">Open workspace ↗</button></div>`).join("")}</section>`;
+    } else {
+      content =
+        heading("Voc", "The host console sees run state across projects.") +
+        `<div class="host-metrics">${metric("ACTIVE RUNS", active.length, "from the shared feed")}${metric("WORKSPACES", sessions.length, "guest sessions")}</div><section class="host-panel"><div class="host-panel-head"><div><span>GLOBAL CONSOLE</span><h3>Attention and history</h3></div><button type="button" data-host-route="runs">Open run feed →</button></div><div class="host-empty"><strong>${active.length ? `${active.length} active run(s)` : "No live runs loaded"}</strong><p>Open a workspace to launch a demo run; return here to follow it from the host.</p></div></section>`;
+    }
+    return `<div class="host-screen"><div class="host-demo">SIMULATOR <span>· example state, no local runtime connection</span></div>${content}</div>`;
   }
 
   function paintHw() {
-    const live = sessions.filter((s) => s.group === "live").length;
-    const cpu = 8 + Math.floor(Math.random() * 24);
-    const mem = (3.1 + Math.random() * 1.6).toFixed(1);
+    const live = runs.filter(
+      (r) => r.state === "active" || r.state === "launching",
+    ).length;
     const liveEl = $("#hw-live");
     if (liveEl) liveEl.textContent = "LIVE " + live;
     const cpuEl = $("#hw-cpu");
-    if (cpuEl) cpuEl.textContent = "CPU " + cpu + "%";
+    if (cpuEl) cpuEl.textContent = "CPU —";
     const memEl = $("#hw-mem");
-    if (memEl) memEl.textContent = "MEM " + mem + "/16G";
+    if (memEl) memEl.textContent = "MEM —";
     const hEl = $("#hw-health");
-    if (hEl) {
-      const hot = cpu > 28;
-      hEl.textContent = hot ? "HEALTH !!" : "HEALTH ·";
-      hEl.className = hot ? "hw-warn" : "";
-    }
+    if (hEl) hEl.textContent = "HEALTH DEMO";
   }
 
   function paintTabs() {
@@ -386,6 +459,14 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
       (r) => r.state === "active" || r.state === "launching",
     );
     const groups = ["live", "stale", "idle"];
+    $("#workspace-count").textContent = String(sessions.length);
+    root.querySelectorAll(".host-item[data-host]").forEach((item) => {
+      item.classList.toggle("on", item.dataset.host === hostRoute);
+      item.setAttribute(
+        "aria-current",
+        item.dataset.host === hostRoute ? "page" : "false",
+      );
+    });
     groups.forEach((g) => {
       const items = sessions.filter((s) => s.group === g);
       if (!items.length) return;
@@ -395,7 +476,7 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
         `<div class="group">${label}<span class="n">${items.length}</span></div>`,
       );
       items.forEach((s) => {
-        const on = s.id === activeId ? " on" : "";
+        const on = s.id === activeId && !hostRoute ? " on" : "";
         const mark = s.group === "live" ? "●" : s.group === "stale" ? "◐" : "○";
         const session = document.createElement("div");
         session.className = `sess ${s.group}${on}`;
@@ -413,50 +494,62 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
           row.appendChild(span);
         }
         session.appendChild(row);
+        if (
+          sessions.filter(
+            (other) => other.name.toLowerCase() === s.name.toLowerCase(),
+          ).length > 1
+        ) {
+          const rootLabel = document.createElement("div");
+          rootLabel.className = "disambiguator";
+          rootLabel.textContent = s.root || `/work/${s.name}`;
+          session.appendChild(rootLabel);
+        }
         const faces = document.createElement("div");
         faces.className = "face";
-        faces.textContent = s.faces.map((face) => `· ${face}`).join(" ");
+        if (on) {
+          for (const face of s.faces) {
+            const organ = document.createElement("button");
+            organ.type = "button";
+            organ.dataset.organ = face.toLowerCase();
+            organ.textContent = `· ${face}`;
+            faces.appendChild(organ);
+          }
+        } else {
+          faces.textContent = s.faces.map((face) => `· ${face}`).join(" ");
+        }
         session.appendChild(faces);
         el.appendChild(session);
       });
     });
-    liveRuns.forEach((r) => {
-      const session = document.createElement("div");
-      session.className = "sess live";
-      const row = document.createElement("div");
-      row.className = "row";
-      for (const [className, value] of [
-        ["mark", "·"],
-        ["name", r.agent],
-        ["meta", r.skill],
-      ]) {
-        const span = document.createElement("span");
-        span.className = className;
-        span.textContent = value;
-        row.appendChild(span);
-      }
-      session.appendChild(row);
-      el.appendChild(session);
-    });
     el.querySelectorAll(".sess[data-id]").forEach((n) => {
-      n.addEventListener("click", () => selectSession(Number(n.dataset.id)));
+      n.addEventListener("click", (event) => {
+        const organ = event.target.closest("[data-organ]");
+        selectSession(Number(n.dataset.id));
+        if (organ) selectWs(organ.dataset.organ);
+      });
     });
     paintWs();
     const s = current();
     const projEl = $("#stat-proj");
-    if (projEl && s) projEl.textContent = `${s.name} · ${s.proj}`;
+    if (projEl)
+      projEl.textContent = hostRoute
+        ? "Operator Frame · no project selected"
+        : s
+          ? `${s.name} · ${s.proj}`
+          : "Operator Frame";
     const runsEl = $("#runs-n");
     if (runsEl) runsEl.textContent = String(liveRuns.length);
     paintHw();
   }
 
   function selectSession(id) {
-    if (id === activeId) return;
+    if (id === activeId && !hostRoute) return;
     saveBuf();
     const s = sessions.find((x) => x.id === id);
     if (!s) return;
     activeId = id;
-    vocMode = false;
+    hostRoute = null;
+    activeWs = s.activeWs || "overview";
     renderWs();
     rail();
   }
@@ -737,9 +830,7 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       return;
     }
     if (c === "doctor" || c === "check") {
-      raw(
-        `<span class="g">✓</span> sight loctree · <span class="g">✓</span> memory aicx · <span class="g">✓</span> mouth vc-slack · <span class="g">✓</span> hands vibecrafted\n<span class="g">✓</span> deck alive · tools/vibecrafted-current → 4.1.0+ga7f262d9\n<span class="d">green CI is not a product verdict. Slack is a projector.</span>\nsummary: simulation — live machine: <span class="b">vc-doctor</span>`,
-      );
+      selectHost("doctor");
       return;
     }
     if (c === "receipt") {
@@ -763,19 +854,17 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       return;
     }
     if (c === "dashboard" || c === "start") {
-      a[1] === "ls"
-        ? raw(
-            sessions
-              .map(
-                (s) =>
-                  `  #${s.id} ${s.name}  <span class="d">${s.group}</span>`,
-              )
-              .join("\n"),
-          )
-        : line(
-            `[sim] layout: ${a[1] || "dashboard"} — in real life vc-frame takes the screen`,
-            "d",
-          );
+      selectHost("dashboard");
+      return;
+    }
+    if (
+      c === "projects" ||
+      c === "config" ||
+      c === "doctor" ||
+      c === "runs" ||
+      c === "voc"
+    ) {
+      selectHost(c);
       return;
     }
     if (c === "init" && (!a[1] || AGENTS.includes(a[1]))) {
@@ -943,22 +1032,58 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       e.target.closest(".tools")
     )
       return;
-    if (!window.getSelection().toString()) input.focus();
+    if (!hostRoute && !window.getSelection().toString()) input.focus();
+  });
+  term.addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    if (button.dataset.hostRoute) selectHost(button.dataset.hostRoute);
+    if (
+      button.dataset.scenario === "empty" ||
+      button.dataset.scenario === "sample"
+    ) {
+      runs.forEach((run) => {
+        if (run.timer) clearInterval(run.timer);
+      });
+      runs.length = 0;
+      sessions.length = 0;
+      if (button.dataset.scenario === "sample")
+        sessions.push(
+          ...sampleSessions.map((s) => ({ ...s, faces: [...s.faces] })),
+        );
+      activeId = sessions[0]?.id ?? null;
+      hostRoute = "dashboard";
+      renderWs();
+      rail();
+    }
+    if (button.dataset.session !== undefined)
+      selectSession(Number(button.dataset.session));
+    if (button.dataset.catalog !== undefined) {
+      const project = PROJECT_CATALOG[Number(button.dataset.catalog)];
+      if (!project) return;
+      const existing = sessions.find((s) => s.root === project.root);
+      if (existing) {
+        selectSession(existing.id);
+        return;
+      }
+      const id = nextId++;
+      sessions.push({
+        id,
+        name: project.name,
+        root: project.root,
+        agent: "—",
+        group: "idle",
+        time: "demo",
+        proj: `⎇${project.branch} · example project`,
+        faces: ["Overview", "Agents", "Shell"],
+        activeWs: "overview",
+        buf: IDLE_PANE,
+      });
+      selectSession(id);
+    }
   });
   $("#new-sess").addEventListener("click", () => {
-    saveBuf();
-    const id = nextId++;
-    sessions.push({
-      id,
-      name: "workspace-" + id,
-      agent: "grok",
-      group: "idle",
-      time: clockNow(),
-      proj: "⎇main · fresh guest",
-      faces: ["Overview", "Agents", "Shell"],
-      buf: IDLE_PANE,
-    });
-    selectSession(id);
+    selectHost("projects");
   });
   $("#voc-btn").addEventListener("click", () => {
     toggleVoc();
@@ -978,17 +1103,9 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
     $("#panels-btn").classList.remove("on");
     selectSession(Number(t.dataset.goto));
   });
-  root.querySelectorAll(".host-item[data-cmd]").forEach((n) => {
+  root.querySelectorAll(".host-item[data-host]").forEach((n) => {
     n.addEventListener("click", () => {
-      const c = n.dataset.cmd;
-      if (c === "projects") {
-        line(
-          "[host] ✧ Projects — new-project flow lives on the unsinkable host layouts.",
-          "d",
-        );
-        return;
-      }
-      exec(c);
+      selectHost(n.dataset.host);
     });
   });
   $("#composer").addEventListener("click", () => {
@@ -1011,9 +1128,14 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
     const ta = $("#cm-text");
     const text = ta ? ta.value.trim() : "";
     if (text) {
-      input.value = text;
-      input.focus();
-      if (ta) ta.value = "";
+      if (activeId === null) selectHost("projects");
+      else {
+        if (hostRoute) selectSession(activeId);
+        selectWs("shell");
+        input.value = text;
+        input.focus();
+        if (ta) ta.value = "";
+      }
     }
     closeComposer();
   });
@@ -1045,7 +1167,22 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       const qi = $("#qc-input");
       const text = qi ? qi.value.trim() : "";
       if (text) {
-        exec(text);
+        const isHostCommand = [
+          "dashboard",
+          "projects",
+          "config",
+          "doctor",
+          "runs",
+          "voc",
+        ].includes(text);
+        if (!isHostCommand && activeId === null) selectHost("projects");
+        else {
+          if (hostRoute && !isHostCommand) {
+            selectSession(activeId);
+            selectWs("shell");
+          }
+          exec(text);
+        }
         if (qi) qi.value = "";
       }
       closeQc();
@@ -1063,17 +1200,18 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
   });
   $("#new-tab").addEventListener("click", () => {
     xtCount += 1;
-    WORKSPACES.push({ id: "xt" + xtCount, label: "shell [" + xtCount + "]" });
+    const s = current();
+    if (!s) return;
+    s.extraTabs ||= [];
+    s.extraTabs.push({
+      id: "xt" + xtCount,
+      label: "shell [" + s.extraTabs.length + "]",
+    });
     selectWs("xt" + xtCount);
   });
   $("#theme-btn").addEventListener("click", () => {
-    if (localStorage.getItem(PG_KEY)) {
-      localStorage.removeItem(PG_KEY);
-      pgTheme = docTheme();
-    } else {
-      pgTheme = pgTheme === "dark" ? "light" : "dark";
-      localStorage.setItem(PG_KEY, pgTheme);
-    }
+    pgTheme = pgTheme === "dark" ? "light" : "dark";
+    localStorage.setItem(PG_KEY, pgTheme);
     paintTheme();
   });
 
@@ -1082,13 +1220,12 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
     if (i === 0) return;
     s.buf = s.group === "stale" ? STALE : IDLE_PANE;
   });
-  term.innerHTML = SETTLEMENT;
+  sampleSessions = sessions.map((s) => ({ ...s, faces: [...s.faces] }));
   activeWs = "agents";
+  renderWs();
   rail();
-  paintHw();
   paintTheme();
-  hwTimer = setInterval(paintHw, 2400);
-  if (!EMBED) input.focus();
+  if (!EMBED && !hostRoute) input.focus();
   return {
     focus() {
       if (input) input.focus();
@@ -1097,8 +1234,6 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       runs.forEach((r) => {
         if (r.timer) clearInterval(r.timer);
       });
-      if (hwTimer) clearInterval(hwTimer);
-      themeObserver.disconnect();
     },
   };
 }

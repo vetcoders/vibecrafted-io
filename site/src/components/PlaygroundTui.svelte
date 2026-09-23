@@ -5,32 +5,35 @@
   const SOURCE = `<style>
 :host {
   display: block;
+  position: relative;
   height: 100%;
   min-height: 0;
   container-type: size;
   background: var(--ground);
   color: var(--text);
-  font-family: "JetBrains Mono", ui-monospace, monospace;
-  font-size: 12.5px;
-  line-height: 1.45;
+  font-family: "Spot Mono", ui-monospace, monospace;
+  font-synthesis: none;
+  font-size: 24px;
+  line-height: 29px;
 }
 :host, :host * { box-sizing: border-box; }
+:host .app * { font-family: inherit !important; font-size: 1em !important; letter-spacing: -1px !important; }
 :host {
-  --ground: #0a0a0b;
-  --panel: #121214;
-  --panel-2: #1a1a1e;
-  --line: #27272a;
-  --text: #f4f4f5;
-  --dim: #71717a;
-  --mute: #a1a1aa;
-  --copper: #e4e4e7;
-  --green: #4ade80;
-  --red: #f87171;
-  --gold: #fbbf24;
-  --sel: #27272a;
-  --live: #4ade80;
-  --accent: #c99a3b;
-  --overlay-shadow: rgba(10, 10, 11, 0.35);
+  --ground: #0b0b12;
+  --panel: #11111a;
+  --panel-2: #1a1928;
+  --line: #26233a;
+  --text: #e0def4;
+  --dim: #908ca8;
+  --mute: #b8b4ca;
+  --copper: #d4a574;
+  --green: #a6da95;
+  --red: #eb6f92;
+  --gold: #f6c177;
+  --sel: #d4a574;
+  --live: #a6da95;
+  --accent: #d4a574;
+  --overlay-shadow: rgba(11, 11, 18, 0.35);
   --radius: 2px;
   margin: 0;
   overflow: hidden;
@@ -53,10 +56,13 @@
   --overlay-shadow: rgba(44, 42, 39, 0.3);
 }
 .app {
+  position: absolute;
   display: grid;
-  grid-template-columns: 208px minmax(0, 1fr);
-  grid-template-rows: 34px minmax(0, 1fr) 26px;
-  height: 100%;
+  grid-template-columns: calc(28ch - 84px) minmax(0, 1fr);
+  grid-template-rows: 1lh minmax(0, 1fr) 1lh;
+  width: 170ch;
+  height: 41lh;
+  transform-origin: top left;
   min-height: 0;
 }
 .chrome {
@@ -206,6 +212,7 @@
   text-overflow: ellipsis;
 }
 .host-item:hover { color: var(--text); background: var(--panel-2); }
+.host-item.on { color: var(--accent); background: var(--panel-2); border-left: 2px solid var(--accent); padding-left: 16px; }
 .host-item .runs-n { color: var(--accent); }
 .rail-sep {
   color: var(--dim);
@@ -228,7 +235,10 @@
 .sess.stale .mark { color: var(--gold); }
 .sess .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sess .meta { color: var(--dim); font-size: 11px; }
+.sess .disambiguator { color: var(--dim); font-size: 10px; padding: 1px 0 1px 20px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .sess .face { padding: 1px 0 0 20px; color: var(--dim); font-size: 11px; }
+.sess .face button { appearance: none; border: 0; background: none; color: inherit; font: inherit; padding: 0 7px 0 0; cursor: pointer; }
+.sess .face button:hover { color: var(--accent); }
 .rail-foot { padding: 8px 12px 10px; border-top: 1px solid var(--line); }
 .new {
   width: 100%;
@@ -262,6 +272,48 @@
   word-break: break-word;
   overscroll-behavior: contain;
 }
+#term.host-mode { padding: 0; white-space: normal; }
+.host-screen { width: 100%; padding: 1.5lh 2ch; color: var(--text); }
+.host-demo { display: inline-flex; gap: 6px; border: 1px solid var(--line); padding: 4px 9px; color: var(--accent); font-size: 10px; font-weight: 600; letter-spacing: .1em; }
+.host-demo span { color: var(--dim); font-weight: 400; letter-spacing: 0; }
+.host-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 22px 0 28px; }
+.host-eyebrow { color: var(--accent); font-size: 10px; letter-spacing: .16em; }
+.host-heading h2 { margin: 7px 0 8px; font-size: clamp(24px, 2.6vw, 36px); line-height: 1.1; letter-spacing: -.04em; }
+.host-heading p { max-width: 640px; margin: 0; color: var(--mute); font-size: 12px; line-height: 1.6; }
+.host-screen button { appearance: none; background: transparent; border: 1px solid var(--line); color: var(--text); font: inherit; font-size: 11px; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
+.host-screen button:hover { border-color: var(--accent); color: var(--accent); }
+.host-screen .host-primary { background: var(--accent); border-color: var(--accent); color: var(--ground); font-weight: 600; padding: 9px 14px; }
+.host-screen .host-primary:hover { color: var(--ground); opacity: .85; }
+.host-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); background: var(--panel); margin-bottom: 20px; }
+.host-metric { display: flex; flex-direction: column; min-height: 110px; padding: 15px 17px; border-right: 1px solid var(--line); }
+.host-metric:last-child { border-right: 0; }
+.host-metric span, .host-panel-head span { color: var(--dim); font-size: 10px; letter-spacing: .13em; }
+.host-metric strong { margin: 11px 0 3px; font-size: 24px; line-height: 1; font-weight: 600; }
+.host-metric small, .host-list-copy small, .host-check small, .host-setting small { color: var(--dim); font-size: 10px; line-height: 1.4; }
+.host-columns { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 20px; }
+.host-panel { background: var(--panel); border: 1px solid var(--line); margin-bottom: 20px; min-width: 0; }
+.host-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.host-panel-head h3 { font-size: 14px; margin: 4px 0 0; font-weight: 600; }
+.host-list-row { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-bottom: 1px solid var(--line); }
+.host-list-row:last-child, .host-check:last-child, .host-setting:last-child { border-bottom: 0; }
+.host-list-icon { color: var(--accent); font-size: 16px; }
+.host-list-copy { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.host-list-copy strong { font-size: 11.5px; font-weight: 600; }
+.host-list-copy small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.host-state { color: var(--accent); text-transform: uppercase; font-size: 10px; letter-spacing: .08em; }
+.host-check { display: flex; align-items: flex-start; gap: 10px; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+.host-check > div { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.host-check strong { font-size: 11.5px; font-weight: 500; }
+.host-good { color: var(--green); }
+.host-muted { color: var(--dim); }
+.host-setting { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 12px; padding: 13px 18px; border-bottom: 1px solid var(--line); font-size: 11px; }
+.host-setting span { color: var(--mute); }
+.host-setting small { grid-column: 1 / 3; }
+.host-empty { padding: 26px 18px; }
+.host-empty p, .host-panel-note { color: var(--mute); font-size: 11px; line-height: 1.6; }
+.host-panel-note { margin: 14px 18px 18px; }
+.expand-frame { position: absolute; right: 8px; bottom: 8px; z-index: 8; background: var(--panel); border: 1px solid var(--line); color: var(--accent); padding: 5px 8px; font-size: 12px; text-decoration: none; }
+.expand-frame:hover { border-color: var(--accent); }
 #term .c { color: var(--copper); }
 #term .g { color: var(--green); }
 #term .r { color: var(--red); }
@@ -412,6 +464,7 @@
   background: var(--panel);
   flex: none;
 }
+.inline[hidden], .ws-tab[hidden] { display: none; }
 .inline .ps1 { color: var(--green); font-weight: 600; }
 #cmd {
   flex: 1;
@@ -453,18 +506,8 @@
 .blink { animation: bl 1.2s steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
 ::selection { background: var(--sel); }
-@container (max-width: 640px) {
-  .app { grid-template-columns: minmax(0, 1fr); }
-  .rail { display: none; }
-  .workspace { grid-column: 1; }
-  #hw-disk, #hw-mem { display: none; }
-}
-@container (max-width: 420px) {
-  .tools .sep, #quickcmd { display: none; }
-  #hw-cpu { display: none; }
-}
 </style>
-<div class="app">
+<div class="app" data-grid="170x41">
   <header class="chrome">
     <span class="brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍<span class="dot">.</span></span>
     <span class="datum">⎮</span>
@@ -484,16 +527,16 @@
   <aside class="rail">
     <div class="rail-head">Operator Frame</div>
     <div class="rail-host">
-      <button type="button" class="host-item" data-cmd="dashboard">⌂ Dashboard</button>
-      <button type="button" class="host-item" data-cmd="status">❖ Active runs · <span class="runs-n" id="runs-n">0</span></button>
-      <button type="button" class="host-item" data-cmd="doctor">⚙︎ Config</button>
-      <button type="button" class="host-item" data-cmd="doctor">· Doctor</button>
-      <button type="button" class="host-item" data-cmd="projects">✧ Projects</button>
+      <button type="button" class="host-item" data-host="dashboard">⌂ Dashboard</button>
+      <button type="button" class="host-item" data-host="runs">❖ Active runs · <span class="runs-n" id="runs-n">0</span></button>
+      <button type="button" class="host-item" data-host="config">⚙︎ Config</button>
+      <button type="button" class="host-item" data-host="doctor">· Doctor</button>
+      <button type="button" class="host-item" data-host="projects">✧ Projects</button>
     </div>
     <div class="rail-sep" aria-hidden="true">··············</div>
-    <div class="rail-head">Workspaces</div>
+    <div class="rail-head">Workspaces · <span id="workspace-count">0</span></div>
     <div class="rail-body" id="rail"></div>
-    <div class="rail-foot"><button class="new" id="new-sess" type="button">[+] new workspace</button></div>
+    <div class="rail-foot"><button class="new" id="new-sess" type="button">[+] Open project</button></div>
   </aside>
   <div class="workspace">
     <div id="term"></div>
@@ -514,15 +557,16 @@
   </div>
   <footer class="statusbar">
     <span class="lock">⌃g LOCK</span>
-    <span class="proj" id="stat-proj">loctree · ⎇integration/pr88-mega · PR#87 · +3.1k/−900</span>
-    <span id="hw-live">LIVE 3</span>
-    <span id="hw-cpu">CPU 14%</span>
-    <span id="hw-mem">MEM 3.8/16G</span>
-    <span id="hw-disk">DISK 12G</span>
-    <span id="hw-health">HEALTH ·</span>
-    <span class="right">BASE</span>
+    <span class="proj" id="stat-proj">Operator Frame · no project selected</span>
+    <span id="hw-live">LIVE 0</span>
+    <span id="hw-cpu">CPU —</span>
+    <span id="hw-mem">MEM —</span>
+    <span id="hw-disk">DISK —</span>
+    <span id="hw-health">HEALTH DEMO</span>
+    <span class="right">170×41 · DEMO</span>
   </footer>
-</div>`;
+</div>
+<a class="expand-frame" href="/playground/index.html" target="_blank" rel="noopener">Open full 170×41 ↗</a>`;
 
   let host: HTMLDivElement | undefined;
   let api: PlaygroundApi | undefined;
@@ -532,7 +576,30 @@
     const shadow = host.attachShadow({ mode: 'open' });
     shadow.innerHTML = SOURCE;
     api = bootPlayground(shadow);
-    return () => api?.destroy();
+    const app = shadow.querySelector<HTMLElement>('.app');
+    const fit = () => {
+      if (!app || !host) return;
+      const font = getComputedStyle(host);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.font = `${font.fontSize} ${font.fontFamily}`;
+      const cellWidth = ctx.measureText('0').width - 3;
+      const cellHeight = parseFloat(font.lineHeight);
+      const gridWidth = cellWidth * 170;
+      const gridHeight = cellHeight * 41;
+      const scale = Math.min(host.clientWidth / gridWidth, host.clientHeight / gridHeight);
+      app.style.width = `${gridWidth}px`;
+      app.style.height = `${gridHeight}px`;
+      app.style.transform = `scale(${scale})`;
+      app.style.left = `${Math.max(0, (host.clientWidth - gridWidth * scale) / 2)}px`;
+      app.style.top = `${Math.max(0, (host.clientHeight - gridHeight * scale) / 2)}px`;
+    };
+    const observer = new ResizeObserver(fit);
+    observer.observe(host);
+    document.fonts.ready.then(fit);
+    fit();
+    return () => { observer.disconnect(); api?.destroy(); };
   });
 </script>
 

@@ -1,8 +1,10 @@
 # Operator Frame workspace simulator — complete design contract
 
-Status: design for the interactive site simulator, 2026-09-23. This document
-defines the **target experience**. The current installed Frame and current
-site playground do not yet meet it. It supplements
+Status: target contract, 2026-09-23. The site simulator now renders host
+Dashboard, Active runs, Config, Doctor, Projects and Voc alongside guest
+workspaces. It can preview an empty host and restore example workspaces.
+The installed Frame has not been verified against this contract, and the
+two site presentations still have separate renderers. This document supplements
 `HOMEPAGE_PRODUCT_STAGE_SPEC.md`; the nine-scene page choreography and its
 `postMessage` protocol remain in force.
 
@@ -73,6 +75,15 @@ count the host, saved-only records, recent projects, agent runs or clients.
 from live workspaces. A project enters the rail only after a guest session
 exists. `❖ Active runs` and the bottom LIVE value read the same simulated
 feed, so the number cannot diverge between projections.
+
+The simulator uses a `170 × 41` character reference frame from the observed
+VC Terminal window, with Spot Mono throughout. It scales that frame to fit
+the browser viewport; it does not claim that every installed terminal starts
+at this size. Its dark colors follow the local VC Terminal theme values:
+`#0b0b12` background, `#e0def4` foreground, `#d4a574` accent, `#a6da95`
+green, `#eb6f92` red and `#f6c177` gold. Browser font metrics and CSS line
+height approximate the terminal cell geometry; screenshots remain a visual
+reference, not a pixel parity receipt.
 
 The current client's selected row is shown with a persistent selection
 mark and text label, not color alone. Session liveliness is a separate

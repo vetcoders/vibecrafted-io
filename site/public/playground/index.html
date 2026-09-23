@@ -1,194 +1,1040 @@
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Vibecrafted — Operator Frame</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+/>
 <style>
-:root{
-  --ground:#080807; --panel:#100f0e; --panel-2:#171615; --line:#2d2b27; --text:#f5f4ef;
-  --dim:rgba(245,244,239,.42); --mute:rgba(245,244,239,.62); --amber:#c99a3b;
-  --green:#4ade80; --red:#f87171; --gold:#fbbf24; --sel:#2d2b27; --live:#4ade80;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:var(--ground);color:var(--text);overflow:hidden;
-  font-family:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;font-size:12.5px;line-height:1.45}
-.app{display:grid;grid-template-rows:34px minmax(0,1fr) 26px;grid-template-columns:232px minmax(0,1fr);height:100%}
+  :root {
+    --ground: #0b0b12;
+    --panel: #11111a;
+    --panel-2: #1a1928;
+    --line: #26233a;
+    --text: #e0def4;
+    --dim: #908ca8;
+    --mute: #b8b4ca;
+    --amber: #d4a574;
+    --green: #a6da95;
+    --red: #eb6f92;
+    --gold: #f6c177;
+    --sel: #d4a574;
+    --live: #a6da95;
+  }
+  html.light {
+    --ground: #f3f1eb;
+    --panel: #ebe7de;
+    --panel-2: #e2ddd3;
+    --line: #d4cfc4;
+    --text: #2c2a27;
+    --dim: #8a8278;
+    --mute: #5c564e;
+    --amber: #8a6a32;
+    --green: #2f7d4a;
+    --gold: #a16207;
+    --sel: #d4cfc4;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    height: 100%;
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    overflow: hidden;
+    font-family: "Spot Mono", ui-monospace, monospace;
+    font-synthesis: none;
+    font-size: 24px;
+    line-height: 29px;
+  }
+  .app * {
+    font-family: inherit !important;
+    font-size: 1em !important;
+    letter-spacing: -1px !important;
+  }
+  .app {
+    position: absolute;
+    display: grid;
+    grid-template-rows: 1lh minmax(0, 1fr) 1lh;
+    grid-template-columns: calc(28ch - 84px) minmax(0, 1fr);
+    width: 170ch;
+    height: 41lh;
+    transform-origin: top left;
+  }
 
-/* ── Top bar — host chrome + guest organs ─────────────────── */
-.topbar{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 14px;
-  border-bottom:1px solid var(--line);background:var(--panel);font-size:11.5px;white-space:nowrap;overflow:hidden}
-.topbar .brand{color:var(--text);letter-spacing:.02em}
-.topbar .vsep{color:var(--dim)}
-.topbar .lock{color:var(--dim);border:1px solid var(--line);border-radius:2px;padding:0 7px;font-size:10.5px}
-.organs{display:flex;gap:2px}
-.organ{appearance:none;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--dim);
-  font:inherit;font-size:11.5px;padding:0 10px;height:34px;cursor:pointer}
-.organ:hover{color:var(--text)}
-.organ.on{color:var(--amber);border-bottom-color:var(--amber)}
-.topbar .voc{margin-left:auto;color:var(--text);border:1px solid var(--line);border-radius:2px;
-  padding:1px 10px;cursor:pointer;background:transparent;font:inherit;font-size:11.5px}
-.topbar .voc:hover{border-color:var(--amber)}
-.topbar .tools{color:var(--dim)}
-.topbar .tools .panels-chip{color:var(--amber);border:1px solid var(--amber);border-radius:2px;
-  padding:0 6px;cursor:pointer;background:transparent;font:inherit}
-.topbar .tools .panels-chip:hover{background:rgba(201,154,59,.12)}
+  /* ── Top bar — host chrome + guest organs ─────────────────── */
+  .topbar {
+    grid-column: 1/3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    font-size: 11.5px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .topbar .brand {
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .topbar .vsep {
+    color: var(--dim);
+  }
+  .topbar .lock {
+    color: var(--dim);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 0 7px;
+    font-size: 10.5px;
+  }
+  .organs {
+    display: flex;
+    gap: 2px;
+  }
+  .organ {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: var(--dim);
+    font: inherit;
+    font-size: 11.5px;
+    padding: 0 10px;
+    height: 34px;
+    cursor: pointer;
+  }
+  .organ:hover {
+    color: var(--text);
+  }
+  .organ.on {
+    color: var(--amber);
+    border-bottom-color: var(--amber);
+  }
+  .topbar .voc {
+    margin-left: auto;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 1px 10px;
+    cursor: pointer;
+    background: transparent;
+    font: inherit;
+    font-size: 11.5px;
+  }
+  .topbar .voc:hover {
+    border-color: var(--amber);
+  }
+  .topbar .tools {
+    color: var(--dim);
+  }
+  .topbar .tools button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    padding: 3px 5px;
+  }
+  .topbar .tools button:hover {
+    color: var(--amber);
+  }
+  .topbar .tools .panels-chip {
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+    padding: 0 6px;
+    cursor: pointer;
+    background: transparent;
+    font: inherit;
+  }
+  .topbar .tools .panels-chip:hover {
+    background: rgba(201, 154, 59, 0.12);
+  }
 
-/* ── Rail: Operator Frame (host) + Workspaces (guests) ────── */
-.rail{grid-row:2;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
-.rail-sec{padding:9px 12px 4px;font-size:10px;font-weight:500;letter-spacing:.14em;color:var(--mute)}
-.rail-sec .n{color:var(--dim);margin-left:6px}
-.host{border-bottom:1px dotted var(--line);padding-bottom:8px;margin-bottom:6px}
-.host-item{padding:4px 12px 4px 18px;color:var(--dim);cursor:pointer;font-size:12px}
-.host-item:hover{color:var(--text);background:var(--panel-2)}
-.host-item .n{color:var(--amber);font-size:11px}
-.rail-body{flex:1;overflow-y:auto;padding:0 0 8px}
-.ws{padding:6px 12px 5px;cursor:pointer;border-left:2px solid transparent}
-.ws:hover{background:var(--panel-2)}
-.ws.on{background:var(--panel-2);border-left-color:var(--amber)}
-.ws .row{display:flex;align-items:baseline;gap:8px}
-.ws .mark{width:12px;flex:none;color:var(--dim)}
-.ws.live .mark{color:var(--green)}
-.ws.stale .mark{color:var(--gold)}
-.ws .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ws .hash{color:var(--dim);font-size:10.5px}
-.ws .face{padding:1px 0 0 22px;color:var(--dim);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ws .face.live-face{color:var(--mute)}
-.ws .face .spin{color:var(--green)}
-.rail-foot{padding:8px 12px 10px;border-top:1px solid var(--line)}
-.new{width:100%;background:transparent;border:1px solid var(--line);color:var(--mute);border-radius:2px;
-  font:inherit;font-size:12px;padding:6px 8px;cursor:pointer;text-align:left}
-.new:hover{border-color:var(--amber);color:var(--text)}
+  /* ── Rail: Operator Frame (host) + Workspaces (guests) ────── */
+  .rail {
+    grid-row: 2;
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .rail-sec {
+    padding: 9px 12px 4px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--mute);
+  }
+  .rail-sec .n {
+    color: var(--dim);
+    margin-left: 6px;
+  }
+  .host {
+    border-bottom: 1px dotted var(--line);
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+  }
+  .host-item {
+    padding: 4px 12px 4px 18px;
+    color: var(--dim);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .host-item:hover {
+    color: var(--text);
+    background: var(--panel-2);
+  }
+  .host-item.on {
+    color: var(--amber);
+    background: var(--panel-2);
+    border-left: 2px solid var(--amber);
+    padding-left: 16px;
+  }
+  .host-item .n {
+    color: var(--amber);
+    font-size: 11px;
+  }
+  .rail-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 8px;
+  }
+  .ws {
+    padding: 6px 12px 5px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+  }
+  .ws:hover {
+    background: var(--panel-2);
+  }
+  .ws.on {
+    background: var(--panel-2);
+    border-left-color: var(--amber);
+  }
+  .ws .row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .ws .mark {
+    width: 12px;
+    flex: none;
+    color: var(--dim);
+  }
+  .ws.live .mark {
+    color: var(--green);
+  }
+  .ws.stale .mark {
+    color: var(--gold);
+  }
+  .ws .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ws .hash {
+    color: var(--dim);
+    font-size: 10.5px;
+  }
+  .ws .disambiguator {
+    color: var(--dim);
+    font-size: 10px;
+    padding: 1px 0 1px 22px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .ws .face {
+    padding: 1px 0 0 22px;
+    color: var(--dim);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ws button.face {
+    display: block;
+    width: 100%;
+    text-align: left;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+  .ws button.face:hover {
+    color: var(--amber);
+  }
+  .ws .face.live-face {
+    color: var(--mute);
+  }
+  .ws .face .spin {
+    color: var(--green);
+  }
+  .rail-foot {
+    padding: 8px 12px 10px;
+    border-top: 1px solid var(--line);
+  }
+  .new {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--mute);
+    border-radius: 2px;
+    font: inherit;
+    font-size: 12px;
+    padding: 6px 8px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .new:hover {
+    border-color: var(--amber);
+    color: var(--text);
+  }
 
-/* ── Canvas ────────────────────────────────────────────────── */
-.workspace{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--ground);position:relative}
-.pane-title{display:flex;justify-content:space-between;align-items:baseline;padding:7px 16px;
-  border-bottom:1px solid var(--line);color:var(--dim);font-size:11px;background:var(--panel)}
-.pane-title .pt-name{color:var(--mute)}
-#term{flex:1 1 0;min-height:0;overflow-y:auto;padding:12px 16px 8px;white-space:pre-wrap;word-break:break-word;overscroll-behavior:contain}
-#term .c{color:var(--text)} #term .g{color:var(--green)} #term .r{color:var(--red)}
-#term .d{color:var(--dim)} #term .y{color:var(--gold)} #term .b{color:var(--mute)} #term .a{color:var(--amber)}
-#term .bold{font-weight:600}
-.inline{display:flex;gap:8px;padding:7px 14px;border-top:1px solid var(--line);background:var(--panel);flex:none}
-.inline .ps1{color:var(--amber);font-weight:600}
-#cmd{flex:1;background:none;border:none;outline:none;color:var(--text);font:inherit;caret-color:var(--amber)}
+  /* ── Canvas ────────────────────────────────────────────────── */
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--ground);
+    position: relative;
+  }
+  .pane-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 7px 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 11px;
+    background: var(--panel);
+  }
+  .pane-title .pt-name {
+    color: var(--mute);
+  }
+  #term {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 16px 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overscroll-behavior: contain;
+  }
+  #term.host-mode {
+    white-space: normal;
+    padding: 0;
+  }
+  .host-screen {
+    width: 100%;
+    padding: 1.5lh 2ch;
+  }
+  .host-demo {
+    display: inline-block;
+    border: 1px solid var(--line);
+    padding: 4px 9px;
+    color: var(--amber);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .host-demo span {
+    color: var(--dim);
+    letter-spacing: 0;
+  }
+  .host-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 24px;
+    margin: 22px 0 28px;
+  }
+  .host-eyebrow {
+    color: var(--amber);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .host-heading h2 {
+    font-size: clamp(24px, 2.6vw, 36px);
+    line-height: 1.1;
+    margin: 7px 0 8px;
+    letter-spacing: -0.04em;
+  }
+  .host-heading p {
+    max-width: 640px;
+    color: var(--mute);
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .host-screen button {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 11px;
+    padding: 6px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .host-screen button:hover {
+    color: var(--amber);
+    border-color: var(--amber);
+  }
+  .host-screen .host-primary {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--ground);
+    font-weight: 600;
+    padding: 9px 14px;
+  }
+  .host-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--line);
+    background: var(--panel);
+    margin-bottom: 20px;
+  }
+  .host-metric {
+    display: flex;
+    flex-direction: column;
+    min-height: 110px;
+    padding: 15px 17px;
+    border-right: 1px solid var(--line);
+  }
+  .host-metric:last-child {
+    border-right: 0;
+  }
+  .host-metric span,
+  .host-panel-head span {
+    color: var(--dim);
+    font-size: 10px;
+    letter-spacing: 0.13em;
+  }
+  .host-metric strong {
+    font-size: 24px;
+    line-height: 1;
+    margin: 11px 0 3px;
+  }
+  .host-metric small,
+  .host-list-copy small,
+  .host-check small,
+  .host-setting small {
+    color: var(--dim);
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .host-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .host-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    margin-bottom: 20px;
+    min-width: 0;
+  }
+  .host-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .host-panel-head h3 {
+    font-size: 14px;
+    margin: 4px 0 0;
+  }
+  .host-list-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .host-list-row:last-child,
+  .host-check:last-child,
+  .host-setting:last-child {
+    border-bottom: 0;
+  }
+  .host-list-icon {
+    color: var(--amber);
+    font-size: 16px;
+  }
+  .host-list-copy {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .host-list-copy strong {
+    font-size: 11.5px;
+  }
+  .host-list-copy small {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .host-state {
+    color: var(--amber);
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .host-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .host-check > div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .host-check strong {
+    font-size: 11.5px;
+  }
+  .host-good {
+    color: var(--green);
+  }
+  .host-muted {
+    color: var(--dim);
+  }
+  .host-setting {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 3px 12px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+  }
+  .host-setting span {
+    color: var(--mute);
+  }
+  .host-setting small {
+    grid-column: 1/3;
+  }
+  .host-empty {
+    padding: 26px 18px;
+  }
+  .host-empty p,
+  .host-panel-note {
+    color: var(--mute);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .host-panel-note {
+    margin: 14px 18px 18px;
+  }
+  .host-scenario {
+    margin-top: 1lh;
+    text-align: right;
+  }
+  #term .c {
+    color: var(--text);
+  }
+  #term .g {
+    color: var(--green);
+  }
+  #term .r {
+    color: var(--red);
+  }
+  #term .d {
+    color: var(--dim);
+  }
+  #term .y {
+    color: var(--gold);
+  }
+  #term .b {
+    color: var(--mute);
+  }
+  #term .a {
+    color: var(--amber);
+  }
+  #term .bold {
+    font-weight: 600;
+  }
+  .inline {
+    display: flex;
+    gap: 8px;
+    padding: 7px 14px;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+    flex: none;
+  }
+  .inline .ps1 {
+    color: var(--amber);
+    font-weight: 600;
+  }
+  #cmd {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font: inherit;
+    caret-color: var(--amber);
+  }
 
-/* organ surfaces (non-shell) */
-.organ-view{flex:1;overflow-y:auto;padding:16px 18px;display:none}
-.organ-view.on{display:block}
-.ov-card{border:1px solid var(--line);border-radius:2px;padding:12px 14px;margin-bottom:10px;background:var(--panel)}
-.ov-card .ov-k{color:var(--dim);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
-.ov-card .ov-v{color:var(--text);margin-top:2px}
-.ov-card .ov-v .a{color:var(--amber)}
-.agent-chip{display:inline-block;border:1px solid var(--line);border-radius:2px;padding:3px 10px;margin:0 8px 8px 0;color:var(--mute)}
-.agent-chip.live{border-color:var(--green);color:var(--green)}
+  /* organ surfaces (non-shell) */
+  .organ-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 18px;
+    display: none;
+  }
+  .organ-view.on {
+    display: block;
+  }
+  .ov-card {
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--panel);
+  }
+  .ov-card .ov-k {
+    color: var(--dim);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .ov-card .ov-v {
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .ov-card .ov-v .a {
+    color: var(--amber);
+  }
+  .agent-chip {
+    display: inline-block;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 3px 10px;
+    margin: 0 8px 8px 0;
+    color: var(--mute);
+  }
+  .agent-chip.live {
+    border-color: var(--green);
+    color: var(--green);
+  }
 
-/* Panels overlay — independent layer */
-.panels-overlay{position:absolute;top:44px;right:16px;width:280px;border:1px solid var(--amber);border-radius:2px;
-  background:rgba(8,8,7,.96);box-shadow:0 8px 24px rgba(0,0,0,.5);display:none;z-index:5}
-.panels-overlay.on{display:block}
-.panels-head{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-bottom:1px solid var(--line);
-  color:var(--amber);font-size:11px}
-.panels-scopes{display:flex;gap:6px;padding:8px 10px 4px}
-.scope{flex:1;text-align:center;border:1px solid var(--line);border-radius:2px;padding:3px 0;color:var(--dim);
-  cursor:pointer;font-size:10.5px;letter-spacing:.08em}
-.scope.on{border-color:var(--amber);color:var(--amber)}
-.panels-list{padding:6px 10px 10px}
-.panel-row{display:flex;justify-content:space-between;padding:5px 6px;border-radius:2px;cursor:pointer;color:var(--mute);font-size:11.5px}
-.panel-row:hover{background:var(--panel-2)}
-.panel-row.on{color:var(--text)}
-.panel-row .ps{color:var(--dim);font-size:10px}
+  /* Panels overlay — independent layer */
+  .panels-overlay {
+    position: absolute;
+    top: 44px;
+    right: 16px;
+    width: 280px;
+    border: 1px solid var(--amber);
+    border-radius: 2px;
+    background: rgba(8, 8, 7, 0.96);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 5;
+  }
+  .panels-overlay.on {
+    display: block;
+  }
+  .panels-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--line);
+    color: var(--amber);
+    font-size: 11px;
+  }
+  .panels-scopes {
+    display: flex;
+    gap: 6px;
+    padding: 8px 10px 4px;
+  }
+  .scope {
+    flex: 1;
+    text-align: center;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 3px 0;
+    color: var(--dim);
+    cursor: pointer;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+  .scope.on {
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .panels-list {
+    padding: 6px 10px 10px;
+  }
+  .mini-overlay {
+    position: absolute;
+    z-index: 6;
+    top: 42px;
+    right: 16px;
+    width: min(400px, calc(100% - 32px));
+    border: 1px solid var(--amber);
+    background: var(--panel);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    padding: 12px;
+  }
+  .mini-overlay[hidden] {
+    display: none;
+  }
+  .mini-overlay .mini-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--amber);
+  }
+  .mini-overlay button {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 11px;
+    padding: 5px 8px;
+    cursor: pointer;
+  }
+  .mini-overlay button:hover {
+    border-color: var(--amber);
+  }
+  .mini-overlay textarea,
+  .mini-overlay input {
+    display: block;
+    width: 100%;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font: inherit;
+    font-size: 11px;
+    padding: 8px;
+    outline: none;
+    margin-bottom: 10px;
+  }
+  .mini-overlay textarea {
+    min-height: 95px;
+    resize: vertical;
+  }
+  .mini-overlay .mini-note {
+    color: var(--dim);
+    font-size: 10px;
+    margin-top: 8px;
+  }
+  .panel-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 6px;
+    border-radius: 2px;
+    cursor: pointer;
+    color: var(--mute);
+    font-size: 11.5px;
+  }
+  .panel-row:hover {
+    background: var(--panel-2);
+  }
+  .panel-row.on {
+    color: var(--text);
+  }
+  .panel-row .ps {
+    color: var(--dim);
+    font-size: 10px;
+  }
 
-/* ── Bottom bar — host chrome with guest projection ───────── */
-.statusbar{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 12px;
-  border-top:1px solid var(--line);background:var(--panel);font-size:11px;color:var(--dim)}
-.statusbar .lock{color:var(--gold)}
-.statusbar .center{flex:1;text-align:center;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.statusbar .center .a{color:var(--amber)}
-.statusbar .vitals{font-variant-numeric:tabular-nums}
+  /* ── Bottom bar — host chrome with guest projection ───────── */
+  .statusbar {
+    grid-column: 1/3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 12px;
+    border-top: 1px solid var(--line);
+    background: var(--panel);
+    font-size: 11px;
+    color: var(--dim);
+  }
+  .statusbar .lock {
+    color: var(--gold);
+  }
+  .statusbar .center {
+    flex: 1;
+    text-align: center;
+    color: var(--mute);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .statusbar .center .a {
+    color: var(--amber);
+  }
+  .statusbar .vitals {
+    font-variant-numeric: tabular-nums;
+  }
 
-.blink{animation:bl 1.2s steps(1) infinite}
-@keyframes bl{50%{opacity:0}}
-.spin{display:inline-block;animation:sp 1s steps(8) infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-::selection{background:var(--sel)}
-@media(max-width:820px){.app{grid-template-columns:1fr}.rail{display:none}.topbar .tools{display:none}}
-@media(prefers-reduced-motion:reduce){.blink,.spin{animation:none}}
-html.embed,html.embed body{height:100%;background:var(--ground)}
+  .blink {
+    animation: bl 1.2s steps(1) infinite;
+  }
+  @keyframes bl {
+    50% {
+      opacity: 0;
+    }
+  }
+  .spin {
+    display: inline-block;
+    animation: sp 1s steps(8) infinite;
+  }
+  @keyframes sp {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  ::selection {
+    background: var(--sel);
+  }
+  @media (max-width: 640px) {
+    .host-columns,
+    .host-metrics {
+      grid-template-columns: 1fr;
+    }
+    .host-metric {
+      min-height: 70px;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blink,
+    .spin {
+      animation: none;
+    }
+  }
+  html.embed,
+  html.embed body {
+    height: 100%;
+    background: var(--ground);
+  }
 </style>
 
-<div class="app">
+<div class="app" data-grid="170x41">
   <header class="topbar">
     <span class="brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
     <span class="vsep">⎮</span>
     <span class="lock">⚿ L</span>
-    <nav class="organs" id="organs" role="tablist" aria-label="Guest organs"></nav>
+    <nav
+      class="organs"
+      id="organs"
+      role="tablist"
+      aria-label="Guest organs"
+    ></nav>
     <button class="voc" id="voc-btn" type="button">Voc</button>
-    <span class="tools">✍ Composer · <button class="panels-chip" id="panels-btn" type="button">⿻ Panels <span id="panels-n">1</span></button> · ❯_ Quick cmd ☾</span>
+    <span class="tools"
+      ><button id="composer-btn" type="button">✍ Composer</button> ·
+      <button class="panels-chip" id="panels-btn" type="button">
+        ⿻ Panels <span id="panels-n">1</span>
+      </button>
+      · <button id="quick-btn" type="button">❯_ Quick cmd</button>
+      <button id="theme-btn" type="button" title="Toggle demo theme">
+        ☾
+      </button></span
+    >
   </header>
 
   <aside class="rail">
     <div class="host">
       <div class="rail-sec">Operator Frame</div>
       <div class="host-item" data-host="dashboard">⌂ Dashboard</div>
-      <div class="host-item" data-host="runs">❖ Active runs · <span class="n" id="active-runs">0</span></div>
+      <div class="host-item" data-host="runs">
+        ❖ Active runs · <span class="n" id="active-runs">0</span>
+      </div>
       <div class="host-item" data-host="config">⚙︎ Config</div>
       <div class="host-item" data-host="doctor">· Doctor</div>
       <div class="host-item" data-host="projects">✧ Projects</div>
     </div>
-    <div class="rail-sec">Workspaces</div>
+    <div class="rail-sec">Workspaces · <span id="workspace-count">0</span></div>
     <div class="rail-body" id="rail"></div>
-    <div class="rail-foot"><button class="new" id="new-ws" type="button">[+] new workspace</button></div>
+    <div class="rail-foot">
+      <button class="new" id="new-ws" type="button">[+] Open project</button>
+    </div>
   </aside>
 
   <div class="workspace">
-    <div class="pane-title"><span class="pt-name" id="pt-name">❖ Shell</span><span id="pt-meta">SCROLL: 0/1495</span></div>
+    <div class="pane-title">
+      <span class="pt-name" id="pt-name">❖ Shell</span
+      ><span id="pt-meta">SCROLL: 0/1495</span>
+    </div>
     <div id="term"></div>
     <div class="organ-view" id="ov-overview"></div>
     <div class="organ-view" id="ov-agents"></div>
-    <div class="inline" id="shell-inline"><span class="ps1">❯</span><input id="cmd" autocomplete="off" spellcheck="false" aria-label="command"></div>
+    <div class="inline" id="shell-inline">
+      <span class="ps1">❯</span
+      ><input
+        id="cmd"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="command"
+      />
+    </div>
 
     <div class="panels-overlay" id="panels">
-      <div class="panels-head"><span>⿻ Panels</span><span id="panels-pager">1/4 ←→</span></div>
+      <div class="panels-head">
+        <span>⿻ Panels</span><span id="panels-pager">1/4 ←→</span>
+      </div>
       <div class="panels-scopes">
         <div class="scope on" data-scope="global">Global</div>
         <div class="scope" data-scope="project">Project</div>
       </div>
       <div class="panels-list" id="panels-list"></div>
     </div>
+    <div class="mini-overlay" id="composer-overlay" hidden>
+      <div class="mini-head">
+        ✍ Composer
+        <button type="button" data-close-overlay="composer-overlay">✕</button>
+      </div>
+      <textarea
+        id="composer-draft"
+        aria-label="Composer draft"
+        placeholder="Draft a command for the selected workspace..."
+      ></textarea
+      ><button type="button" id="composer-send">Send to Shell →</button>
+      <div class="mini-note">
+        Draft stays local to this demo until you send it to the guest Shell.
+      </div>
+    </div>
+    <div class="mini-overlay" id="quick-overlay" hidden>
+      <div class="mini-head">
+        ❯_ Quick cmd
+        <button type="button" data-close-overlay="quick-overlay">✕</button>
+      </div>
+      <input
+        id="quick-input"
+        aria-label="Quick command"
+        placeholder="dashboard, projects, doctor, workflow kimi..."
+      />
+      <div class="mini-note">
+        Enter routes a host view or opens the selected guest Shell for a demo
+        command.
+      </div>
+    </div>
   </div>
 
   <footer class="statusbar">
     <span class="lock">⌃g LOCK</span>
     <span class="center" id="ws-projection"></span>
-    <span class="vitals">LIVE <span id="v-live">0</span> | CPU 1098% | MEM 296.1/512G | DISK 102G | HEALTH <span id="v-health" class="y">!!</span></span>
+    <span class="vitals"
+      >LIVE <span id="v-live">0</span> | CPU — | MEM — | DISK — | HEALTH
+      <span id="v-health">DEMO</span> | 170×41</span
+    >
   </footer>
 </div>
 
 <script>
-"use strict";
-const EMBED=new URLSearchParams(location.search).has("embed");
-if(EMBED) document.documentElement.classList.add("embed");
-const $=s=>document.querySelector(s);
-const term=$("#term"), input=$("#cmd");
-const AGENTS=["claude","codex","agy","junie","grok","kimi"];
-const SKILLS={scaffold:["READ","0.2.0"],implement:["WRITE","2.2.0"],review:["READ","2.0.0"],workflow:["WRITE","3.6.0"],
-followup:["READ","2.2.0"],marbles:["WRITE","7.0.0"],audit:["READ","1.0.0"],polarize:["WRITE","2.0.0"],
-dou:["READ","2.1.0"],decorate:["WRITE","2.1.0"],hydrate:["WRITE","1.0.0"],release:["WRITE","0.2.1"],
-justdo:["WRITE","3.1.0"],intents:["READ","1.0.1"],research:["READ","1.3.0"],prune:["READ","3.3.3"],
-trust:["READ","1.0.0"],guard:["READ","1.0.0"],partner:["READ","—"],ownership:["WRITE","—"],delegate:["READ","—"]};
-const FLOWS={workflow:"examine → research → implement → verify",marbles:"map cracks → L1 fix → L2…LN → settle",
-prune:"map runtime cone → separate live truth → cut proven dead → verify",implement:"init → implement cut → verify real path → followup",
-dou:"crawl buyer surface → test install/trust → collect gaps → undone verdict",release:"prove readiness → build+sign → publish → rollback truth"};
-const MODES=["implement","research","review","plan","prompt","observe","await","stop","resume"];
-const DECK=["help","version","status","doctor","receipt","init","resume","update","uninstall","dashboard","loop","cron",
-"dispatch","server","gui","tui","telemetry","ship","clear","surfaces","loct","aicx","...Object.keys(SKILLS)"].filter(x=>!x.startsWith("..."))
-  .concat(Object.keys(SKILLS),AGENTS);
-let runs=[], hist=[], hi=0, activeId=0, nextId=8;
-let organ="shell";           // guest organ: overview | agents | shell
-let hostView=null;           // host surface when set: dashboard|runs|config|doctor|projects|voc
-let panelScope="global";
+  "use strict";
+  const EMBED = new URLSearchParams(location.search).has("embed");
+  if (EMBED) document.documentElement.classList.add("embed");
+  const $ = (s) => document.querySelector(s);
+  const term = $("#term"),
+    input = $("#cmd");
+  const AGENTS = ["claude", "codex", "agy", "junie", "grok", "kimi"];
+  const SKILLS = {
+    scaffold: ["READ", "0.2.0"],
+    implement: ["WRITE", "2.2.0"],
+    review: ["READ", "2.0.0"],
+    workflow: ["WRITE", "3.6.0"],
+    followup: ["READ", "2.2.0"],
+    marbles: ["WRITE", "7.0.0"],
+    audit: ["READ", "1.0.0"],
+    polarize: ["WRITE", "2.0.0"],
+    dou: ["READ", "2.1.0"],
+    decorate: ["WRITE", "2.1.0"],
+    hydrate: ["WRITE", "1.0.0"],
+    release: ["WRITE", "0.2.1"],
+    justdo: ["WRITE", "3.1.0"],
+    intents: ["READ", "1.0.1"],
+    research: ["READ", "1.3.0"],
+    prune: ["READ", "3.3.3"],
+    trust: ["READ", "1.0.0"],
+    guard: ["READ", "1.0.0"],
+    partner: ["READ", "—"],
+    ownership: ["WRITE", "—"],
+    delegate: ["READ", "—"],
+  };
+  const FLOWS = {
+    workflow: "examine → research → implement → verify",
+    marbles: "map cracks → L1 fix → L2…LN → settle",
+    prune: "map runtime cone → separate live truth → cut proven dead → verify",
+    implement: "init → implement cut → verify real path → followup",
+    dou: "crawl buyer surface → test install/trust → collect gaps → undone verdict",
+    release: "prove readiness → build+sign → publish → rollback truth",
+  };
+  const MODES = [
+    "implement",
+    "research",
+    "review",
+    "plan",
+    "prompt",
+    "observe",
+    "await",
+    "stop",
+    "resume",
+  ];
+  const DECK = [
+    "help",
+    "version",
+    "status",
+    "doctor",
+    "receipt",
+    "init",
+    "resume",
+    "update",
+    "uninstall",
+    "dashboard",
+    "loop",
+    "cron",
+    "dispatch",
+    "server",
+    "gui",
+    "tui",
+    "telemetry",
+    "ship",
+    "clear",
+    "surfaces",
+    "loct",
+    "aicx",
+    "...Object.keys(SKILLS)",
+  ]
+    .filter((x) => !x.startsWith("..."))
+    .concat(Object.keys(SKILLS), AGENTS);
+  let runs = [],
+    hist = [],
+    hi = 0,
+    activeId = 0,
+    nextId = 8;
+  let organ = "shell"; // guest organ: overview | agents | shell
+  let hostView = "dashboard"; // host surface when set: dashboard|runs|config|doctor|projects|voc
+  let panelScope = "global";
 
-/* ── Content sampled from a real operator dump (2026-09-19, 8 workspaces) ── */
-const KIMI_SPARSE=`<span class="a bold">❖ kimi-code</span>  <span class="d">· Lbrx Services · feat/npm-install [PR#84]</span>
+  /* ── Content sampled from a real operator dump (2026-09-19, 8 workspaces) ── */
+  const KIMI_SPARSE = `<span class="a bold">❖ kimi-code</span>  <span class="d">· Lbrx Services · feat/npm-install [PR#84]</span>
 <span class="d">────────────────────────────────────────────────────────</span>
 Finder liczy rozmiar logiczny (apparent), nie realne bloki.
 
@@ -202,7 +1048,7 @@ Obrazy lima to sparse files — Finder sumuje długości logiczne,
 Suma apparent: ~280G — to widzi Finder. Realna: <span class="g">40G</span>.
 <span class="d">~220G różnicy to niezapisana pusta przestrzeń w sparse obrazach.</span>`;
 
-const SETTLEMENT=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>  <span class="d">4.3.1+b85bfd13 · vibecrafted · junie</span>
+  const SETTLEMENT = `<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>  <span class="d">4.3.1+b85bfd13 · vibecrafted · junie</span>
 <span class="d">────────────────────────────────────────────────────────</span>
 <span class="d">==================== VIBECRAFTED LAUNCH RECEIPT ====================</span>
 run_id:     <span class="b">just-260919-071328-172v</span>
@@ -220,192 +1066,539 @@ await:      <span class="b">vibecrafted junie await --run-id just-260919-071328-
 
 <span class="d">settlement</span>  <span class="g">f</span>  <span class="d">· 6m 02s · 3 files · 0 gates red</span>`;
 
-const IDLE_PANE=`<span class="d">idle organ — type a command, or pick a workspace in the rail.</span>
+  const IDLE_PANE = `<span class="d">idle organ — type a command, or pick a workspace in the rail.</span>
 <span class="d">try</span> <span class="b">help</span>  <span class="d">·</span>  <span class="b">workflow kimi -p "Read this repo and name the first fix."</span>`;
 
-const workspaces=[
-  {id:0, name:"Lbrx Services",      branch:"feat/npm-install", pr:"PR#84", diff:"+188/−64",  group:"live",  agents:["kimi","claude"], proc:"❯_ kimi-code",   time:"17:06"},
-  {id:1, name:"Polyversai 2",       branch:"main",             pr:"—",     diff:"",          group:"idle",  agents:[],              proc:"",              time:"16:44"},
-  {id:2, name:"Vibecrafted",        branch:"stack/command-bridge-on-pr-96", pr:"PR#97", diff:"+23/−1124", group:"live", agents:["junie","claude"], proc:"⣸ cargo build", time:"16:31"},
-  {id:3, name:"W3 06",              branch:"main",             pr:"—",     diff:"",          group:"idle",  agents:[],              proc:"",              time:"15:58"},
-  {id:4, name:"W2 06",              branch:"main",             pr:"—",     diff:"",          group:"idle",  agents:[],              proc:"",              time:"15:20"},
-  {id:5, name:"Vibecrafted 921310b",branch:"921310b",          pr:"—",     diff:"",          group:"idle",  agents:[],              proc:"",              time:"14:47"},
-  {id:6, name:"Vibecrafted",        branch:"main",             pr:"—",     diff:"",          group:"stale", agents:[],              proc:"",              time:"11:02"},
-  {id:7, name:"W2 03",              branch:"main",             pr:"—",     diff:"",          group:"idle",  agents:[],              proc:"",              time:"09:36"}
-];
+  const workspaces = [
+    {
+      id: 0,
+      name: "Lbrx Services",
+      branch: "feat/npm-install",
+      pr: "PR#84",
+      diff: "+188/−64",
+      group: "live",
+      agents: ["kimi", "claude"],
+      proc: "❯_ kimi-code",
+      time: "17:06",
+    },
+    {
+      id: 1,
+      name: "Polyversai 2",
+      branch: "main",
+      pr: "—",
+      diff: "",
+      group: "idle",
+      agents: [],
+      proc: "",
+      time: "16:44",
+    },
+    {
+      id: 2,
+      name: "Vibecrafted",
+      branch: "stack/command-bridge-on-pr-96",
+      pr: "PR#97",
+      diff: "+23/−1124",
+      group: "live",
+      agents: ["junie", "claude"],
+      proc: "⣸ cargo build",
+      time: "16:31",
+    },
+    {
+      id: 3,
+      name: "W3 06",
+      branch: "main",
+      pr: "—",
+      diff: "",
+      group: "idle",
+      agents: [],
+      proc: "",
+      time: "15:58",
+    },
+    {
+      id: 4,
+      name: "W2 06",
+      branch: "main",
+      pr: "—",
+      diff: "",
+      group: "idle",
+      agents: [],
+      proc: "",
+      time: "15:20",
+    },
+    {
+      id: 5,
+      name: "Vibecrafted 921310b",
+      branch: "921310b",
+      pr: "—",
+      diff: "",
+      group: "idle",
+      agents: [],
+      proc: "",
+      time: "14:47",
+    },
+    {
+      id: 6,
+      name: "Vibecrafted",
+      branch: "main",
+      pr: "—",
+      diff: "",
+      group: "stale",
+      agents: [],
+      proc: "",
+      time: "11:02",
+    },
+    {
+      id: 7,
+      name: "W2 03",
+      branch: "main",
+      pr: "—",
+      diff: "",
+      group: "idle",
+      agents: [],
+      proc: "",
+      time: "09:36",
+    },
+  ];
+  const PROJECT_CATALOG = [
+    { name: "Operator", root: "/work/operator", branch: "main" },
+    { name: "Workflow", root: "/work/workflow", branch: "main" },
+    { name: "Research", root: "/work/research", branch: "main" },
+    { name: "Vibecrafted", root: "/work/second/vibecrafted", branch: "main" },
+  ];
+  const HOST_TITLES = {
+    dashboard: "Dashboard",
+    runs: "Active runs",
+    config: "Config",
+    doctor: "Doctor",
+    projects: "Projects",
+    voc: "Voc",
+  };
+  let sampleWorkspaces = [];
 
-const PANELS={
-  global:[  {name:"kimi · operator", note:"rozmowa z operatorem — poza projektami", ws:null},
-            {name:"claude · fleet desk", note:"drugi mózg, bez workspace'a", ws:null}],
-  project:[ {name:"kimi-code", note:"Lbrx Services · feat/npm-install", ws:0},
-            {name:"junie", note:"Vibecrafted · PR#97 review", ws:2},
-            {name:"claude", note:"Vibecrafted · command bridge", ws:2},
-            {name:"codex", note:"Lbrx Services · shell", ws:0}]
-};
+  const PANELS = {
+    global: [
+      {
+        name: "kimi · operator",
+        note: "rozmowa z operatorem — poza projektami",
+        ws: null,
+      },
+      {
+        name: "claude · fleet desk",
+        note: "drugi mózg, bez workspace'a",
+        ws: null,
+      },
+    ],
+    project: [
+      { name: "kimi-code", note: "Lbrx Services · feat/npm-install", ws: 0 },
+      { name: "junie", note: "Vibecrafted · PR#97 review", ws: 2 },
+      { name: "claude", note: "Vibecrafted · command bridge", ws: 2 },
+      { name: "codex", note: "Lbrx Services · shell", ws: 0 },
+    ],
+  };
 
-function clockNow(){const d=new Date(),p=n=>String(n).padStart(2,"0");return p(d.getHours())+":"+p(d.getMinutes())}
-function current(){return workspaces.find(s=>s.id===activeId)}
-function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
-function put(html){const d=document.createElement("div");d.innerHTML=html;term.appendChild(d);term.scrollTop=term.scrollHeight}
-function line(t,cls){put(cls?`<span class="${cls}">${esc(t)}</span>`:esc(t))}
-function raw(h){put(h)}
-function prompt_(c){put(`<span class="a bold">❯</span> ${esc(c)}`)}
-
-/* ── Organs ── */
-const ORGANS=[["overview","Overview"],["agents","Agents"],["shell","Shell"]];
-function paintOrgans(){
-  const el=$("#organs");el.innerHTML="";
-  ORGANS.forEach(([id,label])=>{
-    const b=document.createElement("button");
-    b.type="button";b.className="organ"+((organ===id&&!hostView)?" on":"");
-    b.textContent=(organ===id&&!hostView?"◉ ":"○ ")+label;
-    b.onclick=()=>{hostView=null;organ=id;render();};
-    el.appendChild(b);
-  });
-}
-
-function paintRail(){
-  const el=$("#rail");el.innerHTML="";
-  workspaces.forEach(s=>{
-    const on=s.id===activeId?" on":"";
-    const mark=s.group==="live"?"◉":s.group==="stale"?"◐":"○";
-    const num=String(s.id+1).padStart(2,"0");
-    let faces="";
-    if(on){
-      faces=`<div class="face">· Overview</div>`;
-      faces+=`<div class="face">· Agents${s.agents.length?` ·${s.agents.join("·")} +${s.agents.length-1}`:" ·none"}</div>`;
-      if(s.proc) faces+=`<div class="face live-face">◉ <span class="spin">⣸</span> ${esc(s.proc.replace(/^⣸ |^❯_ /,""))}</div>`;
-      faces+=`<div class="face">[+] new tab</div>`;
-    }
-    el.insertAdjacentHTML("beforeend",
-      `<div class="ws ${s.group}${on}" data-id="${s.id}"><div class="row"><span class="mark">${mark}</span><span class="name">${num} ${esc(s.name)}</span><span class="hash">${esc(s.time)}</span></div>${faces}</div>`);
-  });
-  el.querySelectorAll(".ws[data-id]").forEach(n=>{
-    n.addEventListener("click",()=>selectWorkspace(Number(n.dataset.id)));
-  });
-  /* host counter — wired to the sim's truth */
-  const live=runs.filter(r=>r.state==="active"||r.state==="launching").length;
-  $("#active-runs").textContent=live;
-  $("#v-live").textContent=live;
-  $("#v-health").textContent=live>0?"ok":"!!";
-  $("#v-health").className=live>0?"g":"y";
-}
-
-function paintProjection(){
-  const s=current();if(!s)return;
-  const mid=[s.name];
-  if(s.pr&&s.pr!=="—")mid.push(`<span class="a">${s.pr}</span>`);
-  if(s.branch)mid.push(`⎇${s.branch}`);
-  if(s.diff)mid.push(`<span class="a">${s.diff}</span>`);
-  $("#ws-projection").innerHTML=mid.join(" · ");
-}
-
-function paintPanels(){
-  $("#panels-n").textContent=PANELS.global.length+PANELS.project.length;
-  const list=$("#panels-list");list.innerHTML="";
-  PANELS[panelScope].forEach((p,i)=>{
-    const row=document.createElement("div");
-    row.className="panel-row";
-    row.innerHTML=`<span>❖ ${esc(p.name)}</span><span class="ps">${esc(p.note)}</span>`;
-    row.onclick=()=>{ $("#panels").classList.remove("on");
-      if(p.ws!=null){selectWorkspace(p.ws);}
-      hostView=null;organ="shell";render(); };
-    list.appendChild(row);
-  });
-  document.querySelectorAll(".panels-scopes .scope").forEach(sc=>{
-    sc.classList.toggle("on",sc.dataset.scope===panelScope);
-    sc.onclick=()=>{panelScope=sc.dataset.scope;paintPanels();};
-  });
-}
-
-function paintOrganViews(){
-  const s=current();
-  $("#ov-overview").innerHTML=`
-    <div class="ov-card"><span class="ov-k">Workspace</span><div class="ov-v">${esc(s.name)} <span class="d">· ${esc(s.branch)}</span></div></div>
-    <div class="ov-card"><span class="ov-k">PR</span><div class="ov-v"><span class="a">${esc(s.pr)}</span>${s.diff?` · <span class="a">${esc(s.diff)}</span>`:""}</div></div>
-    <div class="ov-card"><span class="ov-k">Agents here</span><div class="ov-v">${s.agents.length?s.agents.map(a=>`<span class="agent-chip live">${esc(a)}</span>`).join(""):'<span class="d">none active</span>'}</div></div>
-    <div class="ov-card"><span class="ov-k">Process</span><div class="ov-v">${s.proc?`<span class="spin">⣸</span> ${esc(s.proc)}`:'<span class="d">idle</span>'}</div></div>`;
-  $("#ov-agents").innerHTML=`
-    <div class="ov-card"><span class="ov-k">Interactive (Panels layer)</span><div class="ov-v">${PANELS.project.filter(p=>p.ws===s.id).map(p=>`<span class="agent-chip live">${esc(p.name)}</span>`).join("")||'<span class="d">none — ⿻ Panels, scope Project</span>'}</div></div>
-    <div class="ov-card"><span class="ov-k">Dispatched runs</span><div class="ov-v">${runs.filter(r=>r.wsId===s.id).map(r=>`${r.agent}/${r.skill} — ${r.state}`).join("<br>")||'<span class="d">none in this session</span>'}</div></div>
-    <div class="ov-card"><span class="ov-k">Dispatch one</span><div class="ov-v d">shell organ: <span class="b">workflow kimi -p "…"</span></div></div>`;
-}
-
-function render(){
-  paintOrgans();paintRail();paintProjection();
-  const s=current();
-  const showShell=(organ==="shell"&&!hostView);
-  $("#term").style.display=showShell?"":"none";
-  $("#shell-inline").style.display=showShell?"":"none";
-  $("#ov-overview").classList.toggle("on",organ==="overview"&&!hostView);
-  $("#ov-agents").classList.toggle("on",organ==="agents"&&!hostView);
-  if(hostView){ $("#term").style.display=""; $("#term").innerHTML=hostBuffer(hostView); }
-  else if(showShell){ $("#term").innerHTML=s.buf||IDLE_PANE; term.scrollTop=term.scrollHeight; }
-  $("#pt-name").textContent=hostView?`❖ ${hostView[0].toUpperCase()+hostView.slice(1)} — host surface`:`❖ ${organ[0].toUpperCase()+organ.slice(1)} · ${s.name}`;
-  paintOrganViews();
-}
-
-function hostBuffer(h){
-  if(h==="runs"){
-    const live=runs.filter(r=>r.state==="active"||r.state==="launching");
-    return `<span class="a bold">❖ Active runs</span> <span class="d">— host surface, same count as the rail badge</span>\n`+
-      (live.length?live.map(r=>`  <span class="g">●</span> ${r.id}  ${r.agent}/${r.skill}  <span class="d">${r.state}</span>`).join("\n"):`<span class="d">  zero live runs — dispatch one from any Shell organ.</span>`);
+  function clockNow() {
+    const d = new Date(),
+      p = (n) => String(n).padStart(2, "0");
+    return p(d.getHours()) + ":" + p(d.getMinutes());
   }
-  if(h==="dashboard")return `<span class="a bold">⌂ Dashboard</span>\n<span class="d">Host aggregate — workspaces ${workspaces.length}, live ${runs.filter(r=>r.state==="active").length}, stale ${workspaces.filter(w=>w.group==="stale").length}. Pinned: never moves when you switch guests.</span>`;
-  if(h==="config")return `<span class="a bold">⚙︎ Config</span>\n<span class="d">~/.config/vibecrafted — host scope, one per frame. Guest organs never reach here.</span>`;
-  if(h==="doctor")return `<span class="g">✓</span> deck alive · <span class="g">✓</span> tools/vibecrafted-current → 4.3.1+b85bfd13 · <span class="g">✓</span> 32 skill projections\n<span class="g">✓</span> server plane: identity guard consistent\n<span class="d">summary: sim — on a live machine:</span> <span class="b">vc-doctor</span>`;
-  if(h==="projects")return `<span class="a bold">✧ Projects</span>\n`+workspaces.map(w=>`  ${String(w.id+1).padStart(2,"0")} ${w.group==="live"?"<span class='g'>◉</span>":"○"} ${esc(w.name)}  <span class="d">⎇${esc(w.branch)}</span>`).join("\n")+`\n\n<span class="d">New project = host action, lives here — not inside any guest.</span>`;
-  if(h==="voc")return `<span class="a bold">Voc</span> <span class="d">— host console. Same runs the rail counts, full fidelity:</span>\n`+
-    (runs.length?runs.map(r=>`  ${r.id}  ${r.agent.padEnd(6)} ${r.skill.padEnd(10)} ${r.state}`).join("\n"):`<span class="d">  no runs this session.</span>`);
-  return IDLE_PANE;
-}
+  function current() {
+    return workspaces.find((s) => s.id === activeId);
+  }
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  }
+  function put(html) {
+    const d = document.createElement("div");
+    d.innerHTML = html;
+    term.appendChild(d);
+    term.scrollTop = term.scrollHeight;
+  }
+  function line(t, cls) {
+    put(cls ? `<span class="${cls}">${esc(t)}</span>` : esc(t));
+  }
+  function raw(h) {
+    put(h);
+  }
+  function prompt_(c) {
+    put(`<span class="a bold">❯</span> ${esc(c)}`);
+  }
 
-function selectWorkspace(id){
-  if(id===activeId&&!hostView)return;
-  const s=current();if(s&&organ==="shell")s.buf=term.innerHTML;
-  const t=workspaces.find(x=>x.id===id);if(!t)return;
-  activeId=id;hostView=null;render();
-}
-function saveBuf(){const s=current();if(s&&organ==="shell"&&!hostView)s.buf=term.innerHTML}
+  /* ── Organs ── */
+  const ORGANS = [
+    ["overview", "Overview"],
+    ["agents", "Agents"],
+    ["shell", "Shell"],
+  ];
+  function paintOrgans() {
+    const el = $("#organs");
+    el.innerHTML = "";
+    if (hostView) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "organ on";
+      b.textContent = "◉ " + HOST_TITLES[hostView];
+      b.onclick = () => selectHost("dashboard");
+      el.appendChild(b);
+      return;
+    }
+    ORGANS.forEach(([id, label]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "organ" + (organ === id && !hostView ? " on" : "");
+      b.textContent = (organ === id && !hostView ? "◉ " : "○ ") + label;
+      b.onclick = () => {
+        hostView = null;
+        organ = id;
+        const s = current();
+        if (s) s.organ = id;
+        render();
+      };
+      el.appendChild(b);
+    });
+  }
 
-function nowId(){const d=new Date();const p=n=>String(n).padStart(2,"0");
-  return `work-${String(d.getFullYear()).slice(2)}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}-${10000+Math.floor(Math.random()*89999)}`}
+  function paintRail() {
+    const el = $("#rail");
+    el.innerHTML = "";
+    $("#workspace-count").textContent = String(workspaces.length);
+    document.querySelectorAll(".host-item[data-host]").forEach((n) => {
+      n.classList.toggle("on", n.dataset.host === hostView);
+      n.setAttribute(
+        "aria-current",
+        n.dataset.host === hostView ? "page" : "false",
+      );
+    });
+    workspaces.forEach((s) => {
+      const on = s.id === activeId && !hostView ? " on" : "";
+      const mark = s.group === "live" ? "◉" : s.group === "stale" ? "◐" : "○";
+      const num = String(s.id + 1).padStart(2, "0");
+      const disambiguator =
+        workspaces.filter((w) => w.name.toLowerCase() === s.name.toLowerCase())
+          .length > 1
+          ? `<div class="disambiguator">${esc(s.root || `/work/${s.name}`)}</div>`
+          : "";
+      let faces = "";
+      if (on) {
+        faces = `<button type="button" class="face" data-organ="overview">· Overview</button>`;
+        faces += `<button type="button" class="face" data-organ="agents">· Agents${s.agents.length ? ` ·${s.agents.join("·")} +${s.agents.length - 1}` : " ·none"}</button>`;
+        faces += `<button type="button" class="face" data-organ="shell">· Shell${s.proc ? ` · ${esc(s.proc.replace(/^⣸ |^❯_ /, ""))}` : ""}</button>`;
+      }
+      el.insertAdjacentHTML(
+        "beforeend",
+        `<div class="ws ${s.group}${on}" data-id="${s.id}"><div class="row"><span class="mark">${mark}</span><span class="name">${num} ${esc(s.name)}</span><span class="hash">${esc(s.time)}</span></div>${disambiguator}${faces}</div>`,
+      );
+    });
+    el.querySelectorAll(".ws[data-id]").forEach((n) => {
+      n.addEventListener("click", (e) => {
+        const face = e.target.closest("[data-organ]");
+        selectWorkspace(Number(n.dataset.id));
+        if (face) {
+          organ = face.dataset.organ;
+          current().organ = organ;
+          render();
+        }
+      });
+    });
+    /* host counter — wired to the sim's truth */
+    const live = runs.filter(
+      (r) => r.state === "active" || r.state === "launching",
+    ).length;
+    $("#active-runs").textContent = live;
+    $("#v-live").textContent = live;
+    $("#v-health").textContent = "DEMO";
+    $("#v-health").className = "";
+  }
 
-const CHATTER={
-  workflow:["loct context — atlas przeczytany do końca (00–05)","slice() na plikach celu, impact() przed cięciem","implement: cut wylądował, gates w toku","pytest -q … zielone"],
-  marbles:["L1: mapa pęknięć — 3 kandydaci","L1 fix + verify: 2/3 zamknięte","L2: kontrprzykład ubity, re-run gates","powierzchnia trzyma — settle"],
-  prune:["runtime cone zdefiniowany","KEEP-RUNTIME 61 · DELETE-NOW 14 · FORGOTTEN-GEM 3","gates po fali: zielone","gems report zapisany"],
-  generic:["vc-init: perception → intentions → ground truth","praca w toku…","artefakty zapisane do reports/","gates: zielone"]};
+  function paintProjection() {
+    if (hostView) {
+      $("#ws-projection").textContent = "Operator Frame · no project selected";
+      return;
+    }
+    const s = current();
+    if (!s) return;
+    const mid = [s.name];
+    if (s.pr && s.pr !== "—") mid.push(`<span class="a">${s.pr}</span>`);
+    if (s.branch) mid.push(`⎇${s.branch}`);
+    if (s.diff) mid.push(`<span class="a">${s.diff}</span>`);
+    $("#ws-projection").innerHTML = mid.join(" · ");
+  }
 
-function startRun(skill,agent,promptTxt){
-  const id=nowId();
-  const run={id,agent,skill,state:"launching",t0:Date.now(),lines:[],wsId:activeId,report:`reports/${skill}/${id}_report.md`};
-  runs.push(run);
-  const s=current();
-  if(s){s.group="live";s.agent=agent;s.time=clockNow();s.proc=`❯_ ${agent} · ${skill}`;if(!s.agents.includes(agent))s.agents.push(agent)}
-  render();
-  raw(`<span class="d">==================== VIBECRAFTED LAUNCH RECEIPT ====================</span>`);
-  line(`run_id:     ${id}`);line(`agent:      ${agent}`);line(`skill:      ${skill}`);
-  line(`workspace:  ${current().name}`);
-  line(`status:     launching`);line(`report:     ~/.vibecrafted/artifacts/…/${run.report}`);
-  raw(`observe:    <span class="b">vibecrafted ${agent} observe --run-id ${id}</span>`);
-  raw(`await (ARM NOW, supervisor-side): <span class="b">vibecrafted ${agent} await --run-id ${id}</span>`);
-  raw(`<span class="d">=====================================================================</span>`);
-  raw(`<span class="d">watch the rail: ❖ Active runs in Operator Frame just ticked.</span>`);
-  const chat=CHATTER[skill]||CHATTER.generic;
-  let step=0;
-  run.timer=setInterval(()=>{
-    if(step===0){run.state="active";run.lines.push("worker alive, transcript rośnie");}
-    else if(step<=chat.length){run.lines.push(chat[step-1]);}
-    else{run.state="report_validated";run.settle=Math.random()<0.85?"f":"x";clearInterval(run.timer);
-      const s2=workspaces.find(w=>w.id===run.wsId);if(s2){s2.proc=""}
-      raw(`<span class="d">[${run.id}]</span> <span class="g">report_validated</span> — settlement <span class="${run.settle==="f"?"g":"y"}">${run.settle}</span> · raport: ${run.report}`);}
-    paintRail();step++;
-  },2200);
-  if(promptTxt)run.lines.push(`prompt: ${promptTxt}`);
-}
+  function paintPanels() {
+    $("#panels-n").textContent = PANELS.global.length + PANELS.project.length;
+    const list = $("#panels-list");
+    list.innerHTML = "";
+    PANELS[panelScope].forEach((p, i) => {
+      const row = document.createElement("div");
+      row.className = "panel-row";
+      row.innerHTML = `<span>❖ ${esc(p.name)}</span><span class="ps">${esc(p.note)}</span>`;
+      row.onclick = () => {
+        $("#panels").classList.remove("on");
+        if (p.ws != null && workspaces.some((w) => w.id === p.ws)) {
+          selectWorkspace(p.ws);
+          organ = "shell";
+          current().organ = "shell";
+          render();
+          return;
+        }
+        if (!current()) {
+          selectHost("projects");
+          return;
+        }
+        hostView = null;
+        organ = "shell";
+        current().organ = "shell";
+        render();
+      };
+      list.appendChild(row);
+    });
+    document.querySelectorAll(".panels-scopes .scope").forEach((sc) => {
+      sc.classList.toggle("on", sc.dataset.scope === panelScope);
+      sc.onclick = () => {
+        panelScope = sc.dataset.scope;
+        paintPanels();
+      };
+    });
+  }
 
-const HELP=`<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.3.1+b85bfd13</span> — release engine for AI-developed software
+  function paintOrganViews() {
+    const s = current();
+    $("#ov-overview").innerHTML = `
+    <div class="ov-card"><span class="ov-k">Workspace</span><div class="ov-v">${esc(s.name)} <span class="d">· ${esc(s.branch)}</span></div></div>
+    <div class="ov-card"><span class="ov-k">PR</span><div class="ov-v"><span class="a">${esc(s.pr)}</span>${s.diff ? ` · <span class="a">${esc(s.diff)}</span>` : ""}</div></div>
+    <div class="ov-card"><span class="ov-k">Agents here</span><div class="ov-v">${s.agents.length ? s.agents.map((a) => `<span class="agent-chip live">${esc(a)}</span>`).join("") : '<span class="d">none active</span>'}</div></div>
+    <div class="ov-card"><span class="ov-k">Process</span><div class="ov-v">${s.proc ? `<span class="spin">⣸</span> ${esc(s.proc)}` : '<span class="d">idle</span>'}</div></div>`;
+    $("#ov-agents").innerHTML = `
+    <div class="ov-card"><span class="ov-k">Interactive (Panels layer)</span><div class="ov-v">${
+      PANELS.project
+        .filter((p) => p.ws === s.id)
+        .map((p) => `<span class="agent-chip live">${esc(p.name)}</span>`)
+        .join("") || '<span class="d">none — ⿻ Panels, scope Project</span>'
+    }</div></div>
+    <div class="ov-card"><span class="ov-k">Dispatched runs</span><div class="ov-v">${
+      runs
+        .filter((r) => r.wsId === s.id)
+        .map((r) => `${r.agent}/${r.skill} — ${r.state}`)
+        .join("<br>") || '<span class="d">none in this session</span>'
+    }</div></div>
+    <div class="ov-card"><span class="ov-k">Dispatch one</span><div class="ov-v d"><button type="button" id="new-agent">New demo agent →</button> <span class="b">opens this workspace's Shell with a draft</span></div></div>`;
+  }
+
+  function render() {
+    paintOrgans();
+    paintRail();
+    paintProjection();
+    const s = current();
+    const showShell = organ === "shell" && !hostView;
+    term.classList.toggle(
+      "host-mode",
+      Boolean(hostView) || organ === "overview",
+    );
+    $("#term").style.display = showShell ? "" : "none";
+    $("#shell-inline").style.display = showShell ? "" : "none";
+    $("#ov-overview").classList.toggle("on", organ === "overview" && !hostView);
+    $("#ov-agents").classList.toggle("on", organ === "agents" && !hostView);
+    if (hostView) {
+      $("#term").style.display = "";
+      $("#term").innerHTML = hostBuffer(hostView);
+    } else if (showShell) {
+      $("#term").innerHTML = s.buf || IDLE_PANE;
+      term.scrollTop = term.scrollHeight;
+    }
+    $("#pt-name").textContent = hostView
+      ? `❖ ${hostView[0].toUpperCase() + hostView.slice(1)} — host surface`
+      : `❖ ${organ[0].toUpperCase() + organ.slice(1)} · ${s.name}`;
+    if (s) paintOrganViews();
+  }
+
+  function hostBuffer(h) {
+    const active = runs.filter(
+      (r) => r.state === "active" || r.state === "launching",
+    );
+    const metric = (label, value, note) =>
+      `<div class="host-metric"><span>${esc(label)}</span><strong>${esc(String(value))}</strong><small>${esc(note)}</small></div>`;
+    const heading = (title, description, action = "") =>
+      `<div class="host-heading"><div><span class="host-eyebrow">OPERATOR FRAME / ${esc(title.toUpperCase())}</span><h2>${esc(title)}</h2><p>${esc(description)}</p></div>${action}</div>`;
+    const row = (w) =>
+      `<div class="host-list-row"><span class="host-list-icon">◇</span><div class="host-list-copy"><strong>${esc(w.name)}</strong><small>${esc(w.root || `/work/${w.name}`)} · ⎇${esc(w.branch)}</small></div><span class="host-state">${esc(w.group)}</span><button type="button" data-workspace="${w.id}">Open ↗</button></div>`;
+    const openProjects = `<button type="button" class="host-primary" data-host-route="projects">Open project ↗</button>`;
+    let body = "";
+    if (h === "dashboard") {
+      const scenario = workspaces.length
+        ? `<button type="button" data-scenario="empty">Preview empty host</button>`
+        : `<button type="button" data-scenario="sample">Restore sample fleet</button>`;
+      const workspaceRows = workspaces.length
+        ? workspaces.slice(0, 4).map(row).join("")
+        : `<div class="host-empty"><strong>No workspaces open.</strong><p>The host still has Dashboard, Projects, Config, Doctor and Voc. Open a project to attach its guest session.</p><button type="button" data-host-route="projects">Choose a project →</button></div>`;
+      body =
+        heading(
+          "Dashboard",
+          "One host for every workspace. Choose a project, then return here without losing its session.",
+          openProjects,
+        ) +
+        `<div class="host-metrics">${metric("WORKSPACES", workspaces.length, "guest sessions in the rail")}${metric("ACTIVE RUNS", active.length, "same feed as the rail")}${metric("NEEDS ATTENTION", runs.filter((r) => r.state === "stopped").length, "stopped demo runs")}${metric("FRAME", "READY", "example host state")}</div>` +
+        `<div class="host-columns"><section class="host-panel"><div class="host-panel-head"><div><span>01 / CONTINUE WORK</span><h3>Your workspaces</h3></div><button type="button" data-host-route="projects">All projects →</button></div>${workspaceRows}</section><section class="host-panel"><div class="host-panel-head"><div><span>02 / RUNTIME</span><h3>Host status</h3></div><button type="button" data-host-route="doctor">Open Doctor →</button></div><div class="host-check"><span class="host-good">●</span><div><strong>Frame host ready</strong><small>Demo projection · client can switch views</small></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Workspaces stay attached</strong><small>Navigation changes only this client's view</small></div></div><div class="host-check"><span class="host-muted">○</span><div><strong>No real machine checks</strong><small>This site does not read your local runtime</small></div></div></section></div><div class="host-scenario">${scenario}</div>`;
+    } else if (h === "runs") {
+      body =
+        heading(
+          "Active runs",
+          "The host feed connects every run to its owning workspace.",
+        ) +
+        `<div class="host-metrics">${metric("IN PROGRESS", active.length, "launching or active")}${metric("NEEDS ATTENTION", runs.filter((r) => r.state === "stopped").length, "stopped")}${metric("HISTORY", runs.filter((r) => r.state === "report_validated").length, "settled in this demo")}</div>` +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>RUN FEED</span><h3>Across workspaces</h3></div></div>${runs.length ? runs.map((r) => `<div class="host-list-row"><span class="host-list-icon">↗</span><div class="host-list-copy"><strong>${esc(r.agent)} / ${esc(r.skill)}</strong><small>${esc(r.id)} · ${esc(workspaces.find((w) => w.id === r.wsId)?.name || "workspace")}</small></div><span class="host-state">${esc(r.state)}</span><button type="button" data-workspace="${r.wsId}">Open workspace ↗</button></div>`).join("") : `<div class="host-empty"><strong>No agent runs in this demo yet.</strong><p>Open a workspace and start a demo run from its Shell. It will appear here and in the rail count.</p><button type="button" data-host-route="projects">Choose a workspace →</button></div>`}</section>`;
+    } else if (h === "config") {
+      body =
+        heading(
+          "Config",
+          "The settings a host would expose, with a visible source for each value.",
+        ) +
+        `<div class="host-columns"><section class="host-panel"><div class="host-panel-head"><div><span>HOST / EXAMPLE VALUES</span><h3>Runtime</h3></div></div><div class="host-setting"><span>Host identity</span><strong>Operator Frame</strong><small>Source: simulator fixture</small></div><div class="host-setting"><span>Client view</span><strong>Local Frame</strong><small>Source: simulator fixture</small></div><div class="host-setting"><span>Workspace restore</span><strong>Enabled</strong><small>Source: target contract</small></div></section><section class="host-panel"><div class="host-panel-head"><div><span>BOUNDARIES</span><h3>Ownership</h3></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Host owns navigation</strong><small>Dashboard, Config, Doctor, Projects and Voc</small></div></div><div class="host-check"><span class="host-good">●</span><div><strong>Guests own their organs</strong><small>Overview, Agents and Shell per workspace</small></div></div><div class="host-check"><span class="host-muted">○</span><div><strong>Local config stays private</strong><small>No machine settings are read by this page</small></div></div></section></div>`;
+    } else if (h === "doctor") {
+      body =
+        heading(
+          "Doctor",
+          "Named checks and next actions. These are examples, not a diagnosis of this machine.",
+        ) +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>SIMULATED CHECKS</span><h3>Frame readiness</h3></div><span class="host-state">3 example checks</span></div><div class="host-check"><span class="host-good">✓</span><div><strong>Host route is available</strong><small>Dashboard and host views remain accessible with zero workspaces.</small></div><span class="host-state">PASS</span></div><div class="host-check"><span class="host-good">✓</span><div><strong>Guest isolation</strong><small>Switching host views does not erase workspace state.</small></div><span class="host-state">PASS</span></div><div class="host-check"><span class="host-muted">○</span><div><strong>Installed runtime</strong><small>Not connected to this website. Run vc-doctor on your own machine.</small></div><span class="host-state">NOT CHECKED</span></div></section>`;
+    } else if (h === "projects") {
+      body =
+        heading(
+          "Projects",
+          "A project in the catalog becomes a rail workspace only when opened.",
+        ) +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>OPEN WORKSPACES</span><h3>Return to a session</h3></div><span class="host-state">${workspaces.length} in rail</span></div>${workspaces.length ? workspaces.map(row).join("") : `<div class="host-empty"><strong>No workspaces open.</strong><p>Choose a repository below.</p></div>`}</section>` +
+        `<section class="host-panel"><div class="host-panel-head"><div><span>PROJECT CATALOG / EXAMPLES</span><h3>Open another repository</h3></div></div>${PROJECT_CATALOG.map((p, i) => `<div class="host-list-row"><span class="host-list-icon">+</span><div class="host-list-copy"><strong>${esc(p.name)}</strong><small>${esc(p.root)} · ${esc(p.branch)}</small></div><button type="button" data-catalog="${i}">Open workspace ↗</button></div>`).join("")}</section>`;
+    } else {
+      body =
+        heading("Voc", "The host console sees run state across projects.") +
+        `<div class="host-metrics">${metric("ACTIVE RUNS", active.length, "from the shared feed")}${metric("WORKSPACES", workspaces.length, "guest sessions")}</div><section class="host-panel"><div class="host-panel-head"><div><span>GLOBAL CONSOLE</span><h3>Attention and history</h3></div><button type="button" data-host-route="runs">Open run feed →</button></div><div class="host-empty"><strong>${active.length ? `${active.length} active run(s)` : "No live runs loaded"}</strong><p>Open a workspace to launch a demo run; return here to follow it from the host.</p></div></section>`;
+    }
+    return `<div class="host-screen"><div class="host-demo">SIMULATOR <span>· example state, no local runtime connection</span></div>${body}</div>`;
+  }
+
+  function selectWorkspace(id) {
+    if (id === activeId && !hostView) return;
+    const s = current();
+    if (s && organ === "shell") s.buf = term.innerHTML;
+    const t = workspaces.find((x) => x.id === id);
+    if (!t) return;
+    activeId = id;
+    hostView = null;
+    organ = t.organ || "overview";
+    render();
+  }
+  function selectHost(route) {
+    saveBuf();
+    hostView = route;
+    render();
+  }
+  function saveBuf() {
+    const s = current();
+    if (s && organ === "shell" && !hostView) s.buf = term.innerHTML;
+  }
+
+  function nowId() {
+    const d = new Date();
+    const p = (n) => String(n).padStart(2, "0");
+    return `work-${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}-${10000 + Math.floor(Math.random() * 89999)}`;
+  }
+
+  const CHATTER = {
+    workflow: [
+      "loct context — atlas przeczytany do końca (00–05)",
+      "slice() na plikach celu, impact() przed cięciem",
+      "implement: cut wylądował, gates w toku",
+      "pytest -q … zielone",
+    ],
+    marbles: [
+      "L1: mapa pęknięć — 3 kandydaci",
+      "L1 fix + verify: 2/3 zamknięte",
+      "L2: kontrprzykład ubity, re-run gates",
+      "powierzchnia trzyma — settle",
+    ],
+    prune: [
+      "runtime cone zdefiniowany",
+      "KEEP-RUNTIME 61 · DELETE-NOW 14 · FORGOTTEN-GEM 3",
+      "gates po fali: zielone",
+      "gems report zapisany",
+    ],
+    generic: [
+      "vc-init: perception → intentions → ground truth",
+      "praca w toku…",
+      "artefakty zapisane do reports/",
+      "gates: zielone",
+    ],
+  };
+
+  function startRun(skill, agent, promptTxt) {
+    const id = nowId();
+    const run = {
+      id,
+      agent,
+      skill,
+      state: "launching",
+      t0: Date.now(),
+      lines: [],
+      wsId: activeId,
+      report: `reports/${skill}/${id}_report.md`,
+    };
+    runs.push(run);
+    const s = current();
+    if (s) {
+      s.group = "live";
+      s.agent = agent;
+      s.time = clockNow();
+      s.proc = `❯_ ${agent} · ${skill}`;
+      if (!s.agents.includes(agent)) s.agents.push(agent);
+    }
+    render();
+    raw(
+      `<span class="d">==================== VIBECRAFTED LAUNCH RECEIPT ====================</span>`,
+    );
+    line(`run_id:     ${id}`);
+    line(`agent:      ${agent}`);
+    line(`skill:      ${skill}`);
+    line(`workspace:  ${current().name}`);
+    line(`status:     launching`);
+    line(`report:     ~/.vibecrafted/artifacts/…/${run.report}`);
+    raw(
+      `observe:    <span class="b">vibecrafted ${agent} observe --run-id ${id}</span>`,
+    );
+    raw(
+      `await (ARM NOW, supervisor-side): <span class="b">vibecrafted ${agent} await --run-id ${id}</span>`,
+    );
+    raw(
+      `<span class="d">=====================================================================</span>`,
+    );
+    raw(
+      `<span class="d">watch the rail: ❖ Active runs in Operator Frame just ticked.</span>`,
+    );
+    const chat = CHATTER[skill] || CHATTER.generic;
+    let step = 0;
+    run.timer = setInterval(() => {
+      if (step === 0) {
+        run.state = "active";
+        run.lines.push("worker alive, transcript rośnie");
+      } else if (step <= chat.length) {
+        run.lines.push(chat[step - 1]);
+      } else {
+        run.state = "report_validated";
+        run.settle = Math.random() < 0.85 ? "f" : "x";
+        clearInterval(run.timer);
+        const s2 = workspaces.find((w) => w.id === run.wsId);
+        if (s2) {
+          s2.proc = "";
+        }
+        raw(
+          `<span class="d">[${run.id}]</span> <span class="g">report_validated</span> — settlement <span class="${run.settle === "f" ? "g" : "y"}">${run.settle}</span> · raport: ${run.report}`,
+        );
+      }
+      paintRail();
+      step++;
+    }, 2200);
+    if (promptTxt) run.lines.push(`prompt: ${promptTxt}`);
+  }
+
+  const HELP = `<span class="c bold">⚒  𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. 4.3.1+b85bfd13</span> — release engine for AI-developed software
 <span class="d">─────────────────────────────────────────</span>
 <span class="d">Frame anatomy: rail góra = host (Operator Frame, pinned) · rail dół = guests (Workspaces) · organy gościa: Overview / Agents / Shell · Voc = konsola hosta · ⿻ Panels = warstwa rozmów [Global|Project]</span>
 
@@ -426,102 +1619,454 @@ Ship cycle:
 Agents:  ${AGENTS.join(" · ")}
 Spróbuj: <span class="b">workflow kimi -p "Ship dark mode"</span> · <span class="b">marbles claude -p "loop until clean"</span> · <span class="b">help marbles</span>`;
 
-function helpTopic(t){
-  if(SKILLS[t]){const[rw,v]=SKILLS[t];
-    raw(`<span class="c bold">⚒  ${t}</span>\n<span class="d">─────────────────────────────</span>\n  version ${v} · <span class="${rw==="READ"?"g":"c"}">${rw}</span>\nUsage:\n  vibecrafted ${t} &lt;${AGENTS.join("|")}&gt; [flags]\n  vc-${t} &lt;agent&gt; [flags]${FLOWS[t]?`\nFlow:\n  ${FLOWS[t]}`:""}\nFlags: -p/--prompt · -f/--file · --prompt-stdin · --runtime · --root · --model · --json${t==="marbles"?" · --count · --depth\nControls: pause stop resume session inspect delete gc":""}`);return}
-  const T={resume:`Usage:\n  vibecrafted resume &lt;agent&gt; --run-id work-… | --session &lt;uuid&gt; | (AICX 48h pack)\nNigdy work-* do --session. --fork-session tylko claude.`,
-  uninstall:`Usage:\n  vibecrafted uninstall [--dry-run]\nInwentarz → restore kit → cięcie. Dry-run znaczy suchy. Serio.`,
-  server:`Usage:\n  vibecrafted server [start|stop|status|open|doctor] [--port 3024]\n  vibecrafted server service [install|start|stop|status|uninstall]`,
-  dispatch:`Usage:\n  vibecrafted dispatch &lt;plan.dispatch.toml&gt; [--doctor|--dry-run|--json|--resume]\n  vibecrafted dispatch run --run-id … -- &lt;cmd&gt;`,
-  loop:`Usage:\n  vibecrafted loop start --prompt "…" [--completion-promise READY]\n  vibecrafted loop next | status | complete | await-run --run-id … --then-cmd '…'`};
-  if(T[t]){raw(`<span class="c bold">⚒  ${t}</span>\n${T[t]}`);return}
-  line(`Brak topicu "${t}" w symulatorze.`,"d")
-}
+  function helpTopic(t) {
+    if (SKILLS[t]) {
+      const [rw, v] = SKILLS[t];
+      raw(
+        `<span class="c bold">⚒  ${t}</span>\n<span class="d">─────────────────────────────</span>\n  version ${v} · <span class="${rw === "READ" ? "g" : "c"}">${rw}</span>\nUsage:\n  vibecrafted ${t} &lt;${AGENTS.join("|")}&gt; [flags]\n  vc-${t} &lt;agent&gt; [flags]${FLOWS[t] ? `\nFlow:\n  ${FLOWS[t]}` : ""}\nFlags: -p/--prompt · -f/--file · --prompt-stdin · --runtime · --root · --model · --json${t === "marbles" ? " · --count · --depth\nControls: pause stop resume session inspect delete gc" : ""}`,
+      );
+      return;
+    }
+    const T = {
+      resume: `Usage:\n  vibecrafted resume &lt;agent&gt; --run-id work-… | --session &lt;uuid&gt; | (AICX 48h pack)\nNigdy work-* do --session. --fork-session tylko claude.`,
+      uninstall: `Usage:\n  vibecrafted uninstall [--dry-run]\nInwentarz → restore kit → cięcie. Dry-run znaczy suchy. Serio.`,
+      server: `Usage:\n  vibecrafted server [start|stop|status|open|doctor] [--port 3024]\n  vibecrafted server service [install|start|stop|status|uninstall]`,
+      dispatch: `Usage:\n  vibecrafted dispatch &lt;plan.dispatch.toml&gt; [--doctor|--dry-run|--json|--resume]\n  vibecrafted dispatch run --run-id … -- &lt;cmd&gt;`,
+      loop: `Usage:\n  vibecrafted loop start --prompt "…" [--completion-promise READY]\n  vibecrafted loop next | status | complete | await-run --run-id … --then-cmd '…'`,
+    };
+    if (T[t]) {
+      raw(`<span class="c bold">⚒  ${t}</span>\n${T[t]}`);
+      return;
+    }
+    line(`Brak topicu "${t}" w symulatorze.`, "d");
+  }
 
-function cmdStatus(){
-  if(!runs.length){line("Cisza. Zero runów w tej sesji.","d");return}
-  runs.forEach(r=>{const st=r.state==="report_validated"?`<span class="g">${r.state}</span>`:r.state==="active"?`<span class="c">active</span>`:`<span class="d">${r.state}</span>`;
-    raw(`  ${r.id}  ${r.agent.padEnd(6)}  ${r.skill.padEnd(10)}  ${st}${r.settle?`  <span class="${r.settle==="f"?"g":"y"}">${r.settle}</span>`:""}`)})
-}
-function findRun(args){
-  if(args.includes("--last"))return runs[runs.length-1];
-  const i=args.indexOf("--run-id");if(i>=0)return runs.find(r=>r.id===args[i+1]);
-  return runs[runs.length-1];
-}
+  function cmdStatus() {
+    if (!runs.length) {
+      line("Cisza. Zero runów w tej sesji.", "d");
+      return;
+    }
+    runs.forEach((r) => {
+      const st =
+        r.state === "report_validated"
+          ? `<span class="g">${r.state}</span>`
+          : r.state === "active"
+            ? `<span class="c">active</span>`
+            : `<span class="d">${r.state}</span>`;
+      raw(
+        `  ${r.id}  ${r.agent.padEnd(6)}  ${r.skill.padEnd(10)}  ${st}${r.settle ? `  <span class="${r.settle === "f" ? "g" : "y"}">${r.settle}</span>` : ""}`,
+      );
+    });
+  }
+  function findRun(args) {
+    if (args.includes("--last")) return runs[runs.length - 1];
+    const i = args.indexOf("--run-id");
+    if (i >= 0) return runs.find((r) => r.id === args[i + 1]);
+    return runs[runs.length - 1];
+  }
 
-function exec(text){
-  const t=text.trim();if(!t)return;prompt_(t);
-  hist.push(t);hi=hist.length;
-  let rest=t.replace(/^vibecrafted(?:\s+|$)/,"").replace(/^vc-/,"").trim();
-  if(!rest) rest="help";
-  const a=rest.split(/\s+/);let c=a[0];
-  if(MODES.includes(c)&&AGENTS.includes(a[1])){const ag=a[1];a[1]=c;a[0]=ag;c=ag;}
-  const pIdx=a.findIndex(x=>x==="-p"||x==="--prompt");
-  const ptxt=pIdx>=0?t.split(/\s(?:-p|--prompt)\s/)[1]?.replace(/^"|"$/g,""):null;
+  function exec(text) {
+    const t = text.trim();
+    if (!t) return;
+    prompt_(t);
+    hist.push(t);
+    hi = hist.length;
+    let rest = t
+      .replace(/^vibecrafted(?:\s+|$)/, "")
+      .replace(/^vc-/, "")
+      .trim();
+    if (!rest) rest = "help";
+    const a = rest.split(/\s+/);
+    let c = a[0];
+    if (MODES.includes(c) && AGENTS.includes(a[1])) {
+      const ag = a[1];
+      a[1] = c;
+      a[0] = ag;
+      c = ag;
+    }
+    const pIdx = a.findIndex((x) => x === "-p" || x === "--prompt");
+    const ptxt =
+      pIdx >= 0
+        ? t.split(/\s(?:-p|--prompt)\s/)[1]?.replace(/^"|"$/g, "")
+        : null;
 
-  if(c==="clear"){term.innerHTML="";return}
-  if(c==="help"||c==="--help"||c==="-h"){a[1]&&a[1]!=="--all"?helpTopic(a[1]):raw(HELP);return}
-  if(c==="version"){line("vibecrafted 4.3.1+b85bfd13 (simulator)");return}
-  if(c==="status"||c==="stats"){cmdStatus();return}
-  if(c==="doctor"||c==="check"){raw(hostBuffer("doctor"));return}
-  if(c==="receipt"){raw(`vetcoders/vibecrafted → stack/command-bridge-on-pr-96 @ <span class="a">b85bfd13</span> · dirty=no · installed=0abea9ea <span class="y">SOURCE_AHEAD_OF_INSTALLED</span>`);return}
-  if(c==="uninstall"||c==="remove"){
-    if(a.includes("--dry-run")){raw(`<span class="bold">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Uninstall</span>\n\nManaged teardown inventory:\n  remove   shared-skill: …/skills/vc-agents  <span class="d">(+31 dalszych)</span>\n  remove   runtime-data: releases · providers · server · active.json\n  preserve operator-data: artifacts · control_plane · logs\n\n<span class="g">Dry run — nic nie usunięto, zero backupu.</span>`);return}
-    raw(`<span class="r">✗</span> Simulator refuses a wet uninstall.`);return}
-  if(c==="dashboard"||c==="start"){a[1]==="ls"?raw(workspaces.map(s=>`  ${String(s.id+1).padStart(2,"0")} ${s.name}  <span class="d">${s.group}</span>`).join("\n")):line(`[sim] layout: ${a[1]||"dashboard"} — in real life vc-frame takes the screen`,"d");return}
-  if(c==="init"&&(!a[1]||AGENTS.includes(a[1]))){raw(`<span class="a">⚒</span> init ${a[1]||"claude"}: perception (loct context — czytaj DO KOŃCA) → intentions (aicx intents) → ground truth (repo-full)\n<span class="d">Orientacja, nie pipeline. Ślepy start = process failure.</span>`);return}
-  if(AGENTS.includes(c)){const m=a[1];
-    if(!m||!MODES.includes(m)){raw(`Modes for ${c}: ${MODES.join(" · ")}`);return}
-    if(m==="observe"){const r=findRun(a);r?raw(`<span class="d">[${r.id}] tail:</span>\n`+r.lines.slice(-4).map(l=>"  "+esc(l)).join("\n")):line("Brak runów.","d");return}
-    if(m==="await"){const r=findRun(a);if(!r){line("Brak runów.","d");return}
-      line(`await uzbrojony na ${r.id} — supervisor-side, bez pollingu…`,"d");
-      const iv=setInterval(()=>{if(r.state==="report_validated"){clearInterval(iv);raw(`<span class="g">await:</span> ${r.id} → report_validated · settlement <span class="${r.settle==="f"?"g":"y"}">${r.settle}</span>`)}},600);return}
-    if(m==="stop"){const r=findRun(a);if(r&&r.timer){clearInterval(r.timer);r.state="stopped";paintRail();raw(`<span class="y">TERM</span> → ${r.id} stopped. Restart tylko jako NOWY tracked job: <span class="b">${c} resume --run-id ${r.id}</span>`)}else line("Nie ma czego stopować.","d");return}
-    if(m==="resume"){const r=findRun(a);if(r){startRun(r.skill,c,"(resume z batonem)")}else line("Brak runa do wznowienia.","d");return}
-    startRun(m==="prompt"?"justdo":m,c,a.slice(2).join(" "));return}
-  if(SKILLS[c]){const ag=AGENTS.includes(a[1])?a[1]:null;
-    if(!ag){raw(`Usage: vibecrafted ${c} &lt;${AGENTS.join("|")}&gt; [-p "…"]`);return}
-    if(c==="marbles"&&["pause","stop","resume","gc","inspect","session","delete"].includes(a[1])){line(`[marbles ${a[1]}] kontrola orkiestratora — symulacja przyjęta`,"d");return}
-    startRun(c,ag,ptxt);return}
-  if(c==="server"){raw(`server ${a[1]||"status"}: <span class="g">●</span> io.vetcoders.vibecrafted.server enabled · port 3024 <span class="d">(symulacja)</span>`);return}
-  if(c==="gui"||c==="tui"){line(`[sim] ${c==="gui"?"control plane na 127.0.0.1":"Voc — rustowy kokpit (host console, patrz top bar)"}`,"d");return}
-  if(c==="loop"||c==="cron"||c==="dispatch"||c==="ship"||c==="telemetry"){helpTopic(c==="ship"?"loop":c);return}
-  raw(`<span class="a">⚒</span>  "${esc(c)}" is not in the command deck.\n  Try <span class="b">help</span> for the current surface.`)
-}
+    if (c === "clear") {
+      term.innerHTML = "";
+      return;
+    }
+    if (c === "help" || c === "--help" || c === "-h") {
+      a[1] && a[1] !== "--all" ? helpTopic(a[1]) : raw(HELP);
+      return;
+    }
+    if (c === "version") {
+      line("vibecrafted 4.3.1+b85bfd13 (simulator)");
+      return;
+    }
+    if (c === "status" || c === "stats") {
+      cmdStatus();
+      return;
+    }
+    if (c === "doctor" || c === "check") {
+      selectHost("doctor");
+      return;
+    }
+    if (c === "receipt") {
+      raw(
+        `vetcoders/vibecrafted → stack/command-bridge-on-pr-96 @ <span class="a">b85bfd13</span> · dirty=no · installed=0abea9ea <span class="y">SOURCE_AHEAD_OF_INSTALLED</span>`,
+      );
+      return;
+    }
+    if (c === "uninstall" || c === "remove") {
+      if (a.includes("--dry-run")) {
+        raw(
+          `<span class="bold">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. Uninstall</span>\n\nManaged teardown inventory:\n  remove   shared-skill: …/skills/vc-agents  <span class="d">(+31 dalszych)</span>\n  remove   runtime-data: releases · providers · server · active.json\n  preserve operator-data: artifacts · control_plane · logs\n\n<span class="g">Dry run — nic nie usunięto, zero backupu.</span>`,
+        );
+        return;
+      }
+      raw(`<span class="r">✗</span> Simulator refuses a wet uninstall.`);
+      return;
+    }
+    if (c === "dashboard" || c === "start") {
+      selectHost("dashboard");
+      return;
+    }
+    if (c === "projects" || c === "config" || c === "runs" || c === "voc") {
+      selectHost(c);
+      return;
+    }
+    if (c === "init" && (!a[1] || AGENTS.includes(a[1]))) {
+      raw(
+        `<span class="a">⚒</span> init ${a[1] || "claude"}: perception (loct context — czytaj DO KOŃCA) → intentions (aicx intents) → ground truth (repo-full)\n<span class="d">Orientacja, nie pipeline. Ślepy start = process failure.</span>`,
+      );
+      return;
+    }
+    if (AGENTS.includes(c)) {
+      const m = a[1];
+      if (!m || !MODES.includes(m)) {
+        raw(`Modes for ${c}: ${MODES.join(" · ")}`);
+        return;
+      }
+      if (m === "observe") {
+        const r = findRun(a);
+        r
+          ? raw(
+              `<span class="d">[${r.id}] tail:</span>\n` +
+                r.lines
+                  .slice(-4)
+                  .map((l) => "  " + esc(l))
+                  .join("\n"),
+            )
+          : line("Brak runów.", "d");
+        return;
+      }
+      if (m === "await") {
+        const r = findRun(a);
+        if (!r) {
+          line("Brak runów.", "d");
+          return;
+        }
+        line(
+          `await uzbrojony na ${r.id} — supervisor-side, bez pollingu…`,
+          "d",
+        );
+        const iv = setInterval(() => {
+          if (r.state === "report_validated") {
+            clearInterval(iv);
+            raw(
+              `<span class="g">await:</span> ${r.id} → report_validated · settlement <span class="${r.settle === "f" ? "g" : "y"}">${r.settle}</span>`,
+            );
+          }
+        }, 600);
+        return;
+      }
+      if (m === "stop") {
+        const r = findRun(a);
+        if (r && r.timer) {
+          clearInterval(r.timer);
+          r.state = "stopped";
+          paintRail();
+          raw(
+            `<span class="y">TERM</span> → ${r.id} stopped. Restart tylko jako NOWY tracked job: <span class="b">${c} resume --run-id ${r.id}</span>`,
+          );
+        } else line("Nie ma czego stopować.", "d");
+        return;
+      }
+      if (m === "resume") {
+        const r = findRun(a);
+        if (r) {
+          startRun(r.skill, c, "(resume z batonem)");
+        } else line("Brak runa do wznowienia.", "d");
+        return;
+      }
+      startRun(m === "prompt" ? "justdo" : m, c, a.slice(2).join(" "));
+      return;
+    }
+    if (SKILLS[c]) {
+      const ag = AGENTS.includes(a[1]) ? a[1] : null;
+      if (!ag) {
+        raw(`Usage: vibecrafted ${c} &lt;${AGENTS.join("|")}&gt; [-p "…"]`);
+        return;
+      }
+      if (
+        c === "marbles" &&
+        [
+          "pause",
+          "stop",
+          "resume",
+          "gc",
+          "inspect",
+          "session",
+          "delete",
+        ].includes(a[1])
+      ) {
+        line(
+          `[marbles ${a[1]}] kontrola orkiestratora — symulacja przyjęta`,
+          "d",
+        );
+        return;
+      }
+      startRun(c, ag, ptxt);
+      return;
+    }
+    if (c === "server") {
+      raw(
+        `server ${a[1] || "status"}: <span class="g">●</span> io.vetcoders.vibecrafted.server enabled · port 3024 <span class="d">(symulacja)</span>`,
+      );
+      return;
+    }
+    if (c === "gui" || c === "tui") {
+      line(
+        `[sim] ${c === "gui" ? "control plane na 127.0.0.1" : "Voc — rustowy kokpit (host console, patrz top bar)"}`,
+        "d",
+      );
+      return;
+    }
+    if (
+      c === "loop" ||
+      c === "cron" ||
+      c === "dispatch" ||
+      c === "ship" ||
+      c === "telemetry"
+    ) {
+      helpTopic(c === "ship" ? "loop" : c);
+      return;
+    }
+    raw(
+      `<span class="a">⚒</span>  "${esc(c)}" is not in the command deck.\n  Try <span class="b">help</span> for the current surface.`,
+    );
+  }
 
-/* ── wiring ── */
-input.addEventListener("keydown",e=>{
-  if(e.key==="Enter"){exec(input.value);input.value="";}
-  else if(e.key==="ArrowUp"){if(hi>0){hi--;input.value=hist[hi]||"";e.preventDefault()}}
-  else if(e.key==="ArrowDown"){if(hi<hist.length){hi++;input.value=hist[hi]||"";e.preventDefault()}}
-  else if(e.key==="Tab"){e.preventDefault();
-    const parts=input.value.split(/\s+/);const last=parts[parts.length-1];
-    const pool=parts.length<=1?DECK:(SKILLS[parts[0]]||["init","resume"].includes(parts[0])?AGENTS:AGENTS.includes(parts[0])?MODES:DECK);
-    const hit=pool.filter(x=>x.startsWith(last));
-    if(hit.length===1){parts[parts.length-1]=hit[0];input.value=parts.join(" ")+" "}
-    else if(hit.length>1)line(hit.join("  "),"d");}
-});
-document.addEventListener("click",e=>{
-  if(e.target.closest(".rail")||e.target.closest(".topbar")||e.target.closest(".panels-overlay")) return;
-  if(organ!=="shell"||hostView)return;
-  if(!window.getSelection().toString()) input.focus();
-});
-document.querySelectorAll(".host-item").forEach(n=>{
-  n.addEventListener("click",()=>{saveBuf();hostView=n.dataset.host;render();});
-});
-$("#voc-btn").addEventListener("click",()=>{saveBuf();hostView="voc";render();});
-$("#panels-btn").addEventListener("click",e=>{e.stopPropagation();$("#panels").classList.toggle("on");paintPanels();});
-$("#new-ws").addEventListener("click",()=>{
-  saveBuf();
-  const id=nextId++;
-  workspaces.push({id,name:"workspace-"+id,branch:"main",pr:"—",diff:"",group:"idle",agents:[],proc:"",time:clockNow()});
-  selectWorkspace(id);
-});
+  /* ── wiring ── */
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      exec(input.value);
+      input.value = "";
+    } else if (e.key === "ArrowUp") {
+      if (hi > 0) {
+        hi--;
+        input.value = hist[hi] || "";
+        e.preventDefault();
+      }
+    } else if (e.key === "ArrowDown") {
+      if (hi < hist.length) {
+        hi++;
+        input.value = hist[hi] || "";
+        e.preventDefault();
+      }
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      const parts = input.value.split(/\s+/);
+      const last = parts[parts.length - 1];
+      const pool =
+        parts.length <= 1
+          ? DECK
+          : SKILLS[parts[0]] || ["init", "resume"].includes(parts[0])
+            ? AGENTS
+            : AGENTS.includes(parts[0])
+              ? MODES
+              : DECK;
+      const hit = pool.filter((x) => x.startsWith(last));
+      if (hit.length === 1) {
+        parts[parts.length - 1] = hit[0];
+        input.value = parts.join(" ") + " ";
+      } else if (hit.length > 1) line(hit.join("  "), "d");
+    }
+  });
+  document.addEventListener("click", (e) => {
+    if (
+      e.target.closest(".rail") ||
+      e.target.closest(".topbar") ||
+      e.target.closest(".panels-overlay")
+    )
+      return;
+    if (organ !== "shell" || hostView) return;
+    if (!window.getSelection().toString()) input.focus();
+  });
+  document.querySelectorAll(".host-item").forEach((n) => {
+    n.addEventListener("click", () => selectHost(n.dataset.host));
+  });
+  $("#ov-agents").addEventListener("click", (e) => {
+    if (!e.target.closest("#new-agent")) return;
+    organ = "shell";
+    current().organ = "shell";
+    render();
+    input.value = 'workflow kimi -p "Describe the first cut"';
+    input.focus();
+  });
+  $("#composer-btn").addEventListener("click", () => {
+    $("#composer-overlay").hidden = !$("#composer-overlay").hidden;
+    if (!$("#composer-overlay").hidden) $("#composer-draft").focus();
+  });
+  $("#quick-btn").addEventListener("click", () => {
+    $("#quick-overlay").hidden = !$("#quick-overlay").hidden;
+    if (!$("#quick-overlay").hidden) $("#quick-input").focus();
+  });
+  document.querySelectorAll("[data-close-overlay]").forEach((b) =>
+    b.addEventListener("click", () => {
+      $("#" + b.dataset.closeOverlay).hidden = true;
+    }),
+  );
+  $("#composer-send").addEventListener("click", () => {
+    const draft = $("#composer-draft").value.trim();
+    if (!draft) return;
+    if (!current()) {
+      selectHost("projects");
+      $("#composer-overlay").hidden = true;
+      return;
+    }
+    selectWorkspace(activeId);
+    organ = "shell";
+    current().organ = "shell";
+    render();
+    input.value = draft;
+    input.focus();
+    $("#composer-overlay").hidden = true;
+  });
+  $("#quick-input").addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      $("#quick-overlay").hidden = true;
+      return;
+    }
+    if (e.key !== "Enter") return;
+    const command = e.target.value.trim();
+    if (!command) return;
+    $("#quick-overlay").hidden = true;
+    e.target.value = "";
+    if (
+      ["dashboard", "projects", "config", "doctor", "runs", "voc"].includes(
+        command,
+      )
+    ) {
+      selectHost(command);
+      return;
+    }
+    if (!current()) {
+      selectHost("projects");
+      return;
+    }
+    selectWorkspace(activeId);
+    organ = "shell";
+    current().organ = "shell";
+    render();
+    exec(command);
+  });
+  $("#theme-btn").addEventListener("click", () => {
+    document.documentElement.classList.toggle("light");
+    $("#theme-btn").textContent = document.documentElement.classList.contains(
+      "light",
+    )
+      ? "☼"
+      : "☾";
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      $("#composer-overlay").hidden = true;
+      $("#quick-overlay").hidden = true;
+      $("#panels").classList.remove("on");
+    }
+  });
+  $("#voc-btn").addEventListener("click", () =>
+    selectHost(hostView === "voc" ? "dashboard" : "voc"),
+  );
+  $("#panels-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    $("#panels").classList.toggle("on");
+    paintPanels();
+  });
+  term.addEventListener("click", (e) => {
+    const button = e.target.closest("button");
+    if (!button) return;
+    if (button.dataset.scenario) {
+      runs.forEach((run) => clearInterval(run.timer));
+      runs.length = 0;
+      workspaces.length = 0;
+      if (button.dataset.scenario === "sample")
+        workspaces.push(
+          ...sampleWorkspaces.map((w) => ({ ...w, agents: [...w.agents] })),
+        );
+      activeId = workspaces[0]?.id ?? null;
+      hostView = "dashboard";
+      organ = "overview";
+      render();
+      return;
+    }
+    if (button.dataset.hostRoute) selectHost(button.dataset.hostRoute);
+    if (button.dataset.workspace !== undefined)
+      selectWorkspace(Number(button.dataset.workspace));
+    if (button.dataset.catalog !== undefined) {
+      const p = PROJECT_CATALOG[Number(button.dataset.catalog)];
+      if (!p) return;
+      const existing = workspaces.find((w) => w.root === p.root);
+      if (existing) {
+        selectWorkspace(existing.id);
+        return;
+      }
+      const id = nextId++;
+      workspaces.push({
+        id,
+        name: p.name,
+        root: p.root,
+        branch: p.branch,
+        pr: "—",
+        diff: "",
+        group: "idle",
+        agents: [],
+        proc: "",
+        time: "demo",
+        organ: "overview",
+        buf: IDLE_PANE,
+      });
+      selectWorkspace(id);
+    }
+  });
+  $("#new-ws").addEventListener("click", () => selectHost("projects"));
 
-/* boot — buffers from the real dump */
-workspaces[0].buf=KIMI_SPARSE;
-workspaces[2].buf=SETTLEMENT;
-workspaces.forEach(s=>{if(!s.buf)s.buf=IDLE_PANE});
-render();
-if(!EMBED) input.focus();
+  /* boot — buffers from the real dump */
+  workspaces[0].buf = KIMI_SPARSE;
+  workspaces[2].buf = SETTLEMENT;
+  workspaces.forEach((s) => {
+    if (!s.buf) s.buf = IDLE_PANE;
+  });
+  sampleWorkspaces = workspaces.map((w) => ({ ...w, agents: [...w.agents] }));
+  render();
+  function fitGrid() {
+    const app = document.querySelector(".app"),
+      font = getComputedStyle(document.body),
+      canvas = document.createElement("canvas"),
+      ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.font = `${font.fontSize} ${font.fontFamily}`;
+    const gridWidth = (ctx.measureText("0").width - 3) * 170,
+      gridHeight = parseFloat(font.lineHeight) * 41;
+    const scale = Math.min(innerWidth / gridWidth, innerHeight / gridHeight);
+    app.style.width = `${gridWidth}px`;
+    app.style.height = `${gridHeight}px`;
+    app.style.transform = `scale(${scale})`;
+    app.style.left = `${Math.max(0, (innerWidth - gridWidth * scale) / 2)}px`;
+    app.style.top = `${Math.max(0, (innerHeight - gridHeight * scale) / 2)}px`;
+  }
+  addEventListener("resize", fitGrid);
+  document.fonts.ready.then(fitGrid);
+  fitGrid();
+  if (!EMBED && !hostView) input.focus();
 </script>
