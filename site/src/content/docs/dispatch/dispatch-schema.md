@@ -83,16 +83,17 @@ plane itself is accepted.
 
 ## `[policy]`
 
-| Key                         | Default        | Values / meaning                                        |
-| --------------------------- | -------------- | ------------------------------------------------------- |
-| `repair_rounds`             | `0`            | Repair attempts after a failed cut                      |
-| `on_critical_fail`          | `"break"`      | `break` \| `continue`                                   |
-| `on_timeout`                | `"fail"`       | `repair` \| `fail` \| `continue`                        |
-| `concurrency`               | `1`            | `> 1` requires `allow_concurrency = true`               |
-| `allow_concurrency`         | `false`        | Also accepted: `enable_concurrency`, `parallel_enabled` |
-| `verify_executor`           | `"supervisor"` | Who runs verifiers                                      |
-| `require_commit`            | `false`        | Require a commit from the worker                        |
-| `allow_idempotent_existing` | `true`         | Accept already-satisfied cuts                           |
+| Key                         | Default        | Values / meaning                                                                                                       |
+| --------------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `repair_rounds`             | `0`            | Repair attempts after a failed cut                                                                                     |
+| `on_critical_fail`          | `"break"`      | `break` \| `continue`                                                                                                  |
+| `on_noncritical_dep_fail`   | `"stop"`       | `stop` fences queued cuts after an unverified non-critical contract; `continue` explicitly permits expendable failures |
+| `on_timeout`                | `"fail"`       | `repair` \| `fail` \| `continue`                                                                                       |
+| `concurrency`               | `1`            | `> 1` requires `allow_concurrency = true`                                                                              |
+| `allow_concurrency`         | `false`        | Also accepted: `enable_concurrency`, `parallel_enabled`                                                                |
+| `verify_executor`           | `"supervisor"` | Who runs verifiers                                                                                                     |
+| `require_commit`            | `false`        | Require a commit from the worker                                                                                       |
+| `allow_idempotent_existing` | `true`         | Accept already-satisfied cuts                                                                                          |
 
 ### `[policy.await]`
 
@@ -117,7 +118,7 @@ the titles.
 | Key                | Required     | Meaning                                                                                                               |
 | ------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------- |
 | `id`               | yes          | Unique cut id, rendered into `{id}`                                                                                   |
-| `agent`            | no           | Fleet agent (`claude`, `codex`, `agy`, `junie`, `grok`)                                                               |
+| `agent`            | no           | Fleet agent (`claude`, `codex`, `agy`, `junie`, `grok`, `cursor`)                                                     |
 | `workflow`         | yes          | Must resolve (via `workflow_map`) to a supported workflow                                                             |
 | `phase`            | no           | Phase title, when phases are declared                                                                                 |
 | `prompt` / `brief` | one required | Inline prompt, or a brief file path (resolved relative to the plan file; must exist)                                  |
@@ -132,13 +133,36 @@ the titles.
 | `depends_on`       | no           | Cut id array. A cut becomes ready only after every dependency settles successfully; cycles and unknown ids fail parse |
 | `base`             | no           | Per-cut worktree base: `"<sha>"`, `"<branch>"`, or `"cut:<cut-id>"`. Absent = the plan baseline (below)               |
 | `integrator`       | no           | `true` names an exclusive WRITE cut that alone may modify the main checkout                                           |
+| `compile_embargo`  | no           | Boolean, default `false`. Structural WRITE worker posts an unverified checkpoint and defers all executable gates      |
+| `closes_embargo`   | no           | Checkpoint cut ids; only a WRITE integrator may declare closure, and every id must be a `compile_embargo` dependency  |
+
+Embargo is plan-owned. An integrator cannot itself declare `compile_embargo`.
+Checkpoint claims include SHA, owned scope, and every skipped hook or security
+control. They remain `[~]`; their declared commands are deferred, not certified.
+Each skipped control must map to an exact declared verifier command. An unknown
+hook obligation blocks closure until the plan declares that command. The writer
+uses the union of integrator and checkpoint declared verifiers in the assembled
+runtime root; a claim cannot supply executable commands.
+A closure integrator may assemble its named checkpoint dependencies while they
+are unverified. It records `W2_STRUCTURALLY_CLOSED` for the exact assembled SHA
+and restores full gates. Only the canonical writer's full verification against
+that SHA can close the embargo and settle `[x]`. Payloads cannot grant closure
+authority or choose a smaller set of gates.
 
 ## Scheduling and checkout contract
 
 The supervisor parses `depends_on` as a DAG. It launches all ready workers up
-to `policy.concurrency`; independent failures do not stop siblings unless the
-declared critical-failure policy breaks the line. An integrator is exclusive
+to `policy.concurrency`. By default, a failed or unknown contract stops admission
+of every queued cut, including cuts without a dependency edge. Already active
+siblings finish and keep their evidence; they are not terminated by this fence.
+Repair rounds run before the supervisor decides whether a contract is verified.
+An integrator is exclusive
 for the repository and never overlaps another active cut.
+
+Plans that deliberately tolerate an expendable non-critical cut must explicitly
+set `on_noncritical_dep_fail = "continue"`. Its failure stays in the baton.
+Critical cuts retain their separate `on_critical_fail` policy. Worker completion
+alone never releases the default fence: supervisor verification must be green.
 
 Every non-integrator cut receives:
 
@@ -202,7 +226,9 @@ base = "cut:w1-02"    # worktree from that cut's delivered_commit_sha (settled r
 
 ## `[[cuts.verify]]`
 
-Each verifier runs a shell command and matches its output:
+Each verifier runs a shell command and matches its output. A command must exit
+with code 0 unless `expect.exit_code` explicitly declares a different code for
+a negative-path probe; matching text alone cannot hide a failed command:
 
 ```toml
 [[cuts.verify]]

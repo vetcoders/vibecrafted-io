@@ -28,6 +28,23 @@ vibecrafted doctor --release      # VERSION vs GitHub Latest + last source gate
 | Skill-copy shadows  | No per-runtime skill directory (`~/.junie/skills`, `~/.agy/skills`, `~/.grok/skills`, `~/.cursor/skills`) holds a real directory copy of a bundled skill shadowing the canonical `~/.agents/skills` view |
 | Skill-root links    | Every per-runtime skill root is a real directory. One reached through a symlink or junction, or resolving into the skill store, is named (`skill-root:<runtime>`) rather than skipped in silence         |
 
+## Generation integrity (`runtime-generation:integrity`)
+
+Every ordinary doctor run compares the active generation with
+`runtime-pack-provenance.json` → `payload.files`. It hashes the files and checks
+their sizes and modes, reporting `CHANGED`, `MISSING`, and `ADDITIONAL` paths.
+The report lists up to 20 paths and counts the remainder. Move manual fixes into
+the source checkout: changes made directly in an installed generation will be
+lost at the next installation.
+
+This is a difference report against the pack inventory, not proof that a person
+authored every difference. Installer-generated files and Python bytecode can
+also appear as additional files; source changes are listed before those paths.
+Only the admission contract's `.DS_Store` exception is ignored. Invalid or
+missing inventory, symlinks, and unreadable payloads fail verification; an
+unresolvable active generation is explicitly reported as not checked. Doctor
+does not repair or rebaseline the generation.
+
 ## Skill-copy shadows (`shadow-dir:<runtime>/<skill>`)
 
 Installers before 3.x materialized **real directory copies** of `vc-*` skills into per-runtime skill dirs instead of views. Those copies survive next to the canonical `~/.agents/skills` symlink view, drift silently, and an agent that reads both directories (Junie does) sees a stale duplicate. Neither install, update nor doctor used to notice: shadow pruning covered only `claude`/`codex` and only symlinks, and orphan pruning covered only names that had left the bundle.
@@ -42,7 +59,7 @@ Doctor now reports one `shadow-dir:<runtime>/<skill>` warning per copy, with the
 | `managed_stale`     | The copy's `SKILL.md` bytes are a release we shipped (sha256), and every file in it is byte for byte a version we shipped at that same path (git blob id), under a directory that really held a `SKILL.md`                            | Copied into a quarantine dir, then removed                 |
 | `unknown`           | Anything less — an edited file, a path we never shipped, a symlink, or a `SKILL.md` we never released. A real **file** under a skill name is always this: a view is a link and a legacy copy is a directory, so a file there is yours | **Never touched** — reported with a manual `mv` suggestion |
 
-Reconciliation happens during install and update, so the fix doctor names is `vibecrafted update --force`: a plain `vibecrafted update` prints `up to date` and returns without reinstalling once the installed version already matches the channel, and the reconciliation never runs.
+Reconciliation happens during install and update, so the fix doctor names is `vibecrafted update --force`: a plain `vibecrafted update` returns without reinstalling when the channel version matches the executing launcher. This comparison does not attest installation health, and the reconciliation does not run on that path.
 
 Provenance is proven from content, never from the `vc-` name: your own skill parked under a `vc-*` name is reported and left alone. Two proofs are tried, in order:
 
@@ -124,6 +141,55 @@ vibecrafted doctor --fix-server-service     # reconcile the LaunchAgent with the
 ```
 
 Each fix flag re-verifies after repairing, so a clean exit means the repair actually held.
+
+## Terminal startup recovery
+
+The `vc-terminal` launcher validates the installed shell specification before
+opening its default workspace. A malformed record, missing shell or script,
+or persisted `/tmp` probe selects the product recovery shell for that invocation.
+The terminal prints the reason, recovery commands, and the startup log path
+(`$VIBECRAFTED_HOME/logs/terminal-startup.log`, defaulting to
+`~/.vibecrafted/logs/terminal-startup.log`).
+
+```bash
+vc-terminal --doctor       # apply the installer's configuration repair transaction
+vc-frame attach vc-host    # return to the named session
+vc-frame list-sessions     # list available sessions
+```
+
+The repair preserves a backup and unrelated preferences. Temporary diagnostic
+shell overrides belong in invocation arguments; never save them in
+`terminal-policy.toml` or `vc-terminal/vc-terminal.toml`.
+
+When the reserved `vc-host` name has a guest layout, `vc-start` preserves it
+and creates `vc-host-recovered` as the host. The diagnostic names the old session
+and gives its exact attach and cleanup commands. Save its work before choosing
+`kill-session` and `delete-session`; startup never runs those commands for you.
+`vc-frame ka` is an alias for `kill-all-sessions`: it stops every session, so use
+it only for an intentional global reset after saving work in all sessions.
+
+### Open the active generation beside an existing host
+
+Sessions survive runtime upgrades. A `vc-frame:generation-split` warning means
+some live servers still use an older generation. Keep them running and open
+another host with:
+
+```bash
+vc-start --new-host
+vibecrafted start --new-host --repo ~/Projects/example
+```
+
+This opens an empty host on the active generation, even when the repository's
+workspace already exists. Names are `vc-host@<shortgen>`, then `-2`, `-3`, and
+so on; an unstamped development entry uses `vc-host-2`. Occupied names, including
+EXITED records, are preserved. The launcher reports each existing host's
+generation when its socket owner can be identified, otherwise `unknown`.
+
+Ordinary `start` proposes a new host when it detects a generation split.
+Declining cancels the start; a non-interactive caller must pass `--new-host`
+explicitly. `resume` remains deliberate re-entry. The new host has its own
+terminal when started from inside another host. Open projects from that host;
+workspaces remain guests and roles still come from layout identity markers.
 
 ## Receipt — provenance on top of health
 
