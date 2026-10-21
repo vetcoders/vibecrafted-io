@@ -142,6 +142,29 @@ vibecrafted doctor --fix-server-service     # reconcile the LaunchAgent with the
 
 Each fix flag re-verifies after repairing, so a clean exit means the repair actually held.
 
+## Terminal fonts
+
+Open **Agents → New agent → Setup / Font (f)**. The existing chooser shows the
+current policy and lists available Monaspace NF families first, followed by other
+installed fixed-width families. On macOS, CoreText fixed-pitch traits determine
+eligibility; a family name containing “Mono” is not evidence. Upstream family
+names are retained.
+
+Use arrows, Page Up/Down, Home/End, or the mouse wheel to browse. Clicking a row
+selects it; **Apply Font** or Enter applies it. Opening, browsing and cancelling
+leave the policy unchanged. An unavailable or proportional configured family
+remains visible as current, but cannot be chosen as an installed fixed-width
+font. Applying another family updates normal/bold/italic face styles and keeps
+font size, offsets and unrelated preferences.
+
+Frame's direct entry uses the canonical Workshop script with `launcher --font`;
+it opens the same typography scene without provider authentication. Esc closes
+that direct chooser. `--onboarding` still opens the two-step setup flow.
+Non-macOS hosts show curated Monaspace file matches as unavailable diagnostics.
+A filename cannot verify fixed width or face styles, so it cannot authorize a
+new selection. Existing policy and styles are preserved. Catalogue availability describes
+CoreText discovery, not verification of a running terminal renderer.
+
 ## Terminal startup recovery
 
 The `vc-terminal` launcher validates the installed shell specification before
@@ -190,6 +213,14 @@ Declining cancels the start; a non-interactive caller must pass `--new-host`
 explicitly. `resume` remains deliberate re-entry. The new host has its own
 terminal when started from inside another host. Open projects from that host;
 workspaces remain guests and roles still come from layout identity markers.
+
+On macOS, if the fixed product-host handoff cannot prove the current signed
+app/Runtime Pack pair, `vc-start` stops without opening another window or
+allocating a `-2`, `-3`, or later replacement. The created host remains
+available. Verify that the app and active Runtime Pack are paired, then use the
+exact recovery command printed by the refusal (`vc-frame attach
+<reported-host>`). Do not repeat `--new-host` until the terminal/runtime pairing
+is healthy.
 
 ## Receipt — provenance on top of health
 

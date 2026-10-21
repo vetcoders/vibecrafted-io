@@ -1,29 +1,32 @@
 {
   "channel": "main",
-  "version": "4.1.0",
-  "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
-  "signature_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz.sig",
+  "version": "4.5.0",
+  "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
+  "signature_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
   "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
+  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.0-20261021-574248dc-darwin-arm64.tar.gz",
+  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.0-20261021-574248dc.dmg",
+  "release_manifest_url": "https://vibecrafted.io/release-output.json",
   "platforms": {
     "macos-arm64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
       "vendored_foundations": false
     },
     "macos-x64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
       "vendored_foundations": false
     },
     "linux-x64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
       "vendored_foundations": false
     },
     "linux-arm64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
       "vendored_foundations": false
     },
     "windows-x64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.1.0.tar.gz",
+      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.0.tar.gz",
       "vendored_foundations": false
     }
   }

@@ -354,6 +354,7 @@ site-deploy: site-build
 	@echo "Deploying site to $(DEPLOY_HOST):$(DEPLOY_ROOT) (Caddy file_server)..."
 	@rsync -avzh --delete --human-readable \
 		--exclude='.DS_Store' \
+		--filter='P /Vibecrafted_*' \
 		site/dist/ \
 		$(DEPLOY_HOST):$(DEPLOY_ROOT)/
 	@ssh $(DEPLOY_HOST) "echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
