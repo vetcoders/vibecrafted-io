@@ -478,9 +478,10 @@ site-release-assets-guard:
 			echo "Error: bundle root $(BUNDLE_ROOT) not found." >&2; \
 			exit 2; \
 		fi; \
-		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || ! diff -rq \
-		      $(BUNDLE_DIFF_EXCLUDES) \
-		      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
+		changes=$$(rsync -rcn --copy-dirlinks --delete --itemize-changes \
+		      $(BUNDLE_EXCLUDES) --exclude='/bin/vendor/' \
+		      "$(UPSTREAM_ROOT)/" "$(BUNDLE_ROOT)/") || exit 2; \
+		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || [ -n "$$changes" ]; then \
 			echo "Error: SITE_RELEASE_MODE=1 requested, but framework/ is not fresh against $(UPSTREAM_ROOT)." >&2; \
 			echo "       Run make site-release to rebuild/sign/sync/deploy framework assets." >&2; \
 			echo "       For a site-only deploy that intentionally reuses stable signed assets, run make site-build without SITE_RELEASE_MODE." >&2; \
