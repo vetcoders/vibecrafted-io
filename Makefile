@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 
+export COPYFILE_DISABLE := 1
+
 PYTHON   ?= python3
 INSTALLER := scripts/vetcoders_install.py
 SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
@@ -399,6 +401,10 @@ BUNDLE_JUNK_EXCLUDE_NAMES := \
 	.pytest_cache \
 	.ruff_cache \
 	.mypy_cache \
+	.loctree \
+	.prview \
+	.cursor \
+	'._*' \
 	.idea \
 	.DS_Store \
 	__pycache__ \

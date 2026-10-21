@@ -92,6 +92,13 @@ def scan_archive(archive: Path) -> list[Finding]:
                 continue
 
             name = member.name
+            if any(
+                part in {".loctree", ".prview", ".cursor"} or part.startswith("._")
+                for part in Path(name).parts
+            ):
+                findings.append(
+                    Finding(archive, name, "private cache or host metadata")
+                )
 
             if ENV_MEMBER_RE.search(name) and not _is_example_env(name):
                 findings.append(Finding(archive, name, "secret-bearing env file"))
