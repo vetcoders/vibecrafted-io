@@ -77,7 +77,9 @@ FOUNDATION_VENDOR_SPECS := \
 # usually has another agent's uncommitted work in it. A binary built from that
 # tree corresponds to no commit, so it cannot be attested by the release
 # receipt. Skip it and let channel/main.json report vendored_foundations:false.
-VENDOR_FOUNDATIONS ?= 1
+# The website source carrier must not publish locally linked, unnotarized
+# native executables. Native delivery has its own signed/notarized channel.
+VENDOR_FOUNDATIONS ?= 0
 
 define VENDOR_FOUNDATION_BINARIES
 dest_root="$(1)"; \

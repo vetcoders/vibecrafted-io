@@ -14,6 +14,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Release freshness compares the same source projection used by packaging,
   excluding private dot-directory caches and derived foundation binaries while
   still refusing changed or removed product files and version mismatches.
+- Website framework bundles default to source-only distribution rather than
+  copying locally linked native executables without Developer ID notarization.
 - Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
 - Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
 
