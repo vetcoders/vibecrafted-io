@@ -184,6 +184,8 @@ def write_channel_manifest(
     version: str,
     archive_name: str,
     platforms: dict[str, dict] | None = None,
+    *,
+    runtime_pack_name: str | None = None,
 ) -> None:
     channel_dir = site_public / "channel"
     channel_dir.mkdir(parents=True, exist_ok=True)
@@ -195,6 +197,8 @@ def write_channel_manifest(
         "sha256_url": "https://vibecrafted.io/SHA256SUMS",
         "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
     }
+    if runtime_pack_name:
+        manifest["runtime_pack_url"] = f"https://vibecrafted.io/{runtime_pack_name}"
     # Additive only. Installers already in the wild read `archive_url` and stop
     # there; an unknown key costs them nothing. Never move the canonical archive
     # behind `platforms` — that would strand every 3.x install.
@@ -406,12 +410,64 @@ def sync_site_release_assets(
 
     ensure_checksum_contract(bundle_root, bundle_root / "SHA256SUMS", archive_name)
 
+    # The source carrier and native carrier are separate signed products.
+    # Publish only an explicitly selected pack, never a newest-file glob.
+    selected_pack = os.environ.get("VIBECRAFTED_RUNTIME_PACK")
+    previous_channel = site_public / "channel" / "main.json"
+    previous_archive = site_public / archive_name
+    if (
+        not selected_pack
+        and previous_channel.is_file()
+        and previous_archive.is_file()
+        and sha256_file(previous_archive) == sha256_file(bundle_root / archive_name)
+    ):
+        previous = json.loads(previous_channel.read_text(encoding="utf-8"))
+        previous_url = previous.get("runtime_pack_url", "")
+        prefix = "https://vibecrafted.io/"
+        if previous.get("version") == version and previous_url.startswith(prefix):
+            previous_name = previous_url.removeprefix(prefix)
+            if previous_name and Path(previous_name).name == previous_name:
+                selected_pack = str(site_public / previous_name)
+
+    runtime_pack_name = None
+    runtime_pack_files: dict[Path, Path] = {}
+    if selected_pack:
+        pack = Path(selected_pack).expanduser().resolve(strict=True)
+        signature = Path(f"{pack}.sig")
+        checksum = Path(f"{pack}.sha256")
+        for required in (pack, signature, checksum):
+            if not required.is_file():
+                raise FileNotFoundError(f"Missing Runtime Pack artifact: {required}")
+        expected = read_sha256_entries(checksum).get(pack.name)
+        if expected != sha256_file(pack):
+            raise RuntimeError(f"Runtime Pack checksum mismatch: {pack}")
+        runtime_pack_name = pack.name
+        runtime_pack_files = {
+            artifact: site_public / artifact.name
+            for artifact in (pack, signature, checksum)
+        }
+
     for src, dst in required_files.items():
         copy_file(src, dst)
 
+    for src, dst in runtime_pack_files.items():
+        if src.resolve() != dst.resolve():
+            copy_file(src, dst)
+    if runtime_pack_name:
+        with (site_public / "SHA256SUMS").open("a", encoding="utf-8") as handle:
+            handle.write(
+                f"{sha256_file(site_public / runtime_pack_name)}  {runtime_pack_name}\n"
+            )
+
     prune_stale_release_artifacts(site_public, archive_name)
     platforms = describe_platform_coverage(bundle_root, archive_name)
-    write_channel_manifest(site_public, version, archive_name, platforms)
+    write_channel_manifest(
+        site_public,
+        version,
+        archive_name,
+        platforms,
+        runtime_pack_name=runtime_pack_name,
+    )
     manifest_json = export_install_manifest(bundle_root, site_src)
 
     return {
