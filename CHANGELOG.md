@@ -22,6 +22,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
   carrier, signature, checksum and `runtime_pack_url` alongside the source bundle.
   Content-only rebuilds retain that handoff when the source archive is unchanged;
   corrupt or incomplete native carriers are refused before updating the channel.
+- Source archive builds and previews use the product's canonical distribution
+  writer, including the closed `source-provenance.json` required by the public
+  bootstrap, rather than creating an incompatible raw tarball.
 - Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
 - Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
 

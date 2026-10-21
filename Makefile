@@ -508,6 +508,7 @@ bundle-preview:
 	@if [ "$(UPSTREAM_VERSION)" = "$(BUNDLE_VERSION)" ] && \
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" ] && \
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE).sig" ] && \
+	    tar -tzf "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" vibecrafted/source-provenance.json >/dev/null 2>&1 && \
 	    diff -rq \
 	      $(BUNDLE_DIFF_EXCLUDES) \
 	      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
@@ -518,9 +519,10 @@ bundle-preview:
 	@echo "  Changes detected. Projecting tarball..."
 	@TMP_DIR=$$(mktemp -d -t vc-preview-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
-	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ >/dev/null && \
-	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
-	  tar -czf $$TMP_DIR/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted 2>/dev/null && \
+	  $(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
+	    --source "$(UPSTREAM_ROOT)" --output "$$TMP_DIR/$(BUNDLE_ARCHIVE)" \
+	    --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	    --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)" && \
 	  if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
 	  INSTALL_SHA=$$($$SHA256_CMD $(UPSTREAM_ROOT)/install.sh | cut -d' ' -f1) && \
@@ -553,18 +555,10 @@ bundle-build: bundle-preflight
 	@$(call VENDOR_FOUNDATION_BINARIES,$(BUNDLE_ROOT))
 	@echo "  ✓ Upstream synced"
 	@echo "Building tarball: $(BUNDLE_ARCHIVE)..."
-	@TMP_DIR=$$(mktemp -d -t vc-bundle-XXXXXX) && \
-	  trap "rm -rf $$TMP_DIR" EXIT && \
-	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
-	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
-	  leaks=$$(find "$$TMP_DIR" -type f \( -name '.env' -o \( -name '.env.*' ! -name '*.example' \) \)) && \
-	  if [ -n "$$leaks" ]; then \
-	    echo "FATAL: secret-bearing env files in the public release payload (2026-08-10 tskey incident class):" >&2; \
-	    echo "$$leaks" >&2; \
-	    echo "This gate is unconditional — ALLOW_DIRTY_UPSTREAM does not bypass it." >&2; \
-	    exit 9; \
-	  fi && \
-	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
+	@$(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
+	  --source "$(UPSTREAM_ROOT)" --output "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" \
+	  --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	  --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)"
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
