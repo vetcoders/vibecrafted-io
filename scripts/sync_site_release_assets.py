@@ -186,6 +186,7 @@ def write_channel_manifest(
     platforms: dict[str, dict] | None = None,
     *,
     runtime_pack_name: str | None = None,
+    dmg_name: str | None = None,
 ) -> None:
     channel_dir = site_public / "channel"
     channel_dir.mkdir(parents=True, exist_ok=True)
@@ -199,6 +200,9 @@ def write_channel_manifest(
     }
     if runtime_pack_name:
         manifest["runtime_pack_url"] = f"https://vibecrafted.io/{runtime_pack_name}"
+    if dmg_name:
+        manifest["dmg_url"] = f"https://vibecrafted.io/{dmg_name}"
+        manifest["release_manifest_url"] = "https://vibecrafted.io/release-output.json"
     # Additive only. Installers already in the wild read `archive_url` and stop
     # there; an unknown key costs them nothing. Never move the canonical archive
     # behind `platforms` — that would strand every 3.x install.
@@ -430,6 +434,7 @@ def sync_site_release_assets(
                 selected_pack = str(site_public / previous_name)
 
     runtime_pack_name = None
+    dmg_name = None
     runtime_pack_files: dict[Path, Path] = {}
     if selected_pack:
         pack = Path(selected_pack).expanduser().resolve(strict=True)
@@ -446,6 +451,41 @@ def sync_site_release_assets(
             artifact: site_public / artifact.name
             for artifact in (pack, signature, checksum)
         }
+        release_record = pack.parent / "release-output.json"
+        if release_record.is_file():
+            release = json.loads(release_record.read_text(encoding="utf-8"))
+            if (
+                release["product"]["version"] != version
+                or release["runtime_pack"]["path"] != pack.name
+                or release["runtime_pack"]["sha256"] != expected
+            ):
+                raise RuntimeError(
+                    "Native release manifest does not match the selected carrier"
+                )
+            dmg_name = release["dmg"]["path"]
+            if Path(dmg_name).name != dmg_name:
+                raise RuntimeError("Native release manifest has a non-local DMG path")
+            dmg = pack.parent / dmg_name
+            native_files = (
+                release_record,
+                Path(f"{release_record}.sig"),
+                dmg,
+                Path(f"{dmg}.sha256"),
+            )
+            for required in native_files:
+                if not required.is_file():
+                    raise FileNotFoundError(
+                        f"Missing native release artifact: {required}"
+                    )
+            if (
+                sha256_file(dmg) != release["dmg"]["sha256"]
+                or read_sha256_entries(Path(f"{dmg}.sha256")).get(dmg.name)
+                != release["dmg"]["sha256"]
+            ):
+                raise RuntimeError(f"DMG checksum mismatch: {dmg}")
+            runtime_pack_files.update(
+                {artifact: site_public / artifact.name for artifact in native_files}
+            )
 
     for src, dst in required_files.items():
         copy_file(src, dst)
@@ -458,6 +498,8 @@ def sync_site_release_assets(
             handle.write(
                 f"{sha256_file(site_public / runtime_pack_name)}  {runtime_pack_name}\n"
             )
+            if dmg_name:
+                handle.write(f"{sha256_file(site_public / dmg_name)}  {dmg_name}\n")
 
     prune_stale_release_artifacts(site_public, archive_name)
     platforms = describe_platform_coverage(bundle_root, archive_name)
@@ -467,6 +509,7 @@ def sync_site_release_assets(
         archive_name,
         platforms,
         runtime_pack_name=runtime_pack_name,
+        dmg_name=dmg_name,
     )
     manifest_json = export_install_manifest(bundle_root, site_src)
 

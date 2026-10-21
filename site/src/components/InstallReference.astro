@@ -23,6 +23,7 @@ function loadChannel() {
       return JSON.parse(readFileSync(file, 'utf8')) as {
         version: string;
         archive_url: string;
+        dmg_url?: string;
       };
     }
   }
@@ -73,6 +74,19 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
     </div>
 
     <div class="panel panel-unix" data-for="mac linux">
+      {channel.dmg_url && (
+        <div class="install-reference__mac-app">
+          <a class="install-reference__dl" href={channel.dmg_url}>
+            {pl ? `Pobierz aplikację macOS ${version}` : `Download macOS app ${version}`}
+            <span aria-hidden="true">→</span>
+          </a>
+          <p class="install-reference__or">
+            {pl
+              ? 'Najpierw zainstaluj aplikację z podpisanego i notaryzowanego DMG. Poniższy curl instaluje pasujący Runtime Pack.'
+              : 'Install the app from the signed and notarized DMG first. The curl command below installs its matching Runtime Pack.'}
+          </p>
+        </div>
+      )}
       <div class="install-reference__cmd">
         <pre><code>{cmd}</code></pre>
         <CopyButton
@@ -103,8 +117,8 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
       </div>
       <p class="install-reference__or">
         {pl
-          ? 'WSL albo to samo archiwum POSIX — vc-frame jest w środku.'
-          : 'WSL, or the same POSIX archive — vc-frame is inside it.'}
+          ? 'WSL i inne systemy wymagają Runtime Packa dopasowanego do platformy; poniżej są źródła.'
+          : 'WSL and other systems require a platform-matching Runtime Pack; the archive below contains sources.'}
       </p>
       <a class="install-reference__dl" href={archiveHref} download={archiveName}>
         {pl ? `Pobierz ${archiveName}` : `Download ${archiveName}`}
@@ -130,8 +144,8 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
   <aside class="install-reference__note">
     <p>
       {pl
-        ? 'Podpisany DMG (Vibecrafted.app) nie jest w tym kanale. Żywa droga to curl albo archiwum powyżej — CLI, vc-frame i runtime.'
-        : 'A signed DMG (Vibecrafted.app) is not in this channel. The live path is curl or the archive above — CLI, vc-frame, and the runtime.'}
+        ? 'Archiwum zawiera źródła. Na macOS aplikacja i Runtime Pack muszą pochodzić z tego samego wydania; curl nie podmienia działającej aplikacji.'
+        : 'The archive contains sources. On macOS the app and Runtime Pack must belong to the same release; curl does not replace a running app.'}
     </p>
   </aside>
 </section>
@@ -224,6 +238,10 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
   #os-mac:checked ~ .panel-unix,
   #os-linux:checked ~ .panel-unix {
     display: block;
+  }
+
+  #os-linux:checked ~ .panel-unix .install-reference__mac-app {
+    display: none;
   }
 
   #os-win:checked ~ .panel-win {

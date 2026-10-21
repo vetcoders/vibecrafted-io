@@ -25,6 +25,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 - Source archive builds and previews use the product's canonical distribution
   writer, including the closed `source-provenance.json` required by the public
   bootstrap, rather than creating an incompatible raw tarball.
+- The install page links the notarized macOS DMG from the signed native release
+  manifest and explains the paired App/Runtime Pack order. The curl bootstrap
+  does not replace a running desktop app.
 - Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
 - Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
 
