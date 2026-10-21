@@ -7,6 +7,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The embedded operator playground follows the page light/dark theme, including
+  live theme changes, rather than retaining an independent dark preference.
+- Removed the redundant hero border and shadow around the playground; its
+  native terminal chrome remains the single visual frame.
 - Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
 - Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
 

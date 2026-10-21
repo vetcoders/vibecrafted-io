@@ -98,23 +98,21 @@ export function bootPlayground(root: ParentNode): PlaygroundApi {
     cmOpen = false,
     xtCount = 0;
 
-  /* The default simulator palette follows the installed VC Terminal theme.
-     A visitor can switch to the illustrative light palette explicitly. */
+  // The embedded preview follows the page's single theme authority.
   const host = root.getRootNode && root.getRootNode().host;
-  const PG_KEY = "vc-pg-theme";
-  let pgTheme = localStorage.getItem(PG_KEY) || "dark";
 
   function paintTheme() {
+    const pgTheme =
+      document.documentElement.getAttribute("data-theme") === "light"
+        ? "light"
+        : "dark";
     if (host) host.setAttribute("data-pg-theme", pgTheme);
-    const tb = $("#theme-btn");
-    if (tb) {
-      tb.textContent = pgTheme === "dark" ? "☾" : "☼";
-      tb.title =
-        pgTheme === "dark"
-          ? "Preview illustrative light palette"
-          : "Return to VC Terminal palette";
-    }
   }
+  const themeObserver = new MutationObserver(paintTheme);
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
 
   const WORKSPACES = [
     { id: "overview", label: "Overview" },
@@ -1327,11 +1325,6 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
     });
     selectWs("xt" + xtCount);
   });
-  $("#theme-btn").addEventListener("click", () => {
-    pgTheme = pgTheme === "dark" ? "light" : "dark";
-    localStorage.setItem(PG_KEY, pgTheme);
-    paintTheme();
-  });
 
   sessions[0].buf = SETTLEMENT;
   sessions.forEach((s, i) => {
@@ -1349,6 +1342,7 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       if (input) input.focus();
     },
     destroy() {
+      themeObserver.disconnect();
       if (brailleTimer) clearInterval(brailleTimer);
       runs.forEach((r) => {
         if (r.timer) clearInterval(r.timer);

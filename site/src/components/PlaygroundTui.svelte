@@ -537,7 +537,6 @@
       <button type="button" id="panels-btn">⿻ Panels 1</button>
       <span class="sep">·</span>
       <button type="button" id="quickcmd">❯_ Quick cmd</button>
-      <button type="button" id="theme-btn" title="Console follows the page theme — click to go independent">☾</button>
     </div>
   </header>
   <aside class="rail">

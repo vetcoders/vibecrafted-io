@@ -114,11 +114,11 @@
     width: 100%;
     height: min(680px, calc(100dvh - 128px));
     min-height: 360px;
-    border: 1px solid var(--v2-border);
-    border-radius: var(--v2-radius);
+    border: 0;
+    border-radius: 0;
     overflow: hidden;
-    background: var(--v2-ink);
-    box-shadow: var(--v2-hero-shadow);
+    background: transparent;
+    box-shadow: none;
   }
 
   .hero__eyebrow {
