@@ -1,6 +1,6 @@
 {
   "title": "\u2692 Vibecrafted.",
-  "version": "4.5.0",
+  "version": "4.5.1",
   "persist": true,
   "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
   "phases": [
