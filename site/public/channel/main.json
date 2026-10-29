@@ -5,8 +5,8 @@
   "signature_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
   "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
-  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261029-52b875a3-darwin-arm64.tar.gz",
-  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261029-52b875a3.dmg",
+  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261029-5a5f4d71-darwin-arm64.tar.gz",
+  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261029-5a5f4d71.dmg",
   "release_manifest_url": "https://vibecrafted.io/release-output.json",
   "platforms": {
     "macos-arm64": {
