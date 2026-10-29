@@ -24,6 +24,12 @@ function loadChannel() {
         version: string;
         archive_url: string;
         dmg_url?: string;
+        platforms?: Record<string, {
+          exe_url?: string;
+          msi_url?: string;
+          release_manifest_url?: string;
+          authenticode?: 'signed' | 'unsigned';
+        }>;
       };
     }
   }
@@ -33,6 +39,8 @@ function loadChannel() {
 }
 
 const channel = loadChannel();
+const windows = channel.platforms?.['windows-x64'];
+const nativeWindows = Boolean(windows?.exe_url && windows?.msi_url);
 
 const version = channel.version;
 const archiveHref = `/vibecrafted-v${version}.tar.gz`;
@@ -54,7 +62,7 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
   </header>
 
   <aside class="install-reference__got">
-    <h2>{pl ? 'W archiwum' : 'In the archive'}</h2>
+    <h2>{pl ? 'W zestawie' : 'Included'}</h2>
     <ul>
       <li>CLI</li>
       <li>vc-frame</li>
@@ -105,20 +113,58 @@ const archiveName = `vibecrafted-v${version}.tar.gz`;
     </div>
 
     <div class="panel panel-win" data-for="win">
-      <div class="install-reference__cmd">
-        <pre><code>{win}</code></pre>
-        <CopyButton
-          client:load
-          class="install-reference__copy"
-          textToCopy={win}
-          defaultLabel={pl ? 'Kopiuj' : 'Copy'}
-          copiedLabel={pl ? 'Skopiowano' : 'Copied'}
-        />
-      </div>
+      {nativeWindows ? (
+        <>
+          <a class="install-reference__dl" href={windows!.exe_url}>
+            {pl ? `Pobierz instalator Windows ${version} (.exe)` : `Download Windows installer ${version} (.exe)`}
+            <span aria-hidden="true">→</span>
+          </a>
+          <p class="install-reference__or">
+            {pl ? 'Windows x64. Pobierz i uruchom instalator — WSL nie jest wymagany.' : 'Windows x64. Download and run the installer — WSL is not required.'}
+          </p>
+          <a class="install-reference__dl" href={windows!.msi_url}>
+            {pl ? 'Pobierz pakiet MSI' : 'Download MSI package'}
+            <span aria-hidden="true">→</span>
+          </a>
+          {windows!.authenticode === 'unsigned' && (
+            <p class="install-reference__or">
+              {pl
+                ? 'Windows może wyświetlić „Nieznany wydawca”: instalatory nie mają jeszcze podpisu Authenticode.'
+                : 'Windows may show “Unknown publisher”: these installers are not yet Authenticode-signed.'}
+            </p>
+          )}
+          <p class="install-reference__or">
+            <a href={`${windows!.exe_url}.sha256`}>EXE · SHA256</a>
+            {' · '}
+            <a href={`${windows!.msi_url}.sha256`}>MSI · SHA256</a>
+            {' · '}
+            <a href={windows!.release_manifest_url}>{pl ? 'Manifest wydania' : 'Release manifest'}</a>
+          </p>
+        </>
+      ) : (
+        <p class="install-reference__or">
+          {pl
+            ? 'Natywne instalatory Windows nie są jeszcze dostępne w tym opublikowanym kanale.'
+            : 'Native Windows installers are not yet available in this published channel.'}
+        </p>
+      )}
+      <details>
+        <summary>{pl ? 'Korzystasz z WSL?' : 'Using WSL?'}</summary>
+        <div class="install-reference__cmd">
+          <pre><code>{win}</code></pre>
+          <CopyButton
+            client:load
+            class="install-reference__copy"
+            textToCopy={win}
+            defaultLabel={pl ? 'Kopiuj' : 'Copy'}
+            copiedLabel={pl ? 'Skopiowano' : 'Copied'}
+          />
+        </div>
+      </details>
       <p class="install-reference__or">
         {pl
-          ? 'WSL i inne systemy wymagają Runtime Packa dopasowanego do platformy; poniżej są źródła.'
-          : 'WSL and other systems require a platform-matching Runtime Pack; the archive below contains sources.'}
+          ? 'Dla osób budujących samodzielnie dostępne są również źródła.'
+          : 'Sources are also available for people building the product themselves.'}
       </p>
       <a class="install-reference__dl" href={archiveHref} download={archiveName}>
         {pl ? `Pobierz ${archiveName}` : `Download ${archiveName}`}

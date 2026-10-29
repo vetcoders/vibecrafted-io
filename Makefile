@@ -44,6 +44,9 @@ AICX_REPO ?= $(abspath $(UPSTREAM_ROOT)/../aicx)
 LOCTREE_REPO ?= $(abspath $(UPSTREAM_ROOT)/../loctree-suite)
 LOCTREE_MCP_REPO ?= $(LOCTREE_REPO)/loctree-mcp
 DIST_DIR ?= $(CURDIR)/dist
+WINDOWS_WORKFLOW_REF ?= ci/windows-site-release
+WINDOWS_RELEASE_DIR ?= $(DIST_DIR)/windows
+SITE_RELEASE_SELECTION ?= $(DIST_DIR)/site-release-selection.json
 PLUGIN_NAME ?= vibecrafted-framework
 FRAMEWORK_VERSION := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "1.5.0")
 FRAMEWORK_RUNTIME_TESTS := \
@@ -333,6 +336,18 @@ init-hooks:
 # Site Management & Deployments
 # ============================================================================
 
+.PHONY: windows-release site-release-check
+
+site-release-check:
+	@$(PYTHON) -m unittest discover -s tests -p 'test_site_release*.py'
+
+windows-release: bundle-preflight
+	@$(PYTHON) scripts/prepare_site_release.py \
+		--product-root "$(UPSTREAM_ROOT)" \
+		--windows-dir "$(WINDOWS_RELEASE_DIR)" \
+		--selection "$(SITE_RELEASE_SELECTION)" \
+		--workflow-ref "$(WINDOWS_WORKFLOW_REF)"
+
 # Unconditional gate on the bytes this repo publishes. bundle-build already
 # refuses to *create* a leaking payload; this refuses to *ship* one, including
 # an archive that was committed before that gate existed or that a stale
@@ -359,7 +374,7 @@ site-deploy: site-build
 		$(DEPLOY_HOST):$(DEPLOY_ROOT)/
 	@ssh $(DEPLOY_HOST) "echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
 	@echo ""
-	@echo "  ✓ https://vibecrafted.io now serves version $$(cat framework/VERSION)"
+	@echo "  ✓ Uploaded version $$(cat framework/VERSION) to $(DEPLOY_HOST):$(DEPLOY_ROOT)"
 
 site-deploy-pages: site-build
 	@echo "Syncing built site to local docs/ (GitHub Pages mirror)..."
@@ -603,11 +618,11 @@ site-release:
 	@printf "  \033[1m⚒  Release cycle\033[0m — upstream v$(UPSTREAM_VERSION) → production\n"
 	@echo "  ────────────────────────────────────────"
 	@$(MAKE) --no-print-directory bundle-preflight
+	@$(MAKE) --no-print-directory windows-release
 	@$(MAKE) --no-print-directory bundle-preview
 	@$(MAKE) --no-print-directory bundle-build
 	@$(MAKE) --no-print-directory bundle-sign
 	@echo "Syncing release artefacts into site/public/..."
-	@$(PYTHON) scripts/sync_site_release_assets.py
-	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-build
-	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-deploy
-	@printf "\n  \033[32m✓\033[0m Release v%s shipped to https://vibecrafted.io\n\n" "$(UPSTREAM_VERSION)"
+	@VIBECRAFTED_SITE_RELEASE_SELECTION="$(SITE_RELEASE_SELECTION)" SITE_RELEASE_MODE=1 $(PYTHON) scripts/sync_site_release_assets.py
+	@VIBECRAFTED_SITE_RELEASE_SELECTION="$(SITE_RELEASE_SELECTION)" $(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-deploy
+	@printf "\n  \033[32m✓\033[0m Release v%s uploaded to %s:%s\n\n" "$(UPSTREAM_VERSION)" "$(DEPLOY_HOST)" "$(DEPLOY_ROOT)"
