@@ -1,13 +1,13 @@
 {
   "exe": {
-    "path": "Vibecrafted_4.5.1-20261030-642e8192-windows-x64.exe",
-    "sha256": "05d8a5e376fe88c9317495886889081df8463f0caedec1a4ea5474fb8d543d75",
-    "size": 45164550
+    "path": "Vibecrafted_4.5.1-20261030-996c2586-windows-x64.exe",
+    "sha256": "451fbb47e5e32963d99fe1907e54e26c1ad1d2ecd3df7cbf1af3a27b5c50b265",
+    "size": 45178614
   },
   "msi": {
-    "path": "Vibecrafted_4.5.1-20261030-642e8192-windows-x64.msi",
-    "sha256": "123f0e69d615ab47769777b346e9532a8c24d13c64d80467d3ae98ba66a57c83",
-    "size": 45350912
+    "path": "Vibecrafted_4.5.1-20261030-996c2586-windows-x64.msi",
+    "sha256": "21a128688b14a5d01df371dda5b309674398930e12405de5ed39f1e47df808cb",
+    "size": 45363200
   },
   "product": {
     "architecture": "x64",
@@ -15,9 +15,9 @@
     "version": "4.5.1"
   },
   "runtime_pack": {
-    "path": "Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-win32-x64.tar.gz",
-    "sha256": "9a2e935ddeec610797646f04d659c94131c1a16e9e9f9f61ac35262193914541",
-    "size": 44386388
+    "path": "Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-win32-x64.tar.gz",
+    "sha256": "cb39907394d3f016c254399b94911eb7f3f59ee71ad3a300837fa48524c81ad9",
+    "size": 44398896
   },
   "schema": "io.vetcoders.vibecrafted.windows-release-output.v1",
   "signing": {
@@ -27,7 +27,7 @@
   "source_revisions": {
     "vc-frame": "35165de453e42d8b3c7ac9488f5eae1957e134c8",
     "vc-terminal": "38ef2f918383ca4dde797d22869b619097c81d05",
-    "vibecrafted": "642e8192a2b5f0b84b9e8e4e78ddd37d59cfdc58"
+    "vibecrafted": "996c25863381b404455657482adad32d968096b9"
   },
   "verification": {
     "cold_install": "success",
@@ -37,9 +37,9 @@
   "workflow": {
     "controller_sha": "8d880e5c21fd389b6293b8d2dfdb6c094a51eee1",
     "repository": "vetcoders/vibecrafted",
-    "request_id": "971d06f6e36c233f3ddaf6a4",
+    "request_id": "7aa4abb082a60066e3b0f747",
     "run_attempt": 1,
-    "run_id": 40982320966,
-    "source_sha": "642e8192a2b5f0b84b9e8e4e78ddd37d59cfdc58"
+    "run_id": 40999660782,
+    "source_sha": "996c25863381b404455657482adad32d968096b9"
   }
 }
