@@ -5,8 +5,8 @@
   "signature_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
   "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
-  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261029-11668c32-darwin-arm64.tar.gz",
-  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261029-11668c32.dmg",
+  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-darwin-arm64.tar.gz",
+  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-642e8192.dmg",
   "release_manifest_url": "https://vibecrafted.io/release-output.json",
   "platforms": {
     "macos-arm64": {
@@ -26,9 +26,18 @@
       "vendored_foundations": false
     },
     "windows-x64": {
-      "archive_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz",
+      "archive_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-win32-x64.tar.gz",
+      "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-win32-x64.tar.gz",
+      "signature_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-win32-x64.tar.gz.sig",
+      "sha256_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-642e8192-win32-x64.tar.gz.sha256",
+      "exe_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-642e8192-windows-x64.exe",
+      "msi_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-642e8192-windows-x64.msi",
+      "release_manifest_url": "https://vibecrafted.io/windows-release.json",
+      "release_manifest_signature_url": "https://vibecrafted.io/windows-release.json.sig",
+      "source_revision": "642e8192a2b5f0b84b9e8e4e78ddd37d59cfdc58",
+      "authenticode": "unsigned",
       "vendored_foundations": false,
-      "native_installers_available": false
+      "source_archive_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz"
     }
   }
 }
