@@ -14,11 +14,13 @@ import SectionCommercial from '../../components/sections/SectionCommercial.astro
 import SectionEngineering from '../../components/sections/SectionEngineering.astro';
 import { getTranslations } from '../../lib/i18n';
 import { loadCopy } from '../../lib/content';
+import { readInstallerChannelVersion } from '../../lib/installer/channel-version';
 import type { HeroData } from '../../components/sections/HeroSectionV2.svelte';
 
 const t = getTranslations('pl');
 const page = t.v2Pages.landing;
 const hero = (await loadCopy('hero', 'pl')) as unknown as HeroData;
+const channelVersion = readInstallerChannelVersion() ?? '';
 ---
 
 <LayoutV2
@@ -28,7 +30,7 @@ const hero = (await loadCopy('hero', 'pl')) as unknown as HeroData;
   hasHero={true}
   ogImage="/assets/product/02-start-here-map.png"
 >
-  <HeroSectionV2 client:load lang="pl" hero={hero} />
+  <HeroSectionV2 client:load lang="pl" hero={hero} channelVersion={channelVersion} />
   <SectionProductSurface lang="pl" />
   <SectionInstallManifest lang="pl" />
   <SectionProblem lang="pl" />

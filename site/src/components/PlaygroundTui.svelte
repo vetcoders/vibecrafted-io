@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { bootPlayground, type PlaygroundApi } from './operator-tui';
 
+  let { channelVersion = '' }: { channelVersion?: string } = $props();
+
   const SOURCE = `<style>
 :host {
   display: block;
@@ -589,6 +591,7 @@
 
   onMount(() => {
     if (!host) return;
+    if (channelVersion) host.dataset.channelVersion = channelVersion;
     const shadow = host.attachShadow({ mode: 'open' });
     shadow.innerHTML = SOURCE;
     api = bootPlayground(shadow);
