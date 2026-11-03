@@ -1,5 +1,8 @@
 <script lang="ts">
   import type { Lang } from '../../lib/i18n';
+  import { getTranslations } from '../../lib/i18n';
+  import CopyButton from '../CopyButton.svelte';
+  import { PUBLIC_INSTALL_COMMAND } from '../../lib/installer/public-install-command';
 
   interface HeroData {
     ariaLabel: string;
@@ -13,6 +16,8 @@
     body: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    installLead: string;
+    installHint: string;
     telemetry: {
       marbles: string;
       converge: string;
@@ -29,6 +34,9 @@
   }
 
   let { lang = 'en', hero }: Props = $props();
+
+  const copy = $derived(getTranslations(lang).copyButton);
+  const installCommand = PUBLIC_INSTALL_COMMAND;
 
   const headingAccentWord = $derived(hero.heading.accent.replace(/\.$/, ''));
   const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
@@ -94,6 +102,26 @@
     <p class="hero__body">
       {@html hero.body}
     </p>
+    <div class="hero__install">
+      <span class="hero__install-kicker">{hero.installLead}</span>
+      <div class="hero__install-row">
+        <code class="hero__install-cmd">
+          <span class="hero__install-prompt" aria-hidden="true">$</span>
+          {installCommand}
+        </code>
+        <CopyButton
+          textToCopy={installCommand}
+          class="hero__install-copy"
+          defaultLabel={copy.default}
+          copiedLabel={copy.copied}
+          errorLabel={copy.error}
+          defaultAriaLabel={copy.defaultAria}
+          copiedAriaLabel={copy.copiedAria}
+          errorAriaLabel={copy.errorAria}
+        />
+      </div>
+      <p class="hero__install-hint">{hero.installHint}</p>
+    </div>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -306,7 +334,7 @@
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
     max-width: 66ch;
-    margin: 0 0 40px;
+    margin: 0 0 22px;
   }
 
   .hero__body em {
@@ -318,6 +346,77 @@
     font-family: var(--font-mono);
     font-size: 0.92em;
     color: var(--accent);
+  }
+
+  /* ── Install command (first action) ─────────────────────── */
+
+  .hero__install {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 16px;
+    max-width: 100%;
+  }
+
+  .hero__install-kicker {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-on-dark-mute);
+  }
+
+  .hero__install-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .hero__install-cmd {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    max-width: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--fg-on-dark);
+    background: #121214;
+    border: 1px solid var(--v2-border-strong, #3f3f46);
+    border-radius: var(--v2-radius-sm, 8px);
+    white-space: nowrap;
+  }
+
+  .hero__install-prompt {
+    color: var(--accent);
+  }
+
+  .hero__install-hint {
+    margin: 0;
+    max-width: 62ch;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--fg-on-dark-mute);
+  }
+
+  :global(.hero__install-copy[data-copy-managed='svelte']) {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
+    color: var(--accent);
+    padding: 10px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: var(--v2-radius-sm, 8px);
+    cursor: pointer;
   }
 
   /* ── CTAs ───────────────────────────────────────────────── */
@@ -555,6 +654,18 @@
 
     .hero__heading {
       font-size: clamp(40px, 10vw, 72px);
+    }
+
+    .hero__install-row {
+      align-items: stretch;
+    }
+
+    .hero__install-cmd {
+      font-size: 12px;
+    }
+
+    :global(.hero__install-copy[data-copy-managed='svelte']) {
+      align-self: flex-start;
     }
 
     .hero__telemetry {

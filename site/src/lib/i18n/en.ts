@@ -117,6 +117,8 @@ export const en = {
     body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchers that dispatch peer agents from the TUI, a shared control plane, and a read/write cadence. When you want one pass end-to-end, that is <code>/vc-ship</code>.",
     ctaPrimary: "INSTALL",
     ctaSecondary: "QUICK START",
+    installLead: "Install",
+    installHint: "macOS, Linux, and WSL2. The bootstrap installs the published channel.",
     telemetry: {
       marbles: "AGENTS",
       converge: "REPOS",
