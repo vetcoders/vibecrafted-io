@@ -15,12 +15,21 @@
  *
  * Validation: https://validator.schema.org/ (paste page HTML or URL after deploy).
  * Anti-aesthetic: no marketing-tone copy, dense factual content, no tracking.
+ *
+ * softwareVersion is the installer channel this site publishes
+ * (`site/public/channel/main.json`). `install.sh` installs that version.
+ * GitHub Releases, git tags, and the product VERSION file are separate
+ * publishers and are not copied here. A missing or non-semver channel
+ * omits the field rather than falling back to a hard-coded number.
  */
+import { readInstallerChannelVersion } from "../lib/installer/public-install";
+
 interface Props {
   siteUrl?: string;
 }
 
 const { siteUrl = "https://vibecrafted.io" } = Astro.props as Props;
+const softwareVersion = readInstallerChannelVersion();
 
 const graph = {
   "@context": "https://schema.org",
@@ -50,7 +59,7 @@ const graph = {
       url: siteUrl,
       downloadUrl: `${siteUrl}/install.sh`,
       installUrl: `${siteUrl}/en/install/`,
-      softwareVersion: "3.4.0",
+      ...(softwareVersion ? { softwareVersion } : {}),
       releaseNotes: `${siteUrl}/en/dou/`,
       description:
         "Orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): an 11-stage read/write lifecycle, smart model casting, and /vc-ship — a whole project delivered A to Z.",

@@ -9,7 +9,7 @@
 
 # Section chrome from landingV2.operator
 title: "THE OPERATOR"
-centerLabel: "INSTALL · HAND OFF · OBSERVE · 3.6.0"
+centerLabel: "INSTALL · HAND OFF · OBSERVE"
 
 # Main heading — inline HTML kept as a single string (<br />, <em class="accent-2">).
 headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
@@ -18,7 +18,7 @@ headingHtml: 'Install once. Then <em class="accent-2">pass the baton</em>'
 installSteps:
   - step: "STEP 01"
     command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
-    note: "One local bootstrap from the published 3.6.0 artifact — not a private checkout."
+    note: "One local bootstrap from the published installer channel — not a private checkout."
   - step: "STEP 02"
     command: "$ vibecrafted doctor"
     note: "Health check: foundations prebuilt-first, control plane staged, VERSION stamped."

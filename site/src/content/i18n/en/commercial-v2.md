@@ -61,7 +61,7 @@ plans:
       - "Agency white-label path"
       - "SLA + audit exports"
       - "Codescribe enterprise lane"
-      - "Co-build with VetCoders"
+      - "Co-build with Vetcoders"
 
 gateLabel: "Hedge posture · 90-day gate"
 gateTitle: "Ship one commercial surface. Ask for money. Keep retreat as dignity, not failure."
