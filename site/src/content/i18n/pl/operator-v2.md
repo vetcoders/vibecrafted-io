@@ -17,7 +17,7 @@ headingHtml: 'Zainstaluj raz. Potem <em class="accent-2">podaj pałeczkę</em>'
 # 3 kroki instalacji — każdy ma step label, komendę i notkę.
 installSteps:
   - step: "KROK 01"
-    command: "$ curl -fsSL vibecrafted.io/install.sh | bash"
+    command: "$ curl -fsSL https://vibecrafted.io/install.sh | bash"
     note: "Jeden lokalny bootstrap. Instaluje komendy i otwiera prowadzony launcher."
   - step: "KROK 02"
     command: "$ vibecrafted doctor"

@@ -10,8 +10,9 @@ Sibling brand (structural perception engine): https://loctree.com
 Authors: Vetcoders — Maciej Gad (@div0-space) + Monika Szymańska (@m-szymanska). Two veterinarians who built the framework by shipping with it.
 License: vibecrafted framework — see GitHub repo. Skills under same license.
 Stack: Astro 6 + Svelte 5 + MDX. i18n: English / Polish. Hosted at vibecrafted.io.
-Source version at 2026-08-14 audit: 3.7.1 (canonical value: https://raw.githubusercontent.com/vetcoders/vibecrafted/main/VERSION).
-Latest published release and its actual assets: https://github.com/vetcoders/vibecrafted/releases/latest (do not infer that every source version or DMG is published).
+Installed version: the `version` field of https://vibecrafted.io/channel/main.json. The bootstrap installs that channel; do not treat a number written in this file as current.
+Source VERSION: https://raw.githubusercontent.com/vetcoders/vibecrafted/main/VERSION (separate publisher from the installer channel).
+Latest published GitHub Release and its actual assets: https://github.com/vetcoders/vibecrafted/releases/latest (do not infer that every source version or DMG is published).
 
 ## Install channel truth
 
