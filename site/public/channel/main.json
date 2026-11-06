@@ -5,8 +5,8 @@
   "signature_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz.sig",
   "sha256_url": "https://vibecrafted.io/SHA256SUMS",
   "public_key_url": "https://vibecrafted.io/vibecrafted-signing.pub",
-  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-darwin-arm64.tar.gz",
-  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-996c2586.dmg",
+  "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261106-47b12911-darwin-arm64.tar.gz",
+  "dmg_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261106-47b12911.dmg",
   "release_manifest_url": "https://vibecrafted.io/release-output.json",
   "platforms": {
     "macos-arm64": {
@@ -26,15 +26,15 @@
       "vendored_foundations": false
     },
     "windows-x64": {
-      "archive_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-win32-x64.tar.gz",
-      "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-win32-x64.tar.gz",
-      "signature_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-win32-x64.tar.gz.sig",
-      "sha256_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261030-996c2586-win32-x64.tar.gz.sha256",
-      "exe_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-996c2586-windows-x64.exe",
-      "msi_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261030-996c2586-windows-x64.msi",
+      "archive_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261106-47b12911-win32-x64.tar.gz",
+      "runtime_pack_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261106-47b12911-win32-x64.tar.gz",
+      "signature_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261106-47b12911-win32-x64.tar.gz.sig",
+      "sha256_url": "https://vibecrafted.io/Vibecrafted_RuntimePack_4.5.1-20261106-47b12911-win32-x64.tar.gz.sha256",
+      "exe_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261106-47b12911-windows-x64.exe",
+      "msi_url": "https://vibecrafted.io/Vibecrafted_4.5.1-20261106-47b12911-windows-x64.msi",
       "release_manifest_url": "https://vibecrafted.io/windows-release.json",
       "release_manifest_signature_url": "https://vibecrafted.io/windows-release.json.sig",
-      "source_revision": "996c25863381b404455657482adad32d968096b9",
+      "source_revision": "47b12911b647c4cd96dfae3822e3d6d4ffa0152a",
       "authenticode": "unsigned",
       "vendored_foundations": false,
       "source_archive_url": "https://vibecrafted.io/vibecrafted-v4.5.1.tar.gz"
