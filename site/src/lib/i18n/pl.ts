@@ -107,9 +107,9 @@ export const pl = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Runtime operacyjny multiagentowych CLI workflows.",
+      title: "Vibecrafted — AI potrafi pisać. Dowód rozstrzyga.",
       description:
-        "Metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): dispatch peerów z TUI, wspólny control plane, rytm read/write i /vc-ship od A do Z.",
+        "Wizja struktury, trwała intencja, usta na Slacku i bramki. Loctree · Aicx · vc-slack · Vibecrafted.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -129,15 +129,15 @@ export const pl = {
   },
   v2Hero: {
     ariaLabel: "Sekcja główna",
-    eyebrow: "RUNTIME OPERACYJNY · MULTIAGENTOWE CLI WORKFLOWS",
+    eyebrow: "WZROK · PAMIĘĆ · RĘCE · SPRAWCZOŚĆ",
     heading: {
-      pre: "Runtime operacyjny",
-      mid: "dla multiagentowych",
-      accent: "CLI workflows.",
+      pre: "AI potrafi pisać.",
+      mid: "",
+      accent: "Dowód rozstrzyga.",
     },
-    body: "Vibecrafted to metoda i runtime orkiestracji agentów CLI (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchery, które dispatchują peer agentów z TUI, wspólny control plane i rytm read/write. Gdy chcesz jeden przebieg od A do Z — to jest <code>/vc-ship</code>.",
+    body: 'Duett weterynarzy zbudował to, czego brakowało agentom: wizję struktury, trwałą intencję i usta, które postują — z codziennym dowodem i listą tego, co nadal pada.<code>loct impact · aicx search · /vc grok send · vc justdo</code>',
     ctaPrimary: "INSTALUJ",
-    ctaSecondary: "QUICK START",
+    ctaSecondary: "SPRÓBUJ",
     telemetry: {
       marbles: "AGENCI",
       converge: "REPO",

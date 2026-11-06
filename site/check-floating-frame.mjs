@@ -76,10 +76,9 @@ const product = read('src/components/sections/SectionProductSurface.astro');
 const floating = read('src/components/FloatingProductProof.svelte');
 const termWin = read('src/components/TerminalWindow.astro');
 
-assert.match(hero, /vc-termwin__titlebar/, 'Hero must render decorative titlebar chrome.');
-assert.match(hero, /vc-termwin__dot--close/, 'Hero must include traffic lights.');
-assert.match(hero, /vc-termwin__body/, 'Hero capture must live in chrome body.');
-assert.match(hero, /real-usage\.png/, 'Hero must use real usage capture.');
+assert.match(hero, /PlaygroundTui/, 'Hero mounts the operator TUI in-document.');
+assert.match(hero, /hero__playground/, 'Hero playground host stays, without an iframe.');
+assert.doesNotMatch(hero, /<iframe/i, 'Hero must not nest an iframe.');
 assert.doesNotMatch(
   hero,
   /class="hero__shot"/,

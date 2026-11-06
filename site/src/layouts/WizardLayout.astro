@@ -416,9 +416,9 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
   .wizard-shell {
     position: relative;
     z-index: 1;
-    width: min(100%, 76rem);
+    width: min(100%, 44rem);
     height: auto;
-    min-height: calc(100dvh - clamp(1.6rem, 4vw, 2.7rem));
+    min-height: 0;
   }
 
   .wizard-shell__backdrop {
@@ -781,14 +781,14 @@ const closeInstallerShort = wizardLayoutCopy.closeInstallerShort;
     .wizard-shell {
       width: 100%;
       height: auto;
-      min-height: 100dvh;
+      min-height: 0;
     }
 
     .wizard-shell__frame {
       border-left: 0;
       border-right: 0;
       border-radius: 0;
-      min-height: 100dvh;
+      min-height: 0;
     }
 
     .wizard-shell__topbar {

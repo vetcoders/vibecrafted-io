@@ -102,17 +102,17 @@
     en: {
       top: {
         brand: 'Vibecrafted.',
-        center: 'Framework — The Game',
-        fig: 'FIG. 06 · GAME VC-006',
-        mode: 'Teaching mode'
+        center: 'Sight · Memory · Hands · Agency',
+        fig: 'FIG. 06 · OPERATOR LOOP',
+        mode: 'Operator mode'
       },
       hero: {
-        kicker: '§ 06 · Framework loop',
-        title: 'Throw marbles onto the board.',
+        kicker: 'SIGHT · MEMORY · HANDS · AGENCY',
+        title: 'AI can write. Evidence decides.',
         lead:
-          'Most miss, bounce, collide, and wander. Run another round. Some settle. Some keep moving. Repeat until the board fills and the pattern becomes clear.',
+          'A veterinary duo built what coding agents lacked: structural vision, durable intent, and a mouth that posts — with daily proof and a list of what still fails.',
         foot:
-          "A metaphor for coding with AI agents: the first throw gives you a lot of fast code and a lot of chaos. It's the next iterations that make the solution settle, errors fall away, and the project edge toward release."
+          'The board is a metaphor. The commands are real. Loctree maps. Aicx remembers. vc-slack wires the room. Vibecrafted ships under gates. Marbles only settle what those four already made true.'
       },
       board: {
         shape: 'Board shape',
@@ -128,7 +128,7 @@
         grooves: 'Grooves',
         marbles: 'Marbles',
         signal: 'Signal',
-        teaching: 'Teaching surface — not production output.',
+        teaching: 'Operator surface — commands are real; the board is the metaphor.',
         pickShape: 'Pick shape',
         runHint: 'watching convergence...',
         throwRound: 'Throw round',
@@ -146,72 +146,72 @@
       phases: [
         {
           id: 'frame',
-          eyebrow: '01 · Frame',
-          title: 'Frame',
-          verb: 'Define the board',
+          eyebrow: '01 · Map',
+          title: 'Map',
+          verb: 'See the blast radius',
           body:
-            'Set the outer boundary of the work. Before agents can optimize anything, the system needs a real shape.',
-          command: 'vc-scaffold my-project',
-          note: 'Boundary first. Work without a frame becomes drift.',
+            'Loctree first. ASTs, importers, impact — before anyone edits. A throw without a map is just noise on the board.',
+          command: 'loct impact src/auth.ts && loct slice src/auth.ts',
+          note: 'Structure before generation. Sight is not a vibe.',
           fill: 0.08,
           tone: 'copper'
         },
         {
           id: 'perceive',
-          eyebrow: '02 · Perceive',
-          title: 'Perceive',
-          verb: 'Load repo truth',
+          eyebrow: '02 · Remember',
+          title: 'Remember',
+          verb: 'Keep intent after compaction',
           body:
-            'Loctree, AICX, and history establish what is actually true before the first implementation throw.',
-          command: 'vibecrafted init codex',
-          note: 'Perception beats memory. Ground truth beats intuition.',
+            'Aicx stores durable intent from raw agent sessions. Typed memory — not chat residue. Search it before the next throw.',
+          command: 'aicx search "handoff"',
+          note: 'Adapters: Claude · Codex · Gemini · Junie · Grok. Memory outlives the context window.',
           fill: 0.22,
           tone: 'teal'
         },
         {
           id: 'work',
-          eyebrow: '03 · Work',
-          title: 'Work',
-          verb: 'Send specialists',
+          eyebrow: '03 · Craft',
+          title: 'Craft',
+          verb: 'Ship under gates',
           body:
-            'Specialist force enters the board. Research, implementation, review, and runtime capture start filling real slots.',
-          command: 'vibecrafted workflow claude --prompt "Plan and implement auth"',
-          note: 'Throughput is useful only when every throw has a slot.',
+            'Specialists enter only after map + memory. Workflows write receipts. Green CI is not product-readiness.',
+          command: 'vibecrafted workflow grok -p "Read this repo and name the first real fix."',
+          note: 'Throughput is useful only when every throw has a slot and a falsification gate.',
           fill: 0.42,
           tone: 'steel'
         },
         {
           id: 'converge',
-          eyebrow: '04 · Converge',
-          title: 'Converge',
-          verb: 'Reduce entropy',
+          eyebrow: '04 · Wire',
+          title: 'Wire',
+          verb: 'Give models a mouth',
           body:
-            'Follow-up, Marbles, and DoU expose weak fits. The board keeps looping until blockers are visible and reducible.',
-          command: 'vibecrafted marbles codex --prompt "Reduce remaining P0/P1/P2"',
-          note: 'The question is not whether it works. The question is what is still wrong.',
+            'vc-slack is agency, not scrape. OAuth + MCP + /vc <agent> send. Slack is a projector. The bus is the room.',
+          command: '/vc grok send "Finish until this is a daily-driver, not a demo."',
+          note: 'Read when you need context. Write when you need sprawczość.',
           fill: 0.68,
           tone: 'mint'
         },
         {
           id: 'ship',
-          eyebrow: '05 · Ship',
-          title: 'Ship',
-          verb: 'Close the surface',
+          eyebrow: '05 · Prove',
+          title: 'Prove',
+          verb: 'Close with evidence',
           body:
-            'Decorate, Hydrate, and Release turn a converged repo into a reachable, understandable product surface.',
-          command: 'vibecrafted release codex --prompt "Prepare release steps"',
-          note: 'Release begins when someone outside the repo can use the thing.',
+            'Marbles reduce what is still wrong. Release begins when someone outside the repo can install, trust, and use the thing — with a list of what still fails.',
+          command: 'vc justdo . "ship the release with a receipt"',
+          note: 'The question is not whether it works. The question is what is still undone.',
           fill: 0.9,
           tone: 'mint'
         }
       ],
       operators: {
-        loctree: { label: 'Loctree', kind: 'structure' },
-        aicx: { label: 'AICX', kind: 'memory' },
-        prview: { label: 'PRView', kind: 'review' },
-        screenscribe: { label: 'ScreenScribe', kind: 'runtime' },
-        agents: { label: 'Agents', kind: 'execution' },
-        marbles: { label: 'Marbles', kind: 'convergence' }
+        loctree: { label: 'Loctree', kind: 'sight' },
+        aicx: { label: 'Aicx', kind: 'memory' },
+        prview: { label: 'vc-slack', kind: 'mouth' },
+        screenscribe: { label: 'Codescribe', kind: 'voice' },
+        agents: { label: 'Agents', kind: 'hands' },
+        marbles: { label: 'Marbles', kind: 'proof' }
       },
       status: {
         ready: 'board awaiting first throw',
@@ -225,17 +225,17 @@
     pl: {
       top: {
         brand: 'Vibecrafted.',
-        center: 'Framework — gra',
-        fig: 'FIG. 06 · GAME VC-006',
-        mode: 'Tryb'
+        center: 'Wzrok · Pamięć · Ręce · Sprawczość',
+        fig: 'FIG. 06 · PĘTLA OPERATORA',
+        mode: 'Tryb operatora'
       },
       hero: {
-        kicker: '§ 06 · Pętla frameworka',
-        title: 'Rzuć marble na planszę.',
+        kicker: 'WZROK · PAMIĘĆ · RĘCE · SPRAWCZOŚĆ',
+        title: 'AI potrafi pisać. Dowód rozstrzyga.',
         lead:
-          'Większość chybi, odbije się albo zabłądzi. Uruchom kolejną rundę. Część osiądzie, część ruszy dalej. Powtarzaj, aż plansza się wypełni, a wzór stanie się czytelny.',
+          'Duett weterynarzy zbudował to, czego brakowało agentom: wizję struktury, trwałą intencję i usta, które postują — z codziennym dowodem i listą tego, co nadal pada.',
         foot:
-          'To metafora kodowania z agentami AI: pierwszy rzut daje dużo szybkiego kodu i dużo chaosu. Dopiero kolejne iteracje sprawiają, że rozwiązanie osiada, błędy odpadają, a projekt zaczyna zbliżać się do release’u.'
+          'Plansza to metafora. Komendy są prawdziwe. Loctree mapuje. Aicx pamięta. vc-slack łączy pokój. Vibecrafted stawia bramki. Marbles osiadają tylko to, co te cztery już uczyniły prawdą.'
       },
       board: {
         shape: 'Kształt planszy',
@@ -251,7 +251,7 @@
         grooves: 'Rowki',
         marbles: 'Kulki',
         signal: 'Sygnał',
-        teaching: 'Powierzchnia nauki — nie output produkcyjny.',
+        teaching: 'Powierzchnia operatora — komendy są prawdziwe; plansza jest metaforą.',
         pickShape: 'Wybierz kształt',
         runHint: 'obserwuję konwergencję...',
         throwRound: 'Rozpocznij rundę',
@@ -269,67 +269,72 @@
       phases: [
         {
           id: 'frame',
-          eyebrow: '01 · Frame',
-          title: 'Frame',
-          verb: 'Zdefiniuj planszę',
-          body: 'Ustal kształt planszy.',
-          command: 'vc-scaffold my-project',
-          note: 'Najpierw granica. Praca bez ramy szybko zamienia się w drift.',
+          eyebrow: '01 · Map',
+          title: 'Map',
+          verb: 'Zobacz blast radius',
+          body:
+            'Najpierw Loctree. AST, importery, impact — zanim ktokolwiek edytuje. Rzut bez mapy to szum na planszy.',
+          command: 'loct impact src/auth.ts && loct slice src/auth.ts',
+          note: 'Struktura przed generacją. Wzrok to nie vibe.',
           fill: 0.08,
           tone: 'copper'
         },
         {
           id: 'perceive',
-          eyebrow: '02 · Perceive',
-          title: 'Perceive',
-          verb: 'Załaduj prawdę repo',
-          body: 'Sprawdź, co naprawdę jest na planszy.',
-          command: 'vibecrafted init codex',
-          note: 'Percepcja bije pamięć. Ground truth bije intuicję.',
+          eyebrow: '02 · Remember',
+          title: 'Remember',
+          verb: 'Zatrzymaj intencję po kompaktacji',
+          body:
+            'Aicx trzyma trwałą intencję z surowych sesji agentów. Typed memory — nie osad czatu. Szukaj zanim rzucisz dalej.',
+          command: 'aicx search "handoff"',
+          note: 'Adaptery: Claude · Codex · Gemini · Junie · Grok. Pamięć przeżywa okno kontekstu.',
           fill: 0.22,
           tone: 'teal'
         },
         {
           id: 'work',
-          eyebrow: '03 · Work',
-          title: 'Work',
-          verb: 'Wpuść specjalistów',
-          body: 'Wpuść specjalistów na planszę.',
-          command: 'vibecrafted workflow claude --prompt "Zaplanuj i zaimplementuj auth"',
-          note: 'Przepustowość ma sens tylko wtedy, gdy każdy throw ma swój slot.',
+          eyebrow: '03 · Craft',
+          title: 'Craft',
+          verb: 'Ship pod bramkami',
+          body:
+            'Specjaliści wchodzą dopiero po mapie i pamięci. Workflow pisze kwity. Zielone CI to nie gotowość produktu.',
+          command: 'vibecrafted workflow grok -p "Przeczytaj to repo i nazwij pierwszy prawdziwy fix."',
+          note: 'Przepustowość ma sens tylko wtedy, gdy każdy rzut ma slot i bramkę falsyfikacji.',
           fill: 0.42,
           tone: 'steel'
         },
         {
           id: 'converge',
-          eyebrow: '04 · Converge',
-          title: 'Converge',
-          verb: 'Zmniejsz entropię',
-          body: 'Niech słabe dopasowania odpadną.',
-          command: 'vibecrafted marbles codex --prompt "Reduce remaining P0/P1/P2"',
-          note: 'Pytanie nie brzmi, czy działa. Pytanie brzmi, co nadal jest źle.',
+          eyebrow: '04 · Wire',
+          title: 'Wire',
+          verb: 'Daj modelom usta',
+          body:
+            'vc-slack to sprawczość, nie scrape. OAuth + MCP + /vc <agent> send. Slack jest projektorem. Bus jest pokojem.',
+          command: '/vc grok send "Dokończ, aż to będzie daily-driver, nie demo."',
+          note: 'Czytaj, gdy potrzebujesz kontekstu. Pisz, gdy potrzebujesz sprawczości.',
           fill: 0.68,
           tone: 'mint'
         },
         {
           id: 'ship',
-          eyebrow: '05 · Ship',
-          title: 'Ship',
-          verb: 'Domknij surface',
-          body: 'Wypuść planszę w świat.',
-          command: 'vibecrafted release codex --prompt "Prepare release steps"',
-          note: 'Release zaczyna się wtedy, gdy ktoś spoza repo może z tego skorzystać.',
+          eyebrow: '05 · Prove',
+          title: 'Prove',
+          verb: 'Zamknij dowodem',
+          body:
+            'Marbles redukują to, co nadal jest źle. Release zaczyna się, gdy ktoś spoza repo może zainstalować, zaufać i użyć — z listą tego, co nadal pada.',
+          command: 'vc justdo . "ship the release with a receipt"',
+          note: 'Pytanie nie brzmi, czy działa. Pytanie brzmi, co nadal jest undone.',
           fill: 0.9,
           tone: 'mint'
         }
       ],
       operators: {
-        loctree: { label: 'Loctree', kind: 'struktura' },
-        aicx: { label: 'AICX', kind: 'pamięć' },
-        prview: { label: 'PRView', kind: 'review' },
-        screenscribe: { label: 'ScreenScribe', kind: 'runtime' },
-        agents: { label: 'Agents', kind: 'wykonanie' },
-        marbles: { label: 'Marbles', kind: 'konwergencja' }
+        loctree: { label: 'Loctree', kind: 'wzrok' },
+        aicx: { label: 'Aicx', kind: 'pamięć' },
+        prview: { label: 'vc-slack', kind: 'usta' },
+        screenscribe: { label: 'Codescribe', kind: 'głos' },
+        agents: { label: 'Agents', kind: 'ręce' },
+        marbles: { label: 'Marbles', kind: 'dowód' }
       },
       status: {
         ready: 'plansza czeka na pierwszy throw',
@@ -1177,6 +1182,15 @@
         </div>
       </section>
 
+      <section class="operator-strip" aria-label="Operators">
+        {#each OPERATORS as operator}
+          <div class="operator-row">
+            <span>{copy.operators[operator].label}</span>
+            <em>{copy.operators[operator].kind}</em>
+          </div>
+        {/each}
+      </section>
+
       <details class="advanced-drawer">
         <summary class="advanced-drawer__summary">
           <span>{copy.board.advanced}</span>
@@ -1194,15 +1208,6 @@
               <input type="range" min="35" max="92" bind:value={precision} oninput={setPrecision} />
               <b>{precision}%</b>
             </label>
-          </section>
-
-          <section class="operator-strip" aria-label="Operators">
-            {#each OPERATORS as operator}
-              <div class="operator-row">
-                <span>{copy.operators[operator].label}</span>
-                <em>{copy.operators[operator].kind}</em>
-              </div>
-            {/each}
           </section>
 
           <div class="actions">
@@ -1226,17 +1231,17 @@
 
 <style>
   .game {
-    --ink: var(--v2-ink, #080807);
-    --ink-deep: #050504;
-    --paper: var(--v2-fg-on-dark, #f5f4ef);
-    --muted: var(--v2-fg-muted, rgba(245, 244, 239, 0.62));
-    --dim: rgba(245, 244, 239, 0.36);
-    --rule: rgba(245, 244, 239, 0.1);
-    --rule-soft: rgba(245, 244, 239, 0.06);
-    --rule-strong: rgba(245, 244, 239, 0.18);
-    --copper: var(--v2-accent, #cf6f4e);
-    --teal: var(--v2-accent-2, #3d7a72);
-    --mint: #a6c5bc;
+    --ink: var(--v2-ink);
+    --ink-deep: var(--v2-ink);
+    --paper: var(--v2-fg-on-dark);
+    --muted: var(--v2-fg-on-dark-dim);
+    --dim: var(--v2-fg-on-dark-mute);
+    --rule: var(--v2-rule-dark);
+    --rule-soft: var(--v2-rule-dark-soft);
+    --rule-strong: var(--v2-border-strong);
+    --copper: var(--v2-copper);
+    --teal: var(--v2-accent);
+    --mint: var(--v2-ok);
     min-height: calc(100vh - 72px);
     height: calc(100vh - 72px);
     color: var(--paper);
@@ -1255,7 +1260,7 @@
       radial-gradient(circle, rgba(245, 244, 239, 0.05) 1px, transparent 1.5px) 0 0 / 28px 28px,
       radial-gradient(ellipse 100% 80% at 50% 50%, var(--ink) 30%, var(--ink-deep) 100%);
     padding: 18px 32px 18px;
-    font-family: var(--v2-font-body, Inter, system-ui, sans-serif);
+    font-family: var(--v2-font-body);
     overflow: auto;
     scrollbar-gutter: stable;
     display: flex;
@@ -1272,7 +1277,7 @@
     flex: 0 0 auto;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--rule);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1321,7 +1326,7 @@
 
   .phase-narrative__kicker {
     margin: 0;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1330,7 +1335,7 @@
 
   .phase-narrative__title {
     margin: 0;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(34px, 3.6vw, 52px);
     line-height: 1.05;
     letter-spacing: -0.005em;
@@ -1361,7 +1366,7 @@
 
   .phase-narrative__eyebrow {
     margin: 0;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1370,7 +1375,7 @@
 
   .phase-narrative__verb {
     margin: 0;
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(26px, 2.8vw, 36px);
     line-height: 1.1;
     font-weight: 400;
@@ -1420,10 +1425,10 @@
     display: grid;
     place-items: center;
     border: 1px solid var(--rule);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     background: transparent;
     color: var(--muted);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 14px;
     cursor: pointer;
     transition:
@@ -1445,7 +1450,7 @@
 
   .phase-narrative__step {
     justify-self: center;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
     color: var(--dim);
@@ -1483,7 +1488,7 @@
     position: relative;
     height: 100%;
     min-height: clamp(320px, 44vh, 520px);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule);
     background:
       radial-gradient(
@@ -1509,7 +1514,7 @@
     top: 20px;
     display: grid;
     gap: 6px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1563,7 +1568,7 @@
   }
 
   .metrics span {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1571,7 +1576,7 @@
   }
 
   .metrics strong {
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(22px, 2.2vw, 28px);
     font-weight: 400;
     color: var(--mint);
@@ -1613,7 +1618,7 @@
   }
 
   .command span {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1622,7 +1627,7 @@
 
   .command code {
     overflow-wrap: anywhere;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     color: var(--mint);
     font-size: 13px;
   }
@@ -1645,7 +1650,7 @@
   }
 
   .marble-picker__label {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.26em;
     text-transform: uppercase;
@@ -1664,7 +1669,7 @@
     place-items: center;
     padding: 0;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: var(--v2-radius-pill);
     background: transparent;
     cursor: pointer;
     transition: border-color 180ms ease, transform 180ms ease;
@@ -1688,7 +1693,7 @@
   .marble-pick__sphere {
     width: 26px;
     height: 26px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     box-shadow:
       0 2px 4px rgba(0, 0, 0, 0.45),
       inset -2px -3px 6px rgba(0, 0, 0, 0.32),
@@ -1734,9 +1739,9 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     background: transparent;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     letter-spacing: 0.26em;
     text-transform: uppercase;
@@ -1862,7 +1867,7 @@
   }
 
   .converge-badge__value {
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-size: clamp(34px, 3.4vw, 44px);
     font-weight: 400;
     line-height: 1;
@@ -1873,7 +1878,7 @@
   .converge-badge__label {
     position: absolute;
     bottom: 28%;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 9px;
     letter-spacing: 0.28em;
     text-transform: uppercase;
@@ -1886,7 +1891,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 10px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 10px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -1896,7 +1901,7 @@
   .mode-dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     background: var(--mint);
     box-shadow: 0 0 8px rgba(166, 197, 188, 0.6);
   }
@@ -1935,7 +1940,7 @@
     justify-content: space-between;
     padding: 12px 0;
     border-top: 1px solid var(--rule-soft);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.24em;
     text-transform: uppercase;
@@ -1973,7 +1978,7 @@
   .control-group label > span {
     display: block;
     margin: 0 0 12px;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -1991,11 +1996,11 @@
     display: grid;
     place-items: center;
     gap: 8px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-soft);
     background: transparent;
     color: var(--dim);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -2032,11 +2037,11 @@
     min-height: 38px;
     display: grid;
     place-items: center;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-soft);
     background: transparent;
     color: var(--dim);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -2066,11 +2071,11 @@
   }
 
   .shape-icon--ring {
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
   }
 
   .shape-icon--oval {
-    border-radius: 999px;
+    border-radius: var(--v2-radius-pill);
     border-color: var(--dim);
   }
 
@@ -2104,12 +2109,12 @@
     color: var(--paper);
     background: rgba(245, 244, 239, 0.04);
     border: 1px solid var(--rule);
-    border-radius: 6px;
+    border-radius: var(--v2-radius);
     padding: 10px 12px;
   }
 
   .control-group b {
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     color: var(--paper);
     min-width: 46px;
     text-align: right;
@@ -2125,7 +2130,7 @@
     display: block;
     padding-bottom: 6px;
     border-bottom: 1px dashed rgba(245, 244, 239, 0.1);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 12px;
     line-height: 1.25;
     color: var(--paper);
@@ -2152,11 +2157,11 @@
   .action,
   .actions__secondary button {
     min-height: 44px;
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     border: 1px solid var(--rule-strong);
     background: transparent;
     color: var(--paper);
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -2222,7 +2227,7 @@
     display: block;
     margin-bottom: 6px;
     color: var(--paper);
-    font-family: var(--v2-font-display, "Instrument Serif", serif);
+    font-family: var(--v2-font-display);
     font-style: italic;
     font-size: 22px;
     font-weight: 400;
@@ -2233,7 +2238,7 @@
     flex: 0 0 auto;
     margin: 0;
     text-align: center;
-    font-family: var(--v2-font-mono, "JetBrains Mono", monospace);
+    font-family: var(--v2-font-mono);
     font-size: 11px;
     letter-spacing: 0.18em;
     color: var(--dim);

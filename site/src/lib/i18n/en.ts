@@ -86,9 +86,9 @@ export const en = {
   },
   v2Pages: {
     landing: {
-      title: "Vibecrafted — Operating runtime for multi-agent CLI workflows.",
+      title: "Vibecrafted — AI can write. Evidence decides.",
       description:
-        "An orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): peer dispatch from the TUI, a shared control plane, read/write cadence, and /vc-ship end-to-end.",
+        "Structural vision, durable intent, a Slack mouth, and gates. Loctree · Aicx · vc-slack · Vibecrafted.",
     },
     faq: {
       title: "Vibecrafted · FAQ",
@@ -108,15 +108,15 @@ export const en = {
   },
   v2Hero: {
     ariaLabel: "Hero",
-    eyebrow: "OPERATING RUNTIME · MULTI-AGENT CLI WORKFLOWS",
+    eyebrow: "SIGHT · MEMORY · HANDS · AGENCY",
     heading: {
-      pre: "An operating runtime",
-      mid: "for multi-agent cli",
-      accent: "workflows.",
+      pre: "AI can write.",
+      mid: "",
+      accent: "Evidence decides.",
     },
-    body: "Vibecrafted is an orchestration method and runtime for CLI coding agents (Claude Code, Codex, Junie, Agy, Grok, Gemini): launchers that dispatch peer agents from the TUI, a shared control plane, and a read/write cadence. When you want one pass end-to-end, that is <code>/vc-ship</code>.",
+    body: "A veterinary duo built what coding agents lacked: structural vision, durable intent, and a mouth that posts — with daily proof and a list of what still fails.<code>loct impact · aicx search · /vc grok send · vc justdo</code>",
     ctaPrimary: "INSTALL",
-    ctaSecondary: "QUICK START",
+    ctaSecondary: "TRY IT",
     telemetry: {
       marbles: "AGENTS",
       converge: "REPOS",
@@ -294,7 +294,7 @@ flowchart LR
     quickstartHero: {
       label: "Quick Start",
       title: "From zero to your first 𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍. loop.",
-      lead: "Install Vibecrafted, run doctor, then start one real workflow inside a live repository.",
+      lead: "Install Vibecrafted, then send one real job inside a live repository.",
       quote: "From AI-generated repo to launch-ready product.",
       primaryHref: "/en/",
       primaryLabel: "Back to Overview",

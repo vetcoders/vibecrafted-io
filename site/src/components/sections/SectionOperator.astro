@@ -1,8 +1,9 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import BoardPreview from '../BoardPreview.svelte';
+import FrameAnatomy from '../FrameAnatomy.astro';
 import type { Lang } from '../../lib/i18n';
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const operatorEntry = await getEntry('i18n', `${lang}/operator-v2`);
+const operatorEntry = { data: await loadCopy('operator', lang) };
 if (!operatorEntry) throw new Error(`Missing i18n entry: ${lang}/operator-v2`);
 const section = operatorEntry.data as {
   title: string;
@@ -62,7 +63,7 @@ type BoardPreviewData = {
   caption: string;
 };
 
-const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+const quickstartEntry = { data: await loadCopy('quickstart', lang) };
 if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
 const nextTitle = quickstartEntry.data.title as string;
 ---
@@ -97,14 +98,17 @@ const nextTitle = quickstartEntry.data.title as string;
       <div class="op__cockpit-copy">
         <span class="op__cockpit-kicker">VC-FRAME 0.46 · COCKPIT</span>
         <h3 class="op__cockpit-heading">
-          Session rail on every dispatch layout
+          Host chrome above, guest workspaces below
           <span class="brand-dot">.</span>
         </h3>
         <p class="op__cockpit-body">
-          The operator cockpit ships with the session-manager rail welded into
-          dashboard, marbles, operator, research, and workflow layouts. Tab
-          inventory stays honest; fleet settlement lives on the Mission Control
-          board — not the rail.
+          The Operator Frame is pinned host chrome — Dashboard, Active runs,
+          Config, Doctor, Projects — welded into every dispatch layout and
+          never moving with sessions. Workspaces below it are guests: they
+          flow with ⌘-arrows and die with their sessions, each carrying
+          Overview, Agents, and Shell organs. Voc is the host console, pulled
+          out of the guest tab row; Panels carry the interactive-agent layer,
+          global or project scope.
         </p>
       </div>
       <figure class="op__cockpit-figure">
@@ -116,19 +120,10 @@ const nextTitle = quickstartEntry.data.title as string;
           loading="lazy"
           decoding="async"
         />
-        <figcaption>vc-frame cockpit — live layout chrome, not a mock.</figcaption>
+        <figcaption>vc-frame cockpit — example layout. Rail items in this figure do not open a session.</figcaption>
       </figure>
-      <figure class="op__cockpit-figure op__cockpit-figure--secondary">
-        <img
-          src="/assets/vc-frame/vc-frame-anatomy.png"
-          alt="vc-frame anatomy diagram of panes, rail, and layout structure"
-          width="1600"
-          height="900"
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption>Anatomy of the rail — where inventory lives.</figcaption>
-      </figure>
+      {/* Anatomy slot: live DOM, not a capture — the host/guest design target. */}
+      <FrameAnatomy />
     </div>
 
     {/* #marbles — nav MARBLES anchor lands on the board preview (BOARD /
@@ -190,7 +185,7 @@ const nextTitle = quickstartEntry.data.title as string;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     margin-bottom: 72px;
   }
 
@@ -238,9 +233,9 @@ const nextTitle = quickstartEntry.data.title as string;
   .op__cockpit-figure {
     margin: 0;
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     overflow: hidden;
-    background: var(--bg-ink, #0a1018);
+    background: var(--ink);
   }
 
   .op__cockpit-figure img {
@@ -362,7 +357,7 @@ const nextTitle = quickstartEntry.data.title as string;
     top: 14px;
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     background: var(--accent);
   }
 
@@ -402,7 +397,7 @@ const nextTitle = quickstartEntry.data.title as string;
   .op__practice {
     padding: 8px 12px;
     border: 1px solid var(--rule-paper);
-    border-radius: 2px;
+    border-radius: var(--v2-radius);
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.18em;

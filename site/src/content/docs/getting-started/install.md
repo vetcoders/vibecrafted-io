@@ -1,37 +1,42 @@
 ---
 title: "Install"
-description: "Install Vibecrafted on macOS, Linux or Windows through WSL2, and verify the result with doctor."
+description: "Install Vibecrafted on macOS (one command, no Xcode), Linux, or native Windows (win32-x64 Runtime Pack), and verify the result with doctor."
 section: getting-started
 order: 20
 ---
 
 # Install
 
-Vibecrafted runs on macOS, Linux, and Windows through WSL2. Pick the channel
-that matches your platform, then verify the result with `vibecrafted doctor`.
+Vibecrafted runs on macOS, Linux, and native Windows (win32-x64 Runtime Pack).
+Pick the section for your platform, then verify the result with
+`vibecrafted doctor`.
 
-## Channels
+The canonical download page is
+[vibecrafted.io/en/install](https://vibecrafted.io/en/install/)
+([PL](https://vibecrafted.io/pl/install/)). The release it serves is the one
+named by `https://vibecrafted.io/channel/main.json`; that manifest, not this
+page, is the authority for the current version.
 
-| Channel                      | Platform             | What you get                                           | Status                                   |
-| ---------------------------- | -------------------- | ------------------------------------------------------ | ---------------------------------------- |
-| Signed `Vibecrafted.app` DMG | macOS 14+, arm64     | Full desktop product: terminal, frame, runtime, server | Build path complete; publication pending |
-| Bootstrap `install.sh`       | macOS, Linux, WSL2   | Command deck, runtime, control plane, skills           | Published; CI-gated                      |
-| Source checkout              | macOS, Linux, WSL2   | Everything above plus build, test and release targets  | Published                                |
-| Container                    | anywhere Docker runs | Isolated operator runtime                              | Published                                |
+## macOS (14+, Apple Silicon) — the ordinary path
 
-On macOS and Linux, use the bootstrap today. On Windows, install WSL2 first and
-then use the same bootstrap inside it.
-
-## macOS and Linux
+You do not need Xcode, Command Line Tools, Swift, Make, a Python of your own, or
+a source checkout. Open Terminal and run one command:
 
 ```bash
 curl -fsSL https://vibecrafted.io/install.sh | bash
 ```
 
-The installer detects your platform and Linux distribution family first, reports
-every missing prerequisite in one pass instead of failing one tool at a time,
-and stages a versioned runtime generation under
-`~/.local/share/vibecrafted/tools/`.
+On a supported Mac this installs the signed `Vibecrafted.app` **and** the
+matching runtime together, so you do not need to download the DMG first. The
+installer asks for consent before it changes anything and keeps your existing
+shell, Terminal and Frame configuration and any running sessions.
+
+When it finishes, open a new terminal and check the result:
+
+```bash
+vibecrafted --version
+vibecrafted doctor
+```
 
 To read the script before running it:
 
@@ -41,13 +46,57 @@ less install.sh
 bash install.sh
 ```
 
+### Prefer the app? Download the DMG
+
+1. Open [vibecrafted.io/en/install](https://vibecrafted.io/en/install/) and use
+   **Download macOS app**. The DMG is Developer ID signed and notarized.
+2. Open the DMG and drag `Vibecrafted.app` to Applications, then launch it.
+3. If the app offers to install or upgrade the Vibecrafted tools on first
+   start, accept. Otherwise publish them from the menu bar: **Vibecrafted →
+   Republish anyway…** and confirm.
+
+Dragging the app into Applications does **not** by itself install the
+`vibecrafted` command or the runtime. Until step 3 has run you can have a
+current app next to an older (or absent) command line. `Republish anyway…`
+installs the runtime generation carried inside the app you just opened; it does
+not download a newer app and does not need a source checkout or Xcode.
+
+### Updating on macOS
+
+Re-running the one-command install pairs the app and the runtime again. The
+in-app **Check for Updates** works only once a newer release is actually
+published on the update feed; if none is, nothing is fetched. `Republish
+anyway…` is not an update check — it reinstalls what the app already carries.
+
+## Linux and WSL2
+
+```bash
+curl -fsSL https://vibecrafted.io/install.sh | bash
+```
+
+The bootstrap installs the release bound by the website channel manifest; it
+does not follow a Git branch. Confirm what you received with
+`vibecrafted --version`.
+
+The installer detects your platform and Linux distribution family first, reports
+every missing prerequisite in one pass instead of failing one tool at a time,
+and stages a versioned runtime generation under
+`~/.local/share/vibecrafted/tools/`.
+
+The no-toolchain macOS path above is a darwin-arm64 carrier. It does not cover
+Intel Macs or Linux, and the signed App exists only for macOS. Those platforms
+keep their own requirements — a platform-matching Runtime Pack or the source
+toolchain described in [Build from source](/docs/build-from-source/).
+
 ### Linux is a first-class runtime
 
-The Linux install path is gated on every push and pull request. Two jobs run:
-Ubuntu on a hosted runner, which exercises real `/etc/os-release` detection and
-the apt-family prerequisite hints, and `debian:bookworm-slim` in a container,
-which exercises the bare-minimum case with no pre-baked tooling. Both assert
-that `vibecrafted doctor` reports green afterwards.
+The Linux install path is gated on pushes and pull requests to `main`,
+`develop` and `release/*`. `.github/workflows/install-linux.yml` builds a Linux
+x64 Runtime Pack on Ubuntu 22.04, then installs it with this tree's
+`install.sh` on Ubuntu 22.04, Ubuntu 24.04 and `debian:bookworm-slim`, and runs
+`vibecrafted doctor`. The 22.04 and Debian jobs explicitly waive foundations;
+24.04 keeps the hard foundation gate. CI installs from the checkout, not from
+the published website channel.
 
 The macOS-only surfaces are the desktop app, notarization, and the `locterm`
 runtime. The command deck, control plane, dispatch, skills, and settlement
@@ -55,69 +104,71 @@ ledger all run on Linux.
 
 ## Windows
 
-Vibecrafted has no native Windows build. The installer is POSIX shell and the
-runtime assumes a POSIX process model, so on Windows you install WSL2 once and
-use the Linux path inside it.
-
-Install WSL2 from an elevated PowerShell prompt:
+The native Windows product is the win32-x64 Runtime Pack. It does not require
+WSL. From a checkout:
 
 ```powershell
-wsl --install
+powershell -NoProfile -File .\scripts\build-windows-x64-runtime-pack.ps1
+powershell -NoProfile -File .\install.ps1 -Pack .\build\Vibecrafted_RuntimePack_<version>-<YYYYMMDD>-<sha8>-win32-x64.tar.gz
 ```
 
-Reboot when prompted, then confirm:
+Canonical MSI/EXE names look like
+`Vibecrafted_<version>-<YYYYMMDD>-<sha8>-windows-x64.msi` (unsigned
+Authenticode — SmartScreen will warn; trust is `.sha256` + `.sig`).
 
-```powershell
-wsl --status
-```
+Runtime home is `%LOCALAPPDATA%\Vibecrafted`. Launchers are `*.cmd` under
+`%LOCALAPPDATA%\Vibecrafted\bin`. `tools/vibecrafted-current` is a directory
+junction. PTY/zsh, flock/rescue, and voc are not supported on native Windows
+(`vibecrafted doctor` declares them).
 
-Install Vibecrafted inside your default distribution:
+`install.ps1` delegates to `scripts/install-runtime-pack.ps1` when a pack is
+present. Without a pack it prints the exact next command and exits non-zero.
+First-run: `vibecrafted doctor` then `vibecrafted init`.
 
-```powershell
-wsl bash -c 'curl -fsSL https://vibecrafted.io/install.sh | bash'
-```
+WSL2 remains a POSIX alternative: install WSL2, then use `install.sh` inside
+the distro. That is not the native Windows product.
 
-`install.sh` detects WSL explicitly by reading `/proc/sys/kernel/osrelease` and
-`/proc/version` for a `microsoft` or `wsl` marker, and treats it as Linux for
-runtime purposes. WSL changes the reported platform line, not the install
-layout.
+## Advanced: App and Runtime Pack by hand
 
-The repository also ships `install.ps1`, a Windows entry point that checks for
-PowerShell 5.1 or newer, probes whether WSL is installed and healthy, and either
-prints the exact bootstrap one-liner for your default distribution or prints the
-WSL2 install path and exits non-zero. It never silently succeeds. Run it from a
-checkout with `.\install.ps1`.
+Ordinary users do not need this section. The one-command install and the DMG
+above already carry everything.
 
-## macOS desktop app
+The separate [GitHub Releases](https://github.com/vetcoders/vibecrafted/releases/latest)
+publisher lists versioned carriers and their checksums. Its latest release can
+differ from the website channel; choose the matching App and Runtime Pack from
+one release.
 
-The intended shape of the end-user product is one Developer ID signed and
-notarized artifact carrying matching builds of `vc-terminal`, `vc-frame`,
-`vc-start` and the complete Vibecrafted runtime. No companion repository
-installer is required.
+The signed App is one Developer ID signed and notarized artifact carrying
+matching builds of `vc-terminal`, `vc-frame`, `vc-start` and the complete
+Vibecrafted runtime; no companion repository installer is required. The App
+and its Runtime Pack are paired — a fixed host needs both from the same
+release, not one without the other.
 
-When a release carries a DMG, open the
-[latest release](https://github.com/vetcoders/vibecrafted/releases/latest),
-download `Vibecrafted_<version>-<YYYYMMDD>-<sha8>.dmg` and its adjacent
-`.dmg.sha256`, verify the bytes, then open it:
+To verify a downloaded DMG yourself, fetch the `.dmg` and its adjacent
+`.dmg.sha256` from the carrier named by the website channel manifest (GitHub
+Releases is a separate publisher and its `latest` is not that carrier), then:
 
 ```bash
 shasum -a 256 -c Vibecrafted_<version>-<YYYYMMDD>-<sha8>.dmg.sha256
 ```
 
-Drag `Vibecrafted.app` to Applications and launch it.
-
-Check what a given release actually carries:
+The same release carries
+`Vibecrafted_RuntimePack_<version>-<YYYYMMDD>-<sha8>-darwin-<arch>.tar.gz`, its
+`.sha256`, and detached `.sig`. It is built from the exact Runtime Pack inside
+the signed App and adds only the bundled terminal and native `vc-frame` helper.
+From a source checkout:
 
 ```bash
-gh release view --json assets -q '.assets[].name'
+make install RUNTIME_PACK=../Vibecrafted_RuntimePack_<version>-<YYYYMMDD>-<sha8>-darwin-<arch>.tar.gz
+make uninstall
 ```
 
-The build path is exercised end to end and its shape is gated by contract
-tests: `make release` produces a Developer ID signed, notarized and stapled
-DMG with a signed `release-output.json`. Until the release carrying it is
-published, use the bootstrap channel above.
+Both commands use the pack-owned Python and `vetcoders_install.py`. Installation
+writes one ownership receipt; uninstall refuses modified managed files, restores
+pre-existing collisions, and prunes only directories that receipt proves the
+installer created.
 
-## Portable channel — Linux, WSL2, macOS CLI
+## Portable source channel — Linux, WSL2, source fallback
 
 Apple notarization cannot reach these systems, so the same release carries a
 second canonically named artifact:
@@ -125,11 +176,11 @@ second canonically named artifact:
 `.sha256`.
 
 ```bash
-curl -fsSLO https://github.com/vetcoders/vibecrafted/releases/latest/download/Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz
-curl -fsSLO https://github.com/vetcoders/vibecrafted/releases/latest/download/Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz.sha256
+curl -fsSLO https://github.com/vetcoders/vibecrafted/releases/download/v<version>/Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz
+curl -fsSLO https://github.com/vetcoders/vibecrafted/releases/download/v<version>/Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz.sha256
 sha256sum -c Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz.sha256
 tar -xzf Vibecrafted_<version>-<YYYYMMDD>-<sha8>-portable.tar.gz
-bash vibecrafted-<version>/install.sh
+bash vibecrafted-<version>/install.sh --runtime-pack-file /absolute/path/to/matching-pack.tar.gz install
 ```
 
 What the tarball is, and what it is not:
@@ -141,16 +192,20 @@ What the tarball is, and what it is not:
   `vibecrafted.source-provenance.v2`, a `vibecrafted.distribution-tree.v1`
   digest over every entry, bound to the commit the release was cut from.
   `install.sh` re-validates that carrier before it stages anything.
-- It is **not** a prebuilt-binary bundle. The Rust cockpit binaries (`voc`,
-  `vc-admin`, `vc-server`) are still compiled locally by `make install`, so a
-  Rust toolchain remains a prerequisite on these systems. See the prerequisites
-  section above.
-- On Windows this is the artifact you use _inside_ WSL2. There is no native
-  Windows build; `install.ps1` hands off to WSL by design.
+- It is **not** a prebuilt-binary bundle. Product launchers and native
+  `vc-terminal` / `vc-frame` hosts stay on the Runtime Pack. `--skills-only`
+  installs skill views from source; it does not claim a complete native
+  runtime.
+- Linux prebuilt packs (`linux-x64`, `linux-arm64`) are built natively by
+  `scripts/build-linux-runtime-pack.sh` and are not produced by macOS
+  `make release`. Vibecrafted does not ship a systemd unit; start the server
+  and guardian with `vibecrafted server start`.
+- On Windows, use the native win32-x64 Runtime Pack. The portable Linux
+  tarball is the POSIX alternative inside WSL2.
 
 The checksum proves the bytes survived the wire. The provenance carrier proves
-they are the distribution they claim to be — that is the part `curl | bash`
-from a branch cannot give you.
+they are the distribution they claim to be, pinned to one commit — the part
+`curl | bash`, which follows the website channel, cannot give you.
 
 ### Runtime boundary
 

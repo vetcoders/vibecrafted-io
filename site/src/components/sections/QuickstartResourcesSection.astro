@@ -1,12 +1,12 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 import ProductDetailCard from './ProductDetailCard.astro';
 
 const { lang } = Astro.props as { lang: Lang };
 
-const entry = await getEntry('i18n', `${lang}/quickstartresources`);
+const entry = { data: await loadCopy('quickstart-resources', lang) };
 if (!entry) {
     throw new Error(`Quickstart resources content not found for lang=${lang}`);
 }
@@ -97,7 +97,7 @@ const pathLinks = [
         margin-top: 1rem;
         padding: 1rem 1.1rem;
         border: 1px solid rgba(218, 197, 167, 0.14);
-        border-radius: 1rem;
+        border-radius: var(--v2-radius);
         background:
             linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
             rgba(13, 15, 18, 0.58);
@@ -134,7 +134,7 @@ const pathLinks = [
         justify-content: center;
         padding: 0.62rem 0.88rem;
         border: 1px solid rgba(218, 197, 167, 0.18);
-        border-radius: 999px;
+        border-radius: var(--v2-radius-pill);
         color: rgba(236, 240, 245, 0.94);
         text-decoration: none;
         background: rgba(255, 255, 255, 0.03);
@@ -157,7 +157,7 @@ const pathLinks = [
         margin-top: 1rem;
         padding: 0.95rem 1rem 0.2rem;
         border: 1px solid rgba(175, 182, 190, 0.14);
-        border-radius: 1rem;
+        border-radius: var(--v2-radius);
         background: rgba(9, 11, 14, 0.48);
     }
 

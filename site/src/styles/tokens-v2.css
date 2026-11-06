@@ -2,9 +2,13 @@
  * Landing V2 tokens — authority is the live consoles:
  *   vibecrafted-server/web/styles/tokens.css
  *   vc-slack-agent/console/src/styles.css
- * Graphite, compact, operational. Not editorial print / blueprint.
+ * Graphite, compact, operational. Plates share one 2px hairline
+ * (contact, framework, evidence). Pills stay 999px. Discs stay 50%.
+ * Do not invent a third radius for "cards". Components consume these
+ * vars — no raw px/hex/fallback chains on V2 surfaces.
  */
 
+html:has(body.v2-scope),
 .v2-scope {
   /* Surfaces — zinc graphite */
   --v2-black: #0a0a0b;
@@ -20,6 +24,7 @@
   --v2-fg-on-dark: #f4f4f5;
   --v2-fg-on-dark-dim: #a1a1aa;
   --v2-fg-on-dark-mute: #71717a;
+  --v2-fg-on-dark-hover: #e4e4e7;
 
   /* Paper is now an elevated dark panel, not cream. */
   --v2-fg-on-paper: #f4f4f5;
@@ -60,6 +65,13 @@
   --v2-paper-glass-shadow:
     0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 40px rgba(0, 0, 0, 0.45);
   --v2-paper-backdrop: blur(16px);
+  --v2-hero-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+
+  /* In-flow plates are hairline frames, not filled cards.
+     Overlays that must cover the page use --v2-paper-glass. */
+  --v2-plate: transparent;
+  --v2-input: var(--v2-ink);
+  --v2-input-focus: var(--v2-ink);
 
   /* Type — display voice stays editorial (Instrument Serif) on every h1/h2;
      body and UI chrome follow the consoles (Inter); mono is JetBrains Mono. */
@@ -71,16 +83,19 @@
   --v2-font-sans: var(--v2-font-body);
   --v2-font-script: var(--v2-font-body);
 
-  --v2-radius: 12px;
-  --v2-radius-sm: 8px;
-  --v2-radius-lg: 16px;
+  --v2-radius: 2px;
+  --v2-radius-sm: 2px;
+  --v2-radius-lg: 2px;
+  --v2-radius-pill: 999px;
+  --v2-radius-full: 50%;
+  --v2-radius-none: 0;
 
   --v2-max-width: 1152px;
   --v2-nav-height: 72px;
   --v2-section-padding-y-top: 80px;
   --v2-section-padding-y-bottom: 80px;
   --v2-section-padding-x: 32px;
-  --v2-section-title: clamp(1.75rem, 2.6vw + 0.4vh, 2.75rem);
+  --v2-section-title: clamp(1.5rem, 2.4vw + 1.2cqh, 2.55rem);
   --v2-hero-min-height: 720px;
 
   --ink: var(--v2-ink);
@@ -91,6 +106,7 @@
   --fg-on-dark: var(--v2-fg-on-dark);
   --fg-on-dark-dim: var(--v2-fg-on-dark-dim);
   --fg-on-dark-mute: var(--v2-fg-on-dark-mute);
+  --fg-on-dark-hover: var(--v2-fg-on-dark-hover);
   --fg-on-paper: var(--v2-fg-on-paper);
   --fg-on-paper-dim: var(--v2-fg-on-paper-dim);
   --fg-on-paper-mute: var(--v2-fg-on-paper-mute);
@@ -114,6 +130,7 @@
   --paper-glass-highlight: var(--v2-paper-glass-highlight);
   --paper-glass-shadow: var(--v2-paper-glass-shadow);
   --paper-backdrop: var(--v2-paper-backdrop);
+  --plate: var(--v2-plate);
   --font-display: var(--v2-font-display);
   --font-body: var(--v2-font-body);
   --font-mono: var(--v2-font-mono);
@@ -130,7 +147,69 @@
   font-style: normal;
 }
 
+/* Light palette — vc-frame paper. Same token names, inverted surfaces.
+   Ink is the page, paper is the raised plate, fg-on-dark is primary text. */
+html[data-theme="light"]:has(body.v2-scope),
+html[data-theme="light"] .v2-scope {
+  --v2-black: #f3f1eb;
+  --v2-ink: #f3f1eb;
+  --v2-ink-soft: #ebe7de;
+  --v2-ash: #e2ddd3;
+  --v2-paper: #eae6dd;
+  --v2-paper-soft: #e2ddd3;
+  --v2-ink-rgb: 44, 42, 39;
+  --v2-paper-rgb: 44, 42, 39;
+  --v2-accent-rgb: 138, 106, 50;
+
+  --v2-fg-on-dark: #2c2a27;
+  --v2-fg-on-dark-dim: #5c564e;
+  --v2-fg-on-dark-mute: #8a8278;
+  --v2-fg-on-dark-hover: #1a1917;
+
+  --v2-fg-on-paper: #2c2a27;
+  --v2-fg-on-paper-dim: #5c564e;
+  --v2-fg-on-paper-mute: #8a8278;
+
+  --v2-accent: #8a6a32;
+  --v2-accent-amber: var(--v2-accent);
+  --v2-copper: #b45a3c;
+  --v2-accent-red: #b42318;
+  --v2-accent-2: var(--v2-accent);
+
+  --v2-ok: #2f7d4a;
+  --v2-warn: #a16207;
+  --v2-danger: #b42318;
+  --v2-border: #d4cfc4;
+  --v2-border-strong: #b7b09f;
+
+  --v2-rule-dark: #d4cfc4;
+  --v2-rule-dark-soft: rgba(44, 42, 39, 0.08);
+  --v2-rule-paper: #d4cfc4;
+  --v2-rule-paper-soft: rgba(44, 42, 39, 0.08);
+
+  --v2-paper-hairline: #d4cfc4;
+  --v2-paper-hairline-soft: #b7b09f;
+  --v2-paper-glass: #f7f5f0;
+  --v2-paper-glass-strong: #ebe7de;
+  --v2-paper-glass-highlight: rgba(255, 255, 255, 0.7);
+  --v2-paper-glass-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8), 0 12px 40px rgba(44, 42, 39, 0.08);
+  --v2-hero-shadow: 0 28px 80px rgba(44, 42, 39, 0.12);
+
+  --v2-input: #f7f5f0;
+  --v2-input-focus: #fff;
+}
+
+html:has(body.v2-scope) {
+  color-scheme: dark;
+}
+
+html[data-theme="light"]:has(body.v2-scope) {
+  color-scheme: light;
+}
+
 @media (max-width: 720px) {
+  html:has(body.v2-scope),
   .v2-scope {
     --v2-section-padding-y-top: 52px;
     --v2-section-padding-y-bottom: 52px;
