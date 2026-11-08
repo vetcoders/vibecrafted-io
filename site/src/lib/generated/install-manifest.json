@@ -1,6 +1,6 @@
 {
   "title": "\u2692 Vibecrafted.",
-  "version": "4.1.0",
+  "version": "4.5.2",
   "persist": true,
   "installCommand": "curl -fsSL https://vibecrafted.io/install.sh | bash",
   "phases": [
@@ -38,43 +38,34 @@
       "key": "installation",
       "label": "Installation",
       "optional": false,
-      "reason": "We will install the backyard product spine (one path, no install loops):\n\n  - product foundations: loctree / aicx (canonical product installers)\n  - vc-frame donor BINARY built from sibling source and installed only by\n    Vibecrafted (no companion installer or release channel)\n  - framework-owned support tools when needed\n  - frontier config + operator scripts (Composer / Super binds projection)\n  - shared skills, launchers, and mirrored agent views\n  - the selected runtime horse when RUNTIME=... is provided\n  - the Python CLI and MCP packages through uv tool install\n  - vendored foundation binaries from bin/vendor/<platform> when present\n  - Rust app/server binaries (voc, vc-admin, vc-server) in ~/.local/bin\n\nThe public macOS install is one Vibecrafted.app carrying vc-terminal, vc-frame,\nvc-start, and the Vibecrafted runtime. It does not rewrite user shell or terminal\nconfiguration; the app injects only its bundled environment at process start.",
+      "reason": "We will install the verified Runtime Pack through the public installer:\n\n  - one immutable runtime generation with vc-terminal, vc-frame and vc-start\n  - physical product configuration under ~/.config/vibecrafted\n  - preserved preferences and receipted recovery snapshots\n  - public launchers and shared agent views\n\nThe App and CLI use the same Runtime Pack installer. Installation errors stop\nthis phase; configuration is published only after conflict checks complete.",
       "reasonLines": [
-        "We will install the backyard product spine (one path, no install loops):",
-        "- product foundations: loctree / aicx (canonical product installers)",
-        "- vc-frame donor BINARY built from sibling source and installed only by",
-        "Vibecrafted (no companion installer or release channel)",
-        "- framework-owned support tools when needed",
-        "- frontier config + operator scripts (Composer / Super binds projection)",
-        "- shared skills, launchers, and mirrored agent views",
-        "- the selected runtime horse when RUNTIME=... is provided",
-        "- the Python CLI and MCP packages through uv tool install",
-        "- vendored foundation binaries from bin/vendor/<platform> when present",
-        "- Rust app/server binaries (voc, vc-admin, vc-server) in ~/.local/bin",
-        "The public macOS install is one Vibecrafted.app carrying vc-terminal, vc-frame,",
-        "vc-start, and the Vibecrafted runtime. It does not rewrite user shell or terminal",
-        "configuration; the app injects only its bundled environment at process start."
+        "We will install the verified Runtime Pack through the public installer:",
+        "- one immutable runtime generation with vc-terminal, vc-frame and vc-start",
+        "- physical product configuration under ~/.config/vibecrafted",
+        "- preserved preferences and receipted recovery snapshots",
+        "- public launchers and shared agent views",
+        "The App and CLI use the same Runtime Pack installer. Installation errors stop",
+        "this phase; configuration is published only after conflict checks complete."
       ],
-      "commands": [
-        "bash -e -c 'bash scripts/install-foundations.sh\nbash scripts/install-runtime.sh --runtime \"${VIBECRAFTED_RUNTIME:-none}\" --yes\nmake --no-print-directory install-vendored-binaries\nmake --no-print-directory install-app-binaries\nmake --no-print-directory install-bundle-tools\nstable_root=\"${XDG_DATA_HOME:-$HOME/.local/share}/vibecrafted/tools/vibecrafted-current\"\nbash \"$stable_root/vibecrafted-core/vibecrafted_core/runtime/scripts/install-frontier-config.sh\" --source \"$stable_root\" || printf '\"'\"'[warn] Frontier config skipped (non-fatal)\\n'\"'\"'\n# Project Super binds + operator scripts onto frontier (living install path).\nif command -v vibecrafted >/dev/null 2>&1; then\n  vibecrafted config install || printf '\"'\"'[warn] vibecrafted config install skipped (non-fatal)\\n'\"'\"'\nelif [[ -x scripts/vetcoders_install.py ]]; then\n  python3 -c \"from vibecrafted_core.vc_frame_delivery import stage_vc_frame_config; print(stage_vc_frame_config().render())\" 2>/dev/null \\\n    || printf '\"'\"'[warn] config projection skipped (non-fatal)\\n'\"'\"'\nfi\n'"
-      ]
+      "commands": ["make --no-print-directory install"]
     },
     {
       "key": "onboarding",
       "label": "Onboarding",
       "optional": true,
-      "reason": "Health check, then the product question:\n\n  Launch Vibecrafted now? [Y/n]\n\nOn Y we open the operator session (vc-start) with the Start here tab \u2014\nthe map of the workspace (rail, chrome, keys). That is onboarding content\nalready in the frame layout; the installer only wires the door.\n\nRestore honesty: layout/session resurrection is frame-level. Full agent\nprocess freeze is NOT claimed here (docs/installer/RESTORE_CONTRACT.md).",
+      "reason": "Health check, then the product question:\n\n  Launch Vibecrafted now? [Y/n]\n\nOn Y we open the operator session (vc-start) with the Launchpad tab \u2014\nthe map of the workspace (rail, chrome, keys). That is onboarding content\nalready in the frame layout; the installer only wires the door.\n\nRestore honesty: layout/session resurrection is frame-level. Full agent\nprocess freeze is NOT claimed here (docs/installer/RESTORE_CONTRACT.md).",
       "reasonLines": [
         "Health check, then the product question:",
         "Launch Vibecrafted now? [Y/n]",
-        "On Y we open the operator session (vc-start) with the Start here tab \u2014",
+        "On Y we open the operator session (vc-start) with the Launchpad tab \u2014",
         "the map of the workspace (rail, chrome, keys). That is onboarding content",
         "already in the frame layout; the installer only wires the door.",
         "Restore honesty: layout/session resurrection is frame-level. Full agent",
         "process freeze is NOT claimed here (docs/installer/RESTORE_CONTRACT.md)."
       ],
       "commands": [
-        "bash -e -c 'python3 scripts/vetcoders_install.py doctor || true\nbash scripts/post-install-launch.sh\n'"
+        "bash -e -c 'python3 scripts/vetcoders_install.py doctor\nbash scripts/post-install-launch.sh\n'"
       ]
     }
   ],
@@ -96,12 +87,29 @@
     "commands": {
       "foundations": ["loctree-mcp", "aicx-mcp", "prview", "screenscribe"],
       "toolchains": ["python3", "node", "git", "rsync"],
-      "agents": ["claude", "codex", "agy", "junie", "grok"],
-      "additional_tools": ["mise", "starship", "atuin", "zoxide"]
+      "agents": [
+        "claude",
+        "codex",
+        "agy",
+        "junie",
+        "grok",
+        "cursor-agent",
+        "kimi",
+        "copilot",
+        "omp"
+      ],
+      "additional_tools": [
+        "mise",
+        "starship",
+        "atuin",
+        "zoxide",
+        "zsh-autosuggestions",
+        "zsh-syntax-highlighting"
+      ]
     },
     "paths": {
       "store_dir": "$VIBECRAFTED_ROOT/.vibecrafted/skills",
-      "helpers": "$XDG_CONFIG_HOME/vetcoders/vc-skills.sh",
+      "helpers": "$XDG_CONFIG_HOME/vibecrafted/shell/vc-skills.sh",
       "binaries": ["vibecraft", "vibecrafted"],
       "symlinks": [
         "$HOME/.agents",

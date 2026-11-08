@@ -1,10 +1,10 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import LayoutV2 from '../../layouts/LayoutV2.astro';
 import SectionShell from '../../components/SectionShell.astro';
 import PilotForm from '../../components/PilotForm.svelte';
 
-const entry = await getEntry('i18n', 'pl/pilot-v2');
+const entry = { data: await loadCopy('pilot', 'pl') };
 if (!entry) throw new Error('Missing i18n entry: pl/pilot-v2');
 
 const section = entry.data as {

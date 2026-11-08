@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
@@ -16,7 +16,7 @@ interface FaqHeroData {
     secondaryLabel: string;
 }
 
-const entry = await getEntry('i18n', `${lang}/faqhero`);
+const entry = { data: await loadCopy('faq-hero', lang) };
 if (!entry) {
     throw new Error(`FAQ hero content not found for lang=${lang}`);
 }

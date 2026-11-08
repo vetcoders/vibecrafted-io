@@ -1,0 +1,45 @@
+{
+  "exe": {
+    "path": "Vibecrafted_4.5.2-20261108-62253a16-windows-x64.exe",
+    "sha256": "979296e3f5cbc015de8977e5d9029240bff0744437fd40807986492f1719d73d",
+    "size": 46960808
+  },
+  "msi": {
+    "path": "Vibecrafted_4.5.2-20261108-62253a16-windows-x64.msi",
+    "sha256": "5e90b346d886e6168d1a3208a569d0022d5ffbbd1efb2a0d2fe734d88518045b",
+    "size": 47149056
+  },
+  "product": {
+    "architecture": "x64",
+    "platform": "win32-x64",
+    "version": "4.5.2"
+  },
+  "runtime_pack": {
+    "path": "Vibecrafted_RuntimePack_4.5.2-20261108-62253a16-win32-x64.tar.gz",
+    "sha256": "f0c9a157c0122b66dbc0cfc7d80042ec784ef2aad24b50d6fcb2c921f445c2c0",
+    "size": 46182219
+  },
+  "schema": "io.vetcoders.vibecrafted.windows-release-output.v1",
+  "signing": {
+    "authenticode": "unsigned",
+    "runtime_pack": "product-key"
+  },
+  "source_revisions": {
+    "vc-frame": "48720aa50dcf5ba75d7d0031fb067ec4d9ea69a7",
+    "vc-terminal": "df47e6f1452896a0f4f7c7ceb07117955b6ff4c9",
+    "vibecrafted": "62253a1629e2c1be720271ce645f5130dfea9b42"
+  },
+  "verification": {
+    "cold_install": "success",
+    "exe_install": "success",
+    "msi_install": "success"
+  },
+  "workflow": {
+    "controller_sha": "8d880e5c21fd389b6293b8d2dfdb6c094a51eee1",
+    "repository": "vetcoders/vibecrafted",
+    "request_id": "b978e773b338fe4fed53b6d6",
+    "run_attempt": 1,
+    "run_id": 42475553336,
+    "source_sha": "62253a1629e2c1be720271ce645f5130dfea9b42"
+  }
+}

@@ -170,7 +170,7 @@
     color: var(--fg-on-dark);
     background: rgba(245, 244, 239, 0.06);
     padding: 1px 6px;
-    border-radius: var(--v2-radius-sm, 8px);
+    border-radius: var(--v2-radius);
   }
 
   .faq-page {
@@ -248,7 +248,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     text-decoration: none;
-    border-radius: var(--v2-radius-sm, 8px);
+    border-radius: var(--v2-radius);
   }
 
   a.btn-primary {
@@ -296,7 +296,7 @@
   .toc-group-label .dot {
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    border-radius: var(--v2-radius-full);
     display: inline-block;
   }
 

@@ -1,11 +1,11 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import type { Lang } from '../../lib/i18n';
 import Reveal from '../Reveal.svelte';
 
 const { lang } = Astro.props as { lang: Lang };
 
-const entry = await getEntry('i18n', `${lang}/faqcontent`);
+const entry = { data: await loadCopy('faq-content', lang) };
 if (!entry) {
     throw new Error(`FAQ content not found for lang=${lang}`);
 }
@@ -99,7 +99,7 @@ const learningPath = [
         margin-bottom: 1rem;
         padding: 1rem 1.1rem;
         border: 1px solid rgba(218, 197, 167, 0.14);
-        border-radius: 1rem;
+        border-radius: var(--v2-radius);
         background:
             linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
             rgba(13, 15, 18, 0.58);
@@ -136,7 +136,7 @@ const learningPath = [
         justify-content: center;
         padding: 0.62rem 0.88rem;
         border: 1px solid rgba(218, 197, 167, 0.18);
-        border-radius: 999px;
+        border-radius: var(--v2-radius-pill);
         color: rgba(236, 240, 245, 0.94);
         text-decoration: none;
         background: rgba(255, 255, 255, 0.03);
@@ -165,7 +165,7 @@ const learningPath = [
         overflow: clip;
         padding: 1.1rem 1.1rem 1rem;
         border: 1px solid rgba(218, 197, 167, 0.14);
-        border-radius: 1.2rem;
+        border-radius: var(--v2-radius);
         background:
             radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.05), transparent 40%),
             linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%),
@@ -249,7 +249,7 @@ const learningPath = [
         margin-top: 1rem;
         padding: 0.95rem 1rem 0.2rem;
         border: 1px solid rgba(175, 182, 190, 0.14);
-        border-radius: 1rem;
+        border-radius: var(--v2-radius);
         background: rgba(9, 11, 14, 0.48);
     }
 

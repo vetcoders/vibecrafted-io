@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import InstallerWizard from './InstallerWizard.svelte';
   import LiveInstaller from './LiveInstaller.svelte';
   import { getTranslations, type Lang } from '../lib/i18n';
   import { installerApi, isLiveInstallerHost } from '../lib/installer/api';
@@ -11,14 +10,13 @@
     manifest: unknown;
   }
 
-  let { lang, manifest }: Props = $props();
+  let { lang, manifest: _manifest }: Props = $props();
 
   let mode = $state<'booting' | 'preview' | 'live' | 'lost'>('booting');
   let resolveError = $state<string | null>(null);
 
   const dict = $derived(getTranslations(lang));
   const liveCopy = $derived(dict.sections.installer.live);
-  const wizardCopy = $derived(dict.sections.installer.wizard);
 
   async function resolveMode(isCancelled: () => boolean = () => false) {
     resolveError = null;
@@ -54,20 +52,12 @@
 
 {#if mode === 'live'}
   <LiveInstaller {lang} />
-{:else if mode === 'preview'}
-  <div class="installer-shell">
-    <div class="installer-shell__demo-banner" role="note" aria-label={wizardCopy.installPreviewKicker}>
-      <span class="installer-shell__badge">DEMO</span>
-      <span class="installer-shell__demo-copy">{wizardCopy.installPreviewKicker}</span>
-    </div>
-    <InstallerWizard {lang} {manifest} />
-  </div>
-{:else}
+{:else if mode === 'lost'}
   <div class="installer-shell__bridge" role="status" aria-live="polite">
     <span class="installer-shell__bridge-kicker">
-      {mode === 'lost' ? liveCopy.status.notConnected : liveCopy.status.loadingPreflight}
+      {liveCopy.status.notConnected}
     </span>
-    {#if mode === 'lost' && resolveError}
+    {#if resolveError}
       <p class="installer-shell__bridge-error">{resolveError}</p>
       <button class="installer-shell__bridge-action" onclick={() => resolveMode()}>
         {liveCopy.nav.refresh}
@@ -81,8 +71,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.72rem;
-    flex: 1 0 auto;
-    min-height: 100%;
+    flex: 0 0 auto;
+    min-height: 0;
     height: auto;
   }
 
@@ -127,7 +117,7 @@
     display: grid;
     place-items: center;
     gap: 0.6rem;
-    min-height: 100%;
+    min-height: 0;
     margin: 0 clamp(0.95rem, 2.4vw, 1.6rem);
     padding: clamp(1.25rem, 4vw, 2rem);
     border: 1px solid var(--installer-border);

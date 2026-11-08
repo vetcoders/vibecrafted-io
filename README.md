@@ -114,6 +114,38 @@ make -C $VIBECRAFTED_ROOT/.vibecrafted/tools/vibecrafted-current doctor
 
 ## Building a release
 
+`make site-release UPSTREAM_ROOT=/path/to/vibecrafted` prepares the notarized
+macOS release, builds the matching native Windows Runtime Pack and EXE/MSI on
+the hosted Windows runner, signs the source carrier, then builds and deploys
+the site. Windows cold-install, EXE-install and MSI-install gates must all pass
+before the signed Windows receipt can be published. Every carrier must name
+the same product and donor commits.
+
+The Windows controller is `ci/windows-site-release` by default. Override
+`WINDOWS_WORKFLOW_REF` when using a reviewed newer controller. The immutable
+product commit must be available in `vetcoders/vibecrafted`; the runner uses the
+repository's configured `VC_SIGNING_KEY`. Private signing keys are never copied
+into release artifacts. Windows Authenticode signing remains optional and its
+actual status is shown beside the downloads.
+
+To reuse carriers already built and verified for a frozen product checkout:
+
+```bash
+VIBECRAFTED_RUNTIME_PACK=/path/to/native/Vibecrafted_RuntimePack_...tar.gz \
+VIBECRAFTED_WINDOWS_RELEASE=/path/to/windows/windows-release.json \
+make site-release UPSTREAM_ROOT=/path/to/frozen-product
+```
+
+Reuse performs the same source, signature, checksum, provenance and native-gate
+checks as a fresh build. It does not dispatch another Windows job. A running
+matching macOS candidate is reported as pending instead of starting a duplicate
+builder. `make windows-release` prepares these inputs without publishing them;
+`make site-release-check` runs the focused pipeline regressions. Content-only
+site builds reuse the published channel without needing local native binaries.
+
+`DEPLOY_HOST` and `DEPLOY_ROOT` still select the upload destination. A staging
+upload is reported as staging; it is not proof that the public channel changed.
+
 The root Makefile can now compose the full framework plugin with bundled
 foundation binaries:
 

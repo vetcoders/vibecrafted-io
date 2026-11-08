@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
 
+export COPYFILE_DISABLE := 1
+
 PYTHON   ?= python3
 INSTALLER := scripts/vetcoders_install.py
 SHELL_INSTALLER := skills/vc-agents/scripts/install-shell.sh
@@ -42,6 +44,9 @@ AICX_REPO ?= $(abspath $(UPSTREAM_ROOT)/../aicx)
 LOCTREE_REPO ?= $(abspath $(UPSTREAM_ROOT)/../loctree-suite)
 LOCTREE_MCP_REPO ?= $(LOCTREE_REPO)/loctree-mcp
 DIST_DIR ?= $(CURDIR)/dist
+WINDOWS_WORKFLOW_REF ?= ci/windows-site-release
+WINDOWS_RELEASE_DIR ?= $(DIST_DIR)/windows
+SITE_RELEASE_SELECTION ?= $(DIST_DIR)/site-release-selection.json
 PLUGIN_NAME ?= vibecrafted-framework
 FRAMEWORK_VERSION := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "1.5.0")
 FRAMEWORK_RUNTIME_TESTS := \
@@ -77,7 +82,9 @@ FOUNDATION_VENDOR_SPECS := \
 # usually has another agent's uncommitted work in it. A binary built from that
 # tree corresponds to no commit, so it cannot be attested by the release
 # receipt. Skip it and let channel/main.json report vendored_foundations:false.
-VENDOR_FOUNDATIONS ?= 1
+# The website source carrier must not publish locally linked, unnotarized
+# native executables. Native delivery has its own signed/notarized channel.
+VENDOR_FOUNDATIONS ?= 0
 
 define VENDOR_FOUNDATION_BINARIES
 dest_root="$(1)"; \
@@ -329,6 +336,18 @@ init-hooks:
 # Site Management & Deployments
 # ============================================================================
 
+.PHONY: windows-release site-release-check
+
+site-release-check:
+	@$(PYTHON) -m unittest discover -s tests -p 'test_site_release*.py'
+
+windows-release: bundle-preflight
+	@$(PYTHON) scripts/prepare_site_release.py \
+		--product-root "$(UPSTREAM_ROOT)" \
+		--windows-dir "$(WINDOWS_RELEASE_DIR)" \
+		--selection "$(SITE_RELEASE_SELECTION)" \
+		--workflow-ref "$(WINDOWS_WORKFLOW_REF)"
+
 # Unconditional gate on the bytes this repo publishes. bundle-build already
 # refuses to *create* a leaking payload; this refuses to *ship* one, including
 # an archive that was committed before that gate existed or that a stale
@@ -350,11 +369,12 @@ site-deploy: site-build
 	@echo "Deploying site to $(DEPLOY_HOST):$(DEPLOY_ROOT) (Caddy file_server)..."
 	@rsync -avzh --delete --human-readable \
 		--exclude='.DS_Store' \
+		--filter='P /Vibecrafted_*' \
 		site/dist/ \
 		$(DEPLOY_HOST):$(DEPLOY_ROOT)/
 	@ssh $(DEPLOY_HOST) "echo 'deployed VERSION:' && cat $(DEPLOY_ROOT)/VERSION 2>/dev/null || echo '(no VERSION file)'"
 	@echo ""
-	@echo "  ✓ https://vibecrafted.io now serves version $$(cat framework/VERSION)"
+	@echo "  ✓ Uploaded version $$(cat framework/VERSION) to $(DEPLOY_HOST):$(DEPLOY_ROOT)"
 
 site-deploy-pages: site-build
 	@echo "Syncing built site to local docs/ (GitHub Pages mirror)..."
@@ -397,6 +417,10 @@ BUNDLE_JUNK_EXCLUDE_NAMES := \
 	.pytest_cache \
 	.ruff_cache \
 	.mypy_cache \
+	.loctree \
+	.prview \
+	.cursor \
+	'._*' \
 	.idea \
 	.DS_Store \
 	__pycache__ \
@@ -478,9 +502,10 @@ site-release-assets-guard:
 			echo "Error: bundle root $(BUNDLE_ROOT) not found." >&2; \
 			exit 2; \
 		fi; \
-		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || ! diff -rq \
-		      $(BUNDLE_DIFF_EXCLUDES) \
-		      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
+		changes=$$(rsync -rcn --copy-dirlinks --delete --itemize-changes \
+		      $(BUNDLE_EXCLUDES) --exclude='/bin/vendor/' \
+		      "$(UPSTREAM_ROOT)/" "$(BUNDLE_ROOT)/") || exit 2; \
+		if [ "$(UPSTREAM_VERSION)" != "$(BUNDLE_VERSION)" ] || [ -n "$$changes" ]; then \
 			echo "Error: SITE_RELEASE_MODE=1 requested, but framework/ is not fresh against $(UPSTREAM_ROOT)." >&2; \
 			echo "       Run make site-release to rebuild/sign/sync/deploy framework assets." >&2; \
 			echo "       For a site-only deploy that intentionally reuses stable signed assets, run make site-build without SITE_RELEASE_MODE." >&2; \
@@ -499,6 +524,7 @@ bundle-preview:
 	@if [ "$(UPSTREAM_VERSION)" = "$(BUNDLE_VERSION)" ] && \
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" ] && \
 	    [ -f "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE).sig" ] && \
+	    tar -tzf "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" vibecrafted/source-provenance.json >/dev/null 2>&1 && \
 	    diff -rq \
 	      $(BUNDLE_DIFF_EXCLUDES) \
 	      "$(UPSTREAM_ROOT)" "$(BUNDLE_ROOT)" >/dev/null 2>&1; then \
@@ -509,9 +535,10 @@ bundle-preview:
 	@echo "  Changes detected. Projecting tarball..."
 	@TMP_DIR=$$(mktemp -d -t vc-preview-XXXXXX) && \
 	  trap "rm -rf $$TMP_DIR" EXIT && \
-	  rsync -a $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ >/dev/null && \
-	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
-	  tar -czf $$TMP_DIR/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted 2>/dev/null && \
+	  $(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
+	    --source "$(UPSTREAM_ROOT)" --output "$$TMP_DIR/$(BUNDLE_ARCHIVE)" \
+	    --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	    --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)" && \
 	  if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
 	  INSTALL_SHA=$$($$SHA256_CMD $(UPSTREAM_ROOT)/install.sh | cut -d' ' -f1) && \
@@ -544,18 +571,10 @@ bundle-build: bundle-preflight
 	@$(call VENDOR_FOUNDATION_BINARIES,$(BUNDLE_ROOT))
 	@echo "  ✓ Upstream synced"
 	@echo "Building tarball: $(BUNDLE_ARCHIVE)..."
-	@TMP_DIR=$$(mktemp -d -t vc-bundle-XXXXXX) && \
-	  trap "rm -rf $$TMP_DIR" EXIT && \
-	  rsync -a --copy-dirlinks $(BUNDLE_JUNK_EXCLUDES) $(UPSTREAM_ROOT)/ $$TMP_DIR/vibecrafted/ && \
-	  $(call VENDOR_FOUNDATION_BINARIES,$$TMP_DIR/vibecrafted) && \
-	  leaks=$$(find "$$TMP_DIR" -type f \( -name '.env' -o \( -name '.env.*' ! -name '*.example' \) \)) && \
-	  if [ -n "$$leaks" ]; then \
-	    echo "FATAL: secret-bearing env files in the public release payload (2026-08-10 tskey incident class):" >&2; \
-	    echo "$$leaks" >&2; \
-	    echo "This gate is unconditional — ALLOW_DIRTY_UPSTREAM does not bypass it." >&2; \
-	    exit 9; \
-	  fi && \
-	  tar -czf $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) -C $$TMP_DIR vibecrafted
+	@$(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
+	  --source "$(UPSTREAM_ROOT)" --output "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" \
+	  --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	  --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)"
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
@@ -599,11 +618,11 @@ site-release:
 	@printf "  \033[1m⚒  Release cycle\033[0m — upstream v$(UPSTREAM_VERSION) → production\n"
 	@echo "  ────────────────────────────────────────"
 	@$(MAKE) --no-print-directory bundle-preflight
+	@$(MAKE) --no-print-directory windows-release
 	@$(MAKE) --no-print-directory bundle-preview
 	@$(MAKE) --no-print-directory bundle-build
 	@$(MAKE) --no-print-directory bundle-sign
 	@echo "Syncing release artefacts into site/public/..."
-	@$(PYTHON) scripts/sync_site_release_assets.py
-	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-build
-	@$(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-deploy
-	@printf "\n  \033[32m✓\033[0m Release v%s shipped to https://vibecrafted.io\n\n" "$(UPSTREAM_VERSION)"
+	@VIBECRAFTED_SITE_RELEASE_SELECTION="$(SITE_RELEASE_SELECTION)" SITE_RELEASE_MODE=1 $(PYTHON) scripts/sync_site_release_assets.py
+	@VIBECRAFTED_SITE_RELEASE_SELECTION="$(SITE_RELEASE_SELECTION)" $(MAKE) --no-print-directory SITE_RELEASE_MODE=1 site-deploy
+	@printf "\n  \033[32m✓\033[0m Release v%s uploaded to %s:%s\n\n" "$(UPSTREAM_VERSION)" "$(DEPLOY_HOST)" "$(DEPLOY_ROOT)"
