@@ -39,6 +39,8 @@ UPSTREAM_ROOT ?= $(or $(realpath $(DETECTED_UPSTREAM_ROOT)),$(firstword $(UPSTRE
 SIGNING_KEY   ?= $(HOME)/.keys/vibecrafted-signing.key
 ALLOW_DIRTY_UPSTREAM ?= 0
 BUNDLE_ROOT   := $(CURDIR)/framework
+# One owner for the product's GitHub identity: scripts/sync_site_release_assets.py.
+PRODUCT_REPOSITORY := $(shell cd $(CURDIR)/scripts && $(PYTHON) -c 'from sync_site_release_assets import PRODUCT_REPOSITORY; print(PRODUCT_REPOSITORY)')
 VCFRAME_REPO ?= $(abspath $(UPSTREAM_ROOT)/../vc-frame)
 AICX_REPO ?= $(abspath $(UPSTREAM_ROOT)/../aicx)
 LOCTREE_REPO ?= $(abspath $(UPSTREAM_ROOT)/../loctree-suite)
@@ -537,7 +539,7 @@ bundle-preview:
 	  trap "rm -rf $$TMP_DIR" EXIT && \
 	  $(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
 	    --source "$(UPSTREAM_ROOT)" --output "$$TMP_DIR/$(BUNDLE_ARCHIVE)" \
-	    --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	    --root-name vibecrafted --owner-repo "$(PRODUCT_REPOSITORY)" \
 	    --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)" && \
 	  if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \
 	  TAR_SHA=$$($$SHA256_CMD $$TMP_DIR/$(BUNDLE_ARCHIVE) | cut -d' ' -f1) && \
@@ -573,7 +575,7 @@ bundle-build: bundle-preflight
 	@echo "Building tarball: $(BUNDLE_ARCHIVE)..."
 	@$(PYTHON) "$(UPSTREAM_ROOT)/scripts/distribution_manifest.py" archive \
 	  --source "$(UPSTREAM_ROOT)" --output "$(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)" \
-	  --root-name vibecrafted --owner-repo vetcoders/vibecrafted \
+	  --root-name vibecrafted --owner-repo "$(PRODUCT_REPOSITORY)" \
 	  --source-revision "$$(git -C "$(UPSTREAM_ROOT)" rev-parse HEAD)"
 	@echo "  ✓ Tarball: $(BUNDLE_ROOT)/$(BUNDLE_ARCHIVE)"
 	@if command -v sha256sum >/dev/null 2>&1; then SHA256_CMD='sha256sum'; else SHA256_CMD='shasum -a 256'; fi && \

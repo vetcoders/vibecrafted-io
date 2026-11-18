@@ -18,13 +18,14 @@ from pathlib import Path
 from urllib.parse import quote
 
 from sync_site_release_assets import (
+    PRODUCT_REPOSITORY,
     _verify_release_signature,
     read_sha256_entries,
     sha256_file,
     validate_windows_release,
 )
 
-REPOSITORY = "vetcoders/vibecrafted"
+REPOSITORY = PRODUCT_REPOSITORY
 WORKFLOW = "install-windows.yml"
 NATIVE_JOBS = {
     "install.ps1 + doctor (windows-latest)",

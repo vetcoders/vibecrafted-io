@@ -106,7 +106,7 @@ class WindowsReleaseTests(unittest.TestCase):
             },
             "source_revisions": REVISIONS,
             "workflow": {
-                "repository": "vetcoders/vibecrafted",
+                "repository": assets.PRODUCT_REPOSITORY,
                 "run_id": "42",
                 "run_attempt": "1",
                 "controller_sha": "4" * 40,

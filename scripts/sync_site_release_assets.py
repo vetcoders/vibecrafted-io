@@ -17,6 +17,12 @@ try:
 except ModuleNotFoundError:  # Python < 3.11
     import tomli as tomllib
 
+# The GitHub home of the product. Source archives, the Windows builder and its
+# receipts all carry this identity; the repository moved here from
+# vetcoders/vibecrafted, and provenance refuses an archive whose declared owner
+# disagrees with the checkout it was built from.
+PRODUCT_REPOSITORY = "Loctree/vibecrafted"
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BUNDLE_ROOT = REPO_ROOT / "framework"
 SITE_PUBLIC = REPO_ROOT / "site" / "public"
@@ -237,7 +243,7 @@ def validate_windows_release(
         raise RuntimeError("Windows release source/donor revisions do not match macOS")
     workflow = receipt.get("workflow", {})
     if (
-        workflow.get("repository") != "vetcoders/vibecrafted"
+        workflow.get("repository") != PRODUCT_REPOSITORY
         or workflow.get("source_sha") != source
         or not re.fullmatch(r"[0-9a-f]{40}", str(workflow.get("controller_sha", "")))
         or not re.fullmatch(r"[0-9a-f]{24}", str(workflow.get("request_id", "")))
