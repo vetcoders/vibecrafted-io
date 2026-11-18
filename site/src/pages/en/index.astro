@@ -13,10 +13,12 @@ import SectionEvidence from '../../components/sections/SectionEvidence.astro';
 import SectionCommercial from '../../components/sections/SectionCommercial.astro';
 import SectionEngineering from '../../components/sections/SectionEngineering.astro';
 import { getTranslations } from '../../lib/i18n';
+import { loadCopy } from '../../lib/content';
+import type { HeroData } from '../../components/sections/HeroSectionV2.svelte';
 
 const t = getTranslations('en');
 const page = t.v2Pages.landing;
-const hero = t.v2Hero;
+const hero = (await loadCopy('hero', 'en')) as unknown as HeroData;
 ---
 
 <LayoutV2

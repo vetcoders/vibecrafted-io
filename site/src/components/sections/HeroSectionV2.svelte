@@ -1,12 +1,12 @@
 <script lang="ts">
   import type { Lang } from '../../lib/i18n';
+  import PlaygroundTui from '../PlaygroundTui.svelte';
 
-  interface HeroData {
+  export interface HeroData {
     ariaLabel: string;
     eyebrow: string;
     heading: {
       pre: string;
-      /** Optional middle line (block) between pre and accent. */
       mid?: string;
       accent: string;
     };
@@ -34,53 +34,17 @@
   const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
 
   const installHref = $derived(lang === 'pl' ? '/pl/install/' : '/en/install/');
-  const docsHref = $derived(lang === 'pl' ? '/pl/quickstart/' : '/en/quickstart/');
-
-  // Static surface stats — not marble sim counters.
-  const teleAgents = '040';
-  const teleRepos = '008';
-  const teleLive = 'LIVE';
+  const playgroundTitle = $derived(
+    lang === 'pl' ? 'Playground operatora' : 'Operator playground',
+  );
 </script>
 
 <section class={`hero hero--${lang}`} id="hero" aria-label={hero.ariaLabel}>
   <div class="hero__vignette" data-decor aria-hidden="true"></div>
-  <div class="hero__rail" aria-hidden="true">
-    <span class="hero__rail-live"><i></i> live</span>
-    <span>vibecrafted-server</span>
-    <span>vc-slack</span>
-    <span>loctree · aicx</span>
-  </div>
 
-  <div class="hero__visual" aria-hidden="true">
-    <!-- Exactly one decorative chrome; body fill is edge-to-edge product capture (no window-in-window). -->
-    <div class="hero__window vc-termwin vc-termwin--hero">
-      <div class="vc-termwin__titlebar">
-        <span class="vc-termwin__lights">
-          <span class="vc-termwin__dot vc-termwin__dot--close"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--min"></span>
-          <span class="vc-termwin__dot vc-termwin__dot--max"></span>
-        </span>
-        <span class="vc-termwin__title">Needs attention · Sessions — vc-frame</span>
-      </div>
-      <div class="vc-termwin__body">
-        <img
-          class="hero__art"
-          src="/assets/hero/real-usage.png"
-          alt="vc-frame operator layout: Start here map, sessions rail, Session Manager"
-          width="1600"
-          height="1000"
-          decoding="async"
-          fetchpriority="high"
-        />
-      </div>
-    </div>
-    <div class="hero__art-shade"></div>
-  </div>
-
-  <div class="hero__overlay" data-scroll-fade>
+  <div class="hero__copy" data-scroll-fade>
     <span class="hero__eyebrow">{hero.eyebrow}</span>
     <h1 class="hero__heading">
-      <!-- Brand-dot is sentence terminator only — never mid-phrase after pre/mid. -->
       <span class="hero__heading-mark">{hero.heading.pre}</span>
       {#if hero.heading.mid}
         <span class="hero__heading-mark hero__heading-mark--mid">{hero.heading.mid}</span>
@@ -98,37 +62,14 @@
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
       </a>
-      <a class="hero__cta hero__cta--ghost" href={docsHref}>
+      <a class="hero__cta hero__cta--ghost" href="#playground">
         {hero.ctaSecondary}
       </a>
     </div>
   </div>
 
-  <div class="hero__telemetry" data-scroll-fade>
-    <span class="hero__tele-legend">{hero.telemetryLegend}</span>
-    <span class="hero__tele-row">
-      <span class="hero__tele-label">{hero.telemetry.marbles}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleAgents}</span>
-    </span>
-    <span class="hero__tele-row">
-      <span class="hero__tele-label">{hero.telemetry.converge}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleRepos}</span>
-    </span>
-    <span class="hero__tele-row hero__tele-row--live">
-      <span class="hero__tele-label">{hero.telemetry.live}</span>
-      <span class="hero__tele-dot">·</span>
-      <span class="hero__tele-value">{teleLive}</span>
-    </span>
-  </div>
-
-  <p class="hero__canvas-caption" data-scroll-fade>
-    {hero.canvasCaption}
-  </p>
-
-  <div class="hero__scroll" aria-hidden="true">
-    {hero.scroll} <span class="hero__scroll-arrow">↓</span>
+  <div class="hero__stage hero__playground" id="playground" aria-label={playgroundTitle}>
+    <PlaygroundTui />
   </div>
 </section>
 
@@ -136,13 +77,19 @@
   .hero {
     position: relative;
     isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+    align-items: center;
+    gap: 24px 32px;
     width: 100%;
-    height: 100vh;
-    height: 100svh;
-    min-height: 560px;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 0;
+    padding: 88px 32px 32px;
     background: var(--ink);
     overflow: hidden;
     color: var(--fg-on-dark);
+    box-sizing: border-box;
   }
 
   .hero::before,
@@ -150,90 +97,28 @@
     display: none;
   }
 
-  .hero__rail {
-    position: absolute;
-    top: 76px;
-    left: clamp(32px, 4vw, 72px);
+  .hero__copy {
+    position: relative;
     z-index: 3;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--fg-on-dark-mute);
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    max-width: 16rem;
   }
 
-  .hero__rail > span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: 999px;
-    background: #121214;
-  }
-
-  .hero__rail-live {
-    color: var(--fg-on-dark);
-  }
-
-  .hero__rail-live i {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--v2-ok, #4ade80);
-  }
-
-  /* ── Real-usage window (single decorative chrome + edge-to-edge fill) ─ */
-
-  .hero__visual {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .hero__window {
-    position: absolute;
-    right: clamp(16px, 3vw, 48px);
-    top: 50%;
-    transform: translateY(-52%);
-    width: min(58vw, 920px);
-  }
-
-  .hero__art {
-    display: block;
+  .hero__stage {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
     width: 100%;
-    height: auto;
-    vertical-align: top;
-    opacity: 0.98;
-    filter: contrast(1.02) saturate(0.95);
-  }
-
-  .hero__art-shade {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(90deg, var(--ink) 0%, rgba(7, 10, 14, 0.82) 26%, transparent 52%),
-      linear-gradient(180deg, rgba(7, 10, 14, 0.4) 0%, transparent 22%, transparent 78%, rgba(7, 10, 14, 0.7) 100%);
-  }
-
-  /* ── Text overlay ───────────────────────────────────────── */
-
-  .hero__overlay {
-    position: absolute;
-    left: clamp(32px, 4vw, 72px);
-    bottom: clamp(96px, 12vh, 128px);
-    max-width: min(62%, 780px);
-    z-index: 3;
-    pointer-events: none;
-  }
-
-  .hero__overlay > * {
-    pointer-events: auto;
+    height: min(680px, calc(100dvh - 128px));
+    min-height: 360px;
+    border: 0;
+    border-radius: 0;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
   }
 
   .hero__eyebrow {
@@ -241,20 +126,20 @@
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 400;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--fg-on-dark-mute);
-    margin-bottom: 28px;
+    margin-bottom: 14px;
   }
 
   .hero__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: min(clamp(46px, 7vw, 92px), 10.5vh);
-    line-height: 1.02;
+    font-size: clamp(1.65rem, 2.6vw, 2.7rem);
+    line-height: 1.05;
     letter-spacing: -0.03em;
     color: var(--fg-on-dark);
-    margin: 0 0 32px;
+    margin: 0 0 16px;
   }
 
   .hero__heading-mark,
@@ -262,38 +147,8 @@
     display: block;
   }
 
-  .hero__heading-mark {
-    width: fit-content;
-    color: var(--fg-on-dark);
-    text-shadow: 0 0 32px rgba(var(--v2-accent-rgb), 0.16);
-  }
-
   .hero__heading-dot {
     color: var(--accent);
-  }
-
-  .hero__heading-line {
-    max-width: 16ch;
-  }
-
-  .hero--en .hero__heading-line {
-    max-width: 14ch;
-  }
-
-  .hero--en .hero__heading-mark {
-    max-width: 22ch;
-  }
-
-  .hero--pl .hero__heading {
-    font-size: min(clamp(38px, 5.5vw, 72px), 9.5vh);
-  }
-
-  .hero--pl .hero__heading-line {
-    max-width: 18ch;
-  }
-
-  .hero--pl .hero__heading-mark {
-    max-width: 22ch;
   }
 
   .hero__heading em {
@@ -302,29 +157,31 @@
 
   .hero__body {
     font-family: var(--font-body);
-    font-size: clamp(14px, 1vw, 17px);
+    font-size: clamp(13px, 0.95vw, 15px);
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    max-width: 66ch;
-    margin: 0 0 40px;
-  }
-
-  .hero__body em {
-    font-style: normal;
-    color: var(--accent);
+    margin: 0 0 22px;
   }
 
   .hero__body :global(code) {
+    display: block;
+    margin-top: 14px;
     font-family: var(--font-mono);
-    font-size: 0.92em;
-    color: var(--accent);
+    font-size: 0.82em;
+    line-height: 1.45;
+    color: var(--fg-on-dark);
+    background: var(--v2-plate);
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    padding: 10px 12px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
-
-  /* ── CTAs ───────────────────────────────────────────────── */
 
   .hero__ctas {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     flex-wrap: wrap;
   }
 
@@ -338,7 +195,7 @@
     font-weight: 500;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    border-radius: var(--v2-radius-sm, 8px);
+    border-radius: var(--v2-radius);
     transition:
       transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
       background 0.15s ease,
@@ -352,29 +209,29 @@
   }
 
   .hero__cta--primary {
-    background: var(--fg-on-dark);
+    background: var(--accent);
     color: var(--ink);
-    border: 1px solid var(--fg-on-dark);
+    border: 1px solid var(--accent);
     font-weight: 600;
   }
 
   .hero__cta--primary .hero__cta-arrow {
-    color: var(--accent);
+    color: var(--ink);
     font-size: 14px;
     transform: translateY(-0.5px);
   }
 
   .hero__cta--primary:hover,
   .hero__cta--primary:focus-visible {
-    background: #e4e4e7;
-    border-color: #e4e4e7;
+    background: var(--fg-on-dark-hover);
+    border-color: var(--fg-on-dark-hover);
     color: var(--ink);
   }
 
   .hero__cta--ghost {
     background: transparent;
     color: var(--fg-on-dark);
-    border: 1px solid var(--v2-border-strong, #3f3f46);
+    border: 1px solid var(--v2-border-strong);
   }
 
   .hero__cta--ghost:hover,
@@ -382,210 +239,48 @@
     border-color: var(--fg-on-dark);
   }
 
-  /* ── Live telemetry ──────────────────────────────────────── */
-
-  .hero__telemetry {
-    position: absolute;
-    right: clamp(32px, 4vw, 72px);
-    bottom: clamp(96px, 12vh, 128px);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--fg-on-dark-mute);
-    text-align: right;
-  }
-
-  .hero__tele-legend {
-    display: block;
-    max-width: 28ch;
-    margin-bottom: 10px;
-    margin-left: auto;
-    line-height: 1.45;
-    letter-spacing: 0.08em;
-    text-transform: none;
-    color: var(--fg-on-dark-dim);
-  }
-
-  .hero__tele-row {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-  }
-
-  .hero__tele-label {
-    color: var(--fg-on-dark-mute);
-  }
-
-  .hero__tele-dot {
-    color: var(--fg-on-dark-mute);
-    opacity: 0.6;
-  }
-
-  .hero__tele-value {
-    color: var(--fg-on-dark);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .hero__tele-row--live .hero__tele-value {
-    color: var(--accent);
-  }
-
-  .hero__canvas-caption {
-    position: absolute;
-    right: clamp(32px, 4vw, 72px);
-    top: clamp(112px, 14vh, 168px);
-    z-index: 3;
-    max-width: 30ch;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    line-height: 1.45;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    text-align: right;
-    color: var(--fg-on-dark-mute);
-  }
-
-  /* ── Scroll hint ─────────────────────────────────────────── */
-
-  .hero__scroll {
-    position: absolute;
-    left: 50%;
-    bottom: 28px;
-    transform: translateX(-50%);
-    z-index: 3;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--fg-on-dark-mute);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .hero__scroll-arrow {
-    font-size: 12px;
-    animation: hero-scroll-bob 2.2s ease-in-out infinite;
-  }
-
-  @keyframes hero-scroll-bob {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(3px);
-    }
-  }
-
-  /* ── Responsive ──────────────────────────────────────────── */
-
   @media print, (max-aspect-ratio: 1/3), (prefers-reduced-transparency: reduce) {
     .hero {
       height: auto;
-      min-height: 0;
+      max-height: none;
       overflow: visible;
+      display: block;
     }
 
-    .hero::before,
-    .hero__vignette {
+    .hero__stage {
       display: none;
+    }
+
+    .hero__copy {
+      margin: 24px 0 48px;
     }
   }
 
-  @supports not (mix-blend-mode: screen) {
-    .hero::before,
-    .hero__vignette {
-      display: none;
-    }
-  }
-
-  @media (max-width: 900px) {
+  @media (max-width: 720px) {
     .hero {
+      grid-template-columns: 1fr;
       height: auto;
-      min-height: 640px;
-      padding-bottom: 48px;
-    }
-
-    .hero__visual {
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 40vh;
-      min-height: 200px;
-    }
-
-    .hero__window {
-      right: 12px;
-      left: 12px;
-      top: 88px;
-      transform: none;
-      width: auto;
-      opacity: 0.9;
-    }
-
-    .hero__art-shade {
-      background: linear-gradient(180deg, transparent 20%, var(--ink) 100%);
-    }
-
-    .hero__rail {
-      position: relative;
-      top: 0;
-      left: 0;
-      margin: 88px 24px 0;
-    }
-
-    .hero__rail > span:nth-child(n + 3) {
-      display: none;
-    }
-
-    .hero__overlay {
-      position: relative;
-      left: 0;
-      bottom: 0;
-      margin: 120px 24px 32px;
-      max-width: none;
-    }
-
-    .hero__heading {
-      font-size: clamp(40px, 10vw, 72px);
-    }
-
-    .hero__telemetry {
-      position: relative;
-      right: 0;
-      bottom: 0;
-      margin: 0 24px 24px;
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: flex-start;
+      max-height: none;
+      min-height: 100dvh;
+      padding: 88px 20px 32px;
       gap: 20px;
-      text-align: left;
+      align-items: stretch;
     }
 
-    .hero__tele-row {
-      justify-content: flex-start;
+    .hero__copy {
+      max-width: none;
     }
 
-    .hero__tele-legend {
-      margin-left: 0;
+    .hero__stage {
       width: 100%;
-      max-width: none;
+      height: min(62dvh, 560px);
+      min-height: 320px;
     }
+  }
 
-    .hero__canvas-caption {
-      position: relative;
-      right: 0;
-      top: 0;
-      margin: 0 24px 16px;
-      text-align: left;
-      max-width: none;
+  @media (prefers-reduced-motion: reduce) {
+    .hero__cta {
+      transition: none;
     }
   }
 </style>

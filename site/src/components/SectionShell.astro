@@ -38,22 +38,22 @@ const {
 
 <style>
   /*
-   * Section frame — a viewport-tall stage that GROWS with its content.
-   * Sections are `min-height`, never `height`/`max-height`: a heading that
-   * needs more room pushes the page, it never sits on top of the columns
-   * below it. Surfaces follow the operator consoles (graphite); the header
-   * rail and hairline keep the editorial rhythm.
+   * One screen = one viewport height. Padding stays generous (80px tokens);
+   * the inner grid fills whatever is left. Content must shrink into that
+   * frame — it does not grow the section, and padding is not the squeeze.
    */
   .v2-section {
     position: relative;
     isolation: isolate;
     width: 100%;
-    min-height: 100svh;
+    height: 100dvh;
+    max-height: 100dvh;
     box-sizing: border-box;
     display: grid;
-    align-content: center;
+    grid-template-rows: minmax(0, 1fr);
+    align-content: stretch;
     padding: var(--v2-section-padding-y-top) 0 var(--v2-section-padding-y-bottom);
-    overflow: clip;
+    overflow: hidden;
   }
 
   .v2-section--ink {
@@ -80,9 +80,14 @@ const {
     position: relative;
     z-index: 1;
     width: 100%;
+    height: 100%;
+    min-height: 0;
     max-width: var(--v2-max-width);
     margin: 0 auto;
     padding: 0 var(--v2-section-padding-x);
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    container-type: size;
   }
 
   .v2-section__header {
@@ -111,22 +116,40 @@ const {
   .v2-section__rule {
     height: 1px;
     background: var(--rule-dark);
-    margin-bottom: 40px;
+    margin-bottom: 28px;
   }
 
   .v2-section__body {
     min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .v2-section__body > :not(.v2-section__footer) {
+    flex: 1 1 0;
+    min-height: 0;
+  }
+
+  .v2-section__body > .v2-section__footer {
+    flex: 0 0 auto;
   }
 
   @media print, (max-aspect-ratio: 1/3) {
     .v2-section {
-      min-height: 0;
+      height: auto;
+      max-height: none;
+      overflow: visible;
     }
   }
 
   @media (max-width: 720px) {
     .v2-section {
-      min-height: auto;
+      height: auto;
+      max-height: none;
+      min-height: 100dvh;
+      overflow: visible;
       align-content: start;
     }
 

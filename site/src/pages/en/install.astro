@@ -1,15 +1,14 @@
 ---
-import WizardLayout from '../../layouts/WizardLayout.astro';
-import InstallerShell from '../../components/InstallerShell.svelte';
+import LayoutV2 from '../../layouts/LayoutV2.astro';
 import InstallReference from '../../components/InstallReference.astro';
-import installManifest from '../../lib/generated/install-manifest.json';
 ---
 
-<WizardLayout
-  title="Install Vibecrafted — Guided Setup"
-  description="Guided installer for the Vibecrafted orchestration runtime. Walk through prerequisites, review the plan, and bootstrap the framework."
+<LayoutV2
+  title="Install Vibecrafted"
+  description="Install Vibecrafted with one command on macOS, Linux, and Windows."
   lang="en"
+  hideNewsletter={true}
+  hideContact={true}
 >
-  <InstallerShell client:load lang="en" manifest={installManifest} />
-  <InstallReference />
-</WizardLayout>
+  <InstallReference lang="en" />
+</LayoutV2>

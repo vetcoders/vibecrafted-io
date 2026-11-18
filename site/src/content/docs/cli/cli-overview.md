@@ -10,7 +10,7 @@ order: 10
 The `vibecrafted` CLI has one grammar with two shapes: management commands
 (`vibecrafted <command>`) and skill launchers (`vibecrafted <skill> <agent>`).
 Every launcher dispatches a tracked run for one of the fleet agents —
-claude · codex · agy · junie · grok — and every run leaves a report,
+claude · codex · agy · junie · grok · cursor — and every run leaves a report,
 a transcript, and control-plane state you can query afterwards.
 
 ## Command anatomy
@@ -50,33 +50,53 @@ supervised run.
 
 Every skill launcher accepts the same flag contract:
 
-| Flag                   | Meaning                                    |
-| ---------------------- | ------------------------------------------ |
-| `-p, --prompt <text>`  | Inline prompt                              |
-| `-f, --file <path.md>` | Input file as prompt context               |
-| `--count <n>`          | Marbles / Polarize loop count (default: 3) |
-| `--depth <n>`          | Marbles plan crawl depth (default: 3)      |
-| `--session <id>`       | Session ID for `vibecrafted resume`        |
+| Flag                       | Meaning                                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `-p, --prompt <text>`      | Inline prompt                                                                                                            |
+| `-f, --file <path.md>`     | Input file as prompt context                                                                                             |
+| `--repo <path>`            | Repository to work in, from any directory (`--root`: legacy)                                                             |
+| `--worktree [true\|false]` | Run in a fresh linked checkout of `--repo` (clean Git root)                                                              |
+| `--permissions <policy>`   | `bypass\|auto\|accept-edits\|read-only`, enforced by the agent CLI (default: durable per-agent/global config, else auto) |
+| `--sandbox [true\|false]`  | Agent CLI sandbox on/off; refused before launch when it cannot be enforced                                               |
+| `--model <name>`           | Agent model override (passed through exactly, e.g. `claude-fable-5-1`)                                                   |
+| `--count <n>`              | Marbles / Polarize loop count (default: 3)                                                                               |
+| `--depth <n>`              | Marbles plan crawl depth (default: 3)                                                                                    |
+| `--session <id>`           | Session ID for `vibecrafted resume` / `vibecrafted fork`                                                                 |
 
-`--verbose` is a global option for detailed output. Model overrides exist for
-claude (`--model`) and codex (`-m`); other agents run their defaults.
-
-## Agent-first modes
-
-The launcher grammar also works agent-first, for executing a prepared plan
-file directly:
+`--verbose` is a global option for detailed output. `--repo` and the legacy
+`--root` go through one selector everywhere: passing both with different
+paths is an error, never a silent pick. Model overrides exist for claude
+(`--model`), codex (`-m`), grok (`-m`) and cursor (`--model`); other agents
+run their defaults.
 
 ```bash
-vibecrafted <agent> implement <plan.md>   # execute a plan file
-vibecrafted <agent> research  <plan.md>   # single-agent research mode
-vibecrafted <agent> review    <plan.md>   # review bounded code artifacts
-vibecrafted <agent> plan      <plan.md>   # generate an implementation plan
-vibecrafted <agent> prompt    <plan.md>   # free-form prompt with context
-vibecrafted <agent> observe   --last      # check last agent report/transcript
+cd ~/Downloads   # not a Git checkout
+vibecrafted workflow claude --model claude-fable-5-1 --worktree true \
+  --permissions auto --sandbox true \
+  --repo ~/Projects/app --prompt "Ship it in an isolated, sandboxed checkout"
 ```
 
-Both shapes run through the same engine and produce the same run records.
-Prefer the skill-first shape in scripts and documentation.
+`--permissions` and `--sandbox` are resolved against the installed provider
+CLI before launch and refused with a supported alternative when the provider
+cannot enforce them — never a silent downgrade. See
+[Commands → Execution controls](/docs/commands/#execution-controls-permissions-sandbox)
+for the per-provider mapping.
+
+## Action-first agent modes
+
+The same action-first grammar executes prepared plan files directly:
+
+```bash
+vibecrafted implement <agent> <plan.md>   # execute a plan file
+vibecrafted research <agent>  <plan.md>   # single-agent research mode
+vibecrafted review <agent>    <plan.md>   # review bounded code artifacts
+vibecrafted plan <agent>      <plan.md>   # generate an implementation plan
+vibecrafted prompt <agent>    <plan.md>   # free-form prompt with context
+vibecrafted observe <agent>   --last      # check last agent report/transcript
+```
+
+All actions run through the same engine and produce the same run records.
+Agent-first commands are rejected with a migration hint.
 
 ## `vc-<skill>` shortcuts
 

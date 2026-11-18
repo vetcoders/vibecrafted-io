@@ -22,7 +22,7 @@ export { searchDocs } from "./docs-search";
 // Inline shapes mirroring the i18n collection documents. The collection uses
 // .passthrough() so frontmatter is typed as unknown Record; these inline
 // interfaces describe exactly what docs.ts consumes. Keep aligned with
-// site/src/content/i18n/{en,pl}/{quickstartSteps,quickstartResources,faqContent}.md
+// site/content/{quickstart-steps,quickstart-resources,faq-content}/{en,pl}.md
 type QuickstartStep =
   | {
       kicker: string;
@@ -211,9 +211,12 @@ async function loadSection<T>(
   lang: Lang,
   name: "quickstartSteps" | "quickstartResources" | "faqContent",
 ): Promise<T> {
-  // Astro glob loader lowercases entry IDs; file `quickstartSteps.md` has id
-  // `quickstartsteps`. Match the lookup to the store.
-  const id = `${lang}/${name.toLowerCase()}`;
+  const sections = {
+    quickstartSteps: "quickstart-steps",
+    quickstartResources: "quickstart-resources",
+    faqContent: "faq-content",
+  } as const;
+  const id = `${sections[name]}/${lang}`;
   const entry = await getEntry("i18n", id);
   if (!entry) {
     throw new Error(`i18n entry not found: ${id}`);

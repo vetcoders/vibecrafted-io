@@ -1,0 +1,420 @@
+---
+/**
+ * FrameAnatomy — live-DOM anatomy of the Operator Frame design target.
+ *
+ * Not a capture and not a mockup of the shipping build: the two capture
+ * slots stay photographic (doctrine: real pixels only). This figure is the
+ * anatomy/diagram slot — it teaches the host/guest split the cockpit is
+ * converging on:
+ *
+ *   ① Operator Frame — host layer, pinned and unsinkable; global actions
+ *     (Dashboard, Active runs, Config, Doctor, Projects) never move with
+ *     sessions.
+ *   ② Workspaces — guests; they flow with ⌘-arrows and die with sessions.
+ *     Organs per guest: Overview (see) / Agents (direct) / Shell (do).
+ *   ③ Voc — the host console, pulled out of the guest tab row.
+ *   ④ Panels — independent layer of interactive agents, Global or Project
+ *     scope; conversation survives organ and workspace switches.
+ *   ⑤ Centre status — guest projection on host chrome:
+ *     project · PR · branch · diffstat.
+ *
+ * Content is sampled from a real operator session dump (8 workspaces,
+ * kimi-code panel, vitals) so the anatomy carries true shapes, not lorem.
+ */
+---
+
+<figure class="fa" aria-label="Anatomy of the Operator Frame: host layer, guest workspaces, Voc console, Panels layer">
+  <div class="fa__scroll">
+    <div class="fa__frame">
+      <header class="fa__top">
+        <span class="fa__brand">𝚅𝚒𝚋𝚎𝚌𝚛𝚊𝚏𝚝𝚎𝚍.</span>
+        <span class="fa__sep" aria-hidden="true">⎮</span>
+        <span class="fa__lock">⚿ L</span>
+        <nav class="fa__tabs" aria-label="Guest organs">
+          <span class="fa__tab">○ Overview</span>
+          <span class="fa__tab fa__tab--active">◉ Agents</span>
+          <span class="fa__tab">○ Shell</span>
+        </nav>
+        <span class="fa__voc">Voc<span class="fa__mark">③</span></span>
+        <span class="fa__tools">✍ Composer · ⿻ Panels 1<span class="fa__mark">④</span> · ❯_ Quick cmd ☾</span>
+      </header>
+
+      <div class="fa__body">
+        <aside class="fa__rail">
+          <div class="fa__host">
+            <span class="fa__rail-title">Operator Frame<span class="fa__mark">①</span></span>
+            <span class="fa__host-item">⌂ Dashboard</span>
+            <span class="fa__host-item">❖ Active runs · example</span>
+            <span class="fa__host-item">⚙︎ Config</span>
+            <span class="fa__host-item">· Doctor</span>
+            <span class="fa__host-item">✧ Projects</span>
+          </div>
+          <div class="fa__rail-sep" aria-hidden="true">··············</div>
+          <div class="fa__guests">
+            <span class="fa__rail-title">Workspaces<span class="fa__mark">②</span></span>
+            <div class="fa__ws fa__ws--active">
+              <span class="fa__ws-name">01 ◉ Lbrx Services</span>
+              <span class="fa__ws-line">· Overview</span>
+              <span class="fa__ws-line">· Agents ·kimi·cl +1</span>
+              <span class="fa__ws-line fa__ws-line--live">◉ ❯_ kimi-code</span>
+              <span class="fa__ws-line fa__ws-new">[+] new tab</span>
+            </div>
+            <div class="fa__ws"><span class="fa__ws-name">02 ○ Polyversai 2</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">03 ○ Vibecrafted</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">04 ○ W3 06</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">05 ○ W2 06</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">06 ○ Vibecrafted 9213</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">07 ○ Vibecrafted</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+            <div class="fa__ws"><span class="fa__ws-name">08 ○ W2 03</span><span class="fa__ws-line">· Overview · Agents · Shell</span></div>
+          </div>
+        </aside>
+
+        <main class="fa__canvas">
+          <div class="fa__pane-title">
+            <span>❖ kimi-code</span>
+            <span class="fa__pane-scroll">SCROLL: 0/1495</span>
+          </div>
+          <div class="fa__pane-content">
+            <p>Obrazy dysków lima to sparse files — Finder sumuje długości logiczne, <code>du</code> pokazuje realne bloki.</p>
+            <p class="fa__dim">colima-ci/disk &nbsp;120.0G apparent → 33.2G real · datadisk 100.0G → 0.01G</p>
+            <p class="fa__dim">Suma apparent: ~280G — to widzi Finder. Realna: 40G.</p>
+          </div>
+          <div class="fa__input"><span class="fa__prompt">❯</span><span class="fa__caret"></span></div>
+          <div class="fa__pane-status">
+            <span>K3 · feat/npm-install [PR#84]</span>
+            <span>ctx 14% (139k/1M)</span>
+          </div>
+          <div class="fa__panels-chip" aria-hidden="true">
+            ⿻ Panels <b>Global</b> · Project · 1/4 ←→<span class="fa__mark">④</span>
+          </div>
+        </main>
+      </div>
+
+      <footer class="fa__bottom">
+        <span class="fa__bottom-lock">⌃g LOCK</span>
+        <span class="fa__bottom-center">Lbrx Services · PR#84 · ⎇feat/npm-install · +188/−64<span class="fa__mark">⑤</span></span>
+        <span class="fa__vitals">LIVE 0 | CPU 1098% | MEM 296.1/512G | DISK 102G | HEALTH !! | BASE</span>
+      </footer>
+    </div>
+  </div>
+
+  <figcaption class="fa__legend">
+    <span class="fa__legend-item"><b>①</b> Host layer — pinned and unsinkable; never moves with sessions.</span>
+    <span class="fa__legend-item"><b>②</b> Guests — flow with ⌘-arrows, die with their sessions. Organs: Overview · Agents · Shell.</span>
+    <span class="fa__legend-item"><b>③</b> Voc — the host console, pulled out of the guest tab row.</span>
+    <span class="fa__legend-item"><b>④</b> Panels — independent interactive-agent layer, Global or Project scope.</span>
+    <span class="fa__legend-item"><b>⑤</b> Guest projection on host chrome: project · PR · branch · diffstat.</span>
+  </figcaption>
+</figure>
+
+<style>
+  .fa {
+    margin: 0;
+    grid-column: 1 / -1;
+  }
+
+  .fa__scroll {
+    /* Dark island: this panel is a console — consoles stay graphite in both
+       site themes. Values pinned from the dark register in tokens-v2.css so
+       the light palette never inverts the anatomy frame. The figcaption
+       legend stays theme-aware (it lives on the page, not in the console). */
+    --ink: #0a0a0b;
+    --fg-on-dark: #f4f4f5;
+    --fg-on-dark-dim: #a1a1aa;
+    --fg-on-dark-mute: #71717a;
+    --accent: #c99a3b;
+    --accent-rgb: 201, 154, 59;
+    --rule-paper: #27272a;
+    --rule-dark: #27272a;
+    --rule-dark-soft: rgba(244, 244, 245, 0.06);
+    --v2-ink-rgb: 10, 10, 11;
+    overflow-x: auto;
+    border: 1px solid var(--rule-paper);
+    border-radius: 2px;
+    background: var(--ink);
+  }
+
+  .fa__frame {
+    min-width: 780px;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--fg-on-dark);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.05), transparent 30rem),
+      var(--ink);
+  }
+
+  /* ── Top bar — host chrome ─────────────────────────────── */
+  .fa__top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule-dark);
+    white-space: nowrap;
+  }
+
+  .fa__brand {
+    color: var(--fg-on-dark);
+    letter-spacing: 0.02em;
+  }
+
+  .fa__sep {
+    color: var(--fg-on-dark-mute);
+  }
+
+  .fa__lock {
+    color: var(--fg-on-dark-dim);
+    border: 1px solid var(--rule-dark);
+    padding: 1px 7px;
+    border-radius: 2px;
+  }
+
+  .fa__tabs {
+    display: flex;
+    gap: 14px;
+  }
+
+  .fa__tab {
+    color: var(--fg-on-dark-mute);
+  }
+
+  .fa__tab--active {
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+  }
+
+  .fa__voc {
+    margin-left: auto;
+    color: var(--fg-on-dark);
+    border: 1px solid var(--rule-dark);
+    padding: 1px 10px;
+    border-radius: 2px;
+  }
+
+  .fa__tools {
+    color: var(--fg-on-dark-mute);
+  }
+
+  /* ── Body: rail + canvas ───────────────────────────────── */
+  .fa__body {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 380px;
+  }
+
+  .fa__rail {
+    border-right: 1px solid var(--rule-dark);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .fa__rail-title {
+    display: block;
+    color: var(--fg-on-dark);
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .fa__host {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: 8px;
+  }
+
+  .fa__host-item {
+    color: var(--fg-on-dark-dim);
+    padding-left: 8px;
+  }
+
+  .fa__rail-sep {
+    color: var(--fg-on-dark-mute);
+    letter-spacing: 0.3em;
+    padding: 2px 0 8px;
+    user-select: none;
+  }
+
+  .fa__guests {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .fa__ws {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .fa__ws-name {
+    color: var(--fg-on-dark-dim);
+  }
+
+  .fa__ws--active .fa__ws-name {
+    color: var(--accent);
+  }
+
+  .fa__ws-line {
+    color: var(--fg-on-dark-mute);
+    padding-left: 12px;
+  }
+
+  .fa__ws-line--live {
+    color: var(--fg-on-dark);
+  }
+
+  .fa__ws-new {
+    color: var(--fg-on-dark-mute);
+    font-style: italic;
+  }
+
+  /* ── Canvas: guest organ + pinned Panels chip ──────────── */
+  .fa__canvas {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 18px;
+    min-width: 0;
+  }
+
+  .fa__pane-title {
+    display: flex;
+    justify-content: space-between;
+    color: var(--fg-on-dark-dim);
+    border-bottom: 1px solid var(--rule-dark-soft);
+    padding-bottom: 8px;
+  }
+
+  .fa__pane-scroll {
+    color: var(--fg-on-dark-mute);
+  }
+
+  .fa__pane-content {
+    padding: 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .fa__pane-content p {
+    margin: 0;
+  }
+
+  .fa__pane-content code {
+    color: var(--accent);
+  }
+
+  .fa__dim {
+    color: var(--fg-on-dark-mute);
+  }
+
+  .fa__input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--rule-dark);
+    border-radius: 2px;
+    padding: 7px 10px;
+    color: var(--fg-on-dark-dim);
+  }
+
+  .fa__caret {
+    width: 7px;
+    height: 13px;
+    background: var(--fg-on-dark-dim);
+    animation: fa-blink 1.6s steps(1) infinite;
+  }
+
+  @keyframes fa-blink {
+    50% { opacity: 0; }
+  }
+
+  .fa__pane-status {
+    display: flex;
+    justify-content: space-between;
+    color: var(--fg-on-dark-mute);
+    padding-top: 8px;
+  }
+
+  .fa__panels-chip {
+    position: absolute;
+    top: 44px;
+    right: 18px;
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 4px 10px;
+    color: var(--accent);
+    background: rgba(var(--v2-ink-rgb), 0.92);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .fa__panels-chip b {
+    font-weight: 600;
+  }
+
+  /* ── Bottom bar — host chrome with guest projection ────── */
+  .fa__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 8px 16px;
+    border-top: 1px solid var(--rule-dark);
+    white-space: nowrap;
+  }
+
+  .fa__bottom-lock {
+    color: var(--fg-on-dark-dim);
+  }
+
+  .fa__bottom-center {
+    color: var(--fg-on-dark);
+  }
+
+  .fa__vitals {
+    color: var(--fg-on-dark-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Anatomy markers + legend ──────────────────────────── */
+  .fa__mark {
+    color: var(--accent);
+    font-size: 9px;
+    vertical-align: super;
+    margin-left: 3px;
+  }
+
+  .fa__legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 24px;
+    padding: 14px 4px 0;
+  }
+
+  .fa__legend-item {
+    font-family: var(--font-body);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--fg-on-paper-dim);
+  }
+
+  .fa__legend-item b {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .fa__frame {
+      min-width: 700px;
+    }
+  }
+</style>

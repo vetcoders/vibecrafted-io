@@ -1,5 +1,5 @@
 ---
-import { getEntry } from 'astro:content';
+import { loadCopy } from '../../lib/content';
 import SectionShell from '../SectionShell.astro';
 import SectionFooter from '../SectionFooter.astro';
 import QuickstartCarousel from '../QuickstartCarousel.svelte';
@@ -11,7 +11,7 @@ interface Props {
 
 const { lang = 'en' } = Astro.props as Props;
 
-const quickstartEntry = await getEntry('i18n', `${lang}/quickstart-v2`);
+const quickstartEntry = { data: await loadCopy('quickstart', lang) };
 if (!quickstartEntry) throw new Error(`Missing i18n entry: ${lang}/quickstart-v2`);
 type CarouselStep = {
   num: string;
@@ -44,7 +44,7 @@ const section = quickstartEntry.data as {
   carousel: CarouselData;
 };
 
-const referencesEntry = await getEntry('i18n', `${lang}/references-v2`);
+const referencesEntry = { data: await loadCopy('references', lang) };
 if (!referencesEntry) throw new Error(`Missing i18n entry: ${lang}/references-v2`);
 const nextTitle = referencesEntry.data.title as string;
 ---
@@ -74,7 +74,7 @@ const nextTitle = referencesEntry.data.title as string;
   .quickstart__heading {
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: var(--v2-section-title, clamp(1.5rem, 3vw, 2.55rem));
+    font-size: var(--v2-section-title);
     line-height: 1.1;
     letter-spacing: -0.025em;
     color: var(--fg-on-dark);

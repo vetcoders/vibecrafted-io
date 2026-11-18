@@ -7,6 +7,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The embedded operator playground follows the page light/dark theme, including
+  live theme changes, rather than retaining an independent dark preference.
+- Removed the redundant hero border and shadow around the playground; its
+  native terminal chrome remains the single visual frame.
+- Release freshness compares the same source projection used by packaging,
+  excluding private dot-directory caches and derived foundation binaries while
+  still refusing changed or removed product files and version mismatches.
+- Website framework bundles default to source-only distribution rather than
+  copying locally linked native executables without Developer ID notarization.
+- Exclude nested analysis caches and AppleDouble metadata from website archives;
+  the public archive gate rejects private cache files at any directory depth.
+- Release asset sync accepts an explicitly selected Runtime Pack and publishes its
+  carrier, signature, checksum and `runtime_pack_url` alongside the source bundle.
+  Content-only rebuilds retain that handoff when the source archive is unchanged;
+  corrupt or incomplete native carriers are refused before updating the channel.
+- Source archive builds and previews use the product's canonical distribution
+  writer, including the closed `source-provenance.json` required by the public
+  bootstrap, rather than creating an incompatible raw tarball.
+- The install page links the notarized macOS DMG from the signed native release
+  manifest and explains the paired App/Runtime Pack order. The curl bootstrap
+  does not replace a running desktop app.
+- Content-only deploys preserve published native downloads that are intentionally
+  outside Git, while explicitly staged replacement carriers still upload.
 - Renamed `test_release_contract_stays_polarized_across_public_surfaces` to `test_release_contract_keeps_single_install_cta` to avoid jargon collision with `vc-polarize` skill.
 - Note: `vc-polarize` experimental status remains until the next cycle. The skill is gated on a stable Loctree prism MCP release — see [`docs/roadmap/prism-polarize-gate.md`](docs/roadmap/prism-polarize-gate.md) for the public roadmap entry and references to the runner / loctree / aicx surfaces driving the contract.
 

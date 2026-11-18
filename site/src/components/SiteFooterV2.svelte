@@ -67,15 +67,15 @@
   }
 
   .v2footer__inner {
-    border: 1px solid var(--v2-border, #27272a);
-    border-radius: var(--v2-radius-lg, 16px);
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
     padding: 22px 28px 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
     text-align: center;
-    background: #121214;
+    background: var(--v2-plate);
   }
 
   .v2footer__brand {
@@ -87,7 +87,7 @@
   .v2footer__logo {
     width: 20px;
     height: 20px;
-    border-radius: 4px;
+    border-radius: var(--v2-radius);
   }
 
   .v2footer__wordmark {
