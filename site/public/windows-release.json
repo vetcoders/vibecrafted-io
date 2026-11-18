@@ -1,23 +1,23 @@
 {
   "exe": {
-    "path": "Vibecrafted_4.5.3-20261118-e2ce0020-windows-x64.exe",
-    "sha256": "b7f57d39cde2628d9b8e076f2a62a927e01e8baffdfcd88bcd578d0d64d78e1e",
-    "size": 46986482
+    "path": "Vibecrafted_4.5.4-20261118-9af7de19-windows-x64.exe",
+    "sha256": "783589fa52bf100843c6bd97266923d0a8419b8b37d74023fef49665bbf4cbeb",
+    "size": 46987332
   },
   "msi": {
-    "path": "Vibecrafted_4.5.3-20261118-e2ce0020-windows-x64.msi",
-    "sha256": "39b2c0c4a4e41be9ef0b4afab1079c45a0567c665f2a24e47a57d1796641e9ed",
+    "path": "Vibecrafted_4.5.4-20261118-9af7de19-windows-x64.msi",
+    "sha256": "fe2e83a105d3e948f214ed1ef69c8314bcf6432780af4b8872c656ee88810ca8",
     "size": 47173632
   },
   "product": {
     "architecture": "x64",
     "platform": "win32-x64",
-    "version": "4.5.3"
+    "version": "4.5.4"
   },
   "runtime_pack": {
-    "path": "Vibecrafted_RuntimePack_4.5.3-20261118-e2ce0020-win32-x64.tar.gz",
-    "sha256": "7ca0e41b747dc6009ce467e9b3a8d18da0284603ab849d22151d57c6c0f87307",
-    "size": 46206558
+    "path": "Vibecrafted_RuntimePack_4.5.4-20261118-9af7de19-win32-x64.tar.gz",
+    "sha256": "0e948d644d4b40b304df70a78ccd8a27e0be262ccf27c7417779bc4bae8586b6",
+    "size": 46209801
   },
   "schema": "io.vetcoders.vibecrafted.windows-release-output.v1",
   "signing": {
@@ -25,9 +25,9 @@
     "runtime_pack": "product-key"
   },
   "source_revisions": {
-    "vc-frame": "9a59ae57cda5fd021435a49edc4a10993e092686",
+    "vc-frame": "3097b83ec393b720f6dd9bd5733dc1050d58fed4",
     "vc-terminal": "df47e6f1452896a0f4f7c7ceb07117955b6ff4c9",
-    "vibecrafted": "e2ce00200ebf5db9a0d3ed62df046f20670973f4"
+    "vibecrafted": "9af7de19613e193704dd8811805b0adb622c0ce8"
   },
   "verification": {
     "cold_install": "success",
@@ -37,9 +37,9 @@
   "workflow": {
     "controller_sha": "5af894e209f77d5655da22627eb6de1450ff2253",
     "repository": "Loctree/vibecrafted",
-    "request_id": "5b3c21f34d59f2568b7b4c93",
+    "request_id": "c87ae233b0542e6648b97223",
     "run_attempt": 1,
-    "run_id": 44277364327,
-    "source_sha": "e2ce00200ebf5db9a0d3ed62df046f20670973f4"
+    "run_id": 44375722915,
+    "source_sha": "9af7de19613e193704dd8811805b0adb622c0ce8"
   }
 }
