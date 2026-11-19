@@ -60,7 +60,7 @@ plans:
       - "Agency white-label path"
       - "SLA + audit exports"
       - "Codescribe enterprise lane"
-      - "Co-build z VetCoders"
+      - "Co-build z Vetcoders"
 
 gateLabel: "Hedge · bramka 90 dni"
 gateTitle: "Jeden commercial surface. Poproś o pieniądze. Retreat jako godność, nie porażka."

@@ -900,8 +900,12 @@ Try: <span class="b">loct impact src/auth.ts</span> · <span class="b">aicx sear
       return;
     }
     if (c === "version") {
+      const host = (root as ShadowRoot).host as HTMLElement | undefined;
+      const version = host?.dataset.channelVersion ?? "";
       line(
-        "vibecrafted 4.3.1 — Operator Frame simulator (host above, guests below)",
+        version
+          ? `vibecrafted ${version} — Operator Frame simulator (host above, guests below)`
+          : "Operator Frame simulator (host above, guests below)",
       );
       return;
     }

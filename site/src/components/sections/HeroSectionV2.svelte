@@ -1,6 +1,9 @@
 <script lang="ts">
   import type { Lang } from '../../lib/i18n';
+  import { getTranslations } from '../../lib/i18n';
+  import CopyButton from '../CopyButton.svelte';
   import PlaygroundTui from '../PlaygroundTui.svelte';
+  import { PUBLIC_INSTALL_COMMAND } from '../../lib/installer/public-install-command';
 
   export interface HeroData {
     ariaLabel: string;
@@ -26,9 +29,13 @@
   interface Props {
     lang?: Lang;
     hero: HeroData;
+    /** Installer-channel version. Empty omits it from the simulator. */
+    channelVersion?: string;
   }
 
-  let { lang = 'en', hero }: Props = $props();
+  let { lang = 'en', hero, channelVersion = '' }: Props = $props();
+  const copy = $derived(getTranslations(lang).copyButton);
+  const installCommand = PUBLIC_INSTALL_COMMAND;
 
   const headingAccentWord = $derived(hero.heading.accent.replace(/\.$/, ''));
   const headingAccentDot = $derived(hero.heading.accent.endsWith('.') ? '.' : '');
@@ -58,6 +65,22 @@
     <p class="hero__body">
       {@html hero.body}
     </p>
+    <div class="hero__install">
+      <code class="hero__install-cmd">
+        <span class="hero__install-prompt" aria-hidden="true">$</span>
+        {installCommand}
+      </code>
+      <CopyButton
+        textToCopy={installCommand}
+        class="hero__install-copy"
+        defaultLabel={copy.upperDefault}
+        copiedLabel={copy.copied}
+        errorLabel={copy.error}
+        defaultAriaLabel={copy.defaultAria}
+        copiedAriaLabel={copy.copiedAria}
+        errorAriaLabel={copy.errorAria}
+      />
+    </div>
     <div class="hero__ctas">
       <a class="hero__cta hero__cta--primary" href={installHref}>
         {hero.ctaPrimary}<span class="hero__cta-arrow" aria-hidden="true">→</span>
@@ -69,7 +92,7 @@
   </div>
 
   <div class="hero__stage hero__playground" id="playground" aria-label={playgroundTitle}>
-    <PlaygroundTui />
+    <PlaygroundTui {channelVersion} />
   </div>
 </section>
 
@@ -160,7 +183,7 @@
     font-size: clamp(13px, 0.95vw, 15px);
     line-height: 1.55;
     color: var(--fg-on-dark-dim);
-    margin: 0 0 22px;
+    margin: 0 0 14px;
   }
 
   .hero__body :global(code) {
@@ -177,6 +200,50 @@
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+
+  .hero__install {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    margin: 0 0 12px;
+  }
+
+  .hero__install-cmd {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--fg-on-dark);
+    background: var(--v2-plate);
+    border: 1px solid var(--v2-border);
+    border-radius: var(--v2-radius);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .hero__install-prompt {
+    color: var(--accent);
+    margin-right: 0.4em;
+  }
+
+  :global(.hero__install-copy[data-copy-managed='svelte']) {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(var(--accent-rgb), 0.55);
+    color: var(--accent);
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border-radius: var(--v2-radius);
+    cursor: pointer;
   }
 
   .hero__ctas {
