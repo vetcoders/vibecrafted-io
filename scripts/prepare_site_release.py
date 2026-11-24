@@ -21,15 +21,22 @@ from sync_site_release_assets import (
     _verify_release_signature,
     read_sha256_entries,
     sha256_file,
+    validate_linux_release,
     validate_windows_release,
 )
 
 REPOSITORY = "vetcoders/vibecrafted"
 WORKFLOW = "install-windows.yml"
+LINUX_WORKFLOW = "install-linux.yml"
 NATIVE_JOBS = {
     "install.ps1 + doctor (windows-latest)",
     "MSI silent install + doctor + uninstall",
     "EXE silent install + doctor + uninstall",
+}
+LINUX_X64_JOBS = {
+    "install.sh (ubuntu-ubuntu-22.04)",
+    "install.sh (ubuntu-ubuntu-24.04)",
+    "install.sh (debian-12 container)",
 }
 
 
@@ -40,6 +47,15 @@ def run(args: list[str], **kwargs) -> str:
 
 def api(path: str) -> dict:
     return json.loads(run(["gh", "api", path]))
+
+
+def release_request(revisions: dict, controller_sha: str) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            {"source_revisions": revisions, "controller": controller_sha},
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()[:24]
 
 
 def matching_run(runs: list[dict], request: str, controller: str) -> dict | None:
@@ -196,11 +212,7 @@ def receive_windows_release(
     # GitHub's durable run is the attempt record. Stable inputs find and resume
     # that exact run after a network interruption, rather than starting another
     # expensive native build on every make retry.
-    request = hashlib.sha256(
-        json.dumps(
-            {"source_revisions": revisions, "controller": controller}, sort_keys=True
-        ).encode()
-    ).hexdigest()[:24]
+    request = release_request(revisions, controller)
     started = datetime.now(UTC).isoformat()
     runs_path = f"repos/{REPOSITORY}/actions/workflows/{workflow_id}/runs?event=workflow_dispatch&per_page=100"
     selected_run = matching_run(api(runs_path)["workflow_runs"], request, controller)
@@ -343,12 +355,239 @@ def receive_windows_release(
     return (destination / "windows-release.json").resolve()
 
 
+def extract_linux_artifact(archive: Path, destination: Path) -> None:
+    """Extract the Linux release attachment. Five files, no paths, no keys."""
+    with zipfile.ZipFile(archive) as carrier:
+        members = carrier.infolist()
+        if len(members) != 5 or len({member.filename for member in members}) != 5:
+            raise RuntimeError("Linux release artifact must contain exactly five files")
+        if sum(member.file_size for member in members) > 4 * 1024**3:
+            raise RuntimeError("Linux release artifact exceeds the size limit")
+        for member in members:
+            name = member.filename
+            if (
+                Path(name).name != name
+                or member.is_dir()
+                or stat.S_ISLNK(member.external_attr >> 16)
+                or not (
+                    name in ("linux-x64-release.json", "linux-x64-release.json.sig",
+                             "linux-arm64-release.json", "linux-arm64-release.json.sig")
+                    or (
+                        name.startswith("Vibecrafted_RuntimePack_")
+                        and name.endswith(("-linux-x64.tar.gz", "-linux-arm64.tar.gz",
+                                           ".sha256", ".sig"))
+                    )
+                )
+            ):
+                raise RuntimeError("Linux release artifact contains an unexpected path")
+        destination.mkdir()
+        for member in members:
+            with (
+                carrier.open(member) as source,
+                (destination / member.filename).open("xb") as target,
+            ):
+                shutil.copyfileobj(source, target)
+
+
+def receive_linux_release(
+    release: dict,
+    public_key: Path,
+    destination: Path,
+    controller_ref: str,
+    timeout: int,
+    *,
+    platform: str,
+    request: str,
+) -> Path:
+    """Dispatch install-linux.yml and admit its product-signed receipt.
+
+    ``request`` is the same 24-hex identity the Windows half of this site
+    release already used, so one publication has one request id.
+    """
+    receipt_name = f"{platform}-release.json"
+    artifact_name = f"{platform}-release"
+    cached = os.environ.get(
+        "VIBECRAFTED_LINUX_X64_RELEASE"
+        if platform == "linux-x64"
+        else "VIBECRAFTED_LINUX_ARM64_RELEASE"
+    )
+    receipt_path = Path(cached).expanduser() if cached else destination / receipt_name
+    if cached or receipt_path.is_file():
+        validate_linux_release(receipt_path, release, public_key)
+        print(f"Reusing matching signed native {platform} release.", flush=True)
+        return receipt_path.resolve()
+    revisions = release["source_revisions"]
+    source = revisions["vibecrafted"]
+    if api(f"repos/{REPOSITORY}/commits/{source}")["sha"] != source:
+        raise RuntimeError("Product source is not available to the Linux builder")
+    controller = api(f"repos/{REPOSITORY}/commits/{quote(controller_ref, safe='')}")[
+        "sha"
+    ]
+    workflow = api(f"repos/{REPOSITORY}/actions/workflows/{LINUX_WORKFLOW}")
+    workflow_id = workflow["id"]
+    started = datetime.now(UTC).isoformat()
+    runs_path = (
+        f"repos/{REPOSITORY}/actions/workflows/{workflow_id}/runs"
+        "?event=workflow_dispatch&per_page=100"
+    )
+    selected_run = matching_run(api(runs_path)["workflow_runs"], request, controller)
+    include_arm64 = "true" if platform == "linux-arm64" or os.environ.get(
+        "VIBECRAFTED_INCLUDE_LINUX_ARM64"
+    ) == "1" else "false"
+    # x64 and arm64 share one workflow run. The x64 receiver dispatches it.
+    # The arm64 receiver only resumes that run and reads its second artifact.
+    if platform == "linux-x64" and selected_run is None:
+        print(
+            f"Building native Linux release · request {request} · source {source}",
+            flush=True,
+        )
+        run(
+            [
+                "gh",
+                "workflow",
+                "run",
+                str(workflow_id),
+                "--repo",
+                REPOSITORY,
+                f"--ref={controller_ref}",
+                "-f",
+                f"source_ref={source}",
+                "-f",
+                f"terminal_revision={revisions['vc-terminal']}",
+                "-f",
+                f"frame_revision={revisions['vc-frame']}",
+                "-f",
+                f"request_id={request}",
+                "-f",
+                "release_signing=true",
+                "-f",
+                f"include_arm64={include_arm64}",
+            ]
+        )
+    elif selected_run is None:
+        raise RuntimeError(
+            "linux-arm64 publication requires the linux-x64 workflow run from this request"
+        )
+    elif (
+        selected_run.get("status") == "completed"
+        and selected_run.get("conclusion") != "success"
+    ):
+        raise RuntimeError(
+            f"Linux request already failed: {selected_run['html_url']}. Rerun that exact GitHub run before retrying site-release."
+        )
+    else:
+        print(f"Resuming Linux request {request} · run {selected_run['id']}", flush=True)
+    deadline = time.monotonic() + timeout
+    previous_status = None
+    while time.monotonic() < deadline:
+        if selected_run is None:
+            runs = api(runs_path)["workflow_runs"]
+            selected_run = matching_run(runs, request, controller)
+            if selected_run is None:
+                time.sleep(5)
+                continue
+        selected_run = api(f"repos/{REPOSITORY}/actions/runs/{selected_run['id']}")
+        if selected_run.get("head_sha") != controller:
+            raise RuntimeError("Linux build controller identity changed")
+        status = selected_run["status"]
+        if status != previous_status:
+            print(f"Linux build: {status} · {selected_run['html_url']}", flush=True)
+            previous_status = status
+        if status == "completed":
+            break
+        time.sleep(10)
+    else:
+        raise RuntimeError(
+            f"Linux build timed out; request {request}. Inspect its run before retrying."
+        )
+    if selected_run.get("conclusion") != "success":
+        raise RuntimeError(f"Linux build failed: {selected_run['html_url']}")
+    run_id = selected_run["id"]
+    jobs = api(
+        f"repos/{REPOSITORY}/actions/runs/{run_id}/jobs?filter=latest&per_page=100"
+    )["jobs"]
+    outcomes = {job["name"]: job["conclusion"] for job in jobs}
+    required_jobs = LINUX_X64_JOBS if platform == "linux-x64" else {
+        "install.sh (ubuntu-22.04-arm)"
+    }
+    if any(outcomes.get(name) != "success" for name in required_jobs):
+        raise RuntimeError(f"{platform} native install gates did not all succeed")
+    artifacts = api(f"repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100")[
+        "artifacts"
+    ]
+    run_start = datetime.fromisoformat(selected_run["run_started_at"])
+    matching_artifacts = [
+        item
+        for item in artifacts
+        if item["name"] == artifact_name
+        and not item["expired"]
+        and datetime.fromisoformat(item["created_at"]) >= run_start
+    ]
+    if len(matching_artifacts) != 1:
+        raise RuntimeError(f"Expected one {platform} artifact from this exact run attempt")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        raise RuntimeError(
+            f"Linux artifact directory already exists without an admitted receipt: {destination}"
+        )
+    with tempfile.TemporaryDirectory(
+        prefix=f".{platform}-release-", dir=destination.parent
+    ) as temporary:
+        staged = Path(temporary) / "artifacts"
+        archive = Path(temporary) / "artifact.zip"
+        with archive.open("wb") as output:
+            subprocess.run(
+                [
+                    "gh",
+                    "api",
+                    f"repos/{REPOSITORY}/actions/artifacts/{matching_artifacts[0]['id']}/zip",
+                ],
+                check=True,
+                stdout=output,
+            )
+        extract_linux_artifact(archive, staged)
+        receipt = staged / receipt_name
+        files, _channel = validate_linux_release(receipt, release, public_key)
+        identity = json.loads(receipt.read_text())["workflow"]
+        if any(
+            str(identity.get(key)) != str(value)
+            for key, value in {
+                "run_id": run_id,
+                "run_attempt": selected_run["run_attempt"],
+                "controller_sha": controller,
+                "source_sha": source,
+                "request_id": request,
+            }.items()
+        ):
+            raise RuntimeError("Downloaded Linux receipt belongs to another build attempt")
+        published = Path(temporary) / "admitted"
+        published.mkdir()
+        for path, name in files.items():
+            shutil.copy2(path, published / name)
+        (published / "build-reception.json").write_text(
+            json.dumps(
+                {
+                    "started": started,
+                    "workflow": identity,
+                    "native_jobs": outcomes,
+                    "url": selected_run["html_url"],
+                },
+                indent=2,
+            )
+            + "\n"
+        )
+        published.rename(destination)
+    return (destination / receipt_name).resolve()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--product-root", type=Path, required=True)
     parser.add_argument("--windows-dir", type=Path, required=True)
     parser.add_argument("--selection", type=Path, required=True)
     parser.add_argument("--workflow-ref", default="ci/windows-site-release")
+    parser.add_argument("--linux-dir", type=Path, required=True)
+    parser.add_argument("--linux-workflow-ref", default="release/v4.6.0")
     parser.add_argument("--timeout", type=int, default=7200)
     args = parser.parse_args()
     root = args.product_root.expanduser().resolve(strict=True)
@@ -364,6 +603,31 @@ def main() -> None:
     receipt = receive_windows_release(
         release, public_key, args.windows_dir / source, args.workflow_ref, args.timeout
     )
+    windows_controller = api(
+        f"repos/{REPOSITORY}/commits/{quote(args.workflow_ref, safe='')}"
+    )["sha"]
+    request = release_request(release["source_revisions"], windows_controller)
+    linux_receipt = receive_linux_release(
+        release,
+        public_key,
+        args.linux_dir / source / "x64",
+        args.linux_workflow_ref,
+        args.timeout,
+        platform="linux-x64",
+        request=request,
+    )
+    selection_linux = {"linux_x64_release": str(linux_receipt)}
+    if os.environ.get("VIBECRAFTED_INCLUDE_LINUX_ARM64") == "1":
+        arm_receipt = receive_linux_release(
+            release,
+            public_key,
+            args.linux_dir / source / "arm64",
+            args.linux_workflow_ref,
+            args.timeout,
+            platform="linux-arm64",
+            request=request,
+        )
+        selection_linux["linux_arm64_release"] = str(arm_receipt)
     if (
         run(["git", "-C", str(root), "rev-parse", "HEAD"]).strip() != source
         or run(["git", "-C", str(root), "status", "--porcelain"]).strip()
@@ -375,6 +639,7 @@ def main() -> None:
         "source_revision": source,
         "runtime_pack": str(pack.resolve()),
         "windows_release": str(receipt),
+        **selection_linux,
     }
     temporary = args.selection.with_name(args.selection.name + ".temporary")
     temporary.write_text(json.dumps(selection, indent=2) + "\n")

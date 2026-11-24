@@ -310,6 +310,63 @@ class WindowsReleaseTests(unittest.TestCase):
         self.sign(pack)
         return bundle, pack
 
+    def linux_receipt(self, platform="linux-x64"):
+        architecture = "x64" if platform == "linux-x64" else "arm64"
+        gates = (
+            {"ubuntu_native": "success", "debian_12": "success"}
+            if platform == "linux-x64"
+            else {"native_install": "success"}
+        )
+        pack = (
+            self.root
+            / f"Vibecrafted_RuntimePack_{VERSION}-20261029-{SOURCE[:8]}-{platform}.tar.gz"
+        )
+        provenance = {
+            "version": VERSION,
+            "platform": platform,
+            "architecture": architecture,
+            "source_revisions": REVISIONS,
+        }
+        body = json.dumps(provenance).encode()
+        with tarfile.open(pack, "w:gz") as archive:
+            member = tarfile.TarInfo("VibecraftedRuntime/runtime-pack-provenance.json")
+            member.size = len(body)
+            archive.addfile(member, io.BytesIO(body))
+        digest = hashlib.sha256(pack.read_bytes()).hexdigest()
+        Path(str(pack) + ".sha256").write_text(f"{digest}  {pack.name}\n")
+        self.sign(pack)
+        receipt = {
+            "schema": "io.vetcoders.vibecrafted.linux-release-output.v1",
+            "product": {
+                "version": VERSION,
+                "platform": platform,
+                "architecture": architecture,
+            },
+            "source_revisions": REVISIONS,
+            "runtime_pack": {
+                "path": pack.name,
+                "sha256": digest,
+                "size": pack.stat().st_size,
+            },
+            "workflow": self.receipt["workflow"],
+            "verification": gates,
+            "signing": {"runtime_pack": "product-key"},
+        }
+        path = self.root / f"{platform}-release.json"
+        path.write_text(json.dumps(receipt))
+        self.sign(path)
+        return path
+
+    def test_linux_receipt_projects_pack_signature_and_checksum_urls(self):
+        _files, channel = assets.validate_linux_release(
+            self.linux_receipt(), self.release, self.public
+        )
+        self.assertTrue(channel["runtime_pack_url"].endswith("-linux-x64.tar.gz"))
+        self.assertEqual(channel["signature_url"], channel["runtime_pack_url"] + ".sig")
+        self.assertEqual(channel["sha256_url"], channel["runtime_pack_url"] + ".sha256")
+        self.assertEqual(channel["archive_url"], channel["runtime_pack_url"])
+        self.assertNotIn("exe_url", channel)
+
     def test_release_requires_windows_before_public_files_are_changed(self):
         bundle, pack = self.bundle()
         public = self.root / "public"
@@ -330,6 +387,7 @@ class WindowsReleaseTests(unittest.TestCase):
 
     def test_complete_release_copies_native_files_and_projects_windows_channel(self):
         bundle, pack = self.bundle()
+        linux = self.linux_receipt()
         public = self.root / "public"
         with mock.patch.dict(
             os.environ,
@@ -337,23 +395,56 @@ class WindowsReleaseTests(unittest.TestCase):
                 "SITE_RELEASE_MODE": "1",
                 "VIBECRAFTED_RUNTIME_PACK": str(pack),
                 "VIBECRAFTED_WINDOWS_RELEASE": str(self.receipt_path),
+                "VIBECRAFTED_LINUX_X64_RELEASE": str(linux),
+                "VIBECRAFTED_LINUX_ARM64_RELEASE": "",
                 "VIBECRAFTED_SITE_RELEASE_SELECTION": "",
             },
         ):
             assets.sync_site_release_assets(bundle, public, self.root / "src")
-        channel = json.loads((public / "channel/main.json").read_text())["platforms"][
-            "windows-x64"
-        ]
+        platforms = json.loads((public / "channel/main.json").read_text())["platforms"]
+        channel = platforms["windows-x64"]
+        linux_channel = platforms["linux-x64"]
         for role in ["exe", "msi", "runtime_pack"]:
             self.assertTrue((public / self.receipt[role]["path"]).is_file())
         self.assertEqual(channel["archive_url"], channel["runtime_pack_url"])
         self.assertIn("-win32-x64.tar.gz", channel["archive_url"])
         self.assertIn("source_archive_url", channel)
+        self.assertTrue(linux_channel["runtime_pack_url"].endswith("-linux-x64.tar.gz"))
+        self.assertEqual(
+            linux_channel["signature_url"], linux_channel["runtime_pack_url"] + ".sig"
+        )
+        self.assertEqual(
+            linux_channel["sha256_url"], linux_channel["runtime_pack_url"] + ".sha256"
+        )
+        self.assertTrue(linux_channel["source_archive_url"].endswith(".tar.gz"))
+        self.assertNotIn("runtime_pack_url", platforms["linux-arm64"])
         sums = assets.read_sha256_entries(public / "SHA256SUMS")
         self.assertEqual(
             sums[self.receipt["msi"]["path"]], self.receipt["msi"]["sha256"]
         )
         self.assertIn("windows-release.json", sums)
+        pack_name = linux_channel["runtime_pack_url"].rsplit("/", 1)[-1]
+        self.assertIn(pack_name, sums)
+        self.assertIn("linux-x64-release.json", sums)
+
+    def test_release_requires_linux_x64_pack_before_public_files_change(self):
+        bundle, pack = self.bundle()
+        public = self.root / "public"
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "SITE_RELEASE_MODE": "1",
+                    "VIBECRAFTED_RUNTIME_PACK": str(pack),
+                    "VIBECRAFTED_WINDOWS_RELEASE": str(self.receipt_path),
+                    "VIBECRAFTED_LINUX_X64_RELEASE": "",
+                    "VIBECRAFTED_SITE_RELEASE_SELECTION": "",
+                },
+            ),
+            self.assertRaisesRegex(RuntimeError, "linux-x64"),
+        ):
+            assets.sync_site_release_assets(bundle, public, self.root / "src")
+        self.assertFalse((public / "channel" / "main.json").exists())
 
     def test_mixed_source_archive_refuses_before_projection(self):
         bundle, pack = self.bundle("a" * 40)

@@ -56,6 +56,7 @@ def selected_release_inputs() -> dict[str, str]:
     for key, env in (
         ("runtime_pack", "VIBECRAFTED_RUNTIME_PACK"),
         ("windows_release", "VIBECRAFTED_WINDOWS_RELEASE"),
+        ("linux_x64_release", "VIBECRAFTED_LINUX_X64_RELEASE"),
     ):
         if (
             not isinstance(selection.get(key), str)
@@ -68,6 +69,15 @@ def selected_release_inputs() -> dict[str, str]:
             and Path(override).expanduser().resolve() != Path(selection[key]).resolve()
         ):
             raise RuntimeError(f"{env} conflicts with the prepared site release")
+    arm64 = selection.get("linux_arm64_release")
+    if arm64 not in (None, ""):
+        if not isinstance(arm64, str) or not Path(arm64).is_file():
+            raise RuntimeError("Site release selection is missing linux_arm64_release")
+        override = os.environ.get("VIBECRAFTED_LINUX_ARM64_RELEASE")
+        if override and Path(override).expanduser().resolve() != Path(arm64).resolve():
+            raise RuntimeError(
+                "VIBECRAFTED_LINUX_ARM64_RELEASE conflicts with the prepared site release"
+            )
     return selection
 
 
@@ -334,6 +344,122 @@ def validate_windows_release(
         "release_manifest_signature_url": base + "windows-release.json.sig",
         "source_revision": source,
         "authenticode": signing["authenticode"],
+        "vendored_foundations": False,
+    }
+
+
+_LINUX_PLATFORMS = {"linux-x64": "x64", "linux-arm64": "arm64"}
+_LINUX_GATES = {
+    "linux-x64": {"ubuntu_native": "success", "debian_12": "success"},
+    "linux-arm64": {"native_install": "success"},
+}
+
+
+def validate_linux_release(
+    receipt_path: Path, native_release: dict, public_key: Path
+) -> tuple[dict[Path, str], dict]:
+    """Admit one product-signed Linux Runtime Pack before any public projection.
+
+    linux-x64 requires the Ubuntu matrix and the Debian container install.
+    linux-arm64 requires its own native install. There is no MSI/EXE carrier.
+    """
+    if not receipt_path.is_file() or receipt_path.is_symlink():
+        raise FileNotFoundError(f"Missing Linux release receipt: {receipt_path}")
+    if receipt_path.stat().st_size > 2_000_000:
+        raise RuntimeError("Linux release receipt exceeds the size limit")
+    _verify_release_signature(receipt_path, public_key)
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    version = native_release["product"]["version"]
+    revisions = native_release["source_revisions"]
+    source = revisions["vibecrafted"]
+    if any(not re.fullmatch(r"[0-9a-f]{40}", value) for value in revisions.values()):
+        raise RuntimeError("Native release requires immutable source revisions")
+    if receipt.get("schema") != "io.vetcoders.vibecrafted.linux-release-output.v1":
+        raise RuntimeError("Unsupported Linux release receipt")
+    product = receipt.get("product") or {}
+    platform = product.get("platform")
+    architecture = _LINUX_PLATFORMS.get(platform)
+    if architecture is None or product != {
+        "version": version,
+        "platform": platform,
+        "architecture": architecture,
+    }:
+        raise RuntimeError("Linux release product does not match the selected release")
+    if receipt.get("source_revisions") != revisions:
+        raise RuntimeError("Linux release source/donor revisions do not match macOS")
+    workflow = receipt.get("workflow", {})
+    if (
+        workflow.get("repository") != "vetcoders/vibecrafted"
+        or workflow.get("source_sha") != source
+        or not re.fullmatch(r"[0-9a-f]{40}", str(workflow.get("controller_sha", "")))
+        or not re.fullmatch(r"[0-9a-f]{24}", str(workflow.get("request_id", "")))
+        or not str(workflow.get("run_id", "")).isdigit()
+        or not str(workflow.get("run_attempt", "")).isdigit()
+    ):
+        raise RuntimeError("Linux release workflow identity is incomplete")
+    gates = receipt.get("verification", {})
+    if any(gates.get(name) != "success" for name in _LINUX_GATES[platform]):
+        raise RuntimeError("Linux release native installation gates are incomplete")
+    if receipt.get("signing", {}).get("runtime_pack") != "product-key":
+        raise RuntimeError("Linux release requires product-key signing")
+    receipt_name = f"{platform}-release.json"
+    if receipt_path.name != receipt_name:
+        raise RuntimeError(f"Linux receipt must be named {receipt_name}")
+    files = {
+        receipt_path: receipt_name,
+        Path(f"{receipt_path}.sig"): receipt_name + ".sig",
+    }
+    record = receipt.get("runtime_pack", {})
+    name = record.get("path", "")
+    match = re.fullmatch(
+        rf"Vibecrafted_RuntimePack_{re.escape(version)}-(\d{{8}})-{source[:8]}-{re.escape(platform)}\.tar\.gz",
+        name,
+    )
+    if not match or Path(name).name != name:
+        raise RuntimeError("Non-canonical Linux Runtime Pack artifact name")
+    path = receipt_path.parent / name
+    checksum = Path(f"{path}.sha256")
+    if (
+        not path.is_file()
+        or path.is_symlink()
+        or not checksum.is_file()
+        or checksum.is_symlink()
+    ):
+        raise FileNotFoundError(f"Missing Linux Runtime Pack artifact/checksum: {path}")
+    digest = sha256_file(path)
+    if (
+        not re.fullmatch(r"[0-9a-f]{64}", str(record.get("sha256", "")))
+        or digest != record["sha256"]
+        or path.stat().st_size != record.get("size")
+        or read_sha256_entries(checksum) != {name: digest}
+    ):
+        raise RuntimeError("Linux Runtime Pack hash/size/checksum mismatch")
+    _verify_release_signature(path, public_key)
+    files.update(
+        {
+            path: name,
+            checksum: checksum.name,
+            Path(f"{path}.sig"): f"{path.name}.sig",
+        }
+    )
+    provenance = _carrier_provenance(path, "runtime-pack-provenance.json")
+    if (
+        provenance.get("source_revisions") != revisions
+        or provenance.get("platform") != platform
+        or provenance.get("architecture") != architecture
+        or provenance.get("version") not in (version, f"{version}+g{source[:8]}")
+    ):
+        raise RuntimeError("Linux pack provenance does not match its release receipt")
+    base = "https://vibecrafted.io/"
+    pack_url = base + name
+    return files, {
+        "archive_url": pack_url,
+        "runtime_pack_url": pack_url,
+        "signature_url": pack_url + ".sig",
+        "sha256_url": pack_url + ".sha256",
+        "release_manifest_url": base + receipt_name,
+        "release_manifest_signature_url": base + receipt_name + ".sig",
+        "source_revision": source,
         "vendored_foundations": False,
     }
 
@@ -763,6 +889,37 @@ def sync_site_release_assets(
             "Run `make windows-release` or set VIBECRAFTED_WINDOWS_RELEASE to its signed receipt."
         )
 
+    linux_files: dict[Path, Path] = {}
+    linux_platforms: dict[str, dict] = {}
+    for platform, key, env_name in (
+        ("linux-x64", "linux_x64_release", "VIBECRAFTED_LINUX_X64_RELEASE"),
+        ("linux-arm64", "linux_arm64_release", "VIBECRAFTED_LINUX_ARM64_RELEASE"),
+    ):
+        receipt_name = f"{platform}-release.json"
+        selected_linux = selection.get(key) or os.environ.get(env_name)
+        if not selected_linux and (site_public / receipt_name).is_file():
+            selected_linux = str(site_public / receipt_name)
+        if not selected_linux:
+            if platform == "linux-x64" and release_requested:
+                raise RuntimeError(
+                    "A site release requires a product-signed linux-x64 Runtime Pack. "
+                    "Run `make site-release` after the Linux release workflow, or set "
+                    "VIBECRAFTED_LINUX_X64_RELEASE to its signed receipt."
+                )
+            continue
+        if release is None:
+            raise RuntimeError(
+                "Linux publication requires the matching native macOS release manifest"
+            )
+        admitted, linux_platform = validate_linux_release(
+            Path(selected_linux).expanduser(),
+            release,
+            bundle_root / "vibecrafted-signing.pub",
+        )
+        linux_platform["source_archive_url"] = f"https://vibecrafted.io/{archive_name}"
+        linux_platforms[platform] = linux_platform
+        linux_files.update({path: site_public / name for path, name in admitted.items()})
+
     for src, dst in required_files.items():
         copy_file(src, dst)
 
@@ -770,6 +927,9 @@ def sync_site_release_assets(
         if src.resolve() != dst.resolve():
             copy_file(src, dst)
     for src, dst in windows_files.items():
+        if src.resolve() != dst.resolve():
+            copy_file(src, dst)
+    for src, dst in linux_files.items():
         if src.resolve() != dst.resolve():
             copy_file(src, dst)
     if runtime_pack_name:
@@ -787,6 +947,11 @@ def sync_site_release_assets(
                     or dst.name == "windows-release.json"
                 ):
                     handle.write(f"{sha256_file(dst)}  {dst.name}\n")
+    if linux_files:
+        with (site_public / "SHA256SUMS").open("a", encoding="utf-8") as handle:
+            for dst in linux_files.values():
+                if dst.name.endswith(".tar.gz") or dst.name.endswith("-release.json"):
+                    handle.write(f"{sha256_file(dst)}  {dst.name}\n")
 
     prune_stale_release_artifacts(site_public, archive_name)
     platforms = describe_platform_coverage(bundle_root, archive_name)
@@ -794,6 +959,8 @@ def sync_site_release_assets(
         platforms["windows-x64"] = windows_platform
     else:
         platforms["windows-x64"]["native_installers_available"] = False
+    for platform, entry in linux_platforms.items():
+        platforms[platform] = entry
     write_channel_manifest(
         site_public,
         version,

@@ -46,6 +46,10 @@ LOCTREE_MCP_REPO ?= $(LOCTREE_REPO)/loctree-mcp
 DIST_DIR ?= $(CURDIR)/dist
 WINDOWS_WORKFLOW_REF ?= ci/windows-site-release
 WINDOWS_RELEASE_DIR ?= $(DIST_DIR)/windows
+LINUX_WORKFLOW_REF ?= release/v4.6.0
+LINUX_RELEASE_DIR ?= $(DIST_DIR)/linux
+# false keeps a missing ARM runner from blocking the linux-x64 publication.
+INCLUDE_LINUX_ARM64 ?= false
 SITE_RELEASE_SELECTION ?= $(DIST_DIR)/site-release-selection.json
 PLUGIN_NAME ?= vibecrafted-framework
 FRAMEWORK_VERSION := $(shell cat $(BUNDLE_ROOT)/VERSION 2>/dev/null || echo "1.5.0")
@@ -342,11 +346,14 @@ site-release-check:
 	@$(PYTHON) -m unittest discover -s tests -p 'test_site_release*.py'
 
 windows-release: bundle-preflight
-	@$(PYTHON) scripts/prepare_site_release.py \
+	@VIBECRAFTED_INCLUDE_LINUX_ARM64="$(if $(filter true TRUE 1,$(INCLUDE_LINUX_ARM64)),1,0)" \
+		$(PYTHON) scripts/prepare_site_release.py \
 		--product-root "$(UPSTREAM_ROOT)" \
 		--windows-dir "$(WINDOWS_RELEASE_DIR)" \
+		--linux-dir "$(LINUX_RELEASE_DIR)" \
 		--selection "$(SITE_RELEASE_SELECTION)" \
-		--workflow-ref "$(WINDOWS_WORKFLOW_REF)"
+		--workflow-ref "$(WINDOWS_WORKFLOW_REF)" \
+		--linux-workflow-ref "$(LINUX_WORKFLOW_REF)"
 
 # Unconditional gate on the bytes this repo publishes. bundle-build already
 # refuses to *create* a leaking payload; this refuses to *ship* one, including
